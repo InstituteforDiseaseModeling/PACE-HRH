@@ -29,6 +29,9 @@ country = "Ethiopia"
 dirs = "C:/Users/bhagedorn/OneDrive - Institute for Disease Modeling/Projects/HEP capacity projection/Data/ETH DHS"
 setwd(dirs)
 
+regional <- TRUE #Set to true for regional values, set to false for urban/rural
+ymax=6
+
 # The file extraction process is to use the zipped (compressed) household and
 # birth recode files provided by DHS, using the .dta file format
 
@@ -51,12 +54,9 @@ for(i in 1:max(files$index)){
   tmp.file.birth = file.path(subset(files, index == i & recode == "birth")$filename)
   tmp.file.hh = file.path(subset(files, index == i & recode == "household")$filename)
   
-  # read from temporary location
+  # read in files
   tmp.svy.birth = read.dta13(tmp.file.birth,convert.factors = TRUE,generate.factors = TRUE)
-  #file.remove(tmp.file.birth)
-  
   tmp.svy.hh = read.dta13(tmp.file.hh,convert.factors = TRUE,generate.factors = TRUE)
-  #file.remove(tmp.file.hh)
 
   # calculate the birth month relative to the month of the first interview;
   # larger number imply further in the past
@@ -68,7 +68,6 @@ for(i in 1:max(files$index)){
   # b10 is completeness of information, where b10 == 1 implies no imputation
   
   tmp.svy.birth$b1_recode = as.factor(ifelse(tmp.svy.birth$relative_birth_month %in% 1:36,tmp.svy.birth$b1,NA))
-
   tmp.svy.birth$b1_recode_no_imputation = as.factor(ifelse(tmp.svy.birth$relative_birth_month %in% 1:36,
                    ifelse(as.integer(tmp.svy.birth$b10) == 1,tmp.svy.birth$b1,NA),NA))
   
@@ -80,16 +79,13 @@ for(i in 1:max(files$index)){
   # summarize births by household and month
   # create dummy coding of births
   for(k in 1:12){
-    tmp.svy.birth[,paste("month",k,sep="")] = ifelse(tmp.svy.birth$relative_birth_month %in% 1:36 &
-                                                       tmp.svy.birth$b1 == k, 1, 0)
+    tmp.svy.birth[,paste("month",k,sep="")] = ifelse(tmp.svy.birth$relative_birth_month %in% 1:36 & tmp.svy.birth$b1 == k, 1, 0)
   }
-  
   tmp.svy.birth.summary = aggregate(cbind(month1,month2,month3,month4,month5,month6,month7,month8,month9,month10,month11,month12)~
                                       v001+v002, data = tmp.svy.birth, sum)
   
-  names(tmp.svy.birth.summary)[1:2] = c("hv001","hv002")
-  
   # merge with the hh file
+  names(tmp.svy.birth.summary)[1:2] = c("hv001","hv002")
   tmp.svy.hh = merge(tmp.svy.hh, tmp.svy.birth.summary, by = c("hv001","hv002"), all.x = T)
   
   # replace NA with 0
@@ -101,18 +97,18 @@ for(i in 1:max(files$index)){
   }
   
   # part 1: proportion per month with standard errors     v024=region. v025=urban/rural
-
-  tmp.svy.design.birth = svydesign(id = ~v001, strata=~v024+v025, weights = tmp.svy.birth$v005/mean(tmp.svy.birth$v005), data=tmp.svy.birth)
-  #tmp.svy.design.birth = svydesign(id = ~v001, strata=~v025, weights = tmp.svy.birth$v005/mean(tmp.svy.birth$v005), data=tmp.svy.birth)
   
-  birth_month = svyby(~b1_recode, by = ~v024, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
-  #birth_month = svyby(~b1_recode, by = ~v025, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
-  
-  birth_month_no_imputation = svyby(~b1_recode_no_imputation, by = ~v024, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
-  #birth_month_no_imputation = svyby(~b1_recode_no_imputation, by = ~v025, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
+  if(regional){
+    tmp.svy.design.birth = svydesign(id = ~v001, strata=~v024+v025, weights = tmp.svy.birth$v005/mean(tmp.svy.birth$v005), data=tmp.svy.birth)
+    birth_month = svyby(~b1_recode, by = ~v024, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
+    birth_month_no_imputation = svyby(~b1_recode_no_imputation, by = ~v024, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
+  }else{
+    tmp.svy.design.birth = svydesign(id = ~v001, strata=~v025, weights = tmp.svy.birth$v005/mean(tmp.svy.birth$v005), data=tmp.svy.birth)
+    birth_month = svyby(~b1_recode, by = ~v025, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
+    birth_month_no_imputation = svyby(~b1_recode_no_imputation, by = ~v025, FUN = svymean, design=tmp.svy.design.birth, na.rm = T)
+  }
   
   names(birth_month) = c("region",paste("month",1:12,sep=""),paste("month",1:12,"_se",sep=""))
-
   birth_month[,1] = tolower(as.character(birth_month[,1]))
   
   names(birth_month_no_imputation) = c("region",paste("month",1:12,sep=""),paste("month",1:12,"_se",sep=""))
@@ -130,31 +126,37 @@ for(i in 1:max(files$index)){
   # part 2: birth rate
   tmp.svy.hh$total_births = with(tmp.svy.hh,month1+month2+month3+month4+month5+month6+month7+month8+month9+month10+month11+month12)
   
-  tmp.svy.design.hh = svydesign(id = ~hv001, strata=~hv024+hv025, weights = tmp.svy.hh$hv005/mean(tmp.svy.hh$hv005), data=tmp.svy.hh)
-  #tmp.svy.design.hh = svydesign(id = ~hv001, strata=~hv025, weights = tmp.svy.hh$hv005/mean(tmp.svy.hh$hv005), data=tmp.svy.hh)
+  if(regional){
+    tmp.svy.design.hh = svydesign(id = ~hv001, strata=~hv024+hv025, weights = tmp.svy.hh$hv005/mean(tmp.svy.hh$hv005), data=tmp.svy.hh)
+    birth_rate_year = svyby(~I(total_births/3),by=~hv024, denominator=~I(hv013/1000),design=tmp.svy.design.hh,FUN=svyratio)
+  }else{
+    tmp.svy.design.hh = svydesign(id = ~hv001, strata=~hv025, weights = tmp.svy.hh$hv005/mean(tmp.svy.hh$hv005), data=tmp.svy.hh)
+    birth_rate_year = svyby(~I(total_births/3),by=~hv025, denominator=~I(hv013/1000),design=tmp.svy.design.hh,FUN=svyratio)
+  }
   
-  birth_rate_year = svyby(~I(total_births/3),
-                          #by=~hv024, denominator=~I(hv013/1000),
-                          by=~hv025, denominator=~I(hv013/1000),
-                           design=tmp.svy.design.hh,FUN=svyratio)
   names(birth_rate_year) = c("region","yearly_birthrate_per_1000", "yearly_birthrate_per_1000_se")
   birth_rate_year$region = tolower(as.character(birth_rate_year$region))
 
-  birth_rate_year_combined = svyby(~I(total_births/3),
-                                    by=~I("Country"), denominator=~I(hv013/1000),
-                                    design=tmp.svy.design.hh,FUN=svyratio)
+  birth_rate_year_combined = svyby(~I(total_births/3),by=~I("Country"), denominator=~I(hv013/1000), design=tmp.svy.design.hh,FUN=svyratio)
   names(birth_rate_year_combined) = c("region","yearly_birthrate_per_1000", "yearly_birthrate_per_1000_se")
 
   birth_rate_year = rbind(birth_rate_year, birth_rate_year_combined)
   
   # part3: birth rate by month
   
-  birth_rate_month = svyby(~I(month1/3)+I(month2/3)+I(month3/3)+I(month4/3)+
-                                      I(month5/3)+I(month6/3)+I(month7/3)+I(month8/3)+
-                                      I(month9/3)+I(month10/3)+I(month11/3)+I(month12/3),
-                                      #by=~hv024, denominator=~I(hv013/1000),
-                                      by=~hv025, denominator=~I(hv013/1000),
-                                    design=tmp.svy.design.hh,FUN=svyratio)
+  if(regional){
+    birth_rate_month = svyby(~I(month1/3)+I(month2/3)+I(month3/3)+I(month4/3)+
+                               I(month5/3)+I(month6/3)+I(month7/3)+I(month8/3)+
+                               I(month9/3)+I(month10/3)+I(month11/3)+I(month12/3),
+                                by=~hv024, denominator=~I(hv013/1000),
+                                design=tmp.svy.design.hh,FUN=svyratio)
+  }else{
+    birth_rate_month = svyby(~I(month1/3)+I(month2/3)+I(month3/3)+I(month4/3)+
+                               I(month5/3)+I(month6/3)+I(month7/3)+I(month8/3)+
+                               I(month9/3)+I(month10/3)+I(month11/3)+I(month12/3),
+                             by=~hv025, denominator=~I(hv013/1000),
+                             design=tmp.svy.design.hh,FUN=svyratio)
+  }
   
   names(birth_rate_month) = c("region",paste("month",1:12,"_birthrate",sep=""),
                                        paste("month",1:12,"_birthrate_se",sep=""))
@@ -185,8 +187,53 @@ for(i in 1:max(files$index)){
   # just the relevant columns; SE's not computed
   birth_rate_month_no_imputation = birth_rate_month_no_imputation[,names(birth_rate_month)[1:13]]
 
-  # wrap it up
+  # match up regional spellings as needed
+  birth_month$region[birth_month$region=="addis"] = "addis ababa"
+  birth_month$region[birth_month$region=="addis abeba"] = "addis ababa"
+  birth_month$region[birth_month$region=="addis adaba"] = "addis ababa"
+  birth_month$region[birth_month$region=="affar"] = "afar"
+  birth_month$region[birth_month$region=="ben-gumz"] = "benishangul-gumuz"
+  birth_month$region[birth_month$region=="benishangul"] = "benishangul-gumuz"
+  birth_month$region[birth_month$region=="oromia"] = "oromiya"
+  birth_month$region[birth_month$region=="snnp"] = "snnpr"
+
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="addis"] = "addis ababa"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="addis abeba"] = "addis ababa"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="addis adaba"] = "addis ababa"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="affar"] = "afar"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="ben-gumz"] = "benishangul-gumuz"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="benishangul"] = "benishangul-gumuz"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="oromia"] = "oromiya"
+  birth_month_no_imputation$region[birth_month_no_imputation$region=="snnp"] = "snnpr"
+
+  birth_rate_year$region[birth_rate_year$region=="addis"] = "addis ababa"
+  birth_rate_year$region[birth_rate_year$region=="addis abeba"] = "addis ababa"
+  birth_rate_year$region[birth_rate_year$region=="addis adaba"] = "addis ababa"
+  birth_rate_year$region[birth_rate_year$region=="affar"] = "afar"
+  birth_rate_year$region[birth_rate_year$region=="ben-gumz"] = "benishangul-gumuz"
+  birth_rate_year$region[birth_rate_year$region=="benishangul"] = "benishangul-gumuz"
+  birth_rate_year$region[birth_rate_year$region=="oromia"] = "oromiya"
+  birth_rate_year$region[birth_rate_year$region=="snnp"] = "snnpr"
+
+  birth_rate_month$region[birth_rate_month$region=="addis"] = "addis ababa"
+  birth_rate_month$region[birth_rate_month$region=="addis abeba"] = "addis ababa"
+  birth_rate_month$region[birth_rate_month$region=="addis adaba"] = "addis ababa"
+  birth_rate_month$region[birth_rate_month$region=="affar"] = "afar"
+  birth_rate_month$region[birth_rate_month$region=="ben-gumz"] = "benishangul-gumuz"
+  birth_rate_month$region[birth_rate_month$region=="benishangul"] = "benishangul-gumuz"
+  birth_rate_month$region[birth_rate_month$region=="oromia"] = "oromiya"
+  birth_rate_month$region[birth_rate_month$region=="snnp"] = "snnpr"
+
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="addis"] = "addis ababa"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="addis abeba"] = "addis ababa"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="addis adaba"] = "addis ababa"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="affar"] = "afar"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="ben-gumz"] = "benishangul-gumuz"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="benishangul"] = "benishangul-gumuz"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="oromia"] = "oromiya"
+  birth_rate_month_no_imputation$region[birth_rate_month_no_imputation$region=="snnp"] = "snnpr"
   
+  # wrap it up
   results[[i]] = list(birth_month = birth_month,
                       birth_month_no_imputation = birth_month_no_imputation,
                       birth_rate_year = birth_rate_year,
@@ -200,7 +247,10 @@ for(i in 1:max(files$index)){
 year_label = unique(files[,c("index","year_label")])
 year_label = year_label$year_label[order(year_label$index)]
 
+
+#########################################################
 # write to csv
+
 birth_month_all = do.call("rbind",lapply(1:length(results),function(m) cbind(year=year_label[m],results[[m]]$birth_month)))
 birth_month_no_imputation_all = do.call("rbind",lapply(1:length(results),function(m) cbind(year=year_label[m],results[[m]]$birth_month_no_imputation)))
 birth_rate_year_all = do.call("rbind",lapply(1:length(results),function(m) cbind(year=year_label[m],results[[m]]$birth_rate_year)))
@@ -216,6 +266,7 @@ write.csv(birth_rate_month_all, file=paste(country,"_birth_rate_month_",today,".
 write.csv(birth_rate_month_no_imputation_all, file=paste(country,"_birth_rate_month_no_imputation_",today,".csv",sep=""),row.names = F)
 
 
+#########################################################
 # make plots
 
 ggplot(birth_rate_year_all,aes(x=year,y=yearly_birthrate_per_1000,group=region,color=region))+theme_bw()+
@@ -240,36 +291,42 @@ brmonth$month <- as.numeric(brmonth$month)
 
 pdf("Seasonality of births visualizations.pdf",width=11,height=8.5)
 
-ggplot(brmonth,aes(x=month,y=birthrate,group=year,color=year))+geom_point()+geom_line()+theme_bw()+facet_wrap(~region)+ylim(0,4.1)+xlim(1,12)
-ggplot(brmonth,aes(x=month,y=birthrate,group=region,color=region))+geom_point()+geom_line()+theme_bw()+facet_wrap(~year)+ylim(0,4.1)+xlim(1,12)
-ggplot(brmonth,aes(x=year,y=birthrate,group=region,color=region))+geom_point()+geom_line()+theme_bw()+facet_wrap(~month)+ylim(0,4.1)+xlim(2000,2020)
+ggplot(brmonth,aes(x=month,y=birthrate,group=as.factor(year),color=as.factor(year)))+geom_point()+geom_line()+theme_bw()+facet_wrap(~region)+ylim(0,ymax)+scale_x_continuous(breaks=seq(1,12,1))
+ggplot(brmonth,aes(x=month,y=birthrate,group=region,color=region))+geom_point()+geom_line()+theme_bw()+facet_wrap(~year)+ylim(0,ymax)+scale_x_continuous(breaks=seq(1,12,1))
+ggplot(brmonth,aes(x=year,y=birthrate,group=region,color=region))+geom_point()+geom_line()+theme_bw()+facet_wrap(~month)+ylim(0,ymax)+xlim(2000,2020)
 
-ggplot(brmonth,aes(x=month,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~year)+ylim(0,4.5)+xlim(1,12)+
+ggplot(brmonth,aes(x=month,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~year)+ylim(0,ymax)+xlim(1,12)+
   geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=region),alpha=.3)+
   geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
 
-ggplot(subset(brmonth,region=="Country"),aes(x=month,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~year)+ylim(0,4.5)+xlim(1,12)+
+ggplot(subset(brmonth,region=="Country"),aes(x=month,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~year)+ylim(0,ymax)+xlim(1,12)+
   geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=region),alpha=.3)+
   geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
 
-ggplot(subset(brmonth,region=="rural"),aes(x=month,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~year)+ylim(0,4.5)+xlim(1,12)+
+ggplot(brmonth,aes(x=month,y=birthrate,group=as.factor(year),color=as.factor(year)))+theme_bw()+facet_wrap(~region)+ylim(0,ymax)+xlim(1,12)+
+  geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=as.factor(year)),alpha=.3)+
+  geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
+
+ggplot(subset(brmonth,region=="rural"),aes(x=month,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~year)+ylim(0,ymax)+xlim(1,12)+
   geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=region),alpha=.3)+
   geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
 
-ggplot(brmonth,aes(x=year,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~month)+ylim(0,4.5)+xlim(2000,2020)+
+ggplot(brmonth,aes(x=year,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~month)+ylim(0,ymax)+xlim(2000,2020)+
   geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=region),alpha=.3)+
   geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
 
-ggplot(subset(brmonth,region=="Country"),aes(x=year,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~month)+ylim(0,4.5)+xlim(2000,2020)+
+ggplot(subset(brmonth,region=="Country"),aes(x=year,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~month)+ylim(0,ymax)+xlim(2000,2020)+
   geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=region),alpha=.3)+
   geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
 
-ggplot(subset(brmonth,region=="rural"),aes(x=year,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~month)+ylim(0,4.5)+xlim(2000,2020)+
+ggplot(subset(brmonth,region=="rural"),aes(x=year,y=birthrate,group=region,color=region))+theme_bw()+facet_wrap(~month)+ylim(0,ymax)+xlim(2000,2020)+
   geom_ribbon(aes(ymin=birthrate-stderror*3.92/2,ymax=birthrate+stderror*3.92/2,fill=region),alpha=.3)+
   geom_point()+geom_line()+labs(title="Birth Rate per 1,000 women w/ 95% CI")
 
 dev.off()
 
+
+#########################################################
 # run t-tests
 
 # Paired t-test by month - i.e. is January different than February?
