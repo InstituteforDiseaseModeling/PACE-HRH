@@ -1,0 +1,35 @@
+#' Turn Package Tracing On/Off
+#'
+#' @param state TRUE/FALSE to set tracing state, NULL or empty to return
+#' current state.
+#'
+#' @return Original state
+#' @export
+#'
+#' @examples
+#' oldState <- Trace()
+#' print(oldState)
+#'
+Trace <- function(state = NULL){
+  originalState <- globalPackageEnvironment$traceState
+
+  # IDEA: A different way to drive default behavior when Trace() is called
+  # without parameters would be to use the hasArg() function.
+
+  if (!is.null(state) & (typeof(state) == 'logical')){
+    globalPackageEnvironment$traceState <- state
+  }
+
+  invisible(originalState)
+}
+
+#' Log A Trace Message
+#'
+#' @param msgString Trace message
+#'
+#' @export
+TraceMessage <- function(msgString){
+  if (globalPackageEnvironment$traceState == TRUE){
+    message(msgString)
+  }
+}
