@@ -10,23 +10,30 @@ library(ehep)
 # about what it's doing and any problems it encounters
 ehep::Trace(TRUE)
 
-# Initial population information using data from an Excel spreadsheet.
+# Initialize population information using data from an Excel spreadsheet.
 # By default, ehep looks for the file "./config/R Model Inputs.xlsx".
 # The location of the Excel model inputs file can be controlled through
 # a configuration file, config.json. ehep will look for config.json in
 # the current working directory.
 ehep::InitializePopulation()
 
-# ehep stores configuration information and computed values in its global 
-# package environment. You can view the current contents of the global 
-# package environment with R's ls.str command.
-ls.str(ehep:::globalPackageEnvironment)
+# Use the population information loaded by InitializePopulation() to compute
+# a family of population pyramids, one for each year of the study range.
+demographics <- ehep::ComputeDemographicsProjection()
+
 ```
+
+## The Global Package Environment
+
+ehep stores configuration information and computed values in its global package 
+environment. You can view the current contents of the global package 
+environment with R's `ls.str()` command.
 
 The following is an example of the data that can be recovered by interrogating
-`ehep:::globalPackageEnvironment`
+`ehep:::globalPackageEnvironment`. 
 
 ```
+> ls.str(ehep:::globalPackageEnvironment)
 age_max :  num 100
 age_min :  num 0
 endYear :  num 2040
@@ -59,4 +66,39 @@ traceState :  logi TRUE
 years :  num [1:21] 2020 2021 2022 2023 2024 ...
 ```
 
+## Population Pyramids
+
+The `ComputeDemographicsProjection()` function uses an initial population 
+pyramid, fertility rates, and mortality rates - all loaded through a call to 
+`InitializePopulation()` to build the following data structure:
+
+```
+> str(demographics)
+List of 21
+ $ 2020:'data.frame':	101 obs. of  3 variables:
+  ..$ Range : chr [1:101] "<1" "1" "2" "3" ...
+  ..$ Female: num [1:101] 1713885 1684060 1654236 1624411 1594586 ...
+  ..$ Male  : num [1:101] 1768045 1736053 1704061 1672069 1640077 ...
+ $ 2021:'data.frame':	101 obs. of  3 variables:
+  ..$ Range : chr [1:101] "<1" "1" "2" "3" ...
+  ..$ Female: num [1:101] 1588622 1653639 1678479 1648754 1619027 ...
+  ..$ Male  : num [1:101] 1588622 1705895 1730299 1698413 1666527 ...
+ $ 2022:'data.frame':	101 obs. of  3 variables:
+  ..$ Range : chr [1:101] "<1" "1" "2" "3" ...
+  ..$ Female: num [1:101] 1600107 1534842 1648406 1673168 1643537 ...
+  ..$ Male  : num [1:101] 1600107 1534842 1700497 1724824 1693039 ...
+  
+...
+
+ $ 2039:'data.frame':	101 obs. of  3 variables:
+  ..$ Range : chr [1:101] "<1" "1" "2" "3" ...
+  ..$ Female: num [1:101] 1621472 1600858 1604485 1607340 1609403 ...
+  ..$ Male  : num [1:101] 1621472 1600858 1604485 1607340 1609403 ...
+ $ 2040:'data.frame':	101 obs. of  3 variables:
+  ..$ Range : chr [1:101] "<1" "1" "2" "3" ...
+  ..$ Female: num [1:101] 1610656 1593593 1598655 1602277 1605128 ...
+  ..$ Male  : num [1:101] 1610656 1593593 1598655 1602277 1605128 ...
+```
+Each entry in the top-level list is a dataframe of population data for
+females and males, stratified by age in years.
 
