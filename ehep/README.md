@@ -1,6 +1,29 @@
 # Ethiopia Health Extension Program Capacity Modelling Package
 
-Sample:
+## Installation
+
+### Load the ehep package binary zip file
+
+If you're using RStudio, select __Install Packages ...__ from the __Tools__ menu. 
+Keeping the _Install dependencies_ option
+clicked should cause RStudio to download any other packages ehep requires.
+
+If you suspect you're missing a dependent package, run the _setup.R_ script 
+found in the _util_ subdirectory of the repository.
+
+### Point ehep to the R model input spreadsheet
+
+___You need to do this before you try to run anything.___
+
+By default, ehep looks for a model input file called _R Model Inputs.xlsx_ in a
+subdirectory of your R working directory called _config_.
+
+You can overwrite these assumptions by putting a _globalconfig.json_ file in
+your R working directory. There's a sample _globalconfig.json file_ in the
+repository's _util_ directory. You can edit it to set both the location and 
+name of the model input Excel file.
+
+## Sample
 
 ```
 # Load the ehep library
@@ -8,17 +31,20 @@ library(ehep)
 
 # [OPTIONAL] Turn on tracing if you want ehep to tell you more
 # about what it's doing and any problems it encounters
+
 ehep::Trace(TRUE)
 
 # Initialize population information using data from an Excel spreadsheet.
 # By default, ehep looks for the file "./config/R Model Inputs.xlsx".
 # The location of the Excel model inputs file can be controlled through
-# a configuration file, config.json. ehep will look for config.json in
-# the current working directory.
+# a configuration file, globalconfig.json. ehep will look for globalconfig.json 
+# in the current working directory.
+
 ehep::InitializePopulation()
 
 # Use the population information loaded by InitializePopulation() to compute
 # a family of population pyramids, one for each year of the study range.
+
 demographics <- ehep::ComputeDemographicsProjection()
 
 ```
@@ -101,4 +127,16 @@ List of 21
 ```
 Each entry in the top-level list is a dataframe of population data for
 females and males, stratified by age in years.
+
+##globalconfig.json
+
+The file `globalconfig.json` defines certain global setting for ehep.
+Importantly, this includes the location of the model input Excel file.
+
+```
+{
+  "configDirectoryLocation" : "./config",
+  "inputExcelFile" : "R Model Inputs.xlsx"
+}
+```
 
