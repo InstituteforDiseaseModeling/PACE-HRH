@@ -128,7 +128,7 @@ List of 21
 Each entry in the top-level list is a dataframe of population data for
 females and males, stratified by age in years.
 
-##globalconfig.json
+## globalconfig.json
 
 The file `globalconfig.json` defines certain global setting for ehep.
 Importantly, this includes the location of the model input Excel file.
