@@ -21,35 +21,16 @@ explodeMortalityRates <- function(banded_annual_rates){
   outf <- vector(mode = "double", length = length(ages))
   outm <- vector(mode = "double", length = length(ages))
 
-  # outf[1] = banded_annual_rates[1]
-  # outf[2:5] = replicate(4, banded_annual_rates[2])
-  # outf[6:10] = replicate(5, banded_annual_rates[3])
-  # outf[11:15] = replicate(5, banded_annual_rates[4])
-  # outf[16:20] = replicate(5, banded_annual_rates[5])
-  # outf[21:25] = replicate(5, banded_annual_rates[6])
-  # outf[26:length(ages)] = replicate(76, banded_annual_rates[7])
-  #
-  # outm[1:25] = outf[1:25]
-  # outm[26:length(ages)] = replicate(76, banded_annual_rates[8])
-
-
-
-
-  # This is a (temporary?) rewrite to reproduce what I think is a bug in
-  # Brittany's original Excel model
-
   outf[1] = banded_annual_rates[1]
-  outf[2:4] = replicate(3, banded_annual_rates[2])
-  outf[5:9] = replicate(5, banded_annual_rates[3])
-  outf[10:14] = replicate(5, banded_annual_rates[4])
-  outf[15:19] = replicate(5, banded_annual_rates[5])
-  outf[20:24] = replicate(5, banded_annual_rates[6])
-  outf[25:length(ages)] = replicate(77, banded_annual_rates[7])
+  outf[2:5] = replicate(4, banded_annual_rates[2])
+  outf[6:10] = replicate(5, banded_annual_rates[3])
+  outf[11:15] = replicate(5, banded_annual_rates[4])
+  outf[16:20] = replicate(5, banded_annual_rates[5])
+  outf[21:25] = replicate(5, banded_annual_rates[6])
+  outf[26:length(ages)] = replicate(76, banded_annual_rates[7])
 
-  outm[1:24] = outf[1:24]
-  outm[25:length(ages)] = replicate(77, banded_annual_rates[8])
-
-
+  outm[1:25] = outf[1:25]
+  outm[26:length(ages)] = replicate(76, banded_annual_rates[8])
 
   return(list(Female = outf, Male = outm))
 }
