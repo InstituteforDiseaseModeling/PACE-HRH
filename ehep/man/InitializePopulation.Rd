@@ -10,10 +10,11 @@ InitializePopulation()
 NULL (invisible)
 }
 \description{
-Load basic population information into
+Load basic population information into the global package environment,
+from which it can be used for later processing.
 }
 \examples{
 \dontrun{
-
+ehep::InitializePopulation()
 }
 }

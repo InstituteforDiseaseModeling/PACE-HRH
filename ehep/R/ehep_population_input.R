@@ -129,12 +129,10 @@ generateFertilityRates <- function(popChangeParamsList = NULL){
   return(out)
 }
 
-
-
-
 #' Initialize Population Data
 #'
-#' Load basic population information into
+#' Load basic population information into the global package environment,
+#' from which it can be used for later processing.
 #'
 #' @return NULL (invisible)
 #'
@@ -142,7 +140,7 @@ generateFertilityRates <- function(popChangeParamsList = NULL){
 #'
 #' @examples
 #' \dontrun{
-#'
+#' ehep::InitializePopulation()
 #' }
 InitializePopulation <- function(){
   if (!globalPackageEnvironment$globalConfigLoaded){
