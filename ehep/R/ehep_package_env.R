@@ -27,4 +27,5 @@ globalPackageEnvironment$populationChangeParameters <- NULL
 globalPackageEnvironment$mortalityRates <- NULL
 globalPackageEnvironment$fertilityRates <- NULL
 
+globalPackageEnvironment$taskData <- NULL
 

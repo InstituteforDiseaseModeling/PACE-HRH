@@ -3,6 +3,7 @@
 export(ClinicalTaskTime)
 export(ClinicalTaskTimesGroup)
 export(ComputeDemographicsProjection)
+export(InitializeHealthcareTasks)
 export(InitializePopulation)
 export(Trace)
 export(TraceMessage)

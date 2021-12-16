@@ -44,8 +44,14 @@ ehep::InitializePopulation()
 
 # Use the population information loaded by InitializePopulation() to compute
 # a family of population pyramids, one for each year of the study range.
+# Note: ehep::ComputeDemographicsProjection(debug = TRUE) will return fertility
+# and mortality rate information along with the population pyramids.
 
 demographics <- ehep::ComputeDemographicsProjection()
+
+# Load and pre-process information about healthcare tasks.
+
+tasks <- ehep::InitializeHealthcareTasks()
 
 ```
 

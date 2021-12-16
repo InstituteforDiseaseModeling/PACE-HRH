@@ -36,8 +36,29 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
   return(taskData)
 }
 
+#' Initialize Healthcare Task Information
+#'
+#' Read the healthcare task information from the model inputs Excel file, and
+#' save to a location in the global package environment.
+#'
+#' @param sheetName Sheet name from the model input Excel file
+#'
+#' @export
+#'
+#' @return Data frame of healthcare task parameters
+#'
+InitializeHealthcareTasks <- function(){
+  taskData <- loadTaskParameters()
+
+  # TODO: Insert error handling
+
+  globalPackageEnvironment$taskData <- taskData
+  return(taskData)
+}
 
 
+
+# Ref: TaskValues sheet column names
 # [1] "Indicator"          "CommonName"         "ClinicalOrNon"      "ClinicalCat"        "ServiceCat"         "RelevantPop"        "Geography"          "StartingRateInPop"
 # [9] "RateType"           "RateMultiplier"     "MultiplierReason"   "AnnualDeltaRatio"   "NumContactsPerUnit" "NumContactsAnnual"  "MinsPerContact"     "HoursPerWeek"
 # [17] "FTEratio"
