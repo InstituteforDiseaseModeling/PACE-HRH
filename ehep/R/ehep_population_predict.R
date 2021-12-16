@@ -137,13 +137,15 @@ computeDeaths <- function(population, rates){
 #' @param fertility_rates Fertility rates
 #' @param mortality_rates Mortality rates
 #' @param years Vector of years to model
+#' @param debug Flag for debugging output
 #'
 #' @return Demographics time-series
 #'
 .computeDemographicsProjection <- function(initial_population_pyramid,
-                                            fertility_rates,
-                                            mortality_rates,
-                                            years){
+                                           fertility_rates,
+                                           mortality_rates,
+                                           years,
+                                           debug = FALSE){
 
   previous_pyramid = NULL
 
@@ -175,7 +177,13 @@ computeDeaths <- function(population, rates){
       f[1] <- round(births * globalPackageEnvironment$ratio_females_at_birth, 0)
       m[1] <- round(births * globalPackageEnvironment$ratio_males_at_birth, 0)
 
-      out <- data.frame(Range = range, Female = f, Male = m)
+      if (!debug){
+        out <- data.frame(Range = range, Female = f, Male = m)
+      } else {
+        out <- data.frame(Range = range, Female = f, Male = m,
+                          frates = current_year_fertility_rates,
+                          mrates = previous_year_mortality_rates)
+      }
     }
 
     previous_pyramid <<- out
@@ -197,10 +205,11 @@ computeDeaths <- function(population, rates){
 #'
 #' @export
 #'
-ComputeDemographicsProjection <- function(){
+ComputeDemographicsProjection <- function(...){
   return(.computeDemographicsProjection(
     globalPackageEnvironment$initialPopulation,
     globalPackageEnvironment$fertilityRates,
     globalPackageEnvironment$mortalityRates,
-    globalPackageEnvironment$years))
+    globalPackageEnvironment$years,
+    ...))
 }

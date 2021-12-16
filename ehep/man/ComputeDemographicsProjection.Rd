@@ -4,7 +4,7 @@
 \alias{ComputeDemographicsProjection}
 \title{Compute Demographics Projection}
 \usage{
-ComputeDemographicsProjection()
+ComputeDemographicsProjection(...)
 }
 \value{
 Demographics time-series

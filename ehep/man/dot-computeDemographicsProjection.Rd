@@ -8,7 +8,8 @@
   initial_population_pyramid,
   fertility_rates,
   mortality_rates,
-  years
+  years,
+  debug = FALSE
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ and \code{$Female} fields}
 \item{mortality_rates}{Mortality rates}
 
 \item{years}{Vector of years to model}
+
+\item{debug}{Flag for debugging output}
 }
 \value{
 Demographics time-series
