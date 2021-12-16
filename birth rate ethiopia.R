@@ -26,7 +26,7 @@ library(reshape2)
 
 # DHS directories
 country = "Ethiopia"
-dirs = "C:/Users/bhagedorn/OneDrive - Institute for Disease Modeling/Projects/HEP capacity projection/Data/ETH DHS"
+dirs = "C:/Users/brittanyha/OneDrive - Bill & Melinda Gates Foundation/Projects/HEP capacity projection/Data/ETH DHS"
 setwd(dirs)
 
 regional <- TRUE #Set to true for regional values, set to false for urban/rural
@@ -44,6 +44,7 @@ files = data.frame(filename = c("ETBR41FL.DTA","ETBR51FL.DTA","ETBR61FL.DTA","ET
                    index = c(1,2,3,4,5,
                              1,2,3,4,5))
 
+#files = data.frame(filename=c("ETBR71FL.DTA"),recode=c("birth","household"),year_label=2016,index=c(1))
 
 # revised analysis
 # step 1 - months before first interview date
