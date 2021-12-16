@@ -1,0 +1,19 @@
+Package: ehep
+Type: Package
+Title: Ethiopia Health Extension Program Capacity Modelling
+Version: 0.1.1
+Author: Charles Eliot, Brittany Hagedorn
+Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
+Description: This work allows modeling of the burdens placed on healthcare
+    workers by the addition of new services to the Ethiopian healthcare system.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.2
+Imports:
+    jsonlite,
+    readxl,
+    data.table,
+    assertthat,
+    dplyr,
+    magrittr
