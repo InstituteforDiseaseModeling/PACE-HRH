@@ -37,7 +37,7 @@ ClinicalTaskTime <- function(tasks, taskID, demographics, year){
   n = 0L
 
   # Applicable population
-  n <- .computeApplicablePopulation(population, task&RelevantPop)
+  n <- .computeApplicablePopulation(population, task$RelevantPop)
 
   # Correct for prevalence, frequency, test positivity, etc
   n <- n * task$StartingRateInPop * task$RateMultiplier
@@ -53,14 +53,47 @@ ClinicalTaskTime <- function(tasks, taskID, demographics, year){
   return(n)
 }
 
+#' Calculate Clinical Task Times
+#'
+#' Calculate clinical task times for a group of tasks over a spread of years
+#'
+#' @param tasks Dataframe of task parameters (as returned by \code{loadTaskParameters})
+#' @param taskIDs Vector of task ID strings
+#' @param demographics List of population pyramid dataframes
+#' @param years Vector of years (usually \code{globalPackageEnvironment$years})
+#'
+#' @return Dataframe of annual times in minutes
+#'
+#' @export
+#'
+ClinicalTaskTimesGroup <- function(tasks, taskIDs, demographics, years){
+
+  assertthat::assert_that(length(demographics) >= length(years))
+
+  df <- data.frame(years)
+
+  nul <- lapply(taskIDs, function(id){
+    col <- sapply(years, function(year){
+      ehep::ClinicalTaskTime(tasks, id, demographics, year)
+    })
+
+    df <<- cbind(df,col)
+    return(0)
+  })
+
+  names(df) <- c("Years", mc_group)
+
+  return(df)
+}
+
 .extractPyramid <- function(varName, year){
   df <- eval(parse(text = paste(varName, "$`", as.character(year), "`", sep = "")))
   return(df)
 }
 
 .computeApplicablePopulation <- function(pop, label){
-  if (task$RelevantPop == "births"){return(pop$Female[1] + pop$Male[1])}
-  if (task$RelevantPop == "1-4"){return(pop$Female[2:5] + pop$Male[2:5])}
+  if (label == "births"){return(pop$Female[1] + pop$Male[1])}
+  if (label == "1-4"){return(sum(pop$Female[2:5] + pop$Male[2:5]))}
 
   TraceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
