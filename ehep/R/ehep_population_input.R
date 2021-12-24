@@ -48,7 +48,13 @@ loadPopulationChangeParameters <- function(sheetName = "PopValues"){
                    "Mortality15-19",
                    "Mortality20-24",
                    "MortalityAdultF",
-                   "MortalityAdultM"
+                   "MortalityAdultM",
+                   "AnnualBirthRate20_24",
+                   "AnnualBirthRate25_29",
+                   "AnnualBirthRate30_34",
+                   "AnnualBirthRate35_39",
+                   "AnnualBirthRate40_44",
+                   "AnnualBirthRate45_49"
     )
 
     names(initValues) <- abbrNames
@@ -103,7 +109,7 @@ generateFertilityRates <- function(popChangeParamsList = NULL){
 
   years <- globalPackageEnvironment$startYear:globalPackageEnvironment$endYear
 
-  birthRatesColRange <- 4:7
+  birthRatesColRange <- c(4,16:21)
   initValues <- popChangeParamsList$initValues[birthRatesColRange]
   rates <- popChangeParamsList$changeRates[birthRatesColRange]
 

@@ -29,3 +29,6 @@ globalPackageEnvironment$fertilityRates <- NULL
 
 globalPackageEnvironment$taskData <- NULL
 
+baseValuesEnvironment <- new.env(parent = globalPackageEnvironment)
+epsilonValuesEnvironment <- new.env(parent = globalPackageEnvironment)
+experimentValuesEnvironment <- new.env(parent = globalPackageEnvironment)
