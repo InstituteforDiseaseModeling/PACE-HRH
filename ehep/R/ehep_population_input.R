@@ -6,7 +6,8 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @return Population pyramid data frame. Values are rounded to integers.
+#' @return List with three \code{PopulationPyramid} objects:
+#' \code{female}, \code{male} and \code{total}
 #'
 loadInitialPopulation <- function(sheetName = "TotalPop"){
   popData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
@@ -14,11 +15,16 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
   assertthat::has_name(popData, "Male")
   assertthat::has_name(popData, "Female")
 
-  popData$Male <- round(popData$Male, 0)
-  popData$Female <- round(popData$Female, 0)
-  popData$Total <- popData$Male + popData$Female
+  male <- PopulationPyramid()
+  female <- PopulationPyramid()
+  total <- PopulationPyramid()
 
-  return(popData)
+  male <- setFromVector(male, round(popData$Male, 0))
+  female <- setFromVector(female, round(popData$Female, 0))
+  total <- setFromVector(total,
+                         round(popData$Male, 0) + round(popData$Female, 0))
+
+  return(list(female = female, male = male, total = total))
 }
 
 #' Load Population Change Parameters
@@ -137,11 +143,11 @@ InitializePopulation <- function(){
   globalPackageEnvironment$populationChangeParameters <-
     loadPopulationChangeParameters()
 
-  globalPackageEnvironment$mortalityRates <-
-    generateMortalityRates(globalPackageEnvironment$populationChangeParameters)
-
-  globalPackageEnvironment$fertilityRates <-
-    generateFertilityRates(globalPackageEnvironment$populationChangeParameters)
+  # globalPackageEnvironment$mortalityRates <-
+  #   generateMortalityRates(globalPackageEnvironment$populationChangeParameters)
+  #
+  # globalPackageEnvironment$fertilityRates <-
+  #   generateFertilityRates(globalPackageEnvironment$populationChangeParameters)
 
   invisible(NULL)
 }

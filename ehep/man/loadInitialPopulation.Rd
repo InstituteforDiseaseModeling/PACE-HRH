@@ -10,7 +10,8 @@ loadInitialPopulation(sheetName = "TotalPop")
 \item{sheetName}{Sheet name from the model input Excel file}
 }
 \value{
-Population pyramid data frame. Values are rounded to integers.
+List with three \code{PopulationPyramid} objects:
+\code{female}, \code{male} and \code{total}
 }
 \description{
 Read the initial population pyramid from the model inputs Excel file. The
