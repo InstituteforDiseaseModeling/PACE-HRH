@@ -45,39 +45,6 @@ PopulationChangeParameters <- setClass(
   prototype = list(values = replicate(length(.VarNames), 0.0))
 )
 
-#' Set Population Change Parameters
-#'
-#' @param object PopulationChangeParameters object
-#' @param values Vector of values to copy into PopulationChangeParameters object
-#'
-#' @return Updated \code{PopulationChangeParameters} object
-#'
-#' @exportMethod setFromVector
-#'
-setGeneric(
-  name = "setFromVector",
-  def = function(object, values)
-  {
-    standardGeneric("setFromVector")
-  }
-)
-
-setMethod(
-  f = "setFromVector",
-  signature = "PopulationChangeParameters",
-  definition = function(object, values)
-  {
-    assertthat::assert_that(length(values) == 21)
-    assertthat::assert_that(is.numeric(values) == TRUE)
-
-    # Clear any names on the vector
-    names(values) <- NULL
-
-    object@values = values
-    return(object)
-  }
-)
-
 #' Get Population Change Parameter Values
 #'
 #' @param object \code{PopulationChangeParameters} object
@@ -119,7 +86,7 @@ setGeneric(
 
 setMethod(
   f = "getValue",
-  signature = "PopulationChangeParameters",
+  signature = c("PopulationChangeParameters", "numeric"),
   definition = function(object, label)
   {
     assertthat::is.string(label)
@@ -148,7 +115,7 @@ setGeneric(
 
 setMethod(
   f = "setValue",
-  signature = "PopulationChangeParameters",
+  signature = c("PopulationChangeParameters", "character", "numeric"),
   definition = function(object, label, value)
   {
     assertthat::is.string(label)
@@ -158,6 +125,33 @@ setMethod(
       object@values[.VarLookup[label]] <- value
     }
 
+    return(object)
+  }
+)
+
+
+#' Zero A PopulationChangeParameters Object
+#'
+#' @param object \code{PopulationChangeParameters} object
+#'
+#' @return Updated \code{PopulationChangeParameters} object
+#'
+#' @exportMethod zero
+#'
+setGeneric(
+  name = "zero",
+  def = function(object)
+  {
+    standardGeneric("zero")
+  }
+)
+
+setMethod(
+  f = "zero",
+  signature = c("PopulationChangeParameters"),
+  definition = function(object)
+  {
+    object@values <- replicate(length(.VarNames), 0.0)
     return(object)
   }
 )

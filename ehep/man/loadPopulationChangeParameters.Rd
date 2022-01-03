@@ -10,7 +10,8 @@ loadPopulationChangeParameters(sheetName = "PopValues")
 \item{sheetName}{Sheet name from model input Excel file.}
 }
 \value{
-List with two vectors: \code{initValues} and \code{changeRates}
+List with two \code{PopulationChangeParameters} objects:
+\code{initValues} and \code{changeRates}
 }
 \description{
 Load Population Change Parameters

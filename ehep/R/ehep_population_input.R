@@ -25,40 +25,18 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
 #'
 #' @param sheetName Sheet name from model input Excel file.
 #'
-#' @return List with two vectors: \code{initValues} and \code{changeRates}
+#' @return List with two \code{PopulationChangeParameters} objects:
+#' \code{initValues} and \code{changeRates}
 #'
 loadPopulationChangeParameters <- function(sheetName = "PopValues"){
   popValues <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
 
   if (!is.null(popValues)){
-    initValues <- popValues$Value2020
-    changeRates <- popValues$AnnualChange
+    initValues <- PopulationChangeParameters()
+    changeRates <- PopulationChangeParameters()
 
-    abbrNames <- c("FertRate",
-                   "FertYears",
-                   "AnnualBirthRateAll",
-                   "AnnualBirthRate15_19",
-                   "AnnualBirthRate20_29",
-                   "AnnualBirthRate30_39",
-                   "AnnualBirthRate40_49",
-                   "MortalityInfants",
-                   "Mortality1_4",
-                   "Mortality5_9",
-                   "Mortality10_14",
-                   "Mortality15_19",
-                   "Mortality20_24",
-                   "MortalityAdultF",
-                   "MortalityAdultM",
-                   "AnnualBirthRate20_24",
-                   "AnnualBirthRate25_29",
-                   "AnnualBirthRate30_34",
-                   "AnnualBirthRate35_39",
-                   "AnnualBirthRate40_44",
-                   "AnnualBirthRate45_49"
-    )
-
-    names(initValues) <- abbrNames
-    names(changeRates) <- abbrNames
+    initValues <- setFromVector(initValues, popValues$Value2020)
+    changeRates <- setFromVector(changeRates, popValues$AnnualChange)
 
     popValues <- list(initValues = initValues, changeRates = changeRates)
   }
