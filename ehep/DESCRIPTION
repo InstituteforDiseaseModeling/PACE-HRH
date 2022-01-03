@@ -19,3 +19,23 @@ Imports:
     magrittr,
     ggplot2,
     methods
+Collate: 
+    'ehep_package_env.R'
+    'ehep_pop_pyramid_class.R'
+    'ehep_pop_change_params_class.R'
+    'ehep_add_method.R'
+    'ehep_zero_method.R'
+    'ehep_getValue_method.R'
+    'ehep_setFromVector_method.R'
+    'ehep_setValue_method.R'
+    'ehep_config.R'
+    'ehep_debug_utils.R'
+    'ehep_exp_control.R'
+    'ehep_iterator.R'
+    'ehep_plot.R'
+    'ehep_population_input.R'
+    'ehep_population_predict.R'
+    'ehep_seasonality_config.R'
+    'ehep_task_config.R'
+    'ehep_task_time.R'
+    'ehep_trace.R'
