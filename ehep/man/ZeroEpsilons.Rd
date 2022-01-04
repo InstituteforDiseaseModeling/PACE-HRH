@@ -12,6 +12,6 @@ values are added to the corresponding values from the Base Values Environment
 to produce varied parameters to model.
 }
 \details{
-The Epsilon Values Environment gets its name from the standard practice
-of labelling statistical noise values with the variable name 'epsilon'
+The Epsilon Values Environment gets its name from the practice
+of labeling statistical noise values with the variable name 'epsilon'
 }

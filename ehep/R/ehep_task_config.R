@@ -47,8 +47,8 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
 #'
 #' @return Data frame of healthcare task parameters
 #'
-InitializeHealthcareTasks <- function(){
-  taskData <- loadTaskParameters()
+InitializeHealthcareTasks <- function(...){
+  taskData <- loadTaskParameters(...)
 
   # TODO: Insert error handling
 

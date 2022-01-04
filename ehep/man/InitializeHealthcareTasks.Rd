@@ -4,7 +4,7 @@
 \alias{InitializeHealthcareTasks}
 \title{Initialize Healthcare Task Information}
 \usage{
-InitializeHealthcareTasks()
+InitializeHealthcareTasks(...)
 }
 \arguments{
 \item{sheetName}{Sheet name from the model input Excel file}

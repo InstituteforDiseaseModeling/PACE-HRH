@@ -9,23 +9,6 @@
 #' @export
 #'
 SaveBaseSettings <- function(){
-  # baseValuesEnvironment$fertilityRates <-
-  #   ifelse(exists("fertilityRates", where = globalPackageEnvironment),
-  #          globalPackageEnvironment$fertilityRates, NULL)
-  #
-  # baseValuesEnvironment$mortalityRates <-
-  #   ifelse(exists("mortalityRates", where = globalPackageEnvironment),
-  #          globalPackageEnvironment$mortalityRates, NULL)
-  #
-  # baseValuesEnvironment$initialPopulation <-
-  #   ifelse(exists("initialPopulation", where = globalPackageEnvironment),
-  #          globalPackageEnvironment$initialPopulation, NULL)
-  #
-  # baseValuesEnvironment$initialPopulation <-
-  #   ifelse(exists("initialPopulation", where = globalPackageEnvironment),
-  #          globalPackageEnvironment$initialPopulation, NULL)
-  #
-
   envs <- globalPackageEnvironment
   envd <- baseValuesEnvironment
 
@@ -41,7 +24,7 @@ SaveBaseSettings <- function(){
     envd$initialPopulation <- NULL
   }
 
-  return(NULL)
+  invisible(NULL)
 }
 
 #' Zero Epsilon Values
@@ -50,8 +33,8 @@ SaveBaseSettings <- function(){
 #' values are added to the corresponding values from the Base Values Environment
 #' to produce varied parameters to model.
 #'
-#' The Epsilon Values Environment gets its name from the standard practice
-#' of labelling statistical noise values with the variable name 'epsilon'
+#' The Epsilon Values Environment gets its name from the practice
+#' of labeling statistical noise values with the variable name 'epsilon'
 #'
 #' @export
 #'
@@ -60,12 +43,13 @@ ZeroEpsilons <- function(){
               changeRates = PopulationChangeParameters())
   epsilonValuesEnvironment$populationChangeParameters <- pcp
 
-  pp <- list(female = PopulationPyramid(),
+  pp <- list(age = globalPackageEnvironment$ages,
+             female = PopulationPyramid(),
              male = PopulationPyramid(),
              total = PopulationPyramid())
   epsilonValuesEnvironment$initialPopulation <- pp
 
-  return(NULL)
+  invisible(NULL)
 }
 
 #' Combine Base and Epsilon Values
@@ -81,17 +65,21 @@ ConfigureExperimentValues <- function(){
 
   bve <- baseValuesEnvironment
   eve <- epsilonValuesEnvironment
+  exp <- experimentValuesEnvironment
 
   baseVar <- bve$populationChangeParameters
   epsilonVar <- eve$populationChangeParameters
   pcp = list(initValues = add(baseVar$initValues, epsilonVar$initValues),
              changeRates = add(baseVar$changeRates, epsilonVar$changeRates))
-  eve$populationChangeParameters <- pcp
+  exp$populationChangeParameters <- pcp
 
   baseVar <- bve$initialPopulation
   epsilonVar <- eve$initialPopulation
-  pp = list(female = add(baseVar$female, epsilonVar$female),
+  pp = list(age = globalPackageEnvironment$ages,
+            female = add(baseVar$female, epsilonVar$female),
             male = add(baseVar$male, epsilonVar$female),
             total = add(baseVar$total, epsilonVar$total))
-  eve$initialPopulation <- pp
+  exp$initialPopulation <- pp
+
+  invisible(NULL)
 }
