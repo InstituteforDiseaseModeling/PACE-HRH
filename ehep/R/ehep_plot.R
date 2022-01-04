@@ -34,8 +34,6 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = NULL){
   g <- g + geom_point(aes(x = Age, y = Population), color = color, shape = 0)
   g <- g + scale_y_continuous(labels = scales::comma)
 
-  print(g)
-
   return(g)
 }
 
@@ -93,8 +91,6 @@ PlotPopulationCurves <- function(... , xaxis = NULL, colors = NULL, shapes = NUL
   })
 
   g <- g + scale_y_continuous(labels = scales::comma)
-
-  print(g)
 
   return(g)
 }
