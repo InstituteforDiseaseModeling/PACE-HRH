@@ -124,7 +124,7 @@ computeDeaths <- function(population, rates){
 #' to predict future population pyramids.
 #'
 #' @param initial_population_pyramid Population pyramids dataframe. Must have
-#' \code\{$Age}, \code{$Male} and \code{$Female} fields
+#' \code{$Age}, \code{$Male} and \code{$Female} fields.
 #' @param fertility_rates Fertility rates
 #' @param mortality_rates Mortality rates
 #' @param years Vector of years to model

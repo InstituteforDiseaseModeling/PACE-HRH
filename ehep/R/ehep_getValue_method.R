@@ -39,11 +39,32 @@ setGeneric(
 #'
 setMethod(
   f = "getValue",
-  signature = c("PopulationChangeParameters", "numeric"),
+  signature = c("PopulationChangeParameters", "character"),
   definition = function(object, label)
   {
     assertthat::is.string(label)
 
-    return(object@values[.VarLookup[label]])
+    return(object@values[.PcpVarLookup[label]])
+  }
+)
+
+setMethod(
+  f = "getValue",
+  signature = c("TaskParameters", "character"),
+  definition = function(object, label)
+  {
+    assertthat::is.string(label)
+
+    index <- which(object@labels == label)
+
+    if (length(index) == 1){
+      return(object@values[index])
+    } else if (length(index) == 0){
+      print("oops - too short")
+      return(NULL)
+    } else {
+      print("oops - too long")
+      return(object@values[index[1]])
+    }
   }
 )

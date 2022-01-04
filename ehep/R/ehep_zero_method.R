@@ -19,7 +19,7 @@ setMethod(
   signature = c("PopulationChangeParameters"),
   definition = function(object)
   {
-    object@values <- replicate(length(.VarNames), 0.0)
+    object@values <- replicate(length(.PcpVarNames), 0.0)
     return(object)
   }
 )

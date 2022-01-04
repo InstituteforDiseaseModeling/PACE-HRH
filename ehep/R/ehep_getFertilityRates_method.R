@@ -20,7 +20,7 @@ setMethod(
   definition = function(object)
   {
     x <- object@values[c(4,16:21)]
-    names(x) <- .VarNames[c(4,16:21)]
+    names(x) <- .PcpVarNames[c(4,16:21)]
     return(x)
   }
 )

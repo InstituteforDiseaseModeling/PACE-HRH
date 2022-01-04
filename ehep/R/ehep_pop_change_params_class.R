@@ -1,4 +1,4 @@
-.VarNames <- c("FertRate",
+.PcpVarNames <- c("FertRate",
                "FertYears",
                "AnnualBirthRateAll",
                "AnnualBirthRate15_19",
@@ -21,8 +21,8 @@
                "AnnualBirthRate45_49"
 )
 
-.VarLookup <- 1:length(.VarNames)
-names(.VarLookup) <- .VarNames
+.PcpVarLookup <- 1:length(.PcpVarNames)
+names(.PcpVarLookup) <- .PcpVarNames
 
 #' Population Change Parameters Class
 #'
@@ -42,5 +42,5 @@ PopulationChangeParameters <- setClass(
     values = "numeric"
   ),
 
-  prototype = list(values = replicate(length(.VarNames), 0.0))
+  prototype = list(values = replicate(length(.PcpVarNames), 0.0))
 )

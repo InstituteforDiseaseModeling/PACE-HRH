@@ -23,6 +23,7 @@ Collate:
     'ehep_package_env.R'
     'ehep_pop_pyramid_class.R'
     'ehep_pop_change_params_class.R'
+    'ehep_task_params_class.R'
     'ehep_add_method.R'
     'ehep_zero_method.R'
     'ehep_getValue_method.R'

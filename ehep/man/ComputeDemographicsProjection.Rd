@@ -13,6 +13,9 @@ ComputeDemographicsProjection(
 )
 }
 \arguments{
+\item{initial_population_pyramid}{Population pyramids dataframe. Must have
+\code{$Age}, \code{$Male} and \code{$Female} fields.}
+
 \item{fertility_rates}{Fertility rates}
 
 \item{mortality_rates}{Mortality rates}

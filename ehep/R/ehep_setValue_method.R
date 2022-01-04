@@ -24,8 +24,8 @@ setMethod(
     assertthat::is.string(label)
     assertthat::is.number(value)
 
-    if (!is.na(.VarLookup[label])){
-      object@values[.VarLookup[label]] <- value
+    if (!is.na(.PcpVarLookup[label])){
+      object@values[.PcpVarLookup[label]] <- value
     }
 
     return(object)
