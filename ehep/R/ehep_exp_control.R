@@ -1,5 +1,13 @@
 # The functions in this module control how EHEP handles stochastic experiments.
 
+
+#' Save Base Values For A Stochastic Experiment
+#'
+#' Copy configuration parameters from the Global Package Environment to the
+#' Base Values Environment.
+#'
+#' @export
+#'
 SaveBaseSettings <- function(){
   # baseValuesEnvironment$fertilityRates <-
   #   ifelse(exists("fertilityRates", where = globalPackageEnvironment),
@@ -32,36 +40,58 @@ SaveBaseSettings <- function(){
   } else {
     envd$initialPopulation <- NULL
   }
+
+  return(NULL)
 }
 
+#' Zero Epsilon Values
+#'
+#' Zero the configuration values in the Epsilon Values Environment. These
+#' values are added to the corresponding values from the Base Values Environment
+#' to produce varied parameters to model.
+#'
+#' The Epsilon Values Environment gets its name from the standard practice
+#' of labelling statistical noise values with the variable name 'epsilon'
+#'
+#' @export
+#'
 ZeroEpsilons <- function(){
-  # Create default PopulationChangeParameters object
   pcp <- list(initValues = PopulationChangeParameters(),
               changeRates = PopulationChangeParameters())
-  # Write into the 'epsilon' environment
   epsilonValuesEnvironment$populationChangeParameters <- pcp
 
-  # Create default PopulationPyramid object
   pp <- list(female = PopulationPyramid(),
              male = PopulationPyramid(),
              total = PopulationPyramid())
-  # Write into the 'epsilon' environment
   epsilonValuesEnvironment$initialPopulation <- pp
+
+  return(NULL)
 }
 
-SetExperimentValues <- function(){
+#' Combine Base and Epsilon Values
+#'
+#' Create the configuration values for an individual model experiment by
+#' adding together values from the Base Values Environment and the Epsilon
+#' Values Environment.
+#'
+#' @export
+#'
+ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
-  baseVar <- baseValuesEnvironment$populationChangeParameters
-  epsilonVar <- epsilonValuesEnvironment$populationChangeParameters
+  bve <- baseValuesEnvironment
+  eve <- epsilonValuesEnvironment
+
+  baseVar <- bve$populationChangeParameters
+  epsilonVar <- eve$populationChangeParameters
   pcp = list(initValues = add(baseVar$initValues, epsilonVar$initValues),
              changeRates = add(baseVar$changeRates, epsilonVar$changeRates))
-  experimentValuesEnvironment$populationChangeParameters <- pcp
+  eve$populationChangeParameters <- pcp
 
-  baseVar <- baseValuesEnvironment$initialPopulation
-  epsilonVar <- epsilonValuesEnvironment$initialPopulation
+  baseVar <- bve$initialPopulation
+  epsilonVar <- eve$initialPopulation
   pp = list(female = add(baseVar$female, epsilonVar$female),
             male = add(baseVar$male, epsilonVar$female),
             total = add(baseVar$total, epsilonVar$total))
-  experimentValuesEnvironment$initialPopulation <- pp
+  eve$initialPopulation <- pp
 }
