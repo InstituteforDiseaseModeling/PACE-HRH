@@ -9,35 +9,56 @@
 #' @return Data frame of healthcare task parameters
 #'
 loadTaskParameters <- function(sheetName = "TaskValues"){
-  popData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
+  taskData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
 
   # Convert some of the NA values to sensible defaults
-  assertthat::has_name(popData, "StartingRateInPop")
-  popData$StartingRateInPop[is.na(popData$StartingRateInPop)] <- 0
+  assertthat::has_name(taskData, "StartingRateInPop")
+  taskData$StartingRateInPop[is.na(taskData$StartingRateInPop)] <- 0
 
-  assertthat::has_name(popData, "RateMultiplier")
-  popData$RateMultiplier[is.na(popData$RateMultiplier)] <- 1
+  assertthat::has_name(taskData, "RateMultiplier")
+  taskData$RateMultiplier[is.na(taskData$RateMultiplier)] <- 1
 
-  assertthat::has_name(popData, "AnnualDeltaRatio")
-  popData$AnnualDeltaRatio[is.na(popData$AnnualDeltaRatio)] <- 1
+  assertthat::has_name(taskData, "AnnualDeltaRatio")
+  taskData$AnnualDeltaRatio[is.na(taskData$AnnualDeltaRatio)] <- 1
 
-  assertthat::has_name(popData, "NumContactsPerUnit")
-  popData$NumContactsPerUnit[is.na(popData$NumContactsPerUnit)] <- 0
+  assertthat::has_name(taskData, "NumContactsPerUnit")
+  taskData$NumContactsPerUnit[is.na(taskData$NumContactsPerUnit)] <- 0
 
-  assertthat::has_name(popData, "NumContactsAnnual")
-  popData$NumContactsAnnual[is.na(popData$NumContactsAnnual)] <- 0
+  assertthat::has_name(taskData, "NumContactsAnnual")
+  taskData$NumContactsAnnual[is.na(taskData$NumContactsAnnual)] <- 0
 
-  assertthat::has_name(popData, "HoursPerWeek")
-  popData$HoursPerWeek[is.na(popData$HoursPerWeek)] <- 0
+  assertthat::has_name(taskData, "HoursPerWeek")
+  taskData$HoursPerWeek[is.na(taskData$HoursPerWeek)] <- 0
 
-  assertthat::has_name(popData, "FTEratio")
-  popData$FTEratio[is.na(popData$FTEratio)] <- 0
+  assertthat::has_name(taskData, "FTEratio")
+  taskData$FTEratio[is.na(taskData$FTEratio)] <- 0
 
-  return(popData)
+  return(taskData)
+}
+
+#' Initialize Healthcare Task Information
+#'
+#' Read the healthcare task information from the model inputs Excel file, and
+#' save to a location in the global package environment.
+#'
+#' @param sheetName Sheet name from the model input Excel file
+#'
+#' @export
+#'
+#' @return Data frame of healthcare task parameters
+#'
+InitializeHealthcareTasks <- function(...){
+  taskData <- loadTaskParameters(...)
+
+  # TODO: Insert error handling
+
+  globalPackageEnvironment$taskData <- taskData
+  return(taskData)
 }
 
 
 
+# Ref: TaskValues sheet column names
 # [1] "Indicator"          "CommonName"         "ClinicalOrNon"      "ClinicalCat"        "ServiceCat"         "RelevantPop"        "Geography"          "StartingRateInPop"
 # [9] "RateType"           "RateMultiplier"     "MultiplierReason"   "AnnualDeltaRatio"   "NumContactsPerUnit" "NumContactsAnnual"  "MinsPerContact"     "HoursPerWeek"
 # [17] "FTEratio"

@@ -4,13 +4,30 @@
 \alias{ComputeDemographicsProjection}
 \title{Compute Demographics Projection}
 \usage{
-ComputeDemographicsProjection()
+ComputeDemographicsProjection(
+  initial_population_pyramid,
+  fertility_rates,
+  mortality_rates,
+  years,
+  debug = FALSE
+)
+}
+\arguments{
+\item{initial_population_pyramid}{Population pyramids dataframe. Must have
+\code{$Age}, \code{$Male} and \code{$Female} fields.}
+
+\item{fertility_rates}{Fertility rates}
+
+\item{mortality_rates}{Mortality rates}
+
+\item{years}{Vector of years to model}
+
+\item{debug}{Flag for debugging output}
 }
 \value{
 Demographics time-series
 }
 \description{
-Use the population pyramid, fertility rates, and mortality rates loaded
-globally to predict future population pyramids. Drops through to
-\code{.computeDemographicsProjection()}
+Use an initial population pyramid, fertility rates, and mortality rates
+to predict future population pyramids.
 }

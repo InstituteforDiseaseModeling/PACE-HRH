@@ -6,53 +6,55 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @return Population pyramid data frame. Values are rounded to integers.
+#' @return List with three \code{PopulationPyramid} objects:
+#' \code{female}, \code{male} and \code{total}
 #'
 loadInitialPopulation <- function(sheetName = "TotalPop"){
   popData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
 
+  assertthat::has_name(popData, "Age")
   assertthat::has_name(popData, "Male")
   assertthat::has_name(popData, "Female")
 
-  popData$Male <- round(popData$Male, 0)
-  popData$Female <- round(popData$Female, 0)
-  popData$Total <- popData$Male + popData$Female
+  # For consistency we use the integer range 0:100 to label age buckets. The
+  # character-string age bucket labels read from the model inputs file are saved
+  # for plotting, etc
+  assertthat::assert_that(length(popData$Male) == length(popData$Female))
+  assertthat::assert_that(length(popData$Male) == length(popData$Age))
+  assertthat::assert_that(length(popData$Age) == length(globalPackageEnvironment$ages))
+  globalPackageEnvironment$ageLabels <- popData$Age
 
-  return(popData)
+  male <- PopulationPyramid()
+  female <- PopulationPyramid()
+  total <- PopulationPyramid()
+
+  male <- setFromVector(male, round(popData$Male, 0))
+  female <- setFromVector(female, round(popData$Female, 0))
+  total <- setFromVector(total,
+                         round(popData$Male, 0) + round(popData$Female, 0))
+
+  return(list(age = globalPackageEnvironment$ages,
+              female = female,
+              male = male,
+              total = total))
 }
 
 #' Load Population Change Parameters
 #'
 #' @param sheetName Sheet name from model input Excel file.
 #'
-#' @return List with two vectors: \code{initValues} and \code{changeRates}
+#' @return List with two \code{PopulationChangeParameters} objects:
+#' \code{initValues} and \code{changeRates}
 #'
 loadPopulationChangeParameters <- function(sheetName = "PopValues"){
   popValues <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
 
   if (!is.null(popValues)){
-    initValues <- popValues$Value2020
-    changeRates <- popValues$AnnualChange
+    initValues <- PopulationChangeParameters()
+    changeRates <- PopulationChangeParameters()
 
-    abbrNames <- c("FertRate",
-                   "FertYears",
-                   "AnnualBirthRateAll",
-                   "AnnualBirthRate15_19",
-                   "AnnualBirthRate20_29",
-                   "AnnualBirthRate30_39",
-                   "AnnualBirthRate40_49",
-                   "MortalityInfants",
-                   "Mortality1-4",
-                   "Mortality5-9",
-                   "Mortality10-14",
-                   "Mortality15-19",
-                   "Mortality20-24",
-                   "MortalityAdultF",
-                   "MortalityAdultM"
-    )
-
-    names(initValues) <- abbrNames
-    names(changeRates) <- abbrNames
+    initValues <- setFromVector(initValues, popValues$Value2020)
+    changeRates <- setFromVector(changeRates, popValues$AnnualChange)
 
     popValues <- list(initValues = initValues, changeRates = changeRates)
   }
@@ -77,9 +79,8 @@ generateMortalityRates <- function(popChangeParamsList = NULL){
 
   years <- globalPackageEnvironment$startYear:globalPackageEnvironment$endYear
 
-  mortalityColRange <- 8:15
-  initValues <- popChangeParamsList$initValues[mortalityColRange]
-  rates <- popChangeParamsList$changeRates[mortalityColRange]
+  initValues <- getMortalityRates(popChangeParamsList$initValues)
+  rates <- getMortalityRates(popChangeParamsList$changeRates)
 
   return(.generateDf(initValues, rates, years))
 }
@@ -103,9 +104,14 @@ generateFertilityRates <- function(popChangeParamsList = NULL){
 
   years <- globalPackageEnvironment$startYear:globalPackageEnvironment$endYear
 
-  birthRatesColRange <- 4:7
-  initValues <- popChangeParamsList$initValues[birthRatesColRange]
-  rates <- popChangeParamsList$changeRates[birthRatesColRange]
+  # birthRatesColRange <- c(4,16:21)
+  # initValues <- popChangeParamsList$initValues[birthRatesColRange]
+  # rates <- popChangeParamsList$changeRates[birthRatesColRange]
+
+
+  initValues <- getFertilityRates(popChangeParamsList$initValues)
+  rates <- getFertilityRates(popChangeParamsList$changeRates)
+
 
   return(.generateDf(initValues, rates, years))
 }
@@ -152,12 +158,6 @@ InitializePopulation <- function(){
 
   globalPackageEnvironment$populationChangeParameters <-
     loadPopulationChangeParameters()
-
-  globalPackageEnvironment$mortalityRates <-
-    generateMortalityRates(globalPackageEnvironment$populationChangeParameters)
-
-  globalPackageEnvironment$fertilityRates <-
-    generateFertilityRates(globalPackageEnvironment$populationChangeParameters)
 
   invisible(NULL)
 }

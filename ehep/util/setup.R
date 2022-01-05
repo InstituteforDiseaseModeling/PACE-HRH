@@ -7,12 +7,12 @@ packages = c(
   "assertthat",
   "dplyr",
   "magrittr",
+  "ggplot2",
+  "scales",
   #------------
   "readr",
   "testthat",
-  "tidyr",
-  "ggplot2",
-  "scales"
+  "tidyr"
   )
 
 package.check <- lapply(

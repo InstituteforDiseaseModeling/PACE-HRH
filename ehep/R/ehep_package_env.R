@@ -19,6 +19,10 @@ globalPackageEnvironment$years <- seq(from = globalPackageEnvironment$startYear,
 
 globalPackageEnvironment$age_min <- 0
 globalPackageEnvironment$age_max <- 100
+globalPackageEnvironment$ages <- seq(from = globalPackageEnvironment$age_min,
+                                     to = globalPackageEnvironment$age_max,
+                                     by = 1)
+
 globalPackageEnvironment$ratio_females_at_birth <- 0.5
 globalPackageEnvironment$ratio_males_at_birth <- 1.0 - globalPackageEnvironment$ratio_females_at_birth
 
@@ -27,4 +31,8 @@ globalPackageEnvironment$populationChangeParameters <- NULL
 globalPackageEnvironment$mortalityRates <- NULL
 globalPackageEnvironment$fertilityRates <- NULL
 
+globalPackageEnvironment$taskData <- NULL
 
+baseValuesEnvironment <- new.env(parent = globalPackageEnvironment)
+epsilonValuesEnvironment <- new.env(parent = globalPackageEnvironment)
+experimentValuesEnvironment <- new.env(parent = globalPackageEnvironment)

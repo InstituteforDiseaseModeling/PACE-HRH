@@ -1,6 +1,4 @@
-ages <- seq.int(from = globalPackageEnvironment$age_min,
-                to = globalPackageEnvironment$age_max,
-                by = 1)
+ages <- globalPackageEnvironment$ages
 
 # Expected fields: {"Infants", "1-4y", "5-9y", "10-14y", "15-19y", "20-24y", "AdultFemale", "AdultMale"}
 
@@ -21,40 +19,30 @@ explodeMortalityRates <- function(banded_annual_rates){
   outf <- vector(mode = "double", length = length(ages))
   outm <- vector(mode = "double", length = length(ages))
 
-  # outf[1] = banded_annual_rates[1]
-  # outf[2:5] = replicate(4, banded_annual_rates[2])
-  # outf[6:10] = replicate(5, banded_annual_rates[3])
-  # outf[11:15] = replicate(5, banded_annual_rates[4])
-  # outf[16:20] = replicate(5, banded_annual_rates[5])
-  # outf[21:25] = replicate(5, banded_annual_rates[6])
-  # outf[26:length(ages)] = replicate(76, banded_annual_rates[7])
-  #
-  # outm[1:25] = outf[1:25]
-  # outm[26:length(ages)] = replicate(76, banded_annual_rates[8])
-
-
-
-
-  # This is a (temporary?) rewrite to reproduce what I think is a bug in
-  # Brittany's original Excel model
-
   outf[1] = banded_annual_rates[1]
-  outf[2:4] = replicate(3, banded_annual_rates[2])
-  outf[5:9] = replicate(5, banded_annual_rates[3])
-  outf[10:14] = replicate(5, banded_annual_rates[4])
-  outf[15:19] = replicate(5, banded_annual_rates[5])
-  outf[20:24] = replicate(5, banded_annual_rates[6])
-  outf[25:length(ages)] = replicate(77, banded_annual_rates[7])
+  outf[2:5] = replicate(4, banded_annual_rates[2])
+  outf[6:10] = replicate(5, banded_annual_rates[3])
+  outf[11:15] = replicate(5, banded_annual_rates[4])
+  outf[16:20] = replicate(5, banded_annual_rates[5])
+  outf[21:25] = replicate(5, banded_annual_rates[6])
+  outf[26:length(ages)] = replicate(76, banded_annual_rates[7])
 
-  outm[1:24] = outf[1:24]
-  outm[25:length(ages)] = replicate(77, banded_annual_rates[8])
-
-
+  outm[1:25] = outf[1:25]
+  outm[26:length(ages)] = replicate(76, banded_annual_rates[8])
 
   return(list(Female = outf, Male = outm))
 }
 
-# Expected fields: {"AnnualBirthRate15_19", "AnnualBirthRate20_29", "AnnualBirthRate30_39", "AnnualBirthRate40_49"}
+# Expected fields:
+# {
+# "AnnualBirthRate15_19",
+# "AnnualBirthRate20_24",
+# "AnnualBirthRate25_29",
+# "AnnualBirthRate30_34",
+# "AnnualBirthRate35_39",
+# "AnnualBirthRate40_44",
+# "AnnualBirthRate45_49"
+# }
 
 #' Convert Fertility Rates From Banded To Per-Age
 #'
@@ -67,7 +55,7 @@ explodeMortalityRates <- function(banded_annual_rates){
 #' @return List of vectors of per-year-of-age rates, for males and females
 #'
 explodeFertilityRates <- function(banded_annual_rates){
-  assertthat::assert_that(length(banded_annual_rates) == 4)
+  assertthat::assert_that(length(banded_annual_rates) == 7)
   assertthat::assert_that(length(ages) > 50)
 
   # Initialize output vectors. ASSUME default value is zero.
@@ -75,9 +63,12 @@ explodeFertilityRates <- function(banded_annual_rates){
   outm <- vector(mode = "double", length = length(ages))
 
   outf[16:20] = replicate(5, banded_annual_rates[1])
-  outf[21:30] = replicate(10, banded_annual_rates[2])
-  outf[31:40] = replicate(10, banded_annual_rates[3])
-  outf[41:50] = replicate(10, banded_annual_rates[4])
+  outf[21:25] = replicate(5, banded_annual_rates[2])
+  outf[26:30] = replicate(5, banded_annual_rates[3])
+  outf[31:35] = replicate(5, banded_annual_rates[4])
+  outf[36:40] = replicate(5, banded_annual_rates[5])
+  outf[41:45] = replicate(5, banded_annual_rates[6])
+  outf[46:50] = replicate(5, banded_annual_rates[7])
 
   return(list(Female = outf, Male = outm))
 }
@@ -130,20 +121,24 @@ computeDeaths <- function(population, rates){
 #' Compute Demographics Projection
 #'
 #' Use an initial population pyramid, fertility rates, and mortality rates
-#' to predict future population pyramids
+#' to predict future population pyramids.
 #'
-#' @param initial_population_pyramid Population pyramids dataframe. Must have \code{$Male}
-#' and \code{$Female} fields
+#' @param initial_population_pyramid Population pyramids dataframe. Must have
+#' \code{$Age}, \code{$Male} and \code{$Female} fields.
 #' @param fertility_rates Fertility rates
 #' @param mortality_rates Mortality rates
 #' @param years Vector of years to model
+#' @param debug Flag for debugging output
 #'
 #' @return Demographics time-series
 #'
-.computeDemographicsProjection <- function(initial_population_pyramid,
-                                            fertility_rates,
-                                            mortality_rates,
-                                            years){
+#' @export
+#'
+ComputeDemographicsProjection <- function(initial_population_pyramid,
+                                           fertility_rates,
+                                           mortality_rates,
+                                           years,
+                                           debug = FALSE){
 
   previous_pyramid = NULL
 
@@ -159,23 +154,50 @@ computeDeaths <- function(population, rates){
     } else {
       previous_year <- current_year - 1
 
-      previous_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == previous_year, 2:5]))
-      current_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == current_year, 2:5]))
+      # TODO: Replace magic number subsetting with something automagical
+
+      previous_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == previous_year, 2:8]))
+      current_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == current_year, 2:8]))
 
       previous_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == previous_year, 2:9]))
       current_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == current_year, 2:9]))
 
-      deaths <- computeDeaths(previous_pyramid, previous_year_mortality_rates)
+      # Shuffle the end-of-year snapshots from the previous year to the next
+      # population bucket
+      f <- c(0, previous_pyramid$Female)[1:length(ages)]
+      m <- c(0, previous_pyramid$Male)[1:length(ages)]
 
-      f <- c(0, previous_pyramid$Female - deaths$Female)[1:length(ages)]
-      m <- c(0, previous_pyramid$Male - deaths$Male)[1:length(ages)]
+      currentPyramid <- data.frame(Range = range, Female = f, Male = m)
 
-      births <- computeBirths(f, current_year_fertility_rates$Female)
+      # Compute deaths for all except the newborns (which were zeroed in the
+      # previous step)
+      deaths <- computeDeaths(currentPyramid,
+                              current_year_mortality_rates)
 
-      f[1] <- round(births * globalPackageEnvironment$ratio_females_at_birth, 0)
-      m[1] <- round(births * globalPackageEnvironment$ratio_males_at_birth, 0)
+      f <- f - deaths$Female
+      m <- m - deaths$Male
 
-      out <- data.frame(Range = range, Female = f, Male = m)
+      # Compute births for the current year, based on the average number of
+      # fertile women alive during each time bucket.
+      fAverage <- (currentPyramid$Female + f) / 2
+      births <- computeBirths(fAverage, current_year_fertility_rates$Female)
+
+      births.m <- births * globalPackageEnvironment$ratio_males_at_birth
+      births.f <- births * globalPackageEnvironment$ratio_females_at_birth
+
+      infantDeaths.m <- births.m * current_year_mortality_rates$Male[1] / 1000
+      infantDeaths.f <- births.f * current_year_mortality_rates$Female[1] / 1000
+
+      f[1] <- round(births.f - infantDeaths.f, 0)
+      m[1] <- round(births.m - infantDeaths.m, 0)
+
+      if (!debug){
+        out <- data.frame(Range = range, Female = f, Male = m)
+      } else {
+        out <- data.frame(Range = range, Female = f, Male = m,
+                          frates = current_year_fertility_rates,
+                          mrates = current_year_mortality_rates)
+      }
     }
 
     previous_pyramid <<- out
@@ -187,20 +209,23 @@ computeDeaths <- function(population, rates){
   return(demographics_projection)
 }
 
-#' Compute Demographics Projection
-#'
-#' Use the population pyramid, fertility rates, and mortality rates loaded
-#' globally to predict future population pyramids. Drops through to
-#' \code{.computeDemographicsProjection()}
-#'
-#' @return Demographics time-series
-#'
-#' @export
-#'
-ComputeDemographicsProjection <- function(){
-  return(.computeDemographicsProjection(
-    globalPackageEnvironment$initialPopulation,
-    globalPackageEnvironment$fertilityRates,
-    globalPackageEnvironment$mortalityRates,
-    globalPackageEnvironment$years))
-}
+# ComputeDemographicsProjection <- function(...){
+#   return(.computeDemographicsProjection(
+#     globalPackageEnvironment$initialPopulation,
+#     globalPackageEnvironment$fertilityRates,
+#     globalPackageEnvironment$mortalityRates,
+#     globalPackageEnvironment$years,
+#     ...))
+# }
+
+# deaths <- computeDeaths(previous_pyramid, previous_year_mortality_rates)
+#
+# f <- c(0, previous_pyramid$Female - deaths$Female)[1:length(ages)]
+# m <- c(0, previous_pyramid$Male - deaths$Male)[1:length(ages)]
+#
+# births <- computeBirths(f, current_year_fertility_rates$Female)
+#
+# f[1] <- round(births * globalPackageEnvironment$ratio_females_at_birth, 0)
+# m[1] <- round(births * globalPackageEnvironment$ratio_males_at_birth, 0)
+
+
