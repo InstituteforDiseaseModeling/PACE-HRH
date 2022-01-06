@@ -156,10 +156,9 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
 
       # TODO: Replace magic number subsetting with something automagical
 
-      previous_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == previous_year, 2:8]))
+#      previous_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == previous_year, 2:8]))
+#      previous_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == previous_year, 2:9]))
       current_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == current_year, 2:8]))
-
-      previous_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == previous_year, 2:9]))
       current_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == current_year, 2:9]))
 
       # Shuffle the end-of-year snapshots from the previous year to the next
