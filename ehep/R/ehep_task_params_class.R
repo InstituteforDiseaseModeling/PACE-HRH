@@ -1,7 +1,6 @@
 #' Task Parameters Class
 #'
-#' @slot values numeric
-#' @slot labels character
+#' @slot values numeric matrix
 #'
 #' @return Class of type \code{TaskParameters}
 #'
@@ -12,18 +11,16 @@ TaskParameters <- setClass(
   "TaskParameters",
 
   slots = c(
-    values = "numeric",
-    labels = "character"
+    values = "matrix"
   ),
 
-  prototype = list(values = NULL,
-                   labels = NULL),
+  prototype = list(values = NULL),
 
   validity = function(object){
-    if (length(object@values) != length(object@labels)){
-      return("values and labels vectors must be the same length")
-    } else {
-      return(TRUE)
+    if (!(is.numeric(object@values) & is.matrix(object@values))){
+      return("Expecting numeric matrix")
     }
+
+    return(TRUE)
   }
 )

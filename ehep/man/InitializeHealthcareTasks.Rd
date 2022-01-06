@@ -10,7 +10,7 @@ InitializeHealthcareTasks(...)
 \item{sheetName}{Sheet name from the model input Excel file}
 }
 \value{
-Data frame of healthcare task parameters
+NULL (invisible)
 }
 \description{
 Read the healthcare task information from the model inputs Excel file, and

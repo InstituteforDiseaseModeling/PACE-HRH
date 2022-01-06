@@ -28,9 +28,6 @@ globalPackageEnvironment$ratio_males_at_birth <- 1.0 - globalPackageEnvironment$
 
 globalPackageEnvironment$initialPopulation <- NULL
 globalPackageEnvironment$populationChangeParameters <- NULL
-globalPackageEnvironment$mortalityRates <- NULL
-globalPackageEnvironment$fertilityRates <- NULL
-
 globalPackageEnvironment$taskData <- NULL
 
 baseValuesEnvironment <- new.env(parent = globalPackageEnvironment)

@@ -4,14 +4,10 @@
 \alias{ClinicalTaskTime}
 \title{Calculate Annual Time For Clinical Task}
 \usage{
-ClinicalTaskTime(tasks, taskID, demographics, year)
+ClinicalTaskTime(taskID, year)
 }
 \arguments{
-\item{tasks}{Dataframe of task parameters (as returned by \code{loadTaskParameters})}
-
-\item{taskID}{Task ID string}
-
-\item{demographics}{List of population pyramid dataframes}
+\item{taskID}{Index of row in task tables}
 
 \item{year}{Year (index into \code{demographics} list)}
 }

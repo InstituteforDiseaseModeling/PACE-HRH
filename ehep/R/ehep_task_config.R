@@ -45,7 +45,7 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
 #'
 #' @export
 #'
-#' @return Data frame of healthcare task parameters
+#' @return NULL (invisible)
 #'
 InitializeHealthcareTasks <- function(...){
   taskData <- loadTaskParameters(...)
@@ -53,7 +53,8 @@ InitializeHealthcareTasks <- function(...){
   # TODO: Insert error handling
 
   globalPackageEnvironment$taskData <- taskData
-  return(taskData)
+  globalPackageEnvironment$taskDataDims <- dim(globalPackageEnvironment$taskData)
+  invisible(NULL)
 }
 
 

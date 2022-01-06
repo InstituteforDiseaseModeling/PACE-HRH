@@ -41,3 +41,22 @@ setMethod(
     return(obj1)
   }
 )
+
+#' Add Two TaskParameters Objects Together
+#'
+#' @param obj1 \code{TaskParameters} object
+#' @param obj2 \code{TaskParameters} object
+#'
+#' @return Updated \code{TaskParameters} object
+#'
+setMethod(
+  f = "add",
+  signature = c("TaskParameters", "TaskParameters"),
+  definition = function(obj1, obj2)
+  {
+    assertthat::assert_that(length(obj1@values) == length(obj2@values))
+
+    obj1@values <- obj1@values + obj2@values
+    return(obj1)
+  }
+)

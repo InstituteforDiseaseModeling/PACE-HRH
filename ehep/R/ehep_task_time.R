@@ -1,54 +1,54 @@
 #' Calculate Annual Time For Clinical Task
 #'
-#' @param tasks Dataframe of task parameters (as returned by \code{loadTaskParameters})
-#' @param taskID Task ID string
-#' @param demographics List of population pyramid dataframes
+#' @param taskID Index of row in task tables
 #' @param year Year (index into \code{demographics} list)
 #'
 #' @return Annual time in minutes
 #'
 #' @export
 #'
-ClinicalTaskTime <- function(tasks, taskID, demographics, year){
-  task <- tasks[tasks$Indicator == taskID,]
+ClinicalTaskTime <- function(taskID, year){
+  tp <- experimentValuesEnvironment$taskParameters
 
-  if (nrow(task) == 0){
-    TraceMessage(paste("Bad task ID ", taskID, sep = ""))
-    return(0L)
-  }
+  # TODO: Insert check on length of task table
 
-  if (nrow(task) > 1){
-    TraceMessage(paste("Multiple hits for task ID ", taskID, ". Using first hit.", sep = ""))
-    task <- task[1,]
-  }
+  taskVals <- tp@values[taskID,]
 
-  population <- .extractPyramid("demographics", year)
+  td <- globalPackageEnvironment$taskData
+
+  taskDesc <- td[taskID,]
+
+  population <- .extractPyramid("experimentValuesEnvironment$demographics", year)
 
   if (is.null(population)){
     TraceMessage(paste("No demographic info for year ", year, sep = ""))
     return(0L)
   }
 
-  if (is.na(task$MinsPerContact)){
-    TraceMessage(paste("MinsPerContact missing for task ", taskID, sep = ""))
+  if (is.na(taskVals["MinsPerContact"])){
+    TraceMessage(paste("MinsPerContact missing for task ", taskDesc$Indicator, sep = ""))
     return(0L)
   }
 
   n = 0L
 
   # Applicable population
-  n <- .computeApplicablePopulation(population, task$RelevantPop)
+  n <- .computeApplicablePopulation(population, taskDesc$RelevantPop)
 
   # Correct for prevalence, frequency, test positivity, etc
-  n <- n * task$StartingRateInPop * task$RateMultiplier
+  n <- n * taskVals["StartingRateInPop"] * taskVals["RateMultiplier"]
 
   # Correct for annual decrease in prevalence
-  if (task$AnnualDeltaRatio != 1){
-    n <- n * (task$AnnualDeltaRatio^(year - globalPackageEnvironment$startYear))
+  if (taskVals["AnnualDeltaRatio"] != 1){
+    n <- n * (taskVals["AnnualDeltaRatio"]^(year - globalPackageEnvironment$startYear))
   }
 
   # Multiply by number of contacts and time per contact
-  n <- n * (task$NumContactsPerUnit + task$NumContactsAnnual) * task$MinsPerContact
+  n <- n *
+    (taskVals["NumContactsPerUnit"] + taskVals["NumContactsAnnual"]) *
+    taskVals["MinsPerContact"]
+
+  names(n) <- NULL
 
   return(n)
 }
@@ -57,31 +57,27 @@ ClinicalTaskTime <- function(tasks, taskID, demographics, year){
 #'
 #' Calculate clinical task times for a group of tasks over a spread of years
 #'
-#' @param tasks Dataframe of task parameters (as returned by \code{loadTaskParameters})
-#' @param taskIDs Vector of task ID strings
-#' @param demographics List of population pyramid dataframes
+#' @param taskIDs Vector of task indices into \code{globalPackageEnvironment$taskData}
 #' @param years Vector of years (usually \code{globalPackageEnvironment$years})
 #'
 #' @return Dataframe of annual times in minutes
 #'
 #' @export
 #'
-ClinicalTaskTimesGroup <- function(tasks, taskIDs, demographics, years){
-
-  assertthat::assert_that(length(demographics) >= length(years))
-
+ClinicalTaskTimesGroup <- function(taskIDs, years){
   df <- data.frame(years)
 
   nul <- lapply(taskIDs, function(id){
     col <- sapply(years, function(year){
-      ehep::ClinicalTaskTime(tasks, id, demographics, year)
+      ClinicalTaskTime(id,year)
     })
 
     df <<- cbind(df,col)
     return(0)
   })
 
-  names(df) <- c("Years", mc_group)
+  taskNames <- globalPackageEnvironment$taskData$Indicator[taskIDs]
+  names(df) <- c("Years", taskNames)
 
   return(df)
 }
@@ -94,7 +90,22 @@ ClinicalTaskTimesGroup <- function(tasks, taskIDs, demographics, years){
 .computeApplicablePopulation <- function(pop, label){
   if (label == "births"){return(pop$Female[1] + pop$Male[1])}
   if (label == "1-4"){return(sum(pop$Female[2:5] + pop$Male[2:5]))}
+  if (label == "1 yo"){return(pop$Female[2] + pop$Male[2])}
+  if (label == "2 yo"){return(pop$Female[3] + pop$Male[3])}
+  if (label == "15 yo girls"){return(pop$Female[16])}
+  if (label == "-"){return(0)}
+  if (label == "adults 18+"){return(sum(pop$Female[19:101] + pop$Male[19:101]))}
+  if (label == "1-18"){return(sum(pop$Female[2:19] + pop$Male[2:19]))}
+  if (label == "all"){return(sum(pop$Female + pop$Male))}
+  if (label == "50 yo adults"){return(pop$Female[51] + pop$Male[51])}
+  if (label == "adults 50+"){return(sum(pop$Female[51:101] + pop$Male[51:101]))}
+  if (label == "30 yo adults"){return(pop$Female[31] + pop$Male[31])}
+  if (label == "18 yo women"){return(pop$Female[19])}
+  if (label == "women 15-49"){return(sum(pop$Female[16:50]))}
 
   TraceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }
+
+# [1] "births"       "1-4"          "1 yo"         "2 yo"         "15 yo girls"  "-"            "adults 18+"
+# [8] "1-18"         "all"          "50 yo adults" "adults 50+"   "30 yo adults" "18 yo women"  "women 15-49"

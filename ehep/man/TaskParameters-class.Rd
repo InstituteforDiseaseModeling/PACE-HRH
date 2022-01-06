@@ -14,8 +14,6 @@ Task Parameters Class
 \section{Slots}{
 
 \describe{
-\item{\code{values}}{numeric}
-
-\item{\code{labels}}{character}
+\item{\code{values}}{numeric matrix}
 }}
 

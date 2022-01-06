@@ -4,14 +4,10 @@
 \alias{ClinicalTaskTimesGroup}
 \title{Calculate Clinical Task Times}
 \usage{
-ClinicalTaskTimesGroup(tasks, taskIDs, demographics, years)
+ClinicalTaskTimesGroup(taskIDs, years)
 }
 \arguments{
-\item{tasks}{Dataframe of task parameters (as returned by \code{loadTaskParameters})}
-
-\item{taskIDs}{Vector of task ID strings}
-
-\item{demographics}{List of population pyramid dataframes}
+\item{taskIDs}{Vector of task indices into \code{globalPackageEnvironment$taskData}}
 
 \item{years}{Vector of years (usually \code{globalPackageEnvironment$years})}
 }

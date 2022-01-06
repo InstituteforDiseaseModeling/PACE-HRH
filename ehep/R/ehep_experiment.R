@@ -11,11 +11,17 @@
 #' @export
 #'
 RunExperiment <- function(){
+  # Combine base and epsilon environments to give experiment parameters
   ConfigureExperimentValues()
 
+  # Environment locations
   eve <- experimentValuesEnvironment
+  gpe <- globalPackageEnvironment
+
+  # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- eve$populationChangeParameters
 
+  # Compute mortality and fertility rates to build demographics curves
   mortalityRatesDf <- generateMortalityRates(eve$populationChangeParameters)
   fertilityRatesDf <- generateFertilityRates(eve$populationChangeParameters)
 
@@ -32,6 +38,14 @@ RunExperiment <- function(){
                                  mortalityRatesDf,
                                  globalPackageEnvironment$years,
                                  debug = TRUE)
+
+
+  # STEP 2 - COMPUTE CLINICAL TASK TIME TOTALS
+  clinicalTaskIds <- which(gpe$taskData$ClinicalOrNon == "Clinical" &
+                             gpe$taskData$Geography == "National")
+
+  eve$clinicalTaskTimes <- ClinicalTaskTimesGroup(clinicalTaskIds, gpe$years)
+
 
   invisible(NULL)
 }
