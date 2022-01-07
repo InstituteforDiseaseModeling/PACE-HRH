@@ -4,12 +4,14 @@
 \alias{ClinicalTaskTime}
 \title{Calculate Annual Time For Clinical Task}
 \usage{
-ClinicalTaskTime(taskID, year)
+ClinicalTaskTime(taskID, year, debug = FALSE)
 }
 \arguments{
 \item{taskID}{Index of row in task tables}
 
 \item{year}{Year (index into \code{demographics} list)}
+
+\item{debug}{Emit debugging information (default = FALSE)}
 }
 \value{
 Annual time in minutes

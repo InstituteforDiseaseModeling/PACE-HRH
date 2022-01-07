@@ -2,12 +2,13 @@
 #'
 #' @param taskID Index of row in task tables
 #' @param year Year (index into \code{demographics} list)
+#' @param debug Emit debugging information (default = FALSE)
 #'
 #' @return Annual time in minutes
 #'
 #' @export
 #'
-ClinicalTaskTime <- function(taskID, year){
+ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   tp <- experimentValuesEnvironment$taskParameters
 
   # TODO: Insert check on length of task table
@@ -17,6 +18,11 @@ ClinicalTaskTime <- function(taskID, year){
   td <- globalPackageEnvironment$taskData
 
   taskDesc <- td[taskID,]
+
+  if (debug){
+    print(taskVals)
+    print(taskDesc)
+  }
 
   population <- .extractPyramid("experimentValuesEnvironment$demographics", year)
 
@@ -35,18 +41,34 @@ ClinicalTaskTime <- function(taskID, year){
   # Applicable population
   n <- .computeApplicablePopulation(population, taskDesc$RelevantPop)
 
+  if (debug){
+    print(paste("Applicable pop = ", n, sep = ""))
+  }
+
   # Correct for prevalence, frequency, test positivity, etc
   n <- n * taskVals["StartingRateInPop"] * taskVals["RateMultiplier"]
+
+  if (debug){
+    print(paste("Adj for prevalence -> ", n, sep = ""))
+  }
 
   # Correct for annual decrease in prevalence
   if (taskVals["AnnualDeltaRatio"] != 1){
     n <- n * (taskVals["AnnualDeltaRatio"]^(year - globalPackageEnvironment$startYear))
   }
 
+  if (debug){
+    print(paste("Adj for prevalence decrease -> ", n, sep = ""))
+  }
+
   # Multiply by number of contacts and time per contact
   n <- n *
     (taskVals["NumContactsPerUnit"] + taskVals["NumContactsAnnual"]) *
     taskVals["MinsPerContact"]
+
+  if (debug){
+    print(paste("Multiply by contact number and duration -> ", n, sep = ""))
+  }
 
   names(n) <- NULL
 

@@ -4,7 +4,7 @@
 \alias{RunExperiment}
 \title{Run An EHEP Modeling Experiment}
 \usage{
-RunExperiment()
+RunExperiment(normalize = NULL)
 }
 \value{
 NULL (invisible)
