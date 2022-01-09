@@ -48,3 +48,13 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 
   invisible(NULL)
 }
+
+.checkAndLoadGlobalConfig <- function(){
+  if (!globalPackageEnvironment$globalConfigLoaded){
+    loadGlobalConfig()
+    globalPackageEnvironment$globalConfigLoaded <- TRUE
+  }
+}
+
+
+

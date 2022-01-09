@@ -6,17 +6,22 @@
 #'
 #' Results are written back into \code{experimentValuesEnvironment}.
 #'
+#' @param scenarioName (default = "ScenarioA")
+#' @param normalize Whether or not to normalize the initial population (default = NULL)
+#'
 #' @return NULL (invisible)
 #'
 #' @export
 #'
-RunExperiment <- function(normalize = NULL){
-  # Combine base and epsilon environments to give experiment parameters
-  ConfigureExperimentValues()
-
+RunExperiment <- function(scenarioName = "ScenarioA", normalize = NULL){
   # Environment locations
   eve <- experimentValuesEnvironment
   gpe <- globalPackageEnvironment
+
+  scenario <- .getScenarioConfig(scenarioName)
+
+  # Combine base and epsilon environments to give experiment parameters
+  ConfigureExperimentValues()
 
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- eve$populationChangeParameters
@@ -46,11 +51,37 @@ RunExperiment <- function(normalize = NULL){
                                  globalPackageEnvironment$years,
                                  debug = TRUE)
 
-  # STEP 2 - COMPUTE CLINICAL TASK TIME TOTALS
+  # STEP 2 - COMPUTE TIMES FOR CLINICAL TASKS
   clinicalTaskIds <- which(gpe$taskData$ClinicalOrNon == "Clinical" &
                              gpe$taskData$Geography == "National")
 
   eve$clinicalTaskTimes <- ClinicalTaskTimesGroup(clinicalTaskIds, gpe$years)
+
+  # STEP 3 - TOTAL THE CLINICAL TASK TIMES
+  m <- as.matrix(eve$clinicalTaskTimes)
+  aggAnnualClinicalTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
+
+
+  print(aggAnnualClinicalTimes)
+
+
+  # STEP 4 - CORRECT FOR NON-CLINICAL TASKS
+  nonClinicalTaskIds <- which(gpe$taskData$ClinicalOrNon == "Development" &
+                                gpe$taskData$Geography == "National")
+
+  # Assumption: one big bucket of non-clinical tasks taking up a pre-determined
+  # amount of an FTE's time (FTEratio)
+  n <- length(nonClinicalTaskIds)
+  assertthat::assert_that(n <= 1)
+  aggAnnualNonClinicalTimes = 0
+  if (n == 1){
+    task <- gpe$taskData[nonClinicalTaskIds[1],]
+    print(task)
+    fteRatio <- task$FTEratio
+    aggAnnualNonClinicalTimes <- aggAnnualClinicalTimes * (fteRatio / (1 - fteRatio))
+  }
+
+
 
 
   invisible(NULL)
@@ -78,4 +109,20 @@ RunExperiment <- function(normalize = NULL){
   popDf$Total <- popDf$Male + popDf$Female
 
   return(popDf)
+}
+
+.getScenarioConfig <- function(scenarioName){
+  gpe <- globalPackageEnvironment
+  n <- which(gpe$scenarios$UniqueID == scenarioName)
+
+  if (length(n) == 0) {
+    TraceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
+    return(NULL)
+  }
+
+  if (length(n) > 1) {
+    TraceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
+  }
+
+  return(gpe$scenarios[n[1], ])
 }

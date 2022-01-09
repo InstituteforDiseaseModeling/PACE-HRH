@@ -20,11 +20,11 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   taskDesc <- td[taskID,]
 
   if (debug){
-    print(taskVals)
-    print(taskDesc)
+    .dispClinicalTaskInfo(taskDesc, taskVals)
   }
 
-  population <- .extractPyramid("experimentValuesEnvironment$demographics", year)
+#  population <- .extractPyramid("experimentValuesEnvironment$demographics", year)
+  population <- experimentValuesEnvironment$demographics[[as.character(year)]]
 
   if (is.null(population)){
     TraceMessage(paste("No demographic info for year ", year, sep = ""))
@@ -42,14 +42,14 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   n <- .computeApplicablePopulation(population, taskDesc$RelevantPop)
 
   if (debug){
-    print(paste("Applicable pop = ", n, sep = ""))
+    cat(paste("Applicable pop = ", n, "\n", sep = ""))
   }
 
   # Correct for prevalence, frequency, test positivity, etc
   n <- n * taskVals["StartingRateInPop"] * taskVals["RateMultiplier"]
 
   if (debug){
-    print(paste("Adj for prevalence -> ", n, sep = ""))
+    cat(paste("Adj for prevalence -> ", n, "\n", sep = ""))
   }
 
   # Correct for annual decrease in prevalence
@@ -58,7 +58,7 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   }
 
   if (debug){
-    print(paste("Adj for prevalence decrease -> ", n, sep = ""))
+    cat(paste("Adj for prevalence decrease -> ", n, "\n", sep = ""))
   }
 
   # Multiply by number of contacts and time per contact
@@ -67,12 +67,26 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
     taskVals["MinsPerContact"]
 
   if (debug){
-    print(paste("Multiply by contact number and duration -> ", n, sep = ""))
+    cat(paste("Multiply by contact number and duration -> ", n, "\n", sep = ""))
   }
 
   names(n) <- NULL
 
   return(n)
+}
+
+.dispClinicalTaskInfo <- function(taskDesc, taskVals) {
+  cat(paste("ID:", taskDesc$Indicator, "\n", sep = ""))
+  cat(paste("CommonName:", taskDesc$CommonName, "\n", sep = ""))
+  cat(paste("RelevantPop:", taskDesc$RelevantPop, "\n", sep = ""))
+  cat(paste("StartingRateInPop:", taskVals["StartingRateInPop"], "\n", sep = ""))
+  cat(paste("RateMultiplier:", taskVals["RateMultiplier"], "\n", sep = ""))
+  cat(paste("AnnualDeltaRatio:", taskVals["AnnualDeltaRatio"], "\n", sep = ""))
+  cat(paste("NumContactsPerUnit:", taskVals["NumContactsPerUnit"], "\n", sep = ""))
+  cat(paste("NumContactsAnnual:", taskVals["NumContactsAnnual"], "\n", sep = ""))
+  cat(paste("MinsPerContact:", taskVals["MinsPerContact"], "\n", sep = ""))
+  cat(paste("HoursPerWeek:", taskVals["HoursPerWeek"], "\n", sep = ""))
+  cat(paste("FTEratio:", taskVals["FTEratio"], "\n", sep = ""))
 }
 
 #' Calculate Clinical Task Times
@@ -109,25 +123,50 @@ ClinicalTaskTimesGroup <- function(taskIDs, years){
   return(df)
 }
 
-.computeApplicablePopulation <- function(pop, label){
-  if (label == "births"){return(pop$Female[1] + pop$Male[1])}
-  if (label == "1-4"){return(sum(pop$Female[2:5] + pop$Male[2:5]))}
-  if (label == "1 yo"){return(pop$Female[2] + pop$Male[2])}
-  if (label == "2 yo"){return(pop$Female[3] + pop$Male[3])}
-  if (label == "15 yo girls"){return(pop$Female[16])}
-  if (label == "-"){return(0)}
-  if (label == "adults 18+"){return(sum(pop$Female[19:101] + pop$Male[19:101]))}
-  if (label == "1-18"){return(sum(pop$Female[2:19] + pop$Male[2:19]))}
-  if (label == "all"){return(sum(pop$Female + pop$Male))}
-  if (label == "50 yo adults"){return(pop$Female[51] + pop$Male[51])}
-  if (label == "adults 50+"){return(sum(pop$Female[51:101] + pop$Male[51:101]))}
-  if (label == "30 yo adults"){return(pop$Female[31] + pop$Male[31])}
-  if (label == "18 yo women"){return(pop$Female[19])}
-  if (label == "women 15-49"){return(sum(pop$Female[16:50]))}
+.computeApplicablePopulation <- function(pop, label) {
+  if (label == "births") {
+    return(pop$Female[1] + pop$Male[1])
+  }
+  if (label == "1-4") {
+    return(sum(pop$Female[2:5] + pop$Male[2:5]))
+  }
+  if (label == "1 yo") {
+    return(pop$Female[2] + pop$Male[2])
+  }
+  if (label == "2 yo") {
+    return(pop$Female[3] + pop$Male[3])
+  }
+  if (label == "15 yo girls") {
+    return(pop$Female[16])
+  }
+  if (label == "-") {
+    return(0)
+  }
+  if (label == "adults 18+") {
+    return(sum(pop$Female[19:101] + pop$Male[19:101]))
+  }
+  if (label == "1-18") {
+    return(sum(pop$Female[2:19] + pop$Male[2:19]))
+  }
+  if (label == "all") {
+    return(sum(pop$Female + pop$Male))
+  }
+  if (label == "50 yo adults") {
+    return(pop$Female[51] + pop$Male[51])
+  }
+  if (label == "adults 50+") {
+    return(sum(pop$Female[51:101] + pop$Male[51:101]))
+  }
+  if (label == "30 yo adults") {
+    return(pop$Female[31] + pop$Male[31])
+  }
+  if (label == "18 yo women") {
+    return(pop$Female[19])
+  }
+  if (label == "women 15-49") {
+    return(sum(pop$Female[16:50]))
+  }
 
   TraceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }
-
-# [1] "births"       "1-4"          "1 yo"         "2 yo"         "15 yo girls"  "-"            "adults 18+"
-# [8] "1-18"         "all"          "50 yo adults" "adults 50+"   "30 yo adults" "18 yo women"  "women 15-49"

@@ -4,7 +4,12 @@
 \alias{RunExperiment}
 \title{Run An EHEP Modeling Experiment}
 \usage{
-RunExperiment(normalize = NULL)
+RunExperiment(scenarioName = "ScenarioA", normalize = NULL)
+}
+\arguments{
+\item{scenarioName}{(default = "ScenarioA")}
+
+\item{normalize}{Whether or not to normalize the initial population (default = NULL)}
 }
 \value{
 NULL (invisible)

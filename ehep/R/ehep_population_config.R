@@ -149,10 +149,7 @@ generateFertilityRates <- function(popChangeParamsList = NULL){
 #' ehep::InitializePopulation()
 #' }
 InitializePopulation <- function(){
-  if (!globalPackageEnvironment$globalConfigLoaded){
-    loadGlobalConfig()
-    globalPackageEnvironment$globalConfigLoaded <- TRUE
-  }
+  .checkAndLoadGlobalConfig()
 
   globalPackageEnvironment$initialPopulation <- loadInitialPopulation()
 

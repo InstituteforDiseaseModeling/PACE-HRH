@@ -48,6 +48,8 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
 #' @return NULL (invisible)
 #'
 InitializeHealthcareTasks <- function(...){
+  .checkAndLoadGlobalConfig()
+
   taskData <- loadTaskParameters(...)
 
   # TODO: Insert error handling
@@ -56,10 +58,3 @@ InitializeHealthcareTasks <- function(...){
   globalPackageEnvironment$taskDataDims <- dim(globalPackageEnvironment$taskData)
   invisible(NULL)
 }
-
-
-
-# Ref: TaskValues sheet column names
-# [1] "Indicator"          "CommonName"         "ClinicalOrNon"      "ClinicalCat"        "ServiceCat"         "RelevantPop"        "Geography"          "StartingRateInPop"
-# [9] "RateType"           "RateMultiplier"     "MultiplierReason"   "AnnualDeltaRatio"   "NumContactsPerUnit" "NumContactsAnnual"  "MinsPerContact"     "HoursPerWeek"
-# [17] "FTEratio"
