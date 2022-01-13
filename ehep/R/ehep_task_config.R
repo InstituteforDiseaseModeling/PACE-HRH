@@ -33,6 +33,11 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
   assertthat::has_name(taskData, "FTEratio")
   taskData$FTEratio[is.na(taskData$FTEratio)] <- 0
 
+  computeMethod <- replicate(nrow(taskData), "TimePerTask")
+  computeMethod[taskData$FTEratio != 0] <- "TimeRatio"
+  computeMethod[taskData$HoursPerWeek != 0] <- "TimeAddedOn"
+  taskData$computeMethod <- computeMethod
+
   return(taskData)
 }
 

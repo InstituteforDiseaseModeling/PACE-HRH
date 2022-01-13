@@ -1,4 +1,4 @@
-#' Calculate Annual Time For Clinical Task
+#' Calculate Annual Time For A Task
 #'
 #' @param taskID Index of row in task tables
 #' @param year Year (index into \code{demographics} list)
@@ -8,7 +8,7 @@
 #'
 #' @export
 #'
-ClinicalTaskTime <- function(taskID, year, debug = FALSE){
+TaskTime <- function(taskID, year, debug = FALSE){
   tp <- experimentValuesEnvironment$taskParameters
 
   # TODO: Insert check on length of task table
@@ -20,10 +20,9 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   taskDesc <- td[taskID,]
 
   if (debug){
-    .dispClinicalTaskInfo(taskDesc, taskVals)
+    .dispTaskInfo(taskDesc, taskVals)
   }
 
-#  population <- .extractPyramid("experimentValuesEnvironment$demographics", year)
   population <- experimentValuesEnvironment$demographics[[as.character(year)]]
 
   if (is.null(population)){
@@ -75,7 +74,7 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   return(n)
 }
 
-.dispClinicalTaskInfo <- function(taskDesc, taskVals) {
+.dispTaskInfo <- function(taskDesc, taskVals) {
   cat(paste("ID:", taskDesc$Indicator, "\n", sep = ""))
   cat(paste("CommonName:", taskDesc$CommonName, "\n", sep = ""))
   cat(paste("RelevantPop:", taskDesc$RelevantPop, "\n", sep = ""))
@@ -89,7 +88,7 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
   cat(paste("FTEratio:", taskVals["FTEratio"], "\n", sep = ""))
 }
 
-#' Calculate Clinical Task Times
+#' Calculate Task Times For A Group Of Tasks
 #'
 #' Calculate clinical task times for a group of tasks over a spread of years
 #'
@@ -100,12 +99,12 @@ ClinicalTaskTime <- function(taskID, year, debug = FALSE){
 #'
 #' @export
 #'
-ClinicalTaskTimesGroup <- function(taskIDs, years){
+TaskTimesGroup <- function(taskIDs, years){
   df <- data.frame(years)
 
   nul <- lapply(taskIDs, function(id){
     col <- sapply(years, function(year){
-      ClinicalTaskTime(id,year)
+      TaskTime(id,year)
     })
 
     df <<- cbind(df,col)
@@ -170,3 +169,41 @@ ClinicalTaskTimesGroup <- function(taskIDs, years){
   TraceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }
+
+AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
+  tp <- experimentValuesEnvironment$taskParameters
+  taskVals <- tp@values[taskID, ]
+
+  td <- globalPackageEnvironment$taskData
+  taskDesc <- td[taskID, ]
+
+  if (debug) {
+    .dispTaskInfo(taskDesc, taskVals)
+  }
+
+  fteRatio <- taskVals["FTEratio"]
+  assertthat::assert_that(fteRatio < 1)
+  return(baseTime * (fteRatio / (1 - fteRatio)))
+}
+
+AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
+  assertthat::assert_that(length(baseTimes) == length(years))
+
+  df <- data.frame(years)
+
+  nul <- lapply(taskIDs, function(id){
+    col <- sapply(seq_along(years), function(i){
+      AllocationTaskTime(id, years[i], baseTimes[i])
+    })
+
+    df <<- cbind(df,col)
+    return(0)
+  })
+
+  taskNames <- globalPackageEnvironment$taskData$Indicator[taskIDs]
+  names(df) <- c("Years", taskNames)
+
+  return(df)
+}
+
+

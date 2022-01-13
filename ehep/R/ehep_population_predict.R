@@ -128,6 +128,7 @@ computeDeaths <- function(population, rates){
 #' @param fertility_rates Fertility rates
 #' @param mortality_rates Mortality rates
 #' @param years Vector of years to model
+#' @param normalize Whether or not to normalize the initial population (default = NULL)
 #' @param debug Flag for debugging output
 #'
 #' @return Demographics time-series
@@ -135,10 +136,16 @@ computeDeaths <- function(population, rates){
 #' @export
 #'
 ComputeDemographicsProjection <- function(initial_population_pyramid,
-                                           fertility_rates,
-                                           mortality_rates,
-                                           years,
-                                           debug = FALSE){
+                                          fertility_rates,
+                                          mortality_rates,
+                                          years,
+                                          normalize = NULL,
+                                          growthFlag = FALSE,
+                                          debug = FALSE) {
+  if (.normalizationOn(normalize)){
+    initial_population_pyramid <-
+      .normalizePopulation(initial_population_pyramid, normalize)
+  }
 
   previous_pyramid = NULL
 
@@ -156,8 +163,6 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
 
       # TODO: Replace magic number subsetting with something automagical
 
-#      previous_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == previous_year, 2:8]))
-#      previous_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == previous_year, 2:9]))
       current_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == current_year, 2:8]))
       current_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == current_year, 2:9]))
 
@@ -207,6 +212,34 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
 
   return(demographics_projection)
 }
+
+.normalizationOn <- function(normalize) {
+  if (is.null(normalize)) {
+    return(FALSE)
+  }
+  if (!is.numeric(normalize)) {
+    return(FALSE)
+  }
+  if (normalize < 10000) {
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+.normalizePopulation <- function(popDf, normalizedTotal){
+  total <- sum(popDf$Female) + sum(popDf$Male)
+  normFactor <- normalizedTotal / total
+
+  popDf$Male <- round(popDf$Male * normFactor, 0)
+  popDf$Female <- round(popDf$Female * normFactor, 0)
+  popDf$Total <- popDf$Male + popDf$Female
+
+  return(popDf)
+}
+
+
+
+
 
 # ComputeDemographicsProjection <- function(...){
 #   return(.computeDemographicsProjection(

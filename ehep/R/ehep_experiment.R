@@ -7,21 +7,32 @@
 #' Results are written back into \code{experimentValuesEnvironment}.
 #'
 #' @param scenarioName (default = "ScenarioA")
-#' @param normalize Whether or not to normalize the initial population (default = NULL)
+#' @param debug (default = FALSE)
 #'
-#' @return NULL (invisible)
+#' @return List of dataframes of per-task times, or NULL
 #'
 #' @export
 #'
-RunExperiment <- function(scenarioName = "ScenarioA", normalize = NULL){
+RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
+  # STEP 0 - INITIALIZE
+
+  # Load scenario details
+  scenario <- .getScenarioConfig(scenarioName)
+
+  if (is.null(scenario)){
+    TraceMessage(paste("Unknown scenario ", scenarioName, sep = ""))
+    return(NULL)
+  }
+
+  # Create a results list
+  results <- list()
+
+  # Combine base and epsilon environments to produce experiment parameters
+  ConfigureExperimentValues()
+
   # Environment locations
   eve <- experimentValuesEnvironment
   gpe <- globalPackageEnvironment
-
-  scenario <- .getScenarioConfig(scenarioName)
-
-  # Combine base and epsilon environments to give experiment parameters
-  ConfigureExperimentValues()
 
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- eve$populationChangeParameters
@@ -38,77 +49,119 @@ RunExperiment <- function(scenarioName = "ScenarioA", normalize = NULL){
     Age = popData$age,
     Female = popData$female@values,
     Male = popData$male@values,
-    Total = popData$total@values)
+    Total = popData$total@values
+  )
 
-  if (.normalizationOn(normalize)){
-    initialPopulationDf <-
-      .normalizePopulation(initialPopulationDf, normalize)
-  }
+  eve$demographics <-
+    ComputeDemographicsProjection(
+      initialPopulationDf,
+      fertilityRatesDf,
+      mortalityRatesDf,
+      globalPackageEnvironment$years,
+      normalize = scenario$BaselinePop,
+      growthFlag = scenario$o_PopGrowth,
+      debug = TRUE
+    )
 
-  eve$demographics <- ComputeDemographicsProjection(initialPopulationDf,
-                                 fertilityRatesDf,
-                                 mortalityRatesDf,
-                                 globalPackageEnvironment$years,
-                                 debug = TRUE)
+  # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
+  taskIds <- which(gpe$taskData$computeMethod == "TimePerTask" &
+                             gpe$taskData$Geography == scenario$PopType &
+                     gpe$taskData$ClinicalOrNon == "Clinical")
 
-  # STEP 2 - COMPUTE TIMES FOR CLINICAL TASKS
-  clinicalTaskIds <- which(gpe$taskData$ClinicalOrNon == "Clinical" &
-                             gpe$taskData$Geography == "National")
+  eve$clinicalTaskTimes <- TaskTimesGroup(taskIds, gpe$years)
 
-  eve$clinicalTaskTimes <- ClinicalTaskTimesGroup(clinicalTaskIds, gpe$years)
+  # STEP 2A - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
+  taskIds <- which(gpe$taskData$computeMethod == "TimePerTask" &
+                     gpe$taskData$Geography == scenario$PopType &
+                     gpe$taskData$ClinicalOrNon != "Clinical")
 
-  # STEP 3 - TOTAL THE CLINICAL TASK TIMES
+  eve$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, gpe$years)
+
+  # STEP 3 - TOTAL THE TASK TIMES
   m <- as.matrix(eve$clinicalTaskTimes)
-  aggAnnualClinicalTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
+  aggAnnualClinicalTaskTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
 
+  m <- as.matrix(eve$nonClinicalTaskTimes)
+  aggAnnualNonClinicalTaskTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
 
-  print(aggAnnualClinicalTimes)
+  # STEP 4 - CORRECT FOR RATIO-BASED TIME ALLOCATION
+  taskIds <- which(
+    gpe$taskData$computeMethod == "TimeRatio" &
+      gpe$taskData$Geography == scenario$PopType
+  )
 
+  eve$nonClinicalAllocationTimes <-
+    AllocationTaskTimesGroup(taskIds, gpe$years, aggAnnualClinicalTaskTimes)
 
-  # STEP 4 - CORRECT FOR NON-CLINICAL TASKS
-  nonClinicalTaskIds <- which(gpe$taskData$ClinicalOrNon == "Development" &
-                                gpe$taskData$Geography == "National")
+  m <- as.matrix(eve$nonClinicalAllocationTimes)
+  aggAnnualNonClinicalAllocationTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
 
-  # Assumption: one big bucket of non-clinical tasks taking up a pre-determined
-  # amount of an FTE's time (FTEratio)
-  n <- length(nonClinicalTaskIds)
-  assertthat::assert_that(n <= 1)
-  aggAnnualNonClinicalTimes = 0
-  if (n == 1){
-    task <- gpe$taskData[nonClinicalTaskIds[1],]
-    print(task)
-    fteRatio <- task$FTEratio
-    aggAnnualNonClinicalTimes <- aggAnnualClinicalTimes * (fteRatio / (1 - fteRatio))
+  # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
+  taskIds <- which(gpe$taskData$computeMethod == "TimeAddedOn" &
+                     gpe$taskData$Geography == scenario$PopType)
+
+  if (length(taskIds) > 0){
+    weeklyNonProductiveTime <- sum(gpe$taskData$HoursPerWeek[taskIds]) * 60
+  } else {
+    weeklyNonProductiveTime <- 0
   }
 
+  # STEP 6 - COMPUTE FTE EQUIVALENTS
 
+  # T(c) + T(nc) + N * R(np) = N * R(total)
+  #
+  # where
+  #   T(c) = total time (over whatever period) needed for clinical tasks,
+  #   T(nc) = total time needed for non-clinical tasks,
+  #   R(np) = time PER FTE needed for add-on/non-productive tasks,
+  #   R(total) = available time PER FTE, and
+  #   N = number of FTEs
+  #
+  # Rearranging, N = (T(c) + T(nc) / (R(total) - R(np))
+  # And T(np) = N * R(np)
 
+  # Compute available time per year per FTE (R_total)
+  annualWorkHours <- scenario$WeeksPerYr * scenario$HrsPerWeek
 
-  invisible(NULL)
-}
+  R_total <- annualWorkHours * 60
+  R_np <- weeklyNonProductiveTime * scenario$WeeksPerYr
 
-.normalizationOn <- function(normalize) {
-  if (is.null(normalize)) {
-    return(FALSE)
+  T_c <- aggAnnualClinicalTaskTimes
+  T_nc <- aggAnnualNonClinicalTaskTimes + aggAnnualNonClinicalAllocationTimes
+
+  N <- (T_c + T_nc) / (R_total - R_np)
+
+  T_np <- R_np * N
+
+  eve$nonProductiveTimes <-
+    data.frame("Years" = gpe$years, "Overhead" = T_np)
+
+  if (debug){
+    print("T(c)")
+    print(T_c)
+    print("Non-clinical allocation (MHH)")
+    print(aggAnnualNonClinicalAllocationTimes)
+    print("Travel + Record-Keeping")
+    print(aggAnnualNonClinicalTaskTimes)
+    print("T(nc)")
+    print(T_nc)
+    print("R(total)")
+    print(R_total)
+    print("R(np) (Admin)")
+    print(R_np)
+    print("T(np) (Admin)")
+    print(R_np * N)
+    print("FTEs")
+    print(N)
   }
-  if (!is.numeric(normalize)) {
-    return(FALSE)
-  }
-  if (normalize < 10000) {
-    return(FALSE)
-  }
-  return(TRUE)
-}
 
-.normalizePopulation <- function(popDf, normalizedTotal){
-  total <- sum(popDf$Female) + sum(popDf$Male)
-  normFactor <- normalizedTotal / total
+  results$Clinical <- eve$clinicalTaskTimes
+  results$NonClinical <- eve$nonClinicalTaskTimes
+  results$NonClinicalAllocation <- eve$nonClinicalAllocationTimes
+  results$NonProductive <- eve$nonProductiveTimes
+  results$FTEs <- N
 
-  popDf$Male <- round(popDf$Male * normFactor, 0)
-  popDf$Female <- round(popDf$Female * normFactor, 0)
-  popDf$Total <- popDf$Male + popDf$Female
-
-  return(popDf)
+  return(results)
 }
 
 .getScenarioConfig <- function(scenarioName){

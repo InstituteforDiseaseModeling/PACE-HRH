@@ -4,15 +4,15 @@
 \alias{RunExperiment}
 \title{Run An EHEP Modeling Experiment}
 \usage{
-RunExperiment(scenarioName = "ScenarioA", normalize = NULL)
+RunExperiment(scenarioName = "ScenarioA", debug = FALSE)
 }
 \arguments{
 \item{scenarioName}{(default = "ScenarioA")}
 
-\item{normalize}{Whether or not to normalize the initial population (default = NULL)}
+\item{debug}{(default = FALSE)}
 }
 \value{
-NULL (invisible)
+List of dataframes of per-task times, or NULL
 }
 \description{
 Combine the parameter values in the Base and Epsilon environments, save the
