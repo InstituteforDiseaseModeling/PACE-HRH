@@ -23,7 +23,8 @@ SaveResults <- function(results, filepath, scenario, trial, run){
     df1 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
 
     timeRowData <- results$NonClinical$Time[i, ]
-    df2 <- .emitRowList(timeRowData, NULL, scenario, trial, run, year)
+    countRowData <- results$NonClinical$N[i, ]
+    df2 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
 
     rowData <- results$NonClinicalAllocation[i, ]
     rowData <- rowData[-1]
