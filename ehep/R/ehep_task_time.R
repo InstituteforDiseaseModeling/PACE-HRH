@@ -4,7 +4,9 @@
 #' @param year Year (index into \code{demographics} list)
 #' @param debug Emit debugging information (default = FALSE)
 #'
-#' @return Annual time in minutes
+#' @return List of two vectors:
+#' Time - annual task times in minutes
+#' N - number of times task was performed
 #'
 #' @export
 #'
@@ -27,12 +29,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
 
   if (is.null(population)){
     TraceMessage(paste("No demographic info for year ", year, sep = ""))
-    return(0L)
-  }
-
-  if (is.na(taskVals["MinsPerContact"])){
-    TraceMessage(paste("MinsPerContact missing for task ", taskDesc$Indicator, sep = ""))
-    return(0L)
+    return(list(N = 0, Time = 0))
   }
 
   n = 0L
@@ -62,16 +59,26 @@ TaskTime <- function(taskID, year, debug = FALSE){
 
   # Multiply by number of contacts and time per contact
   n <- n *
-    (taskVals["NumContactsPerUnit"] + taskVals["NumContactsAnnual"]) *
-    taskVals["MinsPerContact"]
+    (taskVals["NumContactsPerUnit"] + taskVals["NumContactsAnnual"])
 
-  if (debug){
-    cat(paste("Multiply by contact number and duration -> ", n, "\n", sep = ""))
+  # Set aside the number of times the service was provided
+  numServices <- round(n, 0)
+  names(numServices) <- NULL
+
+  if (is.na(taskVals["MinsPerContact"])){
+    TraceMessage(paste("MinsPerContact missing for task ", taskDesc$Indicator, sep = ""))
+    t = 0
+  } else {
+    t <- n * taskVals["MinsPerContact"]
   }
 
-  names(n) <- NULL
+  if (debug){
+    cat(paste("Multiply by contact number and duration -> ", t, "\n", sep = ""))
+  }
 
-  return(n)
+  names(t) <- NULL
+
+  return(list(N = numServices, Time = t))
 }
 
 .dispTaskInfo <- function(taskDesc, taskVals) {
@@ -95,26 +102,34 @@ TaskTime <- function(taskID, year, debug = FALSE){
 #' @param taskIDs Vector of task indices into \code{globalPackageEnvironment$taskData}
 #' @param years Vector of years (usually \code{globalPackageEnvironment$years})
 #'
-#' @return Dataframe of annual times in minutes
+#' @return List with two matrices:
+#' Time - annual task times in minutes
+#' N - number of times task was performed
 #'
 #' @export
 #'
 TaskTimesGroup <- function(taskIDs, years){
-  df <- data.frame(years)
+  m <- length(years)
+  n <- length(taskIDs)
 
-  nul <- lapply(taskIDs, function(id){
-    col <- sapply(years, function(year){
-      TaskTime(id,year)
-    })
+  mt <-
+    matrix(
+      nrow = m,
+      ncol = n,
+      dimnames = list(years, globalPackageEnvironment$taskData$Indicator[taskIDs])
+    )
 
-    df <<- cbind(df,col)
-    return(0)
-  })
+  mn <- mt
 
-  taskNames <- globalPackageEnvironment$taskData$Indicator[taskIDs]
-  names(df) <- c("Years", taskNames)
+  for (i in seq_along(years)) {
+    for (j in seq_along(taskIDs)) {
+      l <- TaskTime(taskIDs[j], years[i])
+      mt[i, j] <- l$Time
+      mn[i, j] <- l$N
+    }
+  }
 
-  return(df)
+  return(list(Time = mt, N = mn))
 }
 
 .extractPyramid <- function(varName, year){

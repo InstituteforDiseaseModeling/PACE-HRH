@@ -104,6 +104,41 @@ ZeroEpsilons <- function(){
   invisible(NULL)
 }
 
+
+#' Initilialize Stochastic Variation System
+#'
+#' @return NULL (invisible)
+#'
+#' @export
+InitializeEpsilons <- function(){
+  set.seed(12345)
+
+  ZeroEpsilons()
+
+  invisible(NULL)
+}
+
+
+#' Generate A New Set Of Stochastic Variations
+#'
+#' @return NULL (invisible)
+#'
+#' @export
+NextEpsilons <- function(){
+  b <- baseValuesEnvironment
+  e <- epsilonValuesEnvironment
+
+  # Fertility rate initial values
+  initFratesBase <- b$populationChangeParameters$initValues
+  initFratesEpsilons <- e$populationChangeParameters$initValues
+  baserates <- getFertilityRates(initFratesBase)
+  e$populationChangeParameters$initValues <-
+    setFertilityRates(initFratesEpsilons, baserates * runif(length(baserates),-0.2, 0.2))
+
+  invisible(NULL)
+}
+
+
 #' Combine Base and Epsilon Values
 #'
 #' Create the configuration values for an individual model experiment by

@@ -78,11 +78,8 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   eve$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, gpe$years)
 
   # STEP 3 - TOTAL THE TASK TIMES
-  m <- as.matrix(eve$clinicalTaskTimes)
-  aggAnnualClinicalTaskTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
-
-  m <- as.matrix(eve$nonClinicalTaskTimes)
-  aggAnnualNonClinicalTaskTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
+  aggAnnualClinicalTaskTimes <- apply(eve$clinicalTaskTimes$Time, 1, sum)
+  aggAnnualNonClinicalTaskTimes <- apply(eve$nonClinicalTaskTimes$Time, 1, sum)
 
   # STEP 4 - CORRECT FOR RATIO-BASED TIME ALLOCATION
   taskIds <- which(
@@ -159,7 +156,7 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   results$NonClinical <- eve$nonClinicalTaskTimes
   results$NonClinicalAllocation <- eve$nonClinicalAllocationTimes
   results$NonProductive <- eve$nonProductiveTimes
-  results$FTEs <- N
+  results$FTEs <- data.frame("Years" = gpe$years, "FTEs" = N)
 
   return(results)
 }

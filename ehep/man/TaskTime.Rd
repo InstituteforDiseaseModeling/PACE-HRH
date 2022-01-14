@@ -14,7 +14,9 @@ TaskTime(taskID, year, debug = FALSE)
 \item{debug}{Emit debugging information (default = FALSE)}
 }
 \value{
-Annual time in minutes
+List of two vectors:
+Time - annual task times in minutes
+N - number of times task was performed
 }
 \description{
 Calculate Annual Time For A Task

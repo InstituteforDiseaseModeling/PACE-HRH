@@ -54,6 +54,14 @@ demographics <- ehep::ComputeDemographicsProjection()
 tasks <- ehep::InitializeHealthcareTasks()
 
 ```
+## Global Parameters
+
+The __SetGlobalStartEndYears()__ function can be used to set the start and end 
+years for simulation.
+
+```
+ehep::SetGlobalStartEndYears(2025, 2030)
+```
 
 ## The Global Package Environment
 

@@ -56,5 +56,34 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
   }
 }
 
+#' Set Global Start And End Year Parameters
+#'
+#' @param start Starting year
+#' @param end Ending year (must be greater than \code{start} )
+#'
+#' @return Nothing
+#'
+#' @export
+SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
+  if (!assertthat::is.number(start)) {
+    return
+  }
+
+  if (!assertthat::is.number(end)) {
+    return
+  }
+
+  if (end <= start) {
+    return
+  }
+
+  globalPackageEnvironment$startYear <- start
+  globalPackageEnvironment$endYear <- end
+  globalPackageEnvironment$years <-
+    seq(from = globalPackageEnvironment$startYear,
+        to = globalPackageEnvironment$endYear,
+        by = 1)
+}
+
 
 

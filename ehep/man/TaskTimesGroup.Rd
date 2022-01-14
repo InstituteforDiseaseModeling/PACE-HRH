@@ -12,7 +12,9 @@ TaskTimesGroup(taskIDs, years)
 \item{years}{Vector of years (usually \code{globalPackageEnvironment$years})}
 }
 \value{
-Dataframe of annual times in minutes
+List with two matrices:
+Time - annual task times in minutes
+N - number of times task was performed
 }
 \description{
 Calculate clinical task times for a group of tasks over a spread of years

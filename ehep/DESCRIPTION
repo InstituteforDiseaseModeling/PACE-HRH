@@ -33,6 +33,7 @@ Collate:
     'ehep_setValue_method.R'
     'ehep_getMortalityRates_method.R'
     'ehep_getFertilityRates_method.R'
+    'ehep_setFertilityRates_method.R'
     'ehep_config.R'
     'ehep_exp_control.R'
     'ehep_iterator.R'
@@ -44,3 +45,4 @@ Collate:
     'ehep_task_time.R'
     'ehep_experiment.R'
     'ehep_scenarios_config.R'
+    'ehep_save_results.R'
