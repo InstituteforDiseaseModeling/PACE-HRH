@@ -32,6 +32,7 @@ Collate:
     'ehep_setFromVector_method.R'
     'ehep_setValue_method.R'
     'ehep_getMortalityRates_method.R'
+    'ehep_setMortalityRates_method.R'
     'ehep_getFertilityRates_method.R'
     'ehep_setFertilityRates_method.R'
     'ehep_config.R'

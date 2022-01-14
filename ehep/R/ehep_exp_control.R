@@ -128,12 +128,17 @@ NextEpsilons <- function(){
   b <- baseValuesEnvironment
   e <- epsilonValuesEnvironment
 
+  initValsBase <- b$populationChangeParameters$initValues
+  initValsEpsilons <- e$populationChangeParameters$initValues
+
   # Fertility rate initial values
-  initFratesBase <- b$populationChangeParameters$initValues
-  initFratesEpsilons <- e$populationChangeParameters$initValues
-  baserates <- getFertilityRates(initFratesBase)
+  baserates <- getFertilityRates(initValsBase)
+  obj <- setFertilityRates(initValsEpsilons, baserates * runif(length(baserates), -0.2, 0.2))
+
+  # Mortality rate initial values
+  baserates <- getMortalityRates(initValsBase)
   e$populationChangeParameters$initValues <-
-    setFertilityRates(initFratesEpsilons, baserates * runif(length(baserates),-0.2, 0.2))
+    setMortalityRates(obj, baserates * runif(length(baserates), -0.1, 0.1))
 
   invisible(NULL)
 }
