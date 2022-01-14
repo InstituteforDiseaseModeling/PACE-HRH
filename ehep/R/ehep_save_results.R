@@ -73,3 +73,64 @@ SaveResults <- function(results, filepath, scenario, trial, run){
 
   return(data.table::rbindlist(l))
 }
+
+#' Save Experiment Results As CSV File
+#'
+#' @param results TBD
+#' @param filepath TBD
+#' @param scenario TBD
+#' @param run TBD
+#'
+#' @return NULL (invisible)
+#'
+#' @export
+SaveSuiteResults <- function(results, filepath, scenario, run){
+  trialIds <- names(results)
+
+  l <- lapply(seq_along(trialIds), function(index){
+    return(func(results[[index]], scenario, index, run))
+  })
+
+  out <- data.table::rbindlist(l)
+
+  write.csv(out, file = filepath, row.names = FALSE)
+
+  invisible(NULL)
+}
+
+func <- function(results, scenario, trial, run){
+  dfCsv <- data.frame()
+
+  rows <- seq(1, dim(results$Clinical$Time)[1])
+  years <- dimnames(results$Clinical$Time)[[1]]
+
+  l <- lapply(rows, function(i) {
+    year <- years[i]
+
+    timeRowData <- results$Clinical$Time[i, ]
+    countRowData <- results$Clinical$N[i, ]
+    df1 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
+
+    timeRowData <- results$NonClinical$Time[i, ]
+    countRowData <- results$NonClinical$N[i, ]
+    df2 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
+
+    rowData <- results$NonClinicalAllocation[i, ]
+    rowData <- rowData[-1]
+    df3 <- .emitRowList(rowData, NULL, scenario, trial, run, year)
+
+    rowData <- results$NonProductive[i, ]
+    rowData <- rowData[-1]
+    df4 <- .emitRowList(rowData, NULL, scenario, trial, run, year)
+
+    if (nrow(dfCsv) == 0){
+      dfCsv <<- data.table::rbindlist(list(df1, df2, df3, df4))
+    } else {
+      dfCsv <<- data.table::rbindlist(list(dfCsv, df1, df2, df3, df4))
+    }
+
+    return(1)
+  })
+
+  return(dfCsv)
+}

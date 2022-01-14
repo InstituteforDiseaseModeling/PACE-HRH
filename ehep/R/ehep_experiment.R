@@ -4,7 +4,8 @@
 #' new parameter values to \code{experimentValuesEnvironment}, then run a full
 #' set of calculations.
 #'
-#' Results are written back into \code{experimentValuesEnvironment}.
+#' Results are written back into \code{experimentValuesEnvironment} and as
+#' a results structure.
 #'
 #' @param scenarioName (default = "ScenarioA")
 #' @param debug (default = FALSE)
