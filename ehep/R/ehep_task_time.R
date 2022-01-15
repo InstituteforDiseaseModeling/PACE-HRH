@@ -70,6 +70,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
     t = 0
   } else {
     t <- numServices * taskVals["MinsPerContact"]
+#    t <- n * taskVals["MinsPerContact"]
   }
 
   if (debug){
