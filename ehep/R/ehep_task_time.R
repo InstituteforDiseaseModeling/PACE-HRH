@@ -69,7 +69,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
     TraceMessage(paste("MinsPerContact missing for task ", taskDesc$Indicator, sep = ""))
     t = 0
   } else {
-    t <- n * taskVals["MinsPerContact"]
+    t <- numServices * taskVals["MinsPerContact"]
   }
 
   if (debug){
