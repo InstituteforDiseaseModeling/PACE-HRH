@@ -3,6 +3,7 @@ library(ehep)
 ehep::InitializePopulation()
 ehep::InitializeHealthcareTasks()
 ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
 
 scenario <- "ScenarioA"
 results <-
