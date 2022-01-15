@@ -18,7 +18,8 @@ Imports:
     dplyr,
     magrittr,
     ggplot2,
-    methods
+    methods,
+    truncnorm
 Collate: 
     'ehep_package_env.R'
     'ehep_debug_utils.R'
