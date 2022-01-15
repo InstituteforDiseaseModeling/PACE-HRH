@@ -19,6 +19,7 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
   l <- lapply(seq_len(trials), function(trial){
     NextEpsilons()
     results <- RunExperiment(scenario)
+    results$Population <- experimentValuesEnvironment$demographics
     return(results)
   })
 
