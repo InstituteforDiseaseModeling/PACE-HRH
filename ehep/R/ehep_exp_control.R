@@ -101,6 +101,9 @@ ZeroEpsilons <- function(){
   eve$initialPopulation <- .createZeroPopulationPyramidList()
   eve$taskParameters <- .createZeroTaskParametersObject()
 
+  eve$fertilityRatesMatrix <- NULL
+  eve$mortalityRatesMatrix <- NULL
+
   invisible(NULL)
 }
 
@@ -125,12 +128,23 @@ InitializeEpsilons <- function(){
 #'
 #' @export
 NextEpsilons <- function(){
+  mf <- generateFertilityRatesMatrix()
+  mm <- generateMortalityRatesMatrix()
+
+  epsilonValuesEnvironment$fertilityRatesMatrix <- mf
+  epsilonValuesEnvironment$mortalityRatesMatrix <- mm
+
+  # ORIGINAL CODE VVVVVVV
+
   b <- baseValuesEnvironment
   e <- epsilonValuesEnvironment
   pars <- globalPackageEnvironment$stochasticParams
+  years <- globalPackageEnvironment$years
 
   initValsBase <- b$populationChangeParameters$initValues
   initValsEpsilons <- e$populationChangeParameters$initValues
+  deltasBase <- b$populationChangeParameters$changeRates
+  deltasEpsilons <- e$populationChangeParameters$changeRates
 
   # Fertility rate initial values
   p = pars[pars$Value == "Fertility rates",]$p
@@ -144,6 +158,13 @@ NextEpsilons <- function(){
   baserates <- getMortalityRates(initValsBase)
   e$populationChangeParameters$initValues <-
     setMortalityRates(obj, baserates * runif(length(baserates), p[1], p[2]))
+
+  # Starting incidence rates
+
+  # initIncidenceBase <- b$taskParameters
+  # initIncidenceEpsilons <- e$taskParameters
+
+
 
 
   deltasBase <- b$populationChangeParameters$changeRates
@@ -222,6 +243,11 @@ ConfigureExperimentValues <- function(){
   bVar <- bve$taskParameters
   eVar <- eve$taskParameters
   exp$taskParameters <- add(bVar, eVar)
+
+  # Copy the fertility and mortality rates matrices (computed in NextEpsilons())
+  # to experimentValuesEnvironment. (No adding things together.)
+  exp$fertilityRatesMatrix = eve$fertilityRatesMatrix
+  exp$mortalityRatesMatrix = eve$mortalityRatesMatrix
 
   invisible(NULL)
 }

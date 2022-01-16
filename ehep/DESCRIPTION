@@ -38,6 +38,8 @@ Collate:
     'ehep_setFertilityRates_method.R'
     'ehep_config.R'
     'ehep_exp_control.R'
+    'ehep_frates_matrix.R'
+    'ehep_mrates_matrix.R'
     'ehep_iterator.R'
     'ehep_plot.R'
     'ehep_population_config.R'
