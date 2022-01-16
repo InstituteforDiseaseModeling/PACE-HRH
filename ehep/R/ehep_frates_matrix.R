@@ -15,6 +15,8 @@ generateFertilityRatesMatrix <- function(){
 
   # Grab the initial fertility rates, then apply stochastics
   initRates <- getFertilityRates(initValsBase)
+  rateNames <- names(initRates)
+
   p = pars[pars$Value == "Fertility rates",]$p
   p <- p * c(-1, 1)
   initRates <- initRates * (1 + runif(length(initRates), p[1], p[2]))
@@ -22,7 +24,7 @@ generateFertilityRatesMatrix <- function(){
   # Initialize a rates matrix
   nRows = length(initRates)
   nCols = length(years)
-  m <- matrix(nrow = nRows, ncol = nCols, dimnames = list(as.character(1:nRows), as.character(years)))
+  m <- matrix(nrow = nRows, ncol = nCols, dimnames = list(rateNames, as.character(years)))
   m[,1] <- initRates
 
   # Grab the fertility rates deltas base values and stochastic parameters

@@ -38,12 +38,17 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- eve$populationChangeParameters
 
-  # Compute mortality and fertility rates to build demographics curves
-  mortalityRatesDf <- generateMortalityRates(eve$populationChangeParameters)
-  fertilityRatesDf <- generateFertilityRates(eve$populationChangeParameters)
+  # Mortality and fertility rate matrices are computed in the NextEpsilons()
+  # step, but need to be converted from matrix to data.frame format to pass
+  # to the ComputeDemographicsProjection() function.
+  df <- data.frame(t(eve$mortalityRatesMatrix))
+  mortalityRatesDf <- cbind(Year = rownames(df), df)
+
+  df <- data.frame(t(eve$fertilityRatesMatrix))
+  fertilityRatesDf <- cbind(Year = rownames(df), df)
 
   # Convert the initial population data into a dataframe suitable to pass
-  # to the ComputeDemographicProjection function.
+  # to the ComputeDemographicsProjection function.
   popData <- eve$initialPopulation
 
   initialPopulationDf <- data.frame(

@@ -12,6 +12,8 @@ generateMortalityRatesMatrix <- function(){
 
   # Grab the initial mortality rates, then apply stochastics
   initRates <- getMortalityRates(initValsBase)
+  rateNames <- names(initRates)
+
   p = pars[pars$Value == "Mortality rates",]$p
   p <- p * c(-1, 1)
   initRates <- initRates * (1 + runif(length(initRates), p[1], p[2]))
@@ -19,7 +21,7 @@ generateMortalityRatesMatrix <- function(){
   # Initialize a rates matrix
   nRows = length(initRates)
   nCols = length(years)
-  m <- matrix(nrow = nRows, ncol = nCols, dimnames = list(as.character(1:nRows), as.character(years)))
+  m <- matrix(nrow = nRows, ncol = nCols, dimnames = list(rateNames, as.character(years)))
   m[,1] <- initRates
 
   # Grab the mortality rates deltas base values and stochastic parameters
