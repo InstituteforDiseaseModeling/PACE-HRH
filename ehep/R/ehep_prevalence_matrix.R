@@ -14,23 +14,31 @@ generatePrevalenceRatesMatrix <- function(){
   indexes <- which(g$taskData$applyStochasticity)
 
   tasks <-
-    g$taskData[indexes, c("Indicator", "StartingRateInPop", "AnnualDeltaRatio")]
+    g$taskData[indexes, c("Indicator",
+                          "StartingRateInPop",
+                          "AnnualDeltaRatio",
+                          "ServiceCategory")]
 
   nRows = NROW(tasks)
   nCols = length(years)
 
   # Grab the initial prevalence/incidence values, and apply a stochastic tweak
-  p = pars[pars$Value == "Incidence rates",]$p
+  p = pars[pars$Value == "Incidence rates", ]$p
   initRates <-
     .adjustInitialIncidenceRates(tasks$StartingRateInPop, nRows, p)
 
   # Initialize a rates matrix
-  m <- matrix(nrow = nRows, ncol = nCols, dimnames = list(as.character(indexes), as.character(years)))
-  m[,1] <- initRates
+  m <-
+    matrix(
+      nrow = nRows,
+      ncol = nCols,
+      dimnames = list(as.character(indexes), as.character(years))
+    )
+  m[, 1] <- initRates
 
   # Derive the rest of the matrix
-  p = pars[pars$Value == "Annual delta incidence rates",]$p
-  q = pars[pars$Value == "Annual delta incidence rates",]$q
+  p = pars[pars$Value == "Annual delta incidence rates", ]$p
+  q = pars[pars$Value == "Annual delta incidence rates", ]$q
   lims = p * q * c(-1, 1)
 
   deltaRatios <- tasks$AnnualDeltaRatio
