@@ -4,7 +4,10 @@
 \alias{SaveBaseSettings}
 \title{Save Base Values For A Stochastic Experiment}
 \usage{
-SaveBaseSettings()
+SaveBaseSettings(scenarioName = "")
+}
+\arguments{
+\item{scenarioName}{string}
 }
 \description{
 Copy configuration parameters from the Global Package Environment to the

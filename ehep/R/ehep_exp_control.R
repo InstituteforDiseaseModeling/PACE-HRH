@@ -5,11 +5,15 @@
 #' Copy configuration parameters from the Global Package Environment to the
 #' Base Values Environment.
 #'
+#' @param scenarioName string
+#'
 #' @export
 #'
-SaveBaseSettings <- function(){
+SaveBaseSettings <- function(scenarioName = ""){
   envs <- globalPackageEnvironment
   envd <- baseValuesEnvironment
+
+  envd$scenario <- .getScenarioConfig(scenarioName)
 
   if (exists("populationChangeParameters", where = envs)){
     envd$populationChangeParameters <- envs$populationChangeParameters

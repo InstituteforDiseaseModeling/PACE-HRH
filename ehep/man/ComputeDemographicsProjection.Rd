@@ -10,7 +10,7 @@ ComputeDemographicsProjection(
   mortality_rates,
   years,
   normalize = NULL,
-  growthFlag = FALSE,
+  growthFlag = TRUE,
   debug = FALSE
 )
 }
@@ -25,6 +25,9 @@ ComputeDemographicsProjection(
 \item{years}{Vector of years to model}
 
 \item{normalize}{Whether or not to normalize the initial population (default = NULL)}
+
+\item{growthFlag}{If FALSE, normalize each year to the same population as
+the initial year (default = TRUE)}
 
 \item{debug}{Flag for debugging output}
 }

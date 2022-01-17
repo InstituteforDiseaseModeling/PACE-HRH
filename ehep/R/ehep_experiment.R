@@ -18,7 +18,7 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # STEP 0 - INITIALIZE
 
   # Load scenario details
-  scenario <- .getScenarioConfig(scenarioName)
+  scenario <- baseValuesEnvironment$scenario
 
   if (is.null(scenario)){
     TraceMessage(paste("Unknown scenario ", scenarioName, sep = ""))

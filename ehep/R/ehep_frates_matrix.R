@@ -27,6 +27,14 @@ generateFertilityRatesMatrix <- function(){
   m <- matrix(nrow = nRows, ncol = nCols, dimnames = list(rateNames, as.character(years)))
   m[,1] <- initRates
 
+  # If fertility rate changes are turned off, propagate the initial rate to all years
+  if (b$scenario$o_Fertility_decr == FALSE){
+    for (j in 2:nCols){
+      m[,j] <- initRates
+    }
+    return(m)
+  }
+
   # Grab the fertility rates deltas base values and stochastic parameters
   deltaRatios <- getFertilityRates(deltasBase)
   p = pars[pars$Value == "Annual delta fertility rates",]$p

@@ -129,6 +129,8 @@ computeDeaths <- function(population, rates){
 #' @param mortality_rates Mortality rates
 #' @param years Vector of years to model
 #' @param normalize Whether or not to normalize the initial population (default = NULL)
+#' @param growthFlag If FALSE, normalize each year to the same population as
+#' the initial year (default = TRUE)
 #' @param debug Flag for debugging output
 #'
 #' @return Demographics time-series
@@ -140,12 +142,15 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
                                           mortality_rates,
                                           years,
                                           normalize = NULL,
-                                          growthFlag = FALSE,
+                                          growthFlag = TRUE,
                                           debug = FALSE) {
-  if (.normalizationOn(normalize)){
+  if (.normalizationOn(normalize)) {
     initial_population_pyramid <-
       .normalizePopulation(initial_population_pyramid, normalize)
   }
+
+  initialPopulationTotal <-
+    sum(initial_population_pyramid$Female) + sum(initial_population_pyramid$Male)
 
   previous_pyramid = NULL
 
@@ -210,6 +215,17 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
 
   names(demographics_projection) <- years
 
+  if (growthFlag == FALSE){
+    for (i in seq_along(demographics_projection)){
+      pdata <- demographics_projection[[i]]
+      ptotal <- sum(pdata$Male) + sum(pdata$Female)
+      normfactor <- initialPopulationTotal / ptotal
+
+      demographics_projection[[i]]$Female <- round(demographics_projection[[i]]$Female * normfactor, 0)
+      demographics_projection[[i]]$Male <- round(demographics_projection[[i]]$Male * normfactor, 0)
+    }
+  }
+
   return(demographics_projection)
 }
 
@@ -220,7 +236,7 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
   if (!is.numeric(normalize)) {
     return(FALSE)
   }
-  if (normalize < 10000) {
+  if (normalize < 0) {
     return(FALSE)
   }
   return(TRUE)
