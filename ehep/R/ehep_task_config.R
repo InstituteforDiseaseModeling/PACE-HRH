@@ -38,6 +38,19 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
   computeMethod[taskData$HoursPerWeek != 0] <- "TimeAddedOn"
   taskData$computeMethod <- computeMethod
 
+  # Apply some rules to determine which tasks are affected by stochastically
+  # changing prevalence.
+  #
+  # Stochastically changing prevalence only applies to TimePerTask computations.
+  #
+  # If StartingRateInPop == 1, do NOT compute prevalence. Stochasticity for
+  # these tasks is driven by the population dynamics.
+
+  applyStochasticity <- replicate(nrow(taskData), TRUE)
+  applyStochasticity[taskData$StartingRateInPop == 1] <- FALSE
+  applyStochasticity[taskData$computeMethod != "TimePerTask"] <- FALSE
+  taskData$applyStochasticity <- applyStochasticity
+
   return(taskData)
 }
 
@@ -59,7 +72,10 @@ InitializeHealthcareTasks <- function(...){
 
   # TODO: Insert error handling
 
-  globalPackageEnvironment$taskData <- taskData
-  globalPackageEnvironment$taskDataDims <- dim(globalPackageEnvironment$taskData)
+  g <- globalPackageEnvironment
+
+  g$taskData <- taskData
+  g$taskDataDims <- dim(g$taskData)
+  g$stochasticTasks <- which(g$taskData$applyStochasticity)
   invisible(NULL)
 }

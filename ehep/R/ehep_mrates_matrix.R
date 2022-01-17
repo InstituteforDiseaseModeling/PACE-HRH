@@ -41,7 +41,7 @@ generateMortalityRatesMatrix <- function(){
       a = lims[1],
       b = lims[2]
     )
-    deltas <- deltaRatios + e
+    deltas <- deltaRatios * (1 + e)
     m[ ,j] <- m[ ,j-1] * deltas
   }
 

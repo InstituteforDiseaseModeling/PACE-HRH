@@ -25,6 +25,11 @@ TaskTime <- function(taskID, year, debug = FALSE){
     .dispTaskInfo(taskDesc, taskVals)
   }
 
+  # Determine whether this task is covered in the prevalence rates table
+  prevalenceRatesTableRow <- which(globalPackageEnvironment$stochasticTasks == taskID)
+  prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
+
+  # Look up the population pyramid for this year
   population <- experimentValuesEnvironment$demographics[[as.character(year)]]
 
   if (is.null(population)){
@@ -42,19 +47,14 @@ TaskTime <- function(taskID, year, debug = FALSE){
   }
 
   # Correct for prevalence, frequency, test positivity, etc
-  n <- n * taskVals["StartingRateInPop"] * taskVals["RateMultiplier"]
+  m <- experimentValuesEnvironment$prevalenceRatesMatrix
+  prevalenceMultiplier <-
+    ifelse(prevalenceFlag, m[prevalenceRatesTableRow, as.character(year)], 1)
+
+  n <- n * prevalenceMultiplier * taskVals["RateMultiplier"]
 
   if (debug){
     cat(paste("Adj for prevalence -> ", n, "\n", sep = ""))
-  }
-
-  # Correct for annual decrease in prevalence
-  if (taskVals["AnnualDeltaRatio"] != 1){
-    n <- n * (taskVals["AnnualDeltaRatio"]^(year - globalPackageEnvironment$startYear))
-  }
-
-  if (debug){
-    cat(paste("Adj for prevalence decrease -> ", n, "\n", sep = ""))
   }
 
   # Multiply by number of contacts and time per contact

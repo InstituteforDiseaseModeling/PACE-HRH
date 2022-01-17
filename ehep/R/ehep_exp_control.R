@@ -107,7 +107,6 @@ ZeroEpsilons <- function(){
   invisible(NULL)
 }
 
-
 #' Initilialize Stochastic Variation System
 #'
 #' @return NULL (invisible)
@@ -121,7 +120,6 @@ InitializeEpsilons <- function(){
   invisible(NULL)
 }
 
-
 #' Generate A New Set Of Stochastic Variations
 #'
 #' @return NULL (invisible)
@@ -130,13 +128,14 @@ InitializeEpsilons <- function(){
 NextEpsilons <- function(){
   mf <- generateFertilityRatesMatrix()
   mm <- generateMortalityRatesMatrix()
+  mp <- generatePrevalenceRatesMatrix()
 
   epsilonValuesEnvironment$fertilityRatesMatrix <- mf
   epsilonValuesEnvironment$mortalityRatesMatrix <- mm
+  epsilonValuesEnvironment$prevalenceRatesMatrix <- mp
 
   invisible(NULL)
 }
-
 
 #' Combine Base and Epsilon Values
 #'
@@ -174,10 +173,11 @@ ConfigureExperimentValues <- function(){
   eVar <- eve$taskParameters
   exp$taskParameters <- add(bVar, eVar)
 
-  # Copy the fertility and mortality rates matrices (computed in NextEpsilons())
+  # Copy the rates matrices (computed in NextEpsilons())
   # to experimentValuesEnvironment. (No adding things together.)
   exp$fertilityRatesMatrix = eve$fertilityRatesMatrix
   exp$mortalityRatesMatrix = eve$mortalityRatesMatrix
+  exp$prevalenceRatesMatrix = eve$prevalenceRatesMatrix
 
   invisible(NULL)
 }
