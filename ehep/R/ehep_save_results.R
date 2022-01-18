@@ -88,7 +88,12 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
   trialIds <- names(results)
 
   l <- lapply(seq_along(trialIds), function(index){
-    return(func(results[[index]], scenario, index, run))
+    r <- results[[index]]
+    if (sum(names(r) == "SeasonalityResults") > 0){
+      return(func2(r, scenario, index, run))
+    } else {
+      return(func(r, scenario, index, run))
+    }
   })
 
   out <- data.table::rbindlist(l)
@@ -97,6 +102,39 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
 
   invisible(NULL)
 }
+
+# func2 ... SEASONALITY VERSION
+func2 <- function(results, scenario, trial, run){
+  s <- results$SeasonalityResults
+  taskIds <- names(s)
+
+  l <- lapply(1:252, function(t){
+    year <- ((t - 1) %/% 12) + 2020
+    month <- ((t - 1) %% 12) + 1
+
+    times <- sapply(taskIds, function(taskId){
+      time <- s[[taskId]]$Time[t]
+    })
+
+    Ns <- sapply(taskIds, function(taskId){
+      N <- s[[taskId]]$N[t]
+    })
+
+    return(data.frame("Task_ID" = taskIds,
+                      "Scenario_ID" = scenario,
+                      "Trial_num" = trial,
+                      "Run_num" = run,
+                      "Year" = year,
+                      "Month" = month,
+                      "Num_services" = Ns,
+                      "Service_time" = times,
+                      "Health_benefit" = NA))
+  })
+
+  df <- data.table::rbindlist(l)
+  return(df)
+}
+
 
 func <- function(results, scenario, trial, run){
   dfCsv <- data.frame()

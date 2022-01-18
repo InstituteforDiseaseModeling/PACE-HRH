@@ -4,6 +4,7 @@ ehep::InitializePopulation()
 ehep::InitializeHealthcareTasks()
 ehep::InitializeScenarios()
 ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
 
 scenario <- "ScenarioA"
 results <-

@@ -25,6 +25,12 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
     return(NULL)
   }
 
+  # TODO: stop passing around the redundant scenarioName variable since the
+  # full scenario config record is saved in the Base environment by
+  # SaveBaseSettings(). For now this assertion checks that everything is
+  # still aligned.
+  assertthat::assert_that(scenario$UniqueID == scenarioName)
+
   # Create a results list
   results <- list()
 
@@ -136,8 +142,12 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
 
   T_np <- R_np * N
 
+
+  # HACK ALERT! Calling this field "Administration" lines it up with the
+  # only task currently generating these times ... a fact relied on
+  # in later code!
   eve$nonProductiveTimes <-
-    data.frame("Years" = gpe$years, "Overhead" = T_np)
+    data.frame("Years" = gpe$years, "Administration" = T_np)
 
   if (debug){
     print("T(c)")
@@ -163,6 +173,11 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   results$NonClinicalAllocation <- eve$nonClinicalAllocationTimes
   results$NonProductive <- eve$nonProductiveTimes
   results$FTEs <- data.frame("Years" = gpe$years, "FTEs" = N)
+
+  if (scenario$o_Seasonality){
+    seasonalityResults <- runSeasonalityExperiment(results)
+    results$SeasonalityResults <- seasonalityResults
+  }
 
   return(results)
 }

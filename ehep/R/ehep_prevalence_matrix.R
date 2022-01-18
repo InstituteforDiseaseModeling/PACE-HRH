@@ -17,7 +17,7 @@ generatePrevalenceRatesMatrix <- function(){
     g$taskData[indexes, c("Indicator",
                           "StartingRateInPop",
                           "AnnualDeltaRatio",
-                          "ServiceCategory")]
+                          "ServiceCat")]
 
   nRows = NROW(tasks)
   nCols = length(years)
