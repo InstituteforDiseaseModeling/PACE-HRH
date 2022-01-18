@@ -132,6 +132,8 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 .getSeasonalityCurve <- function(curveType, popType) {
   curve = NULL
 
+  gpe <- globalPackageEnvironment
+
   if (curveType == "Births") {
     if (popType == "National") {
       curve <- gpe$seasonalityCurves$`Births National`
