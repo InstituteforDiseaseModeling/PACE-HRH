@@ -9,6 +9,8 @@ packages = c(
   "magrittr",
   "ggplot2",
   "scales",
+  "methods",
+  "truncnorm",
   #------------
   "readr",
   "testthat",
