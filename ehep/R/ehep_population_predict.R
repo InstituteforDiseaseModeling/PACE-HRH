@@ -1,4 +1,4 @@
-ages <- globalPackageEnvironment$ages
+ages <- GPE$ages
 
 # Expected fields: {"Infants", "1-4y", "5-9y", "10-14y", "15-19y", "20-24y", "AdultFemale", "AdultMale"}
 
@@ -191,8 +191,8 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
       fAverage <- (currentPyramid$Female + f) / 2
       births <- computeBirths(fAverage, current_year_fertility_rates$Female)
 
-      births.m <- births * globalPackageEnvironment$ratio_males_at_birth
-      births.f <- births * globalPackageEnvironment$ratio_females_at_birth
+      births.m <- births * GPE$ratio_males_at_birth
+      births.f <- births * GPE$ratio_females_at_birth
 
       infantDeaths.m <- births.m * current_year_mortality_rates$Male[1] / 1000
       infantDeaths.f <- births.f * current_year_mortality_rates$Female[1] / 1000
@@ -252,28 +252,3 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
 
   return(popDf)
 }
-
-
-
-
-
-# ComputeDemographicsProjection <- function(...){
-#   return(.computeDemographicsProjection(
-#     globalPackageEnvironment$initialPopulation,
-#     globalPackageEnvironment$fertilityRates,
-#     globalPackageEnvironment$mortalityRates,
-#     globalPackageEnvironment$years,
-#     ...))
-# }
-
-# deaths <- computeDeaths(previous_pyramid, previous_year_mortality_rates)
-#
-# f <- c(0, previous_pyramid$Female - deaths$Female)[1:length(ages)]
-# m <- c(0, previous_pyramid$Male - deaths$Male)[1:length(ages)]
-#
-# births <- computeBirths(f, current_year_fertility_rates$Female)
-#
-# f[1] <- round(births * globalPackageEnvironment$ratio_females_at_birth, 0)
-# m[1] <- round(births * globalPackageEnvironment$ratio_males_at_birth, 0)
-
-

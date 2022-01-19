@@ -17,16 +17,14 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   # that isn't set up for seasonality.
   assertthat::assert_that(scenario$o_Seasonality == TRUE)
 
-  gpe <- globalPackageEnvironment
-
   # The seasonality "curve" used when we don't know the seasonality
   dummyCurve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12
 
   # Look for seasonality-affected tasks in the task list for this scenario
-  taskIds <- which(gpe$taskData$Geography == scenario$PopType)
-  taskNames <- gpe$taskData$Indicator[taskIds]
-  seasonalityTaskNames <- gpe$seasonalityOffsets$Task
-  seasonalityTaskCurves <- gpe$seasonalityOffsets$Curve
+  taskIds <- which(GPE$taskData$Geography == scenario$PopType)
+  taskNames <- GPE$taskData$Indicator[taskIds]
+  seasonalityTaskNames <- GPE$seasonalityOffsets$Task
+  seasonalityTaskCurves <- GPE$seasonalityOffsets$Curve
 
   l <- lapply(seq_along(taskIds), function(i){
     taskName <- taskNames[i]
@@ -48,12 +46,12 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 
       # Build a scatter matrix
       nRows <- nCols <- length(monthlyServices)
-      assertthat::are_equal(nRows, 12 * length(gpe$years))
+      assertthat::are_equal(nRows, 12 * length(GPE$years))
 
       A <- matrix(0, nrow = nRows, ncol = nCols)
 
       offsets <-
-        gpe$seasonalityOffsets[seasonalityTaskIndex,
+        GPE$seasonalityOffsets[seasonalityTaskIndex,
                                c("Offset1", "Offset2", "Offset3",
                                  "Offset4", "Offset5", "Offset6")]
       offsets <- offsets[!is.na(offsets)]
@@ -132,30 +130,28 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 .getSeasonalityCurve <- function(curveType, popType) {
   curve = NULL
 
-  gpe <- globalPackageEnvironment
-
   if (curveType == "Births") {
     if (popType == "National") {
-      curve <- gpe$seasonalityCurves$`Births National`
+      curve <- GPE$seasonalityCurves$`Births National`
     } else if (popType == "Rural") {
-      curve <- gpe$seasonalityCurves$`Births Rural`
+      curve <- GPE$seasonalityCurves$`Births Rural`
     } else if (popType == "Urban") {
-      curve <- gpe$seasonalityCurves$`Births Urban`
+      curve <- GPE$seasonalityCurves$`Births Urban`
     }
   } else if (curveType == "Malaria") {
     if (popType == "Urban") {
-      curve <- gpe$seasonalityCurves$`Malaria Urban`
+      curve <- GPE$seasonalityCurves$`Malaria Urban`
     } else if (popType == "Rural") {
-      curve <- gpe$seasonalityCurves$`Malaria Rural`
+      curve <- GPE$seasonalityCurves$`Malaria Rural`
     } else if (popType == "National") {
       # HACK ALERT! There's no Malaria National curve, but Urban and Rural
       # curves are identical (as of 1/17/2022) so this will do.
-      curve <- gpe$seasonalityCurves$`Malaria Rural`
+      curve <- GPE$seasonalityCurves$`Malaria Rural`
     }
   } else if (curveType == "Malnutrition") {
-    curve <- gpe$seasonalityCurves$`Malnutrition`
+    curve <- GPE$seasonalityCurves$`Malnutrition`
   } else if (curveType == "TB") {
-    curve <- gpe$seasonalityCurves$`TB`
+    curve <- GPE$seasonalityCurves$`TB`
   }
 
   if (is.null(curve)) {

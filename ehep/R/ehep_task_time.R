@@ -17,7 +17,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
 
   taskVals <- tp@values[taskID,]
 
-  td <- globalPackageEnvironment$taskData
+  td <- GPE$taskData
 
   taskDesc <- td[taskID,]
 
@@ -26,7 +26,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
   }
 
   # Determine whether this task is covered in the prevalence rates table
-  prevalenceRatesTableRow <- which(globalPackageEnvironment$stochasticTasks == taskID)
+  prevalenceRatesTableRow <- which(GPE$stochasticTasks == taskID)
   prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
 
   # Look up the population pyramid for this year
@@ -117,7 +117,7 @@ TaskTimesGroup <- function(taskIDs, years){
     matrix(
       nrow = m,
       ncol = n,
-      dimnames = list(years, globalPackageEnvironment$taskData$Indicator[taskIDs])
+      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
     )
 
   mn <- mt
@@ -190,7 +190,7 @@ AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
   tp <- experimentValuesEnvironment$taskParameters
   taskVals <- tp@values[taskID, ]
 
-  td <- globalPackageEnvironment$taskData
+  td <- GPE$taskData
   taskDesc <- td[taskID, ]
 
   if (debug) {
@@ -216,7 +216,7 @@ AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
     return(0)
   })
 
-  taskNames <- globalPackageEnvironment$taskData$Indicator[taskIDs]
+  taskNames <- GPE$taskData$Indicator[taskIDs]
   names(df) <- c("Years", taskNames)
 
   return(df)

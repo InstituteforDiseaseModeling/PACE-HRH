@@ -16,6 +16,6 @@ PopulationPyramid <- setClass(
     values = "numeric"
   ),
 
-  prototype = list(values = replicate(length(globalPackageEnvironment$ages), 0.0))
+  prototype = list(values = replicate(length(GPE$ages), 0.0))
 )
 

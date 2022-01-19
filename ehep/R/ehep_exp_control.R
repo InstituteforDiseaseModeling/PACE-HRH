@@ -10,28 +10,28 @@
 #' @export
 #'
 SaveBaseSettings <- function(scenarioName = ""){
-  envs <- globalPackageEnvironment
-  envd <- baseValuesEnvironment
+  # GPE = globalPackageEnvironment = source environment
+  # bve = baseValuesEnvironment = destination environment
 
-  envd$scenario <- .getScenarioConfig(scenarioName)
+  bve$scenario <- .getScenarioConfig(scenarioName)
 
-  if (exists("populationChangeParameters", where = envs)){
-    envd$populationChangeParameters <- envs$populationChangeParameters
+  if (exists("populationChangeParameters", where = GPE)){
+    bve$populationChangeParameters <- GPE$populationChangeParameters
   } else {
-    envd$populationChangeParameters <- NULL
+    bve$populationChangeParameters <- NULL
   }
 
-  if (exists("initialPopulation", where = envs)){
-    envd$initialPopulation <- envs$initialPopulation
+  if (exists("initialPopulation", where = GPE)){
+    bve$initialPopulation <- GPE$initialPopulation
   } else {
-    envd$initialPopulation <- NULL
+    bve$initialPopulation <- NULL
   }
 
-  if (exists("taskData", where = envs)){
-    m <- .convertTaskDfToMatrix(envs$taskData)
-    envd$taskParameters <- TaskParameters(values = m)
+  if (exists("taskData", where = GPE)){
+    m <- .convertTaskDfToMatrix(GPE$taskData)
+    bve$taskParameters <- TaskParameters(values = m)
   } else {
-    envd$taskParameters <- NULL
+    bve$taskParameters <- NULL
   }
 
   invisible(NULL)
@@ -61,7 +61,7 @@ SaveBaseSettings <- function(scenarioName = ""){
 
 .createZeroTaskParametersObject <- function(){
   m <- matrix(0.0,
-              nrow = globalPackageEnvironment$taskDataDims[1],
+              nrow = GPE$taskDataDims[1],
               ncol = length(.taskDataCols))
 
   # TODO: If necessary, add row/column labels.
@@ -79,7 +79,7 @@ SaveBaseSettings <- function(scenarioName = ""){
 .createZeroPopulationPyramidList <- function(){
   return(
     list(
-      age = globalPackageEnvironment$ages,
+      age = GPE$ages,
       female = PopulationPyramid(),
       male = PopulationPyramid(),
       total = PopulationPyramid()
@@ -107,6 +107,7 @@ ZeroEpsilons <- function(){
 
   eve$fertilityRatesMatrix <- NULL
   eve$mortalityRatesMatrix <- NULL
+  eve$prevalenceRatesMatrix <- NULL
 
   invisible(NULL)
 }
@@ -152,10 +153,6 @@ NextEpsilons <- function(){
 ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
-  bve <- baseValuesEnvironment
-  eve <- epsilonValuesEnvironment
-  exp <- experimentValuesEnvironment
-
   # Combine populationChangeParameters values and copy to experimentValuesEnvironment
   bVar <- bve$populationChangeParameters
   eVar <- eve$populationChangeParameters
@@ -166,7 +163,7 @@ ConfigureExperimentValues <- function(){
   # Combine initialPopulation values and copy to experimentValuesEnvironment
   bVar <- bve$initialPopulation
   eVar <- eve$initialPopulation
-  pp = list(age = globalPackageEnvironment$ages,
+  pp = list(age = GPE$ages,
             female = add(bVar$female, eVar$female),
             male = add(bVar$male, eVar$female),
             total = add(bVar$total, eVar$total))

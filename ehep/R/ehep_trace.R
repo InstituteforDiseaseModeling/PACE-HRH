@@ -11,13 +11,13 @@
 #' print(oldState)
 #'
 Trace <- function(state = NULL){
-  originalState <- globalPackageEnvironment$traceState
+  originalState <- GPE$traceState
 
   # IDEA: A different way to drive default behavior when Trace() is called
   # without parameters would be to use the hasArg() function.
 
   if (!is.null(state) & (typeof(state) == 'logical')){
-    globalPackageEnvironment$traceState <- state
+    GPE$traceState <- state
   }
 
   invisible(originalState)
@@ -29,7 +29,7 @@ Trace <- function(state = NULL){
 #'
 #' @export
 TraceMessage <- function(msgString){
-  if (globalPackageEnvironment$traceState == TRUE){
+  if (GPE$traceState == TRUE){
     message(msgString)
   }
 }

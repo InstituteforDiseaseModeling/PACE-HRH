@@ -11,11 +11,11 @@
 loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
   seasonalityCurvesData <- NULL
 
-  if (file.exists(globalPackageEnvironment$inputExcelFile)){
+  if (file.exists(GPE$inputExcelFile)){
     out <- tryCatch(
       {
         seasonalityCurvesData <-
-          readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetNameCurves)
+          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetNameCurves)
       },
       warning = function(war)
       {
@@ -32,7 +32,7 @@ loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
     )
   } else {
     ehep::TraceMessage(paste("Could not find model input file ",
-                             globalPackageEnvironment$inputExcelFile,
+                             GPE$inputExcelFile,
                              sep = ""))
   }
 
@@ -52,11 +52,11 @@ loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
 loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
   seasonalityOffsetsData <- NULL
 
-  if (file.exists(globalPackageEnvironment$inputExcelFile)){
+  if (file.exists(GPE$inputExcelFile)){
     out <- tryCatch(
       {
         seasonalityOffsetsData <-
-          readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetNameOffsets)
+          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetNameOffsets)
       },
       warning = function(war)
       {
@@ -73,7 +73,7 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
     )
   } else {
     ehep::TraceMessage(paste("Could not find model input file ",
-                             globalPackageEnvironment$inputExcelFile,
+                             GPE$inputExcelFile,
                              sep = ""))
   }
 
@@ -99,9 +99,7 @@ InitializeSeasonality <- function(...){
 
   # TODO: Insert error handling
 
-  g <- globalPackageEnvironment
-
-  g$seasonalityCurves <- seasonalityCurvesData
-  g$seasonalityOffsets <- seasonalityOffsetsData
+  GPE$seasonalityCurves <- seasonalityCurvesData
+  GPE$seasonalityOffsets <- seasonalityOffsetsData
   invisible(NULL)
 }

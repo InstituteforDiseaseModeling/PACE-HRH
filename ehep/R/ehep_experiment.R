@@ -37,25 +37,21 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # Combine base and epsilon environments to produce experiment parameters
   ConfigureExperimentValues()
 
-  # Environment locations
-  eve <- experimentValuesEnvironment
-  gpe <- globalPackageEnvironment
-
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
-  pcp <- eve$populationChangeParameters
+  pcp <- exp$populationChangeParameters
 
   # Mortality and fertility rate matrices are computed in the NextEpsilons()
   # step, but need to be converted from matrix to data.frame format to pass
   # to the ComputeDemographicsProjection() function.
-  df <- data.frame(t(eve$mortalityRatesMatrix))
+  df <- data.frame(t(exp$mortalityRatesMatrix))
   mortalityRatesDf <- cbind(Year = rownames(df), df)
 
-  df <- data.frame(t(eve$fertilityRatesMatrix))
+  df <- data.frame(t(exp$fertilityRatesMatrix))
   fertilityRatesDf <- cbind(Year = rownames(df), df)
 
   # Convert the initial population data into a dataframe suitable to pass
   # to the ComputeDemographicsProjection function.
-  popData <- eve$initialPopulation
+  popData <- exp$initialPopulation
 
   initialPopulationDf <- data.frame(
     Age = popData$age,
@@ -64,53 +60,53 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
     Total = popData$total@values
   )
 
-  eve$demographics <-
+  exp$demographics <-
     ComputeDemographicsProjection(
       initialPopulationDf,
       fertilityRatesDf,
       mortalityRatesDf,
-      globalPackageEnvironment$years,
+      GPE$years,
       normalize = scenario$BaselinePop,
       growthFlag = scenario$o_PopGrowth,
       debug = TRUE
     )
 
   # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
-  taskIds <- which(gpe$taskData$computeMethod == "TimePerTask" &
-                             gpe$taskData$Geography == scenario$PopType &
-                     gpe$taskData$ClinicalOrNon == "Clinical")
+  taskIds <- which(GPE$taskData$computeMethod == "TimePerTask" &
+                             GPE$taskData$Geography == scenario$PopType &
+                     GPE$taskData$ClinicalOrNon == "Clinical")
 
-  eve$clinicalTaskTimes <- TaskTimesGroup(taskIds, gpe$years)
+  exp$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
 
   # STEP 2A - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
-  taskIds <- which(gpe$taskData$computeMethod == "TimePerTask" &
-                     gpe$taskData$Geography == scenario$PopType &
-                     gpe$taskData$ClinicalOrNon != "Clinical")
+  taskIds <- which(GPE$taskData$computeMethod == "TimePerTask" &
+                     GPE$taskData$Geography == scenario$PopType &
+                     GPE$taskData$ClinicalOrNon != "Clinical")
 
-  eve$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, gpe$years)
+  exp$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
 
   # STEP 3 - TOTAL THE TASK TIMES
-  aggAnnualClinicalTaskTimes <- apply(eve$clinicalTaskTimes$Time, 1, sum)
-  aggAnnualNonClinicalTaskTimes <- apply(eve$nonClinicalTaskTimes$Time, 1, sum)
+  aggAnnualClinicalTaskTimes <- apply(exp$clinicalTaskTimes$Time, 1, sum)
+  aggAnnualNonClinicalTaskTimes <- apply(exp$nonClinicalTaskTimes$Time, 1, sum)
 
   # STEP 4 - CORRECT FOR RATIO-BASED TIME ALLOCATION
   taskIds <- which(
-    gpe$taskData$computeMethod == "TimeRatio" &
-      gpe$taskData$Geography == scenario$PopType
+    GPE$taskData$computeMethod == "TimeRatio" &
+      GPE$taskData$Geography == scenario$PopType
   )
 
-  eve$nonClinicalAllocationTimes <-
-    AllocationTaskTimesGroup(taskIds, gpe$years, aggAnnualClinicalTaskTimes)
+  exp$nonClinicalAllocationTimes <-
+    AllocationTaskTimesGroup(taskIds, GPE$years, aggAnnualClinicalTaskTimes)
 
-  m <- as.matrix(eve$nonClinicalAllocationTimes)
+  m <- as.matrix(exp$nonClinicalAllocationTimes)
   aggAnnualNonClinicalAllocationTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
 
   # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
-  taskIds <- which(gpe$taskData$computeMethod == "TimeAddedOn" &
-                     gpe$taskData$Geography == scenario$PopType)
+  taskIds <- which(GPE$taskData$computeMethod == "TimeAddedOn" &
+                     GPE$taskData$Geography == scenario$PopType)
 
   if (length(taskIds) > 0){
-    weeklyNonProductiveTime <- sum(gpe$taskData$HoursPerWeek[taskIds]) * 60
+    weeklyNonProductiveTime <- sum(GPE$taskData$HoursPerWeek[taskIds]) * 60
   } else {
     weeklyNonProductiveTime <- 0
   }
@@ -146,8 +142,8 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # HACK ALERT! Calling this field "Administration" lines it up with the
   # only task currently generating these times ... a fact relied on
   # in later code!
-  eve$nonProductiveTimes <-
-    data.frame("Years" = gpe$years, "Administration" = T_np)
+  exp$nonProductiveTimes <-
+    data.frame("Years" = GPE$years, "Administration" = T_np)
 
   if (debug){
     print("T(c)")
@@ -168,11 +164,11 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
     print(N)
   }
 
-  results$Clinical <- eve$clinicalTaskTimes
-  results$NonClinical <- eve$nonClinicalTaskTimes
-  results$NonClinicalAllocation <- eve$nonClinicalAllocationTimes
-  results$NonProductive <- eve$nonProductiveTimes
-  results$FTEs <- data.frame("Years" = gpe$years, "FTEs" = N)
+  results$Clinical <- exp$clinicalTaskTimes
+  results$NonClinical <- exp$nonClinicalTaskTimes
+  results$NonClinicalAllocation <- exp$nonClinicalAllocationTimes
+  results$NonProductive <- exp$nonProductiveTimes
+  results$FTEs <- data.frame("Years" = GPE$years, "FTEs" = N)
 
   if (scenario$o_Seasonality){
     seasonalityResults <- runSeasonalityExperiment(results)
@@ -183,8 +179,7 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
 }
 
 .getScenarioConfig <- function(scenarioName){
-  gpe <- globalPackageEnvironment
-  n <- which(gpe$scenarios$UniqueID == scenarioName)
+  n <- which(GPE$scenarios$UniqueID == scenarioName)
 
   if (length(n) == 0) {
     TraceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
@@ -195,5 +190,5 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
     TraceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
   }
 
-  return(gpe$scenarios[n[1], ])
+  return(GPE$scenarios[n[1], ])
 }

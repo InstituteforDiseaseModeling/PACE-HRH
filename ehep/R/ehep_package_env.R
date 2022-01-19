@@ -5,32 +5,37 @@
 #
 
 globalPackageEnvironment <- new.env(parent = emptyenv())
-
-globalPackageEnvironment$globalConfigLoaded <- FALSE
-
-globalPackageEnvironment$traceState <- FALSE
-globalPackageEnvironment$inputExcelFile <- "./config/R Model Inputs.xlsx"
-
-globalPackageEnvironment$startYear <- 2020
-globalPackageEnvironment$endYear <- 2040
-globalPackageEnvironment$years <- seq(from = globalPackageEnvironment$startYear,
-                                      to = globalPackageEnvironment$endYear,
-                                      by = 1)
-
-globalPackageEnvironment$age_min <- 0
-globalPackageEnvironment$age_max <- 100
-globalPackageEnvironment$ages <- seq(from = globalPackageEnvironment$age_min,
-                                     to = globalPackageEnvironment$age_max,
-                                     by = 1)
-
-globalPackageEnvironment$ratio_females_at_birth <- 0.5
-globalPackageEnvironment$ratio_males_at_birth <- 1.0 - globalPackageEnvironment$ratio_females_at_birth
-
-globalPackageEnvironment$initialPopulation <- NULL
-globalPackageEnvironment$populationChangeParameters <- NULL
-globalPackageEnvironment$taskData <- NULL
-globalPackageEnvironment$scenarios <- NULL
-
 baseValuesEnvironment <- new.env(parent = globalPackageEnvironment)
 epsilonValuesEnvironment <- new.env(parent = globalPackageEnvironment)
 experimentValuesEnvironment <- new.env(parent = globalPackageEnvironment)
+
+# Aliases for environments
+GPE <- globalPackageEnvironment
+bve <- baseValuesEnvironment
+eve <- epsilonValuesEnvironment
+exp <- experimentValuesEnvironment
+
+GPE$globalConfigLoaded <- FALSE
+
+GPE$traceState <- FALSE
+GPE$inputExcelFile <- "./config/R Model Inputs.xlsx"
+
+GPE$startYear <- 2020
+GPE$endYear <- 2040
+GPE$years <- seq(from = GPE$startYear,
+                 to = GPE$endYear,
+                 by = 1)
+
+GPE$age_min <- 0
+GPE$age_max <- 100
+GPE$ages <- seq(from = GPE$age_min,
+                to = GPE$age_max,
+                by = 1)
+
+GPE$ratio_females_at_birth <- 0.5
+GPE$ratio_males_at_birth <- 1.0 - GPE$ratio_females_at_birth
+
+GPE$initialPopulation <- NULL
+GPE$populationChangeParameters <- NULL
+GPE$taskData <- NULL
+GPE$scenarios <- NULL

@@ -9,7 +9,7 @@
 #' @return Data frame of healthcare task parameters
 #'
 loadTaskParameters <- function(sheetName = "TaskValues"){
-  taskData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
+  taskData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   # Convert some of the NA values to sensible defaults
   assertthat::has_name(taskData, "StartingRateInPop")
@@ -72,10 +72,8 @@ InitializeHealthcareTasks <- function(...){
 
   # TODO: Insert error handling
 
-  g <- globalPackageEnvironment
-
-  g$taskData <- taskData
-  g$taskDataDims <- dim(g$taskData)
-  g$stochasticTasks <- which(g$taskData$applyStochasticity)
+  GPE$taskData <- taskData
+  GPE$taskDataDims <- dim(GPE$taskData)
+  GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
   invisible(NULL)
 }

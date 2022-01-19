@@ -9,7 +9,7 @@
 #' @return Data frame of experiment scenario parameters
 #'
 loadScenarios <- function(sheetName = "Scenarios"){
-  scenarios <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
+  scenarios <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
   return(scenarios)
 }
 
@@ -31,6 +31,6 @@ InitializeScenarios <- function(...){
 
   # TODO: Insert error handling
 
-  globalPackageEnvironment$scenarios <- scenarios
+  GPE$scenarios <- scenarios
   invisible(NULL)
 }

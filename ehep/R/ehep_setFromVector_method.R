@@ -43,7 +43,7 @@ setMethod(
   signature = c("PopulationPyramid", "numeric"),
   definition = function(object, values)
   {
-    assertthat::assert_that(length(values) == length(globalPackageEnvironment$ages))
+    assertthat::assert_that(length(values) == length(GPE$ages))
     assertthat::assert_that(is.numeric(values) == TRUE)
 
     # Clear any names on the vector

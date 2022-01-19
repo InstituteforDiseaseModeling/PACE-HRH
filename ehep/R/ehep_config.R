@@ -20,7 +20,7 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
         }
 
         if (!is.null(configInfo$inputExcelFile)){
-          globalPackageEnvironment$inputExcelFile <-
+          GPE$inputExcelFile <-
             paste(configDirPath,
                   configInfo$inputExcelFile,
                   sep = "/")
@@ -50,9 +50,9 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 }
 
 .checkAndLoadGlobalConfig <- function(){
-  if (!globalPackageEnvironment$globalConfigLoaded){
+  if (!GPE$globalConfigLoaded){
     loadGlobalConfig()
-    globalPackageEnvironment$globalConfigLoaded <- TRUE
+    GPE$globalConfigLoaded <- TRUE
   }
 }
 
@@ -77,11 +77,11 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
     return
   }
 
-  globalPackageEnvironment$startYear <- start
-  globalPackageEnvironment$endYear <- end
-  globalPackageEnvironment$years <-
-    seq(from = globalPackageEnvironment$startYear,
-        to = globalPackageEnvironment$endYear,
+  GPE$startYear <- start
+  GPE$endYear <- end
+  GPE$years <-
+    seq(from = GPE$startYear,
+        to = GPE$endYear,
         by = 1)
 }
 

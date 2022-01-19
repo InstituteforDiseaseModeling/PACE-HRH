@@ -25,7 +25,7 @@ saveExperimentDemographics <-
       invisible(NULL)
     }
 
-    ages <- globalPackageEnvironment$ages
+    ages <- GPE$ages
     outdf <- data.frame(Age = ages)
     years <- names(popData)
 

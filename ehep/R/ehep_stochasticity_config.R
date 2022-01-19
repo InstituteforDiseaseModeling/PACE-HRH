@@ -6,7 +6,7 @@
 #' \code{female}, \code{male} and \code{total}
 #'
 loadStochasticParameters <- function(sheetName = "StochasticParamaters"){
-  stochData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
+  stochData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   # Keep the first three columns
   stochData <- stochData[1:3]
@@ -31,6 +31,6 @@ InitializeStochasticParameters <- function(...){
 
   # TODO: Insert error handling
 
-  globalPackageEnvironment$stochasticParams <- stochData
+  GPE$stochasticParams <- stochData
   invisible(NULL)
 }

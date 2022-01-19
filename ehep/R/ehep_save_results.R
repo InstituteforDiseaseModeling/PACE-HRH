@@ -107,9 +107,19 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
 func2 <- function(results, scenario, trial, run){
   s <- results$SeasonalityResults
   taskIds <- names(s)
+  n = length(taskIds)
+
+  NAs <- replicate(n, NA)
+
+  dummyDf <- data.frame(
+    "Task_ID" = taskIds,
+    "Scenario_ID" = scenario,
+    "Trial_num" = trial,
+    "Run_num" = run
+  )
 
   l <- lapply(1:252, function(t){
-    year <- ((t - 1) %/% 12) + 2020
+    year <- ((t - 1) %/% 12) + GPE$startYear
     month <- ((t - 1) %% 12) + 1
 
     times <- sapply(taskIds, function(taskId){
@@ -120,15 +130,24 @@ func2 <- function(results, scenario, trial, run){
       N <- s[[taskId]]$N[t]
     })
 
-    return(data.frame("Task_ID" = taskIds,
-                      "Scenario_ID" = scenario,
-                      "Trial_num" = trial,
-                      "Run_num" = run,
-                      "Year" = year,
-                      "Month" = month,
-                      "Num_services" = Ns,
-                      "Service_time" = times,
-                      "Health_benefit" = NA))
+    retDf <- dummyDf
+    retDf$Year <- replicate(n, year)
+    retDf$Month <- replicate(n, month)
+    retDf$Num_services = Ns
+    retDf$Service_time = times
+    retDf$Health_benefit = NAs
+
+    return(retDf)
+
+    # return(data.frame("Task_ID" = taskIds,
+    #                   "Scenario_ID" = scenario,
+    #                   "Trial_num" = trial,
+    #                   "Run_num" = run,
+    #                   "Year" = year,
+    #                   "Month" = month,
+    #                   "Num_services" = Ns,
+    #                   "Service_time" = times,
+    #                   "Health_benefit" = NA))
   })
 
   df <- data.table::rbindlist(l)

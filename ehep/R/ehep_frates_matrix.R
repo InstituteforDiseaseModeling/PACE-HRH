@@ -3,15 +3,11 @@
 #' @return Rates matrix
 generateFertilityRatesMatrix <- function(){
   # Gather stuff we're going to need
-  b <- baseValuesEnvironment
-  e <- epsilonValuesEnvironment
-  pars <- globalPackageEnvironment$stochasticParams
-  years <- globalPackageEnvironment$years
+  pars <- GPE$stochasticParams
+  years <- GPE$years
 
-  initValsBase <- b$populationChangeParameters$initValues
-  initValsEpsilons <- e$populationChangeParameters$initValues
-  deltasBase <- b$populationChangeParameters$changeRates
-  deltasEpsilons <- e$populationChangeParameters$changeRates
+  initValsBase <- bve$populationChangeParameters$initValues
+  deltasBase <- bve$populationChangeParameters$changeRates
 
   # Grab the initial fertility rates, then apply stochastics
   initRates <- getFertilityRates(initValsBase)
@@ -39,7 +35,7 @@ generateFertilityRatesMatrix <- function(){
   # If fertility rate changes are turned off, assume a delta ratio of 1, but
   # allow that unity value to be tweaked up and down over time.
 
-  if (b$scenario$o_Fertility_decr == FALSE){
+  if (bve$scenario$o_Fertility_decr == FALSE){
     deltaRatios <- 1
   } else {
     deltaRatios <- getFertilityRates(deltasBase)

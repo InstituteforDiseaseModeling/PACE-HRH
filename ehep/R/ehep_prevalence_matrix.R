@@ -4,17 +4,16 @@
 generatePrevalenceRatesMatrix <- function(){
   # Gather stuff we're going to need
   b <- baseValuesEnvironment
-  g <- globalPackageEnvironment
   e <- epsilonValuesEnvironment
 
-  pars <- g$stochasticParams
-  years <- g$years
-  tasks <- g$taskData
+  pars <- GPE$stochasticParams
+  years <- GPE$years
+  tasks <- GPE$taskData
 
-  indexes <- which(g$taskData$applyStochasticity)
+  indexes <- which(GPE$taskData$applyStochasticity)
 
   tasks <-
-    g$taskData[indexes, c("Indicator",
+    GPE$taskData[indexes, c("Indicator",
                           "StartingRateInPop",
                           "AnnualDeltaRatio",
                           "ServiceCat")]

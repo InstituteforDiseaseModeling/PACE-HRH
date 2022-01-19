@@ -20,9 +20,9 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
     NextEpsilons()
     results <- RunExperiment(scenarioName)
     results$Population <- experimentValuesEnvironment$demographics
-    results$PopulationParams <- list(Base = baseValuesEnvironment$populationChangeParameters,
-                                     Epsilon = epsilonValuesEnvironment$populationChangeParameters,
-                                     Experiment = experimentValuesEnvironment$populationChangeParameters)
+    results$PopulationParams <- list(Base = bve$populationChangeParameters,
+                                     Epsilon = eve$populationChangeParameters,
+                                     Experiment = exp$populationChangeParameters)
     return(results)
   })
 

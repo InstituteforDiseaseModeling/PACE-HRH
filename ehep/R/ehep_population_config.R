@@ -10,7 +10,7 @@
 #' \code{female}, \code{male} and \code{total}
 #'
 loadInitialPopulation <- function(sheetName = "TotalPop"){
-  popData <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
+  popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   assertthat::has_name(popData, "Age")
   assertthat::has_name(popData, "Male")
@@ -21,8 +21,8 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
   # for plotting, etc
   assertthat::assert_that(length(popData$Male) == length(popData$Female))
   assertthat::assert_that(length(popData$Male) == length(popData$Age))
-  assertthat::assert_that(length(popData$Age) == length(globalPackageEnvironment$ages))
-  globalPackageEnvironment$ageLabels <- popData$Age
+  assertthat::assert_that(length(popData$Age) == length(GPE$ages))
+  GPE$ageLabels <- popData$Age
 
   male <- PopulationPyramid()
   female <- PopulationPyramid()
@@ -33,7 +33,7 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
   total <- setFromVector(total,
                          round(popData$Male, 0) + round(popData$Female, 0))
 
-  return(list(age = globalPackageEnvironment$ages,
+  return(list(age = GPE$ages,
               female = female,
               male = male,
               total = total))
@@ -47,7 +47,7 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
 #' \code{initValues} and \code{changeRates}
 #'
 loadPopulationChangeParameters <- function(sheetName = "PopValues"){
-  popValues <- readxl::read_xlsx(globalPackageEnvironment$inputExcelFile, sheet = sheetName)
+  popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   if (!is.null(popValues)){
     initValues <- PopulationChangeParameters()
@@ -78,9 +78,9 @@ loadPopulationChangeParameters <- function(sheetName = "PopValues"){
 InitializePopulation <- function(){
   .checkAndLoadGlobalConfig()
 
-  globalPackageEnvironment$initialPopulation <- loadInitialPopulation()
+  GPE$initialPopulation <- loadInitialPopulation()
 
-  globalPackageEnvironment$populationChangeParameters <-
+  GPE$populationChangeParameters <-
     loadPopulationChangeParameters()
 
   invisible(NULL)
