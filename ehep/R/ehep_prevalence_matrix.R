@@ -3,9 +3,6 @@
 #' @return Rates matrix
 generatePrevalenceRatesMatrix <- function(){
   # Gather stuff we're going to need
-  b <- baseValuesEnvironment
-  e <- epsilonValuesEnvironment
-
   pars <- GPE$stochasticParams
   years <- GPE$years
   tasks <- GPE$taskData

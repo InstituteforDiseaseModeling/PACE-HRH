@@ -19,7 +19,7 @@ saveExperimentDemographics <-
       invisible(NULL)
     }
 
-    popData <- experimentValuesEnvironment$demographics
+    popData <- EXP$demographics
 
     if (is.null(popData)) {
       invisible(NULL)

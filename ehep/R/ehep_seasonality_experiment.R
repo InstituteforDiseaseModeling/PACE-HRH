@@ -6,7 +6,7 @@
 #' @return List of dataframes of per-task times, or NULL
 #'
 runSeasonalityExperiment <- function(results, debug = FALSE){
-  scenario <- baseValuesEnvironment$scenario
+  scenario <- BVE$scenario
 
   if (is.null(scenario)){
     TraceMessage(paste("No scenario data", scenarioName, sep = ""))

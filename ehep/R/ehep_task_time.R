@@ -11,7 +11,7 @@
 #' @export
 #'
 TaskTime <- function(taskID, year, debug = FALSE){
-  tp <- experimentValuesEnvironment$taskParameters
+  tp <- EXP$taskParameters
 
   # TODO: Insert check on length of task table
 
@@ -30,7 +30,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
   prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
 
   # Look up the population pyramid for this year
-  population <- experimentValuesEnvironment$demographics[[as.character(year)]]
+  population <- EXP$demographics[[as.character(year)]]
 
   if (is.null(population)){
     TraceMessage(paste("No demographic info for year ", year, sep = ""))
@@ -47,7 +47,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
   }
 
   # Correct for prevalence, frequency, test positivity, etc
-  m <- experimentValuesEnvironment$prevalenceRatesMatrix
+  m <- EXP$prevalenceRatesMatrix
   prevalenceMultiplier <-
     ifelse(prevalenceFlag, m[prevalenceRatesTableRow, as.character(year)], 1)
 
@@ -187,7 +187,7 @@ TaskTimesGroup <- function(taskIDs, years){
 }
 
 AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
-  tp <- experimentValuesEnvironment$taskParameters
+  tp <- EXP$taskParameters
   taskVals <- tp@values[taskID, ]
 
   td <- GPE$taskData

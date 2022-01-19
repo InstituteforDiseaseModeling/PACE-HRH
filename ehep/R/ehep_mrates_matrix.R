@@ -6,8 +6,8 @@ generateMortalityRatesMatrix <- function(){
   pars <- GPE$stochasticParams
   years <- GPE$years
 
-  initValsBase <- bve$populationChangeParameters$initValues
-  deltasBase <- bve$populationChangeParameters$changeRates
+  initValsBase <- BVE$populationChangeParameters$initValues
+  deltasBase <- BVE$populationChangeParameters$changeRates
 
   # Grab the initial mortality rates, then apply stochastics
   initRates <- getMortalityRates(initValsBase)

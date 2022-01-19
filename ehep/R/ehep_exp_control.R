@@ -11,27 +11,27 @@
 #'
 SaveBaseSettings <- function(scenarioName = ""){
   # GPE = globalPackageEnvironment = source environment
-  # bve = baseValuesEnvironment = destination environment
+  # BVE = baseValuesEnvironment = destination environment
 
-  bve$scenario <- .getScenarioConfig(scenarioName)
+  BVE$scenario <- .getScenarioConfig(scenarioName)
 
   if (exists("populationChangeParameters", where = GPE)){
-    bve$populationChangeParameters <- GPE$populationChangeParameters
+    BVE$populationChangeParameters <- GPE$populationChangeParameters
   } else {
-    bve$populationChangeParameters <- NULL
+    BVE$populationChangeParameters <- NULL
   }
 
   if (exists("initialPopulation", where = GPE)){
-    bve$initialPopulation <- GPE$initialPopulation
+    BVE$initialPopulation <- GPE$initialPopulation
   } else {
-    bve$initialPopulation <- NULL
+    BVE$initialPopulation <- NULL
   }
 
   if (exists("taskData", where = GPE)){
     m <- .convertTaskDfToMatrix(GPE$taskData)
-    bve$taskParameters <- TaskParameters(values = m)
+    BVE$taskParameters <- TaskParameters(values = m)
   } else {
-    bve$taskParameters <- NULL
+    BVE$taskParameters <- NULL
   }
 
   invisible(NULL)
@@ -99,15 +99,13 @@ SaveBaseSettings <- function(scenarioName = ""){
 #' @export
 #'
 ZeroEpsilons <- function(){
-  eve <- epsilonValuesEnvironment
+  EPS$populationChangeParameters <- .createZeroPopulationChangeParametersList()
+  EPS$initialPopulation <- .createZeroPopulationPyramidList()
+  EPS$taskParameters <- .createZeroTaskParametersObject()
 
-  eve$populationChangeParameters <- .createZeroPopulationChangeParametersList()
-  eve$initialPopulation <- .createZeroPopulationPyramidList()
-  eve$taskParameters <- .createZeroTaskParametersObject()
-
-  eve$fertilityRatesMatrix <- NULL
-  eve$mortalityRatesMatrix <- NULL
-  eve$prevalenceRatesMatrix <- NULL
+  EPS$fertilityRatesMatrix <- NULL
+  EPS$mortalityRatesMatrix <- NULL
+  EPS$prevalenceRatesMatrix <- NULL
 
   invisible(NULL)
 }
@@ -135,9 +133,9 @@ NextEpsilons <- function(){
   mm <- generateMortalityRatesMatrix()
   mp <- generatePrevalenceRatesMatrix()
 
-  epsilonValuesEnvironment$fertilityRatesMatrix <- mf
-  epsilonValuesEnvironment$mortalityRatesMatrix <- mm
-  epsilonValuesEnvironment$prevalenceRatesMatrix <- mp
+  EPS$fertilityRatesMatrix <- mf
+  EPS$mortalityRatesMatrix <- mm
+  EPS$prevalenceRatesMatrix <- mp
 
   invisible(NULL)
 }
@@ -154,31 +152,31 @@ ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
   # Combine populationChangeParameters values and copy to experimentValuesEnvironment
-  bVar <- bve$populationChangeParameters
-  eVar <- eve$populationChangeParameters
+  bVar <- BVE$populationChangeParameters
+  eVar <- EPS$populationChangeParameters
   pcp = list(initValues = add(bVar$initValues, eVar$initValues),
              changeRates = add(bVar$changeRates, eVar$changeRates))
-  exp$populationChangeParameters <- pcp
+  EXP$populationChangeParameters <- pcp
 
   # Combine initialPopulation values and copy to experimentValuesEnvironment
-  bVar <- bve$initialPopulation
-  eVar <- eve$initialPopulation
+  bVar <- BVE$initialPopulation
+  eVar <- EPS$initialPopulation
   pp = list(age = GPE$ages,
             female = add(bVar$female, eVar$female),
             male = add(bVar$male, eVar$female),
             total = add(bVar$total, eVar$total))
-  exp$initialPopulation <- pp
+  EXP$initialPopulation <- pp
 
   # Combine taskParameters values and copy to experimentValuesEnvironment
-  bVar <- bve$taskParameters
-  eVar <- eve$taskParameters
-  exp$taskParameters <- add(bVar, eVar)
+  bVar <- BVE$taskParameters
+  eVar <- EPS$taskParameters
+  EXP$taskParameters <- add(bVar, eVar)
 
   # Copy the rates matrices (computed in NextEpsilons())
   # to experimentValuesEnvironment. (No adding things together.)
-  exp$fertilityRatesMatrix = eve$fertilityRatesMatrix
-  exp$mortalityRatesMatrix = eve$mortalityRatesMatrix
-  exp$prevalenceRatesMatrix = eve$prevalenceRatesMatrix
+  EXP$fertilityRatesMatrix = EPS$fertilityRatesMatrix
+  EXP$mortalityRatesMatrix = EPS$mortalityRatesMatrix
+  EXP$prevalenceRatesMatrix = EPS$prevalenceRatesMatrix
 
   invisible(NULL)
 }

@@ -18,7 +18,7 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # STEP 0 - INITIALIZE
 
   # Load scenario details
-  scenario <- baseValuesEnvironment$scenario
+  scenario <- BVE$scenario
 
   if (is.null(scenario)){
     TraceMessage(paste("Unknown scenario ", scenarioName, sep = ""))
@@ -38,20 +38,20 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   ConfigureExperimentValues()
 
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
-  pcp <- exp$populationChangeParameters
+  pcp <- EXP$populationChangeParameters
 
   # Mortality and fertility rate matrices are computed in the NextEpsilons()
   # step, but need to be converted from matrix to data.frame format to pass
   # to the ComputeDemographicsProjection() function.
-  df <- data.frame(t(exp$mortalityRatesMatrix))
+  df <- data.frame(t(EXP$mortalityRatesMatrix))
   mortalityRatesDf <- cbind(Year = rownames(df), df)
 
-  df <- data.frame(t(exp$fertilityRatesMatrix))
+  df <- data.frame(t(EXP$fertilityRatesMatrix))
   fertilityRatesDf <- cbind(Year = rownames(df), df)
 
   # Convert the initial population data into a dataframe suitable to pass
   # to the ComputeDemographicsProjection function.
-  popData <- exp$initialPopulation
+  popData <- EXP$initialPopulation
 
   initialPopulationDf <- data.frame(
     Age = popData$age,
@@ -60,7 +60,7 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
     Total = popData$total@values
   )
 
-  exp$demographics <-
+  EXP$demographics <-
     ComputeDemographicsProjection(
       initialPopulationDf,
       fertilityRatesDf,
@@ -76,18 +76,18 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
                              GPE$taskData$Geography == scenario$PopType &
                      GPE$taskData$ClinicalOrNon == "Clinical")
 
-  exp$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+  EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
 
   # STEP 2A - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
   taskIds <- which(GPE$taskData$computeMethod == "TimePerTask" &
                      GPE$taskData$Geography == scenario$PopType &
                      GPE$taskData$ClinicalOrNon != "Clinical")
 
-  exp$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+  EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
 
   # STEP 3 - TOTAL THE TASK TIMES
-  aggAnnualClinicalTaskTimes <- apply(exp$clinicalTaskTimes$Time, 1, sum)
-  aggAnnualNonClinicalTaskTimes <- apply(exp$nonClinicalTaskTimes$Time, 1, sum)
+  aggAnnualClinicalTaskTimes <- apply(EXP$clinicalTaskTimes$Time, 1, sum)
+  aggAnnualNonClinicalTaskTimes <- apply(EXP$nonClinicalTaskTimes$Time, 1, sum)
 
   # STEP 4 - CORRECT FOR RATIO-BASED TIME ALLOCATION
   taskIds <- which(
@@ -95,10 +95,10 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
       GPE$taskData$Geography == scenario$PopType
   )
 
-  exp$nonClinicalAllocationTimes <-
+  EXP$nonClinicalAllocationTimes <-
     AllocationTaskTimesGroup(taskIds, GPE$years, aggAnnualClinicalTaskTimes)
 
-  m <- as.matrix(exp$nonClinicalAllocationTimes)
+  m <- as.matrix(EXP$nonClinicalAllocationTimes)
   aggAnnualNonClinicalAllocationTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
 
   # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
@@ -142,7 +142,7 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # HACK ALERT! Calling this field "Administration" lines it up with the
   # only task currently generating these times ... a fact relied on
   # in later code!
-  exp$nonProductiveTimes <-
+  EXP$nonProductiveTimes <-
     data.frame("Years" = GPE$years, "Administration" = T_np)
 
   if (debug){
@@ -164,10 +164,10 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
     print(N)
   }
 
-  results$Clinical <- exp$clinicalTaskTimes
-  results$NonClinical <- exp$nonClinicalTaskTimes
-  results$NonClinicalAllocation <- exp$nonClinicalAllocationTimes
-  results$NonProductive <- exp$nonProductiveTimes
+  results$Clinical <- EXP$clinicalTaskTimes
+  results$NonClinical <- EXP$nonClinicalTaskTimes
+  results$NonClinicalAllocation <- EXP$nonClinicalAllocationTimes
+  results$NonProductive <- EXP$nonProductiveTimes
   results$FTEs <- data.frame("Years" = GPE$years, "FTEs" = N)
 
   if (scenario$o_Seasonality){
