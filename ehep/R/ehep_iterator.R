@@ -17,34 +17,35 @@
 # original, Dec 1, 2021 Charles Eliot
 
 # Create a vector iterator object
-iter <- function(obj, checkFunc=function(...) TRUE, recycle=FALSE, ...) {
+iter <- function(obj, recycle=FALSE) {
   state <- new.env()
   state$index <- 0L
   state$obj <- obj
   n <- length(obj)
-  it <- list(state=state, length=n, checkFunc=checkFunc, recycle=recycle)
+  it <- list(state=state, length=n, recycle=recycle)
   it
 }
 
-hasNext <- function(obj, ...){
+hasNext <- function(obj){
+  if (obj$recycle){
+    return(TRUE)
+  }
+
   ifelse(obj$state$index + 1 > obj$length, FALSE, TRUE)
 }
 
-getIterVal <- function(obj, plus=0L, ...) {
-  i <- obj$state$index + plus
+getIterVal <- function(obj) {
+  i <- obj$state$index
   if (i > obj$length)
     stop('SubscriptOutOfBounds', call.=FALSE)
   obj$state$obj[[i]]
 }
 
-nextElem <- function(obj, ...) {
+nextElem <- function(obj) {
   repeat {
     tryCatch({
-      if (obj$checkFunc(getIterVal(obj,1L))) {
-        obj$state$index <- obj$state$index + 1L
-        return(getIterVal(obj))
-      }
       obj$state$index <- obj$state$index + 1L
+      return(getIterVal(obj))
     }, error=function(e) {
       if (any(nzchar(e$message))) {
         if (identical(e$message, "SubscriptOutOfBounds")) {
