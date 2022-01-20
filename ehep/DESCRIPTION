@@ -54,3 +54,6 @@ Collate:
     'ehep_scenarios_config.R'
     'ehep_stochasticity_config.R'
     'ehep_save_results.R'
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
