@@ -32,29 +32,35 @@ library(ehep)
 # [OPTIONAL] Turn on tracing if you want ehep to tell you more
 # about what it's doing and any problems it encounters
 
-ehep::Trace(TRUE)
+# ehep::Trace(TRUE)
 
-# Initialize population information using data from an Excel spreadsheet.
-# By default, ehep looks for the file "./config/R Model Inputs.xlsx".
-# The location of the Excel model inputs file can be controlled through
-# a configuration file, globalconfig.json. ehep will look for globalconfig.json 
-# in the current working directory.
-
+# Initialize EHEP
 ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
 
-# Use the population information loaded by InitializePopulation() to compute
-# a family of population pyramids, one for each year of the study range.
-# Note: ehep::ComputeDemographicsProjection(debug = TRUE) will return fertility
-# and mortality rate information along with the population pyramids.
+# Set the name of a scenario to run. The scenario must be in the list defined
+# in the model input spreadsheet
+scenario <- "ScenarioA"
+num_trials <- 5
+run_number <- 1
 
-demographics <- ehep::ComputeDemographicsProjection()
+# Run the scenario
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = num_trials,
+                       debug = FALSE)
 
-# Load and pre-process information about healthcare tasks.
-
-tasks <- ehep::InitializeHealthcareTasks()
-
+# Save the results to a CSV file
+ehep::SaveSuiteResults(results, "results.csv", scenario, run_number)
 ```
 ## Global Parameters
+
+_DO NOT USE THIS FUNCTION_
+_Two problems. (1) Insufficiently tested. (2) Changing the start year without
+changing the starting population pyramid will create inconsistent results._
 
 The __SetGlobalStartEndYears()__ function can be used to set the start and end 
 years for simulation.
@@ -63,47 +69,44 @@ years for simulation.
 ehep::SetGlobalStartEndYears(2025, 2030)
 ```
 
-## The Global Package Environment
+## Environments
 
-ehep stores configuration information and computed values in its global package 
-environment. You can view the current contents of the global package 
-environment with R's `ls.str()` command.
+ehep uses 4 R environments.
 
-The following is an example of the data that can be recovered by interrogating
-`ehep:::globalPackageEnvironment`. 
+__ehep:::globalPackageEnvironment__ (alias ehep:::GPE) stores configuration 
+information.
+
+__ehep:::baseValuesEnvironment__ (alias ehep:::BVE) stores the base values 
+on which to base stochastic trials. An _experiment_ is a set of stochastic
+trials based on a _scenario_. At the start of an experiment, baseline information
+is loaded into baseValuesEnvironment.
+
+__ehep:::epsilonValuesEnvironment__ (alias ehep:::EPS) stores stochastic changes to be
+applied to the base values in baseValuesEnvironment in order to produce the
+values for the experiment. The internal NextEpsilons()
+function is used to inject stochasticity.
+
+__ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
+after applying stochastic variation, used in experiment calculations. Experiment results 
+are written back to experimentValueEnvironment.
+
+You can view the current contents of any of the environments with R's
+`ls.str()` command.
 
 ```
-> ls.str(ehep:::globalPackageEnvironment)
-age_max :  num 100
-age_min :  num 0
-endYear :  num 2040
-fertilityRates : Classes ‘data.table’ and 'data.frame':	21 obs. of  5 variables:
- $ Year                : int  2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 ...
- $ AnnualBirthRate15_19: num  0.0617 0.0601 0.0585 0.0569 0.0554 ...
- $ AnnualBirthRate20_29: num  0.125 0.122 0.119 0.116 0.113 ...
- $ AnnualBirthRate30_39: num  0.125 0.122 0.119 0.116 0.113 ...
- $ AnnualBirthRate40_49: num  0.125 0.122 0.119 0.116 0.113 ...
-globalConfigLoaded :  logi TRUE
-initialPopulation : tibble [101 x 4] (S3: tbl_df/tbl/data.frame)
-inputExcelFile :  chr "./config/R Model Inputs.xlsx"
-mortalityRates : Classes ‘data.table’ and 'data.frame':	21 obs. of  9 variables:
- $ Year            : int  2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 ...
- $ MortalityInfants: num  35.2 33.9 32.6 31.4 30.2 ...
- $ Mortality1.4    : num  3.31 3.16 3.02 2.88 2.75 ...
- $ Mortality5.9    : num  1.123 1.069 1.017 0.968 0.921 ...
- $ Mortality10.14  : num  0.923 0.888 0.853 0.82 0.789 ...
- $ Mortality15.19  : num  1.54 1.49 1.44 1.39 1.34 ...
- $ Mortality20.24  : num  1.7 1.68 1.66 1.64 1.62 ...
- $ MortalityAdultF : num  3.93 3.84 3.75 3.66 3.57 ...
- $ MortalityAdultM : num  5.09 5 4.91 4.82 4.73 ...
+> ls.str(ehep:::EPS)
+fertilityRatesMatrix :  num [1:7, 1:21] 0.0658 0.1826 0.222 0.1791 0.1055 ...
+initialPopulation : List of 4
+ $ age   : num [1:101] 0 1 2 3 4 5 6 7 8 9 ...
+ $ female:Formal class 'PopulationPyramid' [package "ehep"] with 1 slot
+ $ male  :Formal class 'PopulationPyramid' [package "ehep"] with 1 slot
+ $ total :Formal class 'PopulationPyramid' [package "ehep"] with 1 slot
+mortalityRatesMatrix :  num [1:8, 1:21] 30.97 3.604 1.168 0.989 1.645 ...
 populationChangeParameters : List of 2
- $ initValues : Named num [1:15] 4.0485 30 0.1247 0.0617 0.1247 ...
- $ changeRates: Named num [1:15] 0.976 30 0.976 0.973 0.976 ...
-ratio_females_at_birth :  num 0.5
-ratio_males_at_birth :  num 0.5
-startYear :  num 2020
-traceState :  logi TRUE
-years :  num [1:21] 2020 2021 2022 2023 2024 ...
+ $ initValues :Formal class 'PopulationChangeParameters' [package "ehep"] with 1 slot
+ $ changeRates:Formal class 'PopulationChangeParameters' [package "ehep"] with 1 slot
+prevalenceRatesMatrix :  num [1:72, 1:21] 1.9833 2.7244 0.4212 0.0963 0.0947 ...
+taskParameters : Formal class 'TaskParameters' [package "ehep"] with 1 slot
 ```
 
 ## Population Pyramids
