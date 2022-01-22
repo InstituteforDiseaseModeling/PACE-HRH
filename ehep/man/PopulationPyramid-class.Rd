@@ -14,6 +14,8 @@ Population Pyramid Class
 \section{Slots}{
 
 \describe{
+\item{\code{length}}{numeric}
+
 \item{\code{values}}{numeric}
 }}
 

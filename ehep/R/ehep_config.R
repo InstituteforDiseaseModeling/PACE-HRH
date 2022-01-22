@@ -49,11 +49,18 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
   invisible(NULL)
 }
 
+# Internal function used by the various InitializeXXXXX() functions to auto-
+# magically load the global configuration.
+
+# TODO: Add (...) support so the path= parameter can be passed through to allow
+# for using files other than globalconfig.json
+
 .checkAndLoadGlobalConfig <- function(){
   if (!GPE$globalConfigLoaded){
     loadGlobalConfig()
     GPE$globalConfigLoaded <- TRUE
   }
+  invisible(NULL)
 }
 
 #' Set Global Start And End Year Parameters
@@ -66,15 +73,15 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 #' @export
 SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
   if (!assertthat::is.number(start)) {
-    return
+    return(invisible(NULL))
   }
 
   if (!assertthat::is.number(end)) {
-    return
+    return(invisible(NULL))
   }
 
   if (end <= start) {
-    return
+    return(invisible(NULL))
   }
 
   GPE$startYear <- start
@@ -83,6 +90,8 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
     seq(from = GPE$startYear,
         to = GPE$endYear,
         by = 1)
+
+  return(invisible(NULL))
 }
 
 
