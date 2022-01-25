@@ -83,6 +83,6 @@ InitializePopulation <- function(){
   GPE$populationChangeParameters <-
     loadPopulationChangeParameters()
 
-  invisible(NULL)
+  return(invisible(NULL))
 }
 

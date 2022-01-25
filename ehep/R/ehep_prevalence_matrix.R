@@ -13,10 +13,21 @@ generatePrevalenceRatesMatrix <- function(){
     GPE$taskData[indexes, c("Indicator",
                           "StartingRateInPop",
                           "AnnualDeltaRatio",
-                          "ServiceCat")]
+                          "ServiceCat",
+                          "RelevantPop")]
 
   nRows = NROW(tasks)
   nCols = length(years)
+
+  # Determine which rows refer to Malaria/HIV/TB
+  mhivtbMask <-
+    (
+      tasks$ServiceCat == "Malaria" |
+        tasks$ServiceCat == "Tuberculosis" | tasks$ServiceCat == "HIV"
+    )
+
+  # Determine which rows refer to childhood diseases
+  childDisMask <- (tasks$RelevantPop == "1-4")
 
   # Grab the initial prevalence/incidence values, and apply a stochastic tweak
   p = pars[pars$Value == "Incidence rates", ]$p
@@ -37,7 +48,17 @@ generatePrevalenceRatesMatrix <- function(){
   q = pars[pars$Value == "Annual delta incidence rates", ]$q
   lims = p * q * c(-1, 1)
 
+  # Grab the annual prevalence deltas
   deltaRatios <- tasks$AnnualDeltaRatio
+
+  # Set annual prevalence deltas to unity if the scenario requires it
+  if (BVE$scenario$o_MHIVTB_decr == FALSE){
+    deltaRatios[mhivtbMask] <- 1
+  }
+
+  if (BVE$scenario$o_ChildDis_decr == FALSE){
+    deltaRatios[childDisMask] <- 1
+  }
 
   for (j in 2:nCols){
     e <- deltaRatios * truncnorm::rtruncnorm(

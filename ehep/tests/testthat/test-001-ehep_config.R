@@ -183,3 +183,5 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
 })
+
+
