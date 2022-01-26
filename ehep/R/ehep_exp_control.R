@@ -34,7 +34,7 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskParameters <- NULL
   }
 
-  invisible(NULL)
+  return(invisible(NULL))
 }
 
 .taskDataCols <- c("StartingRateInPop",
@@ -107,7 +107,7 @@ ZeroEpsilons <- function(){
   EPS$mortalityRatesMatrix <- NULL
   EPS$prevalenceRatesMatrix <- NULL
 
-  invisible(NULL)
+  return(invisible(NULL))
 }
 
 #' Initilialize Stochastic Variation System
@@ -117,10 +117,8 @@ ZeroEpsilons <- function(){
 #' @export
 InitializeEpsilons <- function(){
   set.seed(12345)
-
   ZeroEpsilons()
-
-  invisible(NULL)
+  return(invisible(NULL))
 }
 
 #' Generate A New Set Of Stochastic Variations
@@ -137,7 +135,12 @@ NextEpsilons <- function(){
   EPS$mortalityRatesMatrix <- mm
   EPS$prevalenceRatesMatrix <- mp
 
-  invisible(NULL)
+  tp <- generateTaskParameterEpsilons(BVE$taskParameters)
+  EPS$taskParameters <- tp
+
+  print(tp)
+
+  return(invisible(NULL))
 }
 
 #' Combine Base and Epsilon Values
@@ -167,10 +170,9 @@ ConfigureExperimentValues <- function(){
             total = add(bVar$total, eVar$total))
   EXP$initialPopulation <- pp
 
-  # Combine taskParameters values and copy to experimentValuesEnvironment
-  bVar <- BVE$taskParameters
-  eVar <- EPS$taskParameters
-  EXP$taskParameters <- add(bVar, eVar)
+  # Copy taskParameters values (computed in NextEpsilons()) to
+  # experimentValuesEnvironment. (No adding things together.)
+  EXP$taskParameters <- EPS$taskParameters
 
   # Copy the rates matrices (computed in NextEpsilons())
   # to experimentValuesEnvironment. (No adding things together.)

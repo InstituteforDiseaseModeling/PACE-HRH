@@ -221,5 +221,3 @@ AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
 
   return(df)
 }
-
-
