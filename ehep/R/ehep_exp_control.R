@@ -138,8 +138,6 @@ NextEpsilons <- function(){
   tp <- generateTaskParameterEpsilons(BVE$taskParameters)
   EPS$taskParameters <- tp
 
-  print(tp)
-
   return(invisible(NULL))
 }
 
