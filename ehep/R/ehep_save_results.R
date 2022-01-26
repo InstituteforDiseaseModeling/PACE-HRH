@@ -1,3 +1,94 @@
+#' Save Demographics Information From A Suite Of Experiments
+#'
+#' @param results Results structure
+#' @param filename CSV file to write to
+#' @param breaks Vector of population bucket boundaries
+#'
+#' @return
+#' @export
+SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) {
+  trials <- names(results)
+
+  l <- lapply(trials, function(trial){
+    trialResults <- results[[trial]]
+    popData <- trialResults$Population
+
+    .formatTrialDemographics(popData, trial, breaks)
+  })
+
+  outdf <- data.table::rbindlist(l)
+  write.csv(outdf, file = filename, row.names = FALSE)
+  return(invisible(outdf))
+}
+
+
+#' @importFrom magrittr %>%
+.formatTrialDemographics <- function(popData, trial, breaks) {
+  if (is.null(popData)) {
+    return(invisible(NULL))
+  }
+
+  ages <- GPE$ages
+
+  # Bucketize age ranges according to the "breaks" variable
+  ageBucket <- 1:length(ages)
+
+  if (!is.null(breaks)){
+    # Both "ages" and "breaks" need to be in ascending numerical order
+    assertthat::assert_that(identical(breaks, breaks[order(breaks)]))
+    assertthat::assert_that(identical(ages, ages[order(ages)]))
+
+    # Add a sentinel value to the breaks list
+    breaks <- c(breaks, max(c(max(ages), max(breaks))) + 1)
+
+    nBucket <- 1L
+    compValue <- breaks[nBucket]
+    for (i in seq_along(ages)){
+      if (ages[i] > compValue){
+        nBucket <- nBucket + 1L
+        compValue <- breaks[nBucket]
+      }
+
+      ageBucket[i] <- nBucket
+    }
+  }
+
+  outdf <- NULL
+  yearList <- names(popData)
+
+  l <- lapply(yearList, function(year) {
+    pop <- popData[[year]]
+
+    trials <- replicate(nrow(pop), trial)
+    years <- replicate(nrow(pop), year)
+
+    # Emit population data
+    df <- data.frame(
+      Trial = trials,
+      Year = years,
+      Age = pop$Range,
+      Female = pop$Female,
+      Male = pop$Male
+    )
+
+    if (!is.null(breaks)){
+      df$AgeBucket <- ageBucket
+
+      df <-
+        df %>%
+        dplyr::group_by(Trial, Year, AgeBucket) %>%
+        dplyr::summarize(Female = sum(Female), Male = sum(Male))
+    }
+
+    return(df)
+  })
+
+  return(data.table::rbindlist(l))
+}
+
+
+
+
 #' Save Experiment Results As CSV File
 #'
 #' @param results TBD
