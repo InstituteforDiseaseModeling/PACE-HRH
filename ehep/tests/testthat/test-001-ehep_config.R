@@ -168,6 +168,11 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
+  testthat::expect_invisible(ehep::SetGlobalStartEndYears(120, 100))
+  testthat::expect_equal(e$startYear, originalStartYear)
+  testthat::expect_equal(e$endYear, originalEndYear)
+  testthat::expect_equal(e$years, originalYears)
+
   start = 100
   end = 120
   testthat::expect_invisible(ehep::SetGlobalStartEndYears(start, end))
@@ -183,5 +188,3 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
 })
-
-
