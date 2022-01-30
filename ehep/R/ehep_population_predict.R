@@ -1,5 +1,11 @@
 ages <- GPE$ages
 
+.mratesExpansionMatrix <- .generateExpansionMatrix(ages = ages,
+                                                   breaks = c(0, 4, 9, 14, 19, 24))
+
+.fratesExpansionMatrix <- .generateExpansionMatrix(ages = ages,
+                                                   breaks = c(14, 19, 24, 29, 34, 39, 44, 49))
+
 # Expected fields: {"Infants", "1-4y", "5-9y", "10-14y", "15-19y", "20-24y", "AdultFemale", "AdultMale"}
 
 #' Convert Mortality Rates From Banded To Per-Age
@@ -13,22 +19,16 @@ ages <- GPE$ages
 #' @return List of vectors of per-year-of-age rates, for males and females
 #'
 explodeMortalityRates <- function(banded_annual_rates){
-  assertthat::assert_that(length(banded_annual_rates) == 8)
-  assertthat::assert_that(length(ages) > 25)
+  if (GPE$globalDebug){
+    assertthat::assert_that(length(banded_annual_rates) == 8)
+    assertthat::assert_that(length(ages) > 25)
+  }
 
-  outf <- vector(mode = "double", length = length(ages))
-  outm <- vector(mode = "double", length = length(ages))
+  r <- banded_annual_rates[1:7]
+  outf <- as.vector(.mratesExpansionMatrix %*% r)
 
-  outf[1] = banded_annual_rates[1]
-  outf[2:5] = replicate(4, banded_annual_rates[2])
-  outf[6:10] = replicate(5, banded_annual_rates[3])
-  outf[11:15] = replicate(5, banded_annual_rates[4])
-  outf[16:20] = replicate(5, banded_annual_rates[5])
-  outf[21:25] = replicate(5, banded_annual_rates[6])
-  outf[26:length(ages)] = replicate(76, banded_annual_rates[7])
-
-  outm[1:25] = outf[1:25]
-  outm[26:length(ages)] = replicate(76, banded_annual_rates[8])
+  r <- banded_annual_rates[c(1:6, 8)]
+  outm <- as.vector(.mratesExpansionMatrix %*% r)
 
   return(list(Female = outf, Male = outm))
 }
@@ -55,20 +55,15 @@ explodeMortalityRates <- function(banded_annual_rates){
 #' @return List of vectors of per-year-of-age rates, for males and females
 #'
 explodeFertilityRates <- function(banded_annual_rates){
-  assertthat::assert_that(length(banded_annual_rates) == 7)
-  assertthat::assert_that(length(ages) > 50)
+  if (GPE$globalDebug){
+    assertthat::assert_that(length(banded_annual_rates) == 7)
+    assertthat::assert_that(length(ages) > 50)
+  }
 
-  # Initialize output vectors. ASSUME default value is zero.
-  outf <- vector(mode = "double", length = length(ages))
   outm <- vector(mode = "double", length = length(ages))
 
-  outf[16:20] = replicate(5, banded_annual_rates[1])
-  outf[21:25] = replicate(5, banded_annual_rates[2])
-  outf[26:30] = replicate(5, banded_annual_rates[3])
-  outf[31:35] = replicate(5, banded_annual_rates[4])
-  outf[36:40] = replicate(5, banded_annual_rates[5])
-  outf[41:45] = replicate(5, banded_annual_rates[6])
-  outf[46:50] = replicate(5, banded_annual_rates[7])
+  r <- c(0, banded_annual_rates, 0)
+  outf <- as.vector(.fratesExpansionMatrix %*% r)
 
   return(list(Female = outf, Male = outm))
 }

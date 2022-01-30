@@ -44,6 +44,7 @@ Collate:
     'ehep_iterator.R'
     'ehep_plot.R'
     'ehep_population_config.R'
+    'ehep_expansion_matrix.R'
     'ehep_population_predict.R'
     'ehep_seasonality_config.R'
     'ehep_seasonality_experiment.R'
