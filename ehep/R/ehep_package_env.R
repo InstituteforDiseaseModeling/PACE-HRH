@@ -1,10 +1,8 @@
 #
 # Create and initialize an R environment for the package.
-# The environment is created at the GlobalEnvironment level so its location
-# is unambiguous.
 #
 
-globalPackageEnvironment <- new.env(parent = emptyenv())
+globalPackageEnvironment <- new.env(parent = parent.frame())
 baseValuesEnvironment <- new.env(parent = globalPackageEnvironment)
 epsilonValuesEnvironment <- new.env(parent = globalPackageEnvironment)
 experimentValuesEnvironment <- new.env(parent = globalPackageEnvironment)
@@ -16,6 +14,7 @@ EPS <- epsilonValuesEnvironment
 EXP <- experimentValuesEnvironment
 
 GPE$globalConfigLoaded <- FALSE
+GPE$globalDebug <- FALSE
 
 GPE$traceState <- FALSE
 GPE$inputExcelFile <- "./config/R Model Inputs.xlsx"
