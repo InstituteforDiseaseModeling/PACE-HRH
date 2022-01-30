@@ -24,6 +24,8 @@
 .PcpVarLookup <- 1:length(.PcpVarNames)
 names(.PcpVarLookup) <- .PcpVarNames
 
+.PcpDefaultValues <- replicate(length(.PcpVarNames), 0.0)
+
 #' Population Change Parameters Class
 #'
 #' @slot values numeric
@@ -42,5 +44,5 @@ PopulationChangeParameters <- setClass(
     values = "numeric"
   ),
 
-  prototype = list(values = replicate(length(.PcpVarNames), 0.0))
+  prototype = list(values = .PcpDefaultValues)
 )
