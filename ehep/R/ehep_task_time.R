@@ -17,12 +17,8 @@ TaskTime <- function(taskID, year, debug = FALSE){
 
   taskVals <- tp@values[taskID,]
 
-  td <- GPE$taskData
-
-  taskDesc <- td[taskID,]
-
   if (debug){
-    .dispTaskInfo(taskDesc, taskVals)
+    .dispTaskInfo(taskID, taskVals)
   }
 
   # Determine whether this task is covered in the prevalence rates table
@@ -40,7 +36,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
   n = 0L
 
   # Applicable population
-  n <- .computeApplicablePopulation(population, taskDesc$RelevantPop)
+  n <- .computeApplicablePopulation(population, GPE$taskData$RelevantPop[taskID])
 
   if (debug){
     cat(paste("Applicable pop = ", n, "\n", sep = ""))
@@ -66,7 +62,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
   names(numServices) <- NULL
 
   if (is.na(taskVals["MinsPerContact"])){
-    TraceMessage(paste("MinsPerContact missing for task ", taskDesc$Indicator, sep = ""))
+    TraceMessage(paste("MinsPerContact missing for task ", GPE$taskData$Indicator[taskID], sep = ""))
     t = 0
   } else {
     t <- numServices * taskVals["MinsPerContact"]
@@ -82,10 +78,10 @@ TaskTime <- function(taskID, year, debug = FALSE){
   return(list(N = numServices, Time = t))
 }
 
-.dispTaskInfo <- function(taskDesc, taskVals) {
-  cat(paste("ID:", taskDesc$Indicator, "\n", sep = ""))
-  cat(paste("CommonName:", taskDesc$CommonName, "\n", sep = ""))
-  cat(paste("RelevantPop:", taskDesc$RelevantPop, "\n", sep = ""))
+.dispTaskInfo <- function(taskId, taskVals) {
+  cat(paste("ID:", GPE$taskData$Indicator[taskId], "\n", sep = ""))
+  cat(paste("CommonName:", GPE$taskData$CommonName[taskId], "\n", sep = ""))
+  cat(paste("RelevantPop:", GPE$taskData$RelevantPop[taskId], "\n", sep = ""))
   cat(paste("StartingRateInPop:", taskVals["StartingRateInPop"], "\n", sep = ""))
   cat(paste("RateMultiplier:", taskVals["RateMultiplier"], "\n", sep = ""))
   cat(paste("AnnualDeltaRatio:", taskVals["AnnualDeltaRatio"], "\n", sep = ""))
@@ -190,11 +186,8 @@ AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
   tp <- EXP$taskParameters
   taskVals <- tp@values[taskID, ]
 
-  td <- GPE$taskData
-  taskDesc <- td[taskID, ]
-
   if (debug) {
-    .dispTaskInfo(taskDesc, taskVals)
+    .dispTaskInfo(taskID, taskVals)
   }
 
   fteRatio <- taskVals["FTEratio"]
