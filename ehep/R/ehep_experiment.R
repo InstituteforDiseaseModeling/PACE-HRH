@@ -40,15 +40,6 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- EXP$populationChangeParameters
 
-  # Mortality and fertility rate matrices are computed in the NextEpsilons()
-  # step, but need to be converted from matrix to data.frame format to pass
-  # to the ComputeDemographicsProjection() function.
-  df <- data.frame(t(EXP$mortalityRatesMatrix))
-  mortalityRatesDf <- cbind(Year = rownames(df), df)
-
-  df <- data.frame(t(EXP$fertilityRatesMatrix))
-  fertilityRatesDf <- cbind(Year = rownames(df), df)
-
   # Convert the initial population data into a dataframe suitable to pass
   # to the ComputeDemographicsProjection function.
   popData <- EXP$initialPopulation
@@ -63,8 +54,8 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   EXP$demographics <-
     ComputeDemographicsProjection(
       initialPopulationDf,
-      fertilityRatesDf,
-      mortalityRatesDf,
+      EXP$fertilityRatesMatrix,
+      EXP$mortalityRatesMatrix,
       GPE$years,
       normalize = scenario$BaselinePop,
       growthFlag = scenario$o_PopGrowth,

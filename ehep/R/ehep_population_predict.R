@@ -79,11 +79,12 @@ explodeFertilityRates <- function(banded_annual_rates){
 #' @return Total number of expected births
 #'
 computeBirths <- function(female_population, rates){
-  # Sanity checks
-  assertthat::assert_that(is.vector(female_population))
-  assertthat::assert_that(is.vector(rates))
-  assertthat::assert_that(length(female_population) == length(ages))
-  assertthat::assert_that(length(female_population) == length(rates))
+  if (GPE$globalDebug){
+    assertthat::assert_that(is.vector(female_population))
+    assertthat::assert_that(is.vector(rates))
+    assertthat::assert_that(length(female_population) == length(ages))
+    assertthat::assert_that(length(female_population) == length(rates))
+  }
 
   return(sum(round(female_population * rates, 0)))
 }
@@ -102,10 +103,11 @@ computeBirths <- function(female_population, rates){
 #' @return List of expected deaths, one vector for each sex
 #'
 computeDeaths <- function(population, rates){
-  # Sanity checks
-  assertthat::assert_that(length(rates$Female) == length(rates$Male))
-  assertthat::assert_that(length(rates$Female) == length(population$Female))
-  assertthat::assert_that(length(rates$Male) == length(population$Male))
+  if (GPE$globalDebug){
+    assertthat::assert_that(length(rates$Female) == length(rates$Male))
+    assertthat::assert_that(length(rates$Female) == length(population$Female))
+    assertthat::assert_that(length(rates$Male) == length(population$Male))
+  }
 
   outf <- round(population$Female * rates$Female / 1000, 0)
   outm <- round(population$Male * rates$Male / 1000, 0)
@@ -120,8 +122,8 @@ computeDeaths <- function(population, rates){
 #'
 #' @param initial_population_pyramid Population pyramids dataframe. Must have
 #' \code{$Age}, \code{$Male} and \code{$Female} fields.
-#' @param fertility_rates Fertility rates
-#' @param mortality_rates Mortality rates
+#' @param fertility_rates Fertility rates matrix
+#' @param mortality_rates Mortality rates matrix
 #' @param years Vector of years to model
 #' @param normalize Whether or not to normalize the initial population (default = NULL)
 #' @param growthFlag If FALSE, normalize each year to the same population as
@@ -161,10 +163,8 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
     } else {
       previous_year <- current_year - 1
 
-      # TODO: Replace magic number subsetting with something automagical
-
-      current_year_fertility_rates <- explodeFertilityRates(unlist(fertility_rates[fertility_rates$Year == current_year, 2:8]))
-      current_year_mortality_rates <- explodeMortalityRates(unlist(mortality_rates[mortality_rates$Year == current_year, 2:9]))
+      current_year_fertility_rates <- explodeFertilityRates(fertility_rates[, as.character(current_year)])
+      current_year_mortality_rates <- explodeMortalityRates(mortality_rates[, as.character(current_year)])
 
       # Shuffle the end-of-year snapshots from the previous year to the next
       # population bucket
