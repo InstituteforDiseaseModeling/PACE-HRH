@@ -70,15 +70,16 @@ test_that("computeDeaths: basic", {
   pop <- ehep:::loadInitialPopulation(sheetName = "TEST_TotalPop")
 
   rates <- vector(mode = "double", length = length(ehep:::GPE$ages))
+
+  # Rates are expressed as "deaths per 1000", so rates = 1000 sets
+  # the actual per-person multiplier to unity.
   rates[] <- 1000
-  ratesList <- list(Female = rates, Male = rates)
+  ratesList <- list(Female = rates, Male = rates/2)
 
-  print(pop)
-  print(ratesList$Female)
+  popDf <- data.frame(Female = pop$female@values, Male = pop$male@values)
+  results <- ehep:::computeDeaths(popDf, ratesList)
 
-  results <- ehep:::computeDeaths(pop, ratesList)
-
-  print(results)
-
-  testthat::expect_true(TRUE)
+  compSum = sum(seq(10000,0,-100))
+  testthat::expect_equal(sum(results$Female), compSum)
+  testthat::expect_equal(sum(results$Male), compSum/2)
 })

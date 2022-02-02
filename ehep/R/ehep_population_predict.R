@@ -95,8 +95,7 @@ computeBirths <- function(female_population, rates){
 #' pyramids for females and males, and the annual rates per age for both
 #' sexes.
 #'
-#' @param population Dataframe of female and male population pyramids, as
-#' returned by, for example, \code{loadInitialPopulation}
+#' @param population Dataframe of female and male population pyramids
 #' @param rates List with exploded vectors of annual death rates, as returned by
 #' \code{explodeMortalityRates}
 #'
