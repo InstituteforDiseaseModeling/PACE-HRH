@@ -7,8 +7,7 @@
 computeDeaths(population, rates)
 }
 \arguments{
-\item{population}{Dataframe of female and male population pyramids, as
-returned by, for example, \code{loadInitialPopulation}}
+\item{population}{Dataframe of female and male population pyramids}
 
 \item{rates}{List with exploded vectors of annual death rates, as returned by
 \code{explodeMortalityRates}}
