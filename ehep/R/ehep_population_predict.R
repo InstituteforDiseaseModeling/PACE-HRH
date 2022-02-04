@@ -1,12 +1,27 @@
 ages <- GPE$ages
 
 .mratesExpansionMatrix <- .generateExpansionMatrix(ages = ages,
-                                                   breaks = c(0, 4, 9, 14, 19, 24))
+                                                   breaks = c(0, 4, 9, 14, 19, 34, 49, 59, 74))
 
 .fratesExpansionMatrix <- .generateExpansionMatrix(ages = ages,
                                                    breaks = c(14, 19, 24, 29, 34, 39, 44, 49))
 
-# Expected fields: {"Infants", "1-4y", "5-9y", "10-14y", "15-19y", "20-24y", "AdultFemale", "AdultMale"}
+# Expected fields: {
+# "MortalityInfants",
+# "Mortality1_4",
+# "Mortality5_9",
+# "Mortality10_14",
+# "Mortality15_19",
+# "Mortality20_34",
+# "Mortality35_49F",
+# "Mortality50_59F",
+# "Mortality60_74F",
+# "Mortality75+F",
+# "Mortality35_49M",
+# "Mortality50_59M",
+# "Mortality60_74M",
+# "Mortality75+M"
+# }
 
 #' Convert Mortality Rates From Banded To Per-Age
 #'
@@ -21,13 +36,13 @@ ages <- GPE$ages
 explodeMortalityRates <- function(banded_annual_rates){
   if (GPE$globalDebug){
     assertthat::assert_that(length(banded_annual_rates) == 8)
-    assertthat::assert_that(length(ages) > 25)
+    assertthat::assert_that(length(ages) > 75)
   }
 
-  r <- banded_annual_rates[1:7]
+  r <- banded_annual_rates[1:10]
   outf <- as.vector(.mratesExpansionMatrix %*% r)
 
-  r <- banded_annual_rates[c(1:6, 8)]
+  r <- banded_annual_rates[c(1:6, 11:14)]
   outm <- as.vector(.mratesExpansionMatrix %*% r)
 
   return(list(Female = outf, Male = outm))

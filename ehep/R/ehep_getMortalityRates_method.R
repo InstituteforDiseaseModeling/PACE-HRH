@@ -19,8 +19,9 @@ setMethod(
   signature = c("PopulationChangeParameters"),
   definition = function(object)
   {
-    x <- object@values[8:15]
-    names(x) <- .PcpVarNames[8:15]
+    mrateIndexes <- c(8:13, 22:29)
+    x <- object@values[mrateIndexes]
+    names(x) <- .PcpVarNames[mrateIndexes]
     return(x)
   }
 )

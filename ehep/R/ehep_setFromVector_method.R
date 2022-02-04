@@ -20,7 +20,7 @@ setMethod(
   signature = c("PopulationChangeParameters", "numeric"),
   definition = function(object, values)
   {
-    assertthat::assert_that(length(values) == 21)
+    assertthat::assert_that(length(values) == 29)
     assertthat::assert_that(is.numeric(values) == TRUE)
 
     # Clear any names on the vector

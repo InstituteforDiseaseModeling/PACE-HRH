@@ -1,6 +1,6 @@
 .PcpVarNames <- c("FertRate",
                "FertYears",
-               "AnnualBirthRateAll",
+               "AnnualBirthRateAdult",
                "AnnualBirthRate15_19",
                "AnnualBirthRate20_29",
                "AnnualBirthRate30_39",
@@ -10,7 +10,7 @@
                "Mortality5_9",
                "Mortality10_14",
                "Mortality15_19",
-               "Mortality20_24",
+               "Mortality20_34",
                "MortalityAdultF",
                "MortalityAdultM",
                "AnnualBirthRate20_24",
@@ -18,7 +18,15 @@
                "AnnualBirthRate30_34",
                "AnnualBirthRate35_39",
                "AnnualBirthRate40_44",
-               "AnnualBirthRate45_49"
+               "AnnualBirthRate45_49",
+               "Mortality35_49F",
+               "Mortality50_59F",
+               "Mortality60_74F",
+               "Mortality75+F",
+               "Mortality35_49M",
+               "Mortality50_59M",
+               "Mortality60_74M",
+               "Mortality75+M"
 )
 
 .PcpVarLookup <- 1:length(.PcpVarNames)
