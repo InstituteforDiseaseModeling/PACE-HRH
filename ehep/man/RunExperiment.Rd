@@ -4,11 +4,9 @@
 \alias{RunExperiment}
 \title{Run An EHEP Modeling Experiment}
 \usage{
-RunExperiment(scenarioName = "ScenarioA", debug = FALSE)
+RunExperiment(debug = FALSE)
 }
 \arguments{
-\item{scenarioName}{(default = "ScenarioA")}
-
 \item{debug}{(default = FALSE)}
 }
 \value{

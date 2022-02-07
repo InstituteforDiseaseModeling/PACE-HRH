@@ -5,7 +5,9 @@
 #' Copy configuration parameters from the Global Package Environment to the
 #' Base Values Environment.
 #'
-#' @param scenarioName string
+#' @param scenarioName Scenario name string
+#'
+#' @return Scenario information (invisible)
 #'
 #' @export
 #'
@@ -34,7 +36,22 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskParameters <- NULL
   }
 
-  return(invisible(NULL))
+  return(invisible(BVE$scenario))
+}
+
+.getScenarioConfig <- function(scenarioName){
+  n <- which(GPE$scenarios$UniqueID == scenarioName)
+
+  if (length(n) == 0) {
+    TraceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
+    return(NULL)
+  }
+
+  if (length(n) > 1) {
+    TraceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
+  }
+
+  return(GPE$scenarios[n[1], ])
 }
 
 .taskDataCols <- c("StartingRateInPop",
