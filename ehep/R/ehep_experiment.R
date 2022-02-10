@@ -7,29 +7,23 @@
 #' Results are written back into \code{experimentValuesEnvironment} and as
 #' a results structure.
 #'
-#' @param scenarioName (default = "ScenarioA")
 #' @param debug (default = FALSE)
 #'
 #' @return List of dataframes of per-task times, or NULL
 #'
-#' @export
-#'
-RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
+RunExperiment <- function(debug = FALSE){
   # STEP 0 - INITIALIZE
 
   # Load scenario details
   scenario <- BVE$scenario
 
   if (is.null(scenario)){
-    TraceMessage(paste("Unknown scenario ", scenarioName, sep = ""))
+    TraceMessage(paste("No scenario specified"))
     return(NULL)
   }
 
-  # TODO: stop passing around the redundant scenarioName variable since the
-  # full scenario config record is saved in the Base environment by
-  # SaveBaseSettings(). For now this assertion checks that everything is
-  # still aligned.
-  assertthat::assert_that(scenario$UniqueID == scenarioName)
+  # TODO: more extensive sanity checking that the Base Environment has been set
+  # up SaveBaseSettings().
 
   # Create a results list
   results <- list()
@@ -167,19 +161,4 @@ RunExperiment <- function(scenarioName = "ScenarioA", debug = FALSE){
   }
 
   return(results)
-}
-
-.getScenarioConfig <- function(scenarioName){
-  n <- which(GPE$scenarios$UniqueID == scenarioName)
-
-  if (length(n) == 0) {
-    TraceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
-    return(NULL)
-  }
-
-  if (length(n) > 1) {
-    TraceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
-  }
-
-  return(GPE$scenarios[n[1], ])
 }

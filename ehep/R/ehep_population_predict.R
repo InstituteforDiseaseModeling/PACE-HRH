@@ -35,7 +35,7 @@ ages <- GPE$ages
 #'
 explodeMortalityRates <- function(banded_annual_rates){
   if (GPE$globalDebug){
-    assertthat::assert_that(length(banded_annual_rates) == 8)
+    assertthat::assert_that(length(banded_annual_rates) == 14)
     assertthat::assert_that(length(ages) > 75)
   }
 

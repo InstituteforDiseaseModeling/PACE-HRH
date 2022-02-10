@@ -61,7 +61,7 @@ generateFertilityRatesMatrix <- function(){
         deltaRatios <- getFertilityRates(deltasBase)
       }
 
-      # Apply stochastic tweaks to every year of the time series
+      # Apply the same delta ratio to every year of the time series
       for (j in 2:nCols) {
         m[, j] <- m[, j - 1] * deltaRatios
       }
