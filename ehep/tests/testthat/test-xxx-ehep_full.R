@@ -2,7 +2,7 @@ library(ehep)
 
 withr::local_dir("..")
 
-test_that("explodeMortalityRates: basic", {
+test_that("Full experiment: basic", {
   skip("Temporarily skipped")
   return
 

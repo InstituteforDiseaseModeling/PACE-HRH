@@ -83,3 +83,77 @@ test_that("computeDeaths: basic", {
   testthat::expect_equal(sum(results$Female), compSum)
   testthat::expect_equal(sum(results$Male), compSum/2)
 })
+
+test_that("ComputeDemographicsProjection: simple", {
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+
+  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+
+  pop <- ehep:::loadInitialPopulation(sheetName = "TEST_TotalPop")
+  pars <- ehep:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
+  pcp <- ehep:::loadPopulationChangeParameters(sheetName = "TEST_PopValues")
+  ages <- ehep:::GPE$ages
+  years <- ehep:::GPE$years
+
+  # This conversion needs to go away. History: ComputeDemographicsProjection()
+  # was one of the first functions written for EHEP, before we started to carry
+  # PopulationPyramid objects around. It was initially easier to just convert
+  # between formats when ComputeDemographicsProjection() is called rather than
+  # risk breaking ComputeDemographicsProjection() itself.
+  initialPopulationDf <- data.frame(
+    Age = pop$age,
+    Female = pop$female@values,
+    Male = pop$male@values,
+    Total = pop$total@values
+  )
+
+  mf <- .generateFertilityRatesMatrix(pars, years, pcp, stochasticity = FALSE)
+  mm <- .generateMortalityRatesMatrix(pars, years, pcp, stochasticity = FALSE)
+
+  demographics <- ComputeDemographicsProjection(
+    initialPopulationDf,
+    mf,
+    mm,
+    years,
+    normalize = NULL,
+    growthFlag = TRUE,
+    debug = FALSE
+  )
+
+  # Save a graph to eyeball for general shape, etc
+  # png("graph_003.png")
+  # g <- ehep::PlotPopulationCurves(demographics)
+  # print(g)
+  # dev.off()
+
+
+  # EXP$demographics <-
+  #   ComputeDemographicsProjection(
+  #     initialPopulationDf,
+  #     EXP$fertilityRatesMatrix,
+  #     EXP$mortalityRatesMatrix,
+  #     GPE$years,
+  #     normalize = scenario$BaselinePop,
+  #     growthFlag = scenario$o_PopGrowth,
+  #     debug = TRUE
+  #   )
+  #
+  #
+  #
+  #
+  #
+  # ComputeDemographicsProjection <- function(initial_population_pyramid,
+  #                                           fertility_rates,
+  #                                           mortality_rates,
+  #                                           years,
+  #                                           normalize = NULL,
+  #                                           growthFlag = TRUE,
+  #                                           debug = FALSE)
+
+#  print(demographics)
+
+  testthat::expect_true(!is.null(demographics))
+})
