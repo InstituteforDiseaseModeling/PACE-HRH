@@ -11,9 +11,10 @@ packages = c(
   "scales",
   "methods",
   "truncnorm",
+  "tibble",
+  "testthat",
   #------------
   "readr",
-  "testthat",
   "tidyr"
   )
 

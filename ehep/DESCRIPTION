@@ -19,7 +19,8 @@ Imports:
     magrittr,
     ggplot2,
     methods,
-    truncnorm
+    truncnorm,
+    tibble
 Collate: 
     'ehep_package_env.R'
     'ehep_debug_utils.R'
@@ -54,6 +55,7 @@ Collate:
     'ehep_experiment.R'
     'ehep_experiments.R'
     'ehep_scenarios_config.R'
+    'ehep_scenarios_manage.R'
     'ehep_stochasticity_config.R'
     'ehep_save_results.R'
 Suggests: 
