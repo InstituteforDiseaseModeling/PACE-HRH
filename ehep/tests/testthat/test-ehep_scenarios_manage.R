@@ -19,8 +19,9 @@ test_that("Scenario management: create empty scenarios table", {
 })
 
 test_that("Scenario management: AddScenario", {
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  # Uncomment to turn on tracing
+  # withr::defer(ehep::Trace(originalTraceState))
+  # originalTraceState <- ehep::Trace(TRUE)
 
   tbl <- ehep:::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
@@ -72,8 +73,9 @@ test_that("Scenario management: AddScenario", {
 })
 
 test_that("Scenario management: DeleteScenario", {
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  # Uncomment to turn on tracing
+  # withr::defer(ehep::Trace(originalTraceState))
+  # originalTraceState <- ehep::Trace(TRUE)
 
   tbl <- ehep:::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
@@ -116,8 +118,9 @@ test_that("Scenario management: DeleteScenario", {
 })
 
 test_that("Scenario management: UpdateScenario", {
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  # Uncomment to turn on tracing
+  # withr::defer(ehep::Trace(originalTraceState))
+  # originalTraceState <- ehep::Trace(TRUE)
 
   tbl <- ehep:::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
@@ -166,8 +169,9 @@ test_that("Scenario management: UpdateScenario", {
 })
 
 test_that("Scenario management: ReadScenario", {
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  # Uncomment to turn on tracing
+  # withr::defer(ehep::Trace(originalTraceState))
+  # originalTraceState <- ehep::Trace(TRUE)
 
   tbl <- ehep:::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)

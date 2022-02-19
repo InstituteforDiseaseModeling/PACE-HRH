@@ -1,7 +1,7 @@
 Package: ehep
 Type: Package
 Title: Ethiopia Health Extension Program Capacity Modelling
-Version: 0.2.8
+Version: 0.2.9
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
 Description: This work allows modeling of the burdens placed on healthcare
@@ -50,6 +50,7 @@ Collate:
     'ehep_seasonality_config.R'
     'ehep_seasonality_experiment.R'
     'ehep_task_config.R'
+    'ehep_task_manage.R'
     'ehep_task_time.R'
     'ehep_task_time_stochasticity.R'
     'ehep_experiment.R'

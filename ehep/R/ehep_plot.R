@@ -1,8 +1,12 @@
+.colorM = rgb(96,131,180, maxColorValue = 255)
+.colorF = rgb(210,120,135, maxColorValue = 255)
+
 #' Plot A Single Population Curve
 #'
 #' @param pop Population values as a numeric vector
 #' @param xaxis Vector of age values for the x axis
 #' @param color Plot color
+#' @param title Plot title
 #'
 #' @return ggplot grob
 #' @export
@@ -12,8 +16,11 @@
 #' @importFrom ggplot2 geom_line
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 ggtitle
 #'
-PlotPopulationCurve <- function(pop, xaxis = NULL, color = NULL){
+PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 
   if (is.null(xaxis)){
     # seq_along produces 1 ... n, but population curves usually start at 0, so
@@ -23,18 +30,62 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = NULL){
 
   assertthat::assert_that(length(pop) == length(xaxis))
 
-  if (is.null(color)){
-    color = "blue"
-  }
-
   df <- data.frame(Age = xaxis, Population = pop)
 
   g <- ggplot2::ggplot(data = df)
   g <- g + geom_line(aes(x = Age, y = Population), color = color)
   g <- g + geom_point(aes(x = Age, y = Population), color = color, shape = 0)
   g <- g + scale_y_continuous(labels = scales::comma)
+  g <- g + ggtitle(title)
 
   return(g)
+}
+
+#' Plot A Single Population Curve From A Results List
+#'
+#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param trial Trail number (index into the results list)
+#' @param year Year in trial timeseries to plot
+#'
+#' @return ggplot grob, or NULL on error
+#' @export
+#'
+PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f", ...){
+  if (is.null(results)){
+    return(NULL)
+  }
+
+  if ((year %in% GPE$years) != TRUE){
+    return(NULL)
+  }
+
+  if (trial < 1 | trial > length(results)){
+    return(NULL)
+  }
+
+  if ((tolower(sex) %in% c("m", "f")) == FALSE){
+    sex <- "f"
+  }
+
+  args <- list(...)
+
+  # Use the color argument if it's provided, otherwise use the standard
+  # male/female colors
+  if (("color" %in% names(args)) != TRUE){
+    args$color <- ifelse(tolower(sex) == "m", .colorM, .colorF)
+  }
+
+  demographics <- results[[trial]]$Population[[as.character(year)]]
+
+  if (sex == "f"){
+    pop <- demographics$Female
+  } else {
+    pop <- demographics$Male
+  }
+
+  args$pop <- pop
+
+  return(do.call(PlotPopulationCurve, args))
 }
 
 #' Plot A Family Of Population Curves
@@ -90,6 +141,7 @@ PlotPopulationCurves <- function(... , xaxis = NULL, colors = NULL, shapes = NUL
     return(1)
   })
 
+  g <- g + xlab("Age") + ylab("Population")
   g <- g + scale_y_continuous(labels = scales::comma)
 
   return(g)
@@ -142,11 +194,6 @@ gatherPopulation <- function(pops){
 
   return(data.table::rbindlist(x))
 }
-
-
-.colorM = rgb(96,131,180, maxColorValue = 255)
-.colorF = rgb(210,120,135, maxColorValue = 255)
-
 
 # library(ggplot2)
 # library(grid)
@@ -295,4 +342,66 @@ PlotPyramids <- function(df) {
   g <- g + xlab("Age") + ylab("Population")
   g <- g + coord_flip()
   print(g)
+}
+
+#' Plot Mortality Rates
+#'
+#' @param ratesMatrix Matrix of banded mortality rates versus years
+#' @param year Year
+#'
+#' @return ggplot grob
+#' @export
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 vars
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 scale_color_manual
+#'
+PlotMortalityRates <- function(ratesMatrix, year){
+  rates <- explodeMortalityRates(as.vector(ratesMatrix[, as.character(year)]))
+  rates$Age <- GPE$ages
+  x <- tidyr::pivot_longer(as.data.frame(rates), cols = c("Female", "Male"), names_to = "Sex", values_to = "Rate")
+
+  titleStr <- paste("Mortality Rates (", year, ")", sep = "")
+
+  g <- ggplot(x, aes(x = Age, y = Rate/1000, color = Sex))
+  g <- g + scale_color_manual(values = c(.colorF, .colorM))
+  g <- g + geom_point(alpha = 0.5)
+  g <- g + facet_grid(cols = vars(Sex))
+  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Mortality Rate")
+  return(g)
+}
+
+#' Plot Fertility Rates
+#'
+#' @param ratesMatrix Matrix of banded fertility rates versus years
+#' @param year Year
+#'
+#' @return ggplot grob
+#' @export
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 vars
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 scale_color_manual
+#'
+PlotFertilityRates <- function(ratesMatrix, year){
+  rates <- explodeFertilityRates(as.vector(ratesMatrix[, as.character(year)]))
+  rates$Age <- GPE$ages
+  x <- tidyr::pivot_longer(as.data.frame(rates), cols = c("Female", "Male"), names_to = "Sex", values_to = "Rate")
+
+  titleStr <- paste("Fertility Rates (", year, ")", sep = "")
+
+  g <- ggplot(x, aes(x = Age, y = Rate, color = Sex))
+  g <- g + scale_color_manual(values = c(.colorF, .colorM))
+  g <- g + geom_point(alpha = 0.5)
+  g <- g + facet_grid(cols = vars(Sex))
+  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Fertility Rate")
+  return(g)
 }

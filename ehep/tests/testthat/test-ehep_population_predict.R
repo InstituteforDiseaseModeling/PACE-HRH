@@ -95,6 +95,7 @@ test_that("ComputeDemographicsProjection: simple", {
   pop <- ehep:::loadInitialPopulation(sheetName = "TEST_TotalPop")
   pars <- ehep:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
   pcp <- ehep:::loadPopulationChangeParameters(sheetName = "TEST_PopValues")
+#  pcp <- ehep:::loadPopulationChangeParameters(sheetName = "TEST_PopValues_Const")
   ages <- ehep:::GPE$ages
   years <- ehep:::GPE$years
 
@@ -120,40 +121,33 @@ test_that("ComputeDemographicsProjection: simple", {
     years,
     normalize = NULL,
     growthFlag = TRUE,
-    debug = FALSE
+    debug = TRUE
   )
 
-  # Save a graph to eyeball for general shape, etc
-  # png("graph_003.png")
-  # g <- ehep::PlotPopulationCurves(demographics)
-  # print(g)
-  # dev.off()
-
-
-  # EXP$demographics <-
-  #   ComputeDemographicsProjection(
-  #     initialPopulationDf,
-  #     EXP$fertilityRatesMatrix,
-  #     EXP$mortalityRatesMatrix,
-  #     GPE$years,
-  #     normalize = scenario$BaselinePop,
-  #     growthFlag = scenario$o_PopGrowth,
-  #     debug = TRUE
-  #   )
-  #
-  #
-  #
-  #
-  #
-  # ComputeDemographicsProjection <- function(initial_population_pyramid,
-  #                                           fertility_rates,
-  #                                           mortality_rates,
-  #                                           years,
-  #                                           normalize = NULL,
-  #                                           growthFlag = TRUE,
-  #                                           debug = FALSE)
-
-#  print(demographics)
-
   testthat::expect_true(!is.null(demographics))
+
+  save(demographics, mm, mf, file = "demographics.RData")
+
+
+  # Save a graph to eyeball for general shape, etc
+  png("graph_003.png", width = 800, height = 800)
+  g <- ehep::PlotPopulationCurve(demographics[[1]]$Female, xaxis = ages)
+  print(g)
+  dev.off()
+
+  png("graph_004.png", width = 800, height = 800)
+  g <- ehep::PlotPopulationCurves(
+    demographics[[1]]$Female,
+    demographics[[2]]$Female,
+    demographics[[3]]$Female,
+    demographics[[4]]$Female,
+    demographics[[5]]$Female,
+    demographics[[6]]$Female,
+    xaxis = ages,
+    colors = c("royalblue4", "royalblue3", "royalblue2", "royalblue1"),
+    shapes = c(0, 1, 2, 5)
+  )
+  print(g)
+  dev.off()
+
 })

@@ -11,14 +11,43 @@
 #' @return Data frame of experiment scenario parameters
 #'
 loadScenarios <- function(sheetName = "Scenarios") {
-  scenarios <-
-    readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  # scenarios <-
+  #   readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
-  # We only care about the first 10 columns of the sheet
-  scenarios <- scenarios[1:10]
+  scenarios <- NULL
 
-  assertthat::are_equal(names(scenarios), .scenarioColumnNames)
-  assertthat::assert_that(all(sapply(scenarios,typeof) == ehep:::.scenarioColumnTypes))
+  if (file.exists(GPE$inputExcelFile)){
+    out <- tryCatch(
+      {
+        scenarios <-
+          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+      },
+      warning = function(war)
+      {
+        ehep::TraceMessage(paste("WARNING:", war))
+      },
+      error = function(err)
+      {
+        ehep::TraceMessage(paste("ERROR:", err))
+      },
+      finally =
+        {
+
+        }
+    )
+  } else {
+    ehep::TraceMessage(paste("Could not find model input file ",
+                             GPE$inputExcelFile,
+                             sep = ""))
+  }
+
+  if (!is.null(scenarios)){
+    # We only care about the first 10 columns of the sheet
+    scenarios <- scenarios[1:10]
+
+    assertthat::are_equal(names(scenarios), .scenarioColumnNames)
+    assertthat::assert_that(all(sapply(scenarios,typeof) == ehep:::.scenarioColumnTypes))
+  }
 
   return(scenarios)
 }

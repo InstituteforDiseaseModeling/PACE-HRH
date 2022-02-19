@@ -4,7 +4,7 @@
 \alias{PlotPopulationCurve}
 \title{Plot A Single Population Curve}
 \usage{
-PlotPopulationCurve(pop, xaxis = NULL, color = NULL)
+PlotPopulationCurve(pop, xaxis = NULL, color = .colorM, title = "")
 }
 \arguments{
 \item{pop}{Population values as a numeric vector}
@@ -12,6 +12,8 @@ PlotPopulationCurve(pop, xaxis = NULL, color = NULL)
 \item{xaxis}{Vector of age values for the x axis}
 
 \item{color}{Plot color}
+
+\item{title}{Plot title}
 }
 \value{
 ggplot grob

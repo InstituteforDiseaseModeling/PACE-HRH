@@ -20,9 +20,8 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
     NextEpsilons()
     results <- RunExperiment()
     results$Population <- EXP$demographics
-    results$PopulationParams <- list(Base = BVE$populationChangeParameters,
-                                     Epsilon = EPS$populationChangeParameters,
-                                     Experiment = EXP$populationChangeParameters)
+    results$PopulationParams <- list(FRatesMatrix = EXP$fertilityRatesMatrix,
+                                     MRatesMatrix = EXP$mortalityRatesMatrix)
     return(results)
   })
 
