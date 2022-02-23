@@ -41,6 +41,22 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
   return(g)
 }
 
+.validResultsParams <- function(results, trial, year){
+  if (is.null(results)){
+    return(FALSE)
+  }
+
+  if ((year %in% GPE$years) != TRUE){
+    return(FALSE)
+  }
+
+  if (trial < 1 | trial > length(results)){
+    return(FALSE)
+  }
+
+  return(TRUE)
+}
+
 #' Plot A Single Population Curve From A Results List
 #'
 #' @param results Results list (as returned by \code{RunExperiments()})
@@ -51,15 +67,7 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 #' @export
 #'
 PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f", ...){
-  if (is.null(results)){
-    return(NULL)
-  }
-
-  if ((year %in% GPE$years) != TRUE){
-    return(NULL)
-  }
-
-  if (trial < 1 | trial > length(results)){
+  if (!.validResultsParams(results, trial, year)){
     return(NULL)
   }
 
@@ -342,6 +350,40 @@ PlotPyramids <- function(df) {
   g <- g + xlab("Age") + ylab("Population")
   g <- g + coord_flip()
   print(g)
+}
+
+#' Plot A Single Pair of Mortality Rates Curves From A Results List
+#'
+#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param trial Trail number (index into the results list)
+#' @param year Year in trial timeseries to plot
+#'
+#' @return ggplot grob, or NULL on error
+#' @export
+#'
+PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
+  if (!.validResultsParams(results, trial, year)) {
+    return(NULL)
+  }
+
+  return(PlotMortalityRates(results[[trial]]$PopulationParams$MRatesMatrix, year))
+}
+
+#' Plot A Single Pair of Fertility Rates Curves From A Results List
+#'
+#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param trial Trail number (index into the results list)
+#' @param year Year in trial timeseries to plot
+#'
+#' @return ggplot grob, or NULL on error
+#' @export
+#'
+PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
+  if (!.validResultsParams(results, trial, year)) {
+    return(NULL)
+  }
+
+  return(PlotFertilityRates(results[[trial]]$PopulationParams$FRatesMatrix, year))
 }
 
 #' Plot Mortality Rates
