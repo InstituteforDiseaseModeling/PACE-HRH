@@ -42,12 +42,6 @@ generateMortalityRatesMatrix <- function(){
   if (stochasticity == FALSE){
     m[, 1] <- initRates
 
-    # if (optConstantMortality == TRUE) {
-    #   deltaRatios <- 1
-    # } else {
-    #   deltaRatios <- getMortalityRates(deltasBase)
-    # }
-
     deltaRatios <- getMortalityRates(deltasBase)
 
     # Apply the same delta ratio to every year of the time series
