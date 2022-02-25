@@ -126,9 +126,6 @@ test_that("ComputeDemographicsProjection: simple", {
 
   testthat::expect_true(!is.null(demographics))
 
-  save(demographics, mm, mf, file = "demographics.RData")
-
-
   # Save a graph to eyeball for general shape, etc
   png("graph_003.png", width = 800, height = 800)
   g <- ehep::PlotPopulationCurve(demographics[[1]]$Female, xaxis = ages)

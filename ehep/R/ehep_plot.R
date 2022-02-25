@@ -447,3 +447,143 @@ PlotFertilityRates <- function(ratesMatrix, year){
   g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Fertility Rate")
   return(g)
 }
+
+#' Plot Fertility Rates Statistics
+#'
+#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param se Whether to show standard error intervals, or projection intervals
+#'
+#' @return ggplot grob
+#' @export
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 vars
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 xlab
+#'
+PlotFertilityRatesStats <- function(results, se = FALSE) {
+  if (is.null(results)) {
+    return(NULL)
+  }
+
+  if (length(results) < 1) {
+    return(NULL)
+  }
+
+  # STEP 1 : Gather some info we're going need
+
+  fRates <- results[[1]]$PopulationParams$FRatesMatrix
+  rowNames <- rownames(fRates)
+  colNames <- colnames(fRates)
+  dims <- dim(fRates)
+  nrows <- dims[1]
+  ncols <- dims[2]
+  msize <- nrows * ncols
+  ntrial <- length(results)
+
+  # STEP 2 : Extract and combine fertility matrixes across multiple trials
+
+  # Collect all the fertility rates matrices into one list
+  l <- lapply(results, function(r) {
+    return(r$PopulationParams$FRatesMatrix)
+  })
+
+  # Flatten the list (which also flattens the matrices that make up the list)
+  v <- unlist(l)
+
+  # STEP 3 - compute means and standard deviations for each rates matrix cell
+  # across all the trials
+
+  # Initialize results matrices for means and standard deviations
+  means <-
+    matrix(
+      0,
+      nrow = dims[1],
+      ncol = dims[2],
+      dimnames = list(rowNames, colNames)
+    )
+
+  sds <-
+    matrix(
+      0,
+      nrow = dims[1],
+      ncol = dims[2],
+      dimnames = list(rowNames, colNames)
+    )
+
+  # Extract the averages and standard deviations across trials.
+  # Note that the default R behavior is to flatten matrices by column. The order
+  # of elements in v is therefore [1,1], [2,1], [3,1], etc. The element at
+  # offset = 2 (offset is zero-based) is [3,1].
+  offset <- 0
+  for (j in seq_len(ncols)) {
+    for (i in seq_len(nrows)) {
+      # i, j = (row, col)
+
+      # Pick out the [i, j] elements from  the flattened data
+      mask <- seq(1 + offset, length(v), msize)
+      values <- v[mask]
+      means[i, j] <- mean(values)
+      sds[i, j] <- sd(values)
+
+      offset <- offset + 1
+    }
+  }
+
+  # STEP 4 : Convert the data into a plot-able data frame
+
+  df <- as.data.frame(t(means))
+  df$Year <- row.names(df)
+  df <-
+    tidyr::pivot_longer(
+      df,
+      cols = starts_with("AnnualBirthRate"),
+      names_to = "Rate",
+      values_to = "Mean"
+    )
+
+  df2 <- as.data.frame(t(sds))
+  df2$Year <- row.names(df2)
+  df2 <-
+    tidyr::pivot_longer(
+      df2,
+      cols = starts_with("AnnualBirthRate"),
+      names_to = "Rate",
+      values_to = "SD"
+    )
+
+  # Compute the 95% confidence interval
+  if (se == TRUE) {
+    df$CI <- df2$SD * qt(0.975, ntrial - 1) / sqrt(ntrial)
+    ylabel <- "Mean (CI = 95%)"
+  } else {
+    df$CI <- df2$SD * qt(0.975, ntrial - 1)
+    ylabel <- "Variance (CI = 95%)"
+  }
+
+  # STEP 5 : Do the plot
+
+  g <- ggplot(df, aes(
+    x = Year,
+    y = Mean,
+    color = Rate,
+    group = Rate
+  ))
+  g <- g + geom_line(size = .5)
+  g <-
+    g + geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI),
+                      width = .5,
+                      size = .75)
+  g <- g + facet_wrap(vars(Rate))
+  g <- g + scale_x_discrete(breaks = c(2020, 2030, 2040))
+  g <- g + theme(legend.position = "none")
+  g <- g + ylab(ylabel) + xlab("Year")
+
+  return(g)
+}
