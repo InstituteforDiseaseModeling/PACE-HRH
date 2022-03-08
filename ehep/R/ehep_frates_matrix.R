@@ -44,22 +44,16 @@ generateFertilityRatesMatrix <- function(){
 
     # Grab the fertility rates deltas base values. If fertility rate changes are
     # turned off, assume a delta ratio of 1. (Same fertility rate year over
-    # year, but subject to stochastic tweaks if stochasticity == TRUE.)
+    # year, but still subject to stochastic tweaks if stochasticity == TRUE.)
+
+    deltaRatios <- getFertilityRates(deltasBase)
 
     if (optConstantFertility == TRUE) {
-      deltaRatios <- 1
-    } else {
-      deltaRatios <- getFertilityRates(deltasBase)
+      deltaRatios[1:length(deltaRatios)] <- 1
     }
 
     if (stochasticity == FALSE){
       m[, 1] <- initRates
-
-      if (optConstantFertility == TRUE) {
-        deltaRatios <- 1
-      } else {
-        deltaRatios <- getFertilityRates(deltasBase)
-      }
 
       # Apply the same delta ratio to every year of the time series
       for (j in 2:nCols) {

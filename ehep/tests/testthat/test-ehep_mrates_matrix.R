@@ -2,7 +2,7 @@ library(ehep)
 
 withr::local_dir("..")
 
-test_that("Fertility rates matrix: basic", {
+test_that("Mortality rates matrix: basic", {
   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
   e <- ehep:::GPE
@@ -18,42 +18,18 @@ test_that("Fertility rates matrix: basic", {
 
   # CASE A
 
-  mBaseline <-
-    ehep:::.generateFertilityRatesMatrix(pars,
-                                         years,
-                                         pcp,
-                                         stochasticity = FALSE,
-                                         optConstantFertility = TRUE)
-
-  nRows <- dim(mBaseline)[1]
-  nCols <- dim(mBaseline)[2]
-  testthat::expect_equal(nRows, length(ehep:::getFertilityRates(pcp$initValues)))
-  testthat::expect_equal(nCols, length(years))
-
-  # In the baseline matrix - no stochasticity, constant fertility rates - the
-  # fertility rates don't change from year to year.
-
-  for (i in 1:nRows) {
-    rowData <- mBaseline[i, ]
-    initVal <- rowData[1]
-    testthat::expect_true(all(rowData == initVal))
-  }
-
-  # CASE B
-
   mDecreasing <-
-    ehep:::.generateFertilityRatesMatrix(pars,
+    ehep:::.generateMortalityRatesMatrix(pars,
                                          years,
                                          pcp,
-                                         stochasticity = FALSE,
-                                         optConstantFertility = FALSE)
+                                         stochasticity = FALSE)
 
   nRows <- dim(mDecreasing)[1]
   nCols <- dim(mDecreasing)[2]
-  testthat::expect_equal(nRows, length(ehep:::getFertilityRates(pcp$initValues)))
+  testthat::expect_equal(nRows, length(ehep:::getMortalityRates(pcp$initValues)))
   testthat::expect_equal(nCols, length(years))
 
-  # In the decreasing fertility matrix without stochasticity the fertility rates
+  # In the decreasing mortality matrix without stochasticity the mortality rates
   # change by the same proportional amount from year to year.
 
   for (i in 1:nRows) {
@@ -66,19 +42,18 @@ test_that("Fertility rates matrix: basic", {
     testthat::expect_true(all(abs(ratios - initRatio) < 1.0e-15))
   }
 
-  # CASE C
+  # CASE B
 
-  # Full stochasticity, decreasing fertility rates
+  # Full stochasticity
 
   e <- vector()
 
   for (n in 1:10) {
     mFull <-
-      ehep:::.generateFertilityRatesMatrix(pars,
+      ehep:::.generateMortalityRatesMatrix(pars,
                                            years,
                                            pcp,
-                                           stochasticity = TRUE,
-                                           optConstantFertility = FALSE)
+                                           stochasticity = TRUE)
 
     for (i in 1:nRows) {
       x <- mFull[i, 2:nCols]
@@ -88,8 +63,8 @@ test_that("Fertility rates matrix: basic", {
   }
 
   # Check that the mean and variance are no more than N% off the expected values
-  p = pars[pars$Value == "Annual delta fertility rates",]$p
-  q = pars[pars$Value == "Annual delta fertility rates",]$q
+  p = pars[pars$Value == "Annual delta mortality rates",]$p
+  q = pars[pars$Value == "Annual delta mortality rates",]$q
 
   m <- 0  # mean of normal distribution underlying truncated norm dist
   s <- p  # standard deviation
@@ -104,6 +79,7 @@ test_that("Fertility rates matrix: basic", {
   Pb <- pnorm(b, mean = m, sd = s)
 
   f <- 1 - (((b * pb) - (a * pa))/(Pb - Pa)) - ((pb - pa)/(Pb - Pa))^2
+
   sdExpected <- sqrt((s^2)*f) # Expected sd of the truncated norm dist
   mExpected = 0.98 # Value hard-wired into the simple_config spreadsheet
 
@@ -118,7 +94,7 @@ test_that("Fertility rates matrix: basic", {
   testthat::expect_true(abs(sd(e) - sdExpected)/sdExpected < 0.10)
 
   # Save a graph to eyeball for general shape, etc
-  png("graph_001.png")
-  hist(e, breaks = 25, main = paste("fertility rates stochastic distribution N = ", length(e)))
+  png("graph_002.png")
+  hist(e, breaks = 25, main = paste("mortality rates stochastic distribution N = ", length(e)))
   dev.off()
 })

@@ -13,7 +13,7 @@ loadScenarios(sheetName = "Scenarios")
 Data frame of experiment scenario parameters
 }
 \description{
-Read the experiment scenario information from the model inputs Excel file. The
-name and location of the model inputs Excel file is loaded from the global
-configuration JSON file.
+Read the experiment scenario information from the model inputs Excel file.
+The name and location of the model inputs Excel file is loaded from the
+global configuration JSON file.
 }

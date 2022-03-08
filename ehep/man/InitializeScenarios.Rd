@@ -4,15 +4,18 @@
 \alias{InitializeScenarios}
 \title{Initialize Experiment Scenario Information}
 \usage{
-InitializeScenarios(...)
+InitializeScenarios(loadFromExcel = TRUE, ...)
 }
 \arguments{
+\item{loadFromExcel}{If TRUE, initialize the scenarios list from the model
+inputs Excel file. If FALSE, initialize with a blank scenarios table.}
+
 \item{...}{See \code{loadScenarios()}}
 }
 \value{
 NULL (invisible)
 }
 \description{
-Read the healthcare task information from the model inputs Excel file, and
+Read experiment scenario information from the model inputs Excel file, and
 save to a location in the global package environment.
 }

@@ -13,16 +13,15 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
   assertthat::is.number(trials)
   assertthat::assert_that(trials > 1)
 
-  ehep::SaveBaseSettings(scenarioName)
-  ehep::InitializeEpsilons()
+  SaveBaseSettings(scenarioName)
+  InitializeEpsilons()
 
   l <- lapply(seq_len(trials), function(trial){
     NextEpsilons()
     results <- RunExperiment()
     results$Population <- EXP$demographics
-    results$PopulationParams <- list(Base = BVE$populationChangeParameters,
-                                     Epsilon = EPS$populationChangeParameters,
-                                     Experiment = EXP$populationChangeParameters)
+    results$PopulationParams <- list(FRatesMatrix = EXP$fertilityRatesMatrix,
+                                     MRatesMatrix = EXP$mortalityRatesMatrix)
     return(results)
   })
 
