@@ -31,5 +31,8 @@ Allowed fields (in the ... arguments):
 \item \strong{o_Fertility_decr} (logical)
 \item \strong{o_MHIVTB_decr} (logical)
 \item \strong{o_ChildDis_decr} (logical)
+\item \strong{sheet_TaskValues} (character)
+\item \strong{sheet_PopValues} (character)
+\item \strong{sheet_SeasonalityCurves} (character)
 }
 }

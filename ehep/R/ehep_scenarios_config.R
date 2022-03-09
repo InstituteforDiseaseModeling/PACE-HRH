@@ -42,11 +42,13 @@ loadScenarios <- function(sheetName = "Scenarios") {
   }
 
   if (!is.null(scenarios)){
-    # We only care about the first 10 columns of the sheet
-    scenarios <- scenarios[1:10]
+    # We only care about some of the sheet
+    scenarios <- scenarios[.scenarioColumnNames]
 
+    # Asserts test that all the expected columns have shown up
+    assertthat::are_equal(length(.scenarioColumnNames), length(.scenarioColumnTypes))
     assertthat::are_equal(names(scenarios), .scenarioColumnNames)
-    assertthat::assert_that(all(sapply(scenarios,typeof) == ehep:::.scenarioColumnTypes))
+    assertthat::assert_that(all(sapply(scenarios,typeof) == .scenarioColumnTypes))
   }
 
   return(scenarios)

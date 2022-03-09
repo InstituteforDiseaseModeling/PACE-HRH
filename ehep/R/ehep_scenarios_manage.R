@@ -9,7 +9,10 @@
     "o_Seasonality",
     "o_Fertility_decr",
     "o_MHIVTB_decr",
-    "o_ChildDis_decr"
+    "o_ChildDis_decr",
+    "sheet_TaskValues",
+    "sheet_PopValues",
+    "sheet_SeasonalityCurves"
   )
 
 .scenarioColumnTypes <-
@@ -23,7 +26,10 @@
     "logical",
     "logical",
     "logical",
-    "logical"
+    "logical",
+    "character",
+    "character",
+    "character"
   )
 
 .scenarioMetaData <- list(cols = .scenarioColumnNames, types = .scenarioColumnTypes)
@@ -63,6 +69,9 @@ CreateScenariosTable <- function() {
 #' * __o_Fertility_decr__ (logical)
 #' * __o_MHIVTB_decr__ (logical)
 #' * __o_ChildDis_decr__ (logical)
+#' * __sheet_TaskValues__ (character)
+#' * __sheet_PopValues__ (character)
+#' * __sheet_SeasonalityCurves__ (character)
 #'
 #' @return Updated scenarios table
 #' @export
@@ -168,6 +177,9 @@ DeleteScenario <-
 #' * __o_Fertility_decr__ (logical)
 #' * __o_MHIVTB_decr__ (logical)
 #' * __o_ChildDis_decr__ (logical)
+#' * __sheet_TaskValues__ (character)
+#' * __sheet_PopValues__ (character)
+#' * __sheet_SeasonalityCurves__ (character)
 #'
 #' @return Updated scenarios table
 #' @export
