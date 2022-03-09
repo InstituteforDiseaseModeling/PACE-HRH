@@ -11,9 +11,6 @@
 #' @return Data frame of experiment scenario parameters
 #'
 loadScenarios <- function(sheetName = "Scenarios") {
-  # scenarios <-
-  #   readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-
   scenarios <- NULL
 
   if (file.exists(GPE$inputExcelFile)){
