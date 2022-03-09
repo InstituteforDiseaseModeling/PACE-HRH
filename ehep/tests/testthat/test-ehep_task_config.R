@@ -36,9 +36,34 @@ test_that("Task configuration: basic data", {
   # taskData$applyStochasticity <- applyStochasticity
 })
 
-# test_that("Population configuration: confirm cleanup 1", {
-#   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
-# })
+test_that("Task configuration: confirm cleanup 1", {
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+})
+
+test_that("Task configuration: invalid sheet name", {
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+
+  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  tasks <- ehep:::loadTaskParameters(sheetName = "notasheet")
+
+  testthat::expect_null(tasks)
+})
+
+test_that("Task configuration: invalid file name", {
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+
+  e$inputExcelFile <- "./simple_config/notafile.xlsx"
+  tasks <- ehep:::loadTaskParameters(sheetName = "TEST_TaskValues")
+
+  testthat::expect_null(tasks)
+})
+
 #
 # # This test loads and validates a simplified version of the input population data.
 # test_that("Population configuration: basic population parameters", {

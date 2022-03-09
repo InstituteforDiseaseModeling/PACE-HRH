@@ -9,7 +9,38 @@
 #' @return Data frame of healthcare task parameters
 #'
 loadTaskParameters <- function(sheetName = "TaskValues"){
-  taskData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  taskData <- NULL
+
+  if (file.exists(GPE$inputExcelFile)){
+    out <- tryCatch(
+      {
+        taskData <-
+          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+      },
+      warning = function(war)
+      {
+        ehep::TraceMessage(paste("WARNING:", war))
+      },
+      error = function(err)
+      {
+        ehep::TraceMessage(paste("ERROR:", err))
+      },
+      finally =
+        {
+
+        }
+    )
+  } else {
+    ehep::TraceMessage(paste("Could not find model input file ",
+                             GPE$inputExcelFile,
+                             sep = ""))
+  }
+
+  if (is.null(taskData)){
+    return(NULL)
+  }
+
+#  taskData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   # Convert some of the NA values to sensible defaults
   assertthat::has_name(taskData, "StartingRateInPop")

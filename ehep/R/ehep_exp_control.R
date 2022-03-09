@@ -29,7 +29,18 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$initialPopulation <- NULL
   }
 
-  if (exists("taskData", where = GPE)){
+  # Load Task parameter data from the appropriate Excel sheet, as specified
+  # in the Scenarios sheet.
+
+  taskSheet <- BVE$scenario$sheet_TaskValues
+
+  if (!is.blank(taskSheet)){
+    GPE$taskData <- loadTaskParameters(taskSheet)
+  } else {
+    GPE$taskData <- loadTaskParameters()
+  }
+
+  if (!is.null(GPE$taskData)) {
     m <- .convertTaskDfToMatrix(GPE$taskData)
     BVE$taskParameters <- TaskParameters(values = m)
   } else {
