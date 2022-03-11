@@ -15,21 +15,29 @@ test_that("Experiment control: basic read from Excel", {
     }
   }
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
-  e$globalConfigLoaded <- TRUE # Fool the system into believing it has already processed the globalconfig.json file
+  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
 
   ehep::InitializeScenarios()
   testthat::expect_true(!is.null(e$scenarios))
 
   scenarioName <- "NoChangeBaseline_NR"
-  testthat::expect_true(scenarioName %in% e$scenarios$UniqueID)
+  assertthat::assert_that(scenarioName %in% e$scenarios$UniqueID)
 
-  ehep::SaveBaseSettings(scenarioName)
+  result <- ehep::SaveBaseSettings(scenarioName)
 
-
-
-
+  testthat::expect_true(!is.null(result))
+  testthat::expect_true(result$UniqueID == scenarioName)
 
   e$scenarios <- NULL
 })
+
+# test_that("Experiment control: Epsilon layer initialization", {
+#   testthat::expect_invisible(ehep::InitializeEpsilons())
+#   testthat::expect_null(ehep:::EPS$fertilityRatesMatrix)
+#   testthat::expect_null(ehep:::EPS$mortalityRatesMatrix)
+#   testthat::expect_null(ehep:::EPS$prevalenceRatesMatrix)
+#   testthat::expect_false(is.null(ehep:::populationChangeParameters))
+#   testthat::expect_false(is.null(ehep:::initialPopulation))
+#   testthat::expect_false(is.null(ehep:::taskParameters))
+# })

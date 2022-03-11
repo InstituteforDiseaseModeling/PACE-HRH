@@ -9,6 +9,8 @@ RunExperiments(scenarioName = "ScenarioA", trials = 100, debug = FALSE)
 \arguments{
 \item{scenarioName}{(default = "ScenarioA")}
 
+\item{trials}{(default = 100)}
+
 \item{debug}{(default = FALSE)}
 }
 \value{

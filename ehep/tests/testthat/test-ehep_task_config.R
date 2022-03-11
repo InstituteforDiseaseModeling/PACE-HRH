@@ -40,6 +40,29 @@ test_that("Task configuration: confirm cleanup 1", {
   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 })
 
+
+
+test_that("Task configuration: InitializeHealthcareTasks", {
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+
+  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+
+  ehep::InitializeHealthcareTasks(sheetName = "TEST_TaskValues")
+
+  td <- ehep:::GPE$taskData
+  testthat::expect_true(!is.null(td))
+  testthat::expect_equal(class(td), c("tbl_df", "tbl", "data.frame"))
+  testthat::expect_equal(names(td[ehep:::.taskColumnNames]), ehep:::.taskColumnNames)
+  testthat::expect_error(td["notacolumn"])
+})
+
+
+
+
+
 test_that("Task configuration: invalid sheet name", {
   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 

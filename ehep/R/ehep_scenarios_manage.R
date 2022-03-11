@@ -213,9 +213,7 @@ UpdateScenario <-
 
     # It should never happen that there are two records with the same UniqueID
     # value, but in case it does happen we use the first match.
-    if (length(rowNum) > 1){
-      rowNum <- rowNum[1]
-    }
+    rowNum <- rowNum[1]
 
     # Write correctly labeled field values to the appropriate record
     args <- list(...)
@@ -269,9 +267,7 @@ ReadScenario <-
 
     # It should never happen that there are two records with the same UniqueID
     # value, but in case it does happen we use the first match.
-    if (length(rowNum) > 1){
-      rowNum <- rowNum[1]
-    }
+    rowNum <- rowNum[1]
 
     return(tbl[rowNum,])
   }

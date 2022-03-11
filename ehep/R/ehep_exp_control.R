@@ -7,7 +7,7 @@
 #'
 #' @param scenarioName Scenario name string
 #'
-#' @return Scenario information (invisible)
+#' @return Scenario information, or NULL if the scenario is invalid
 #'
 #' @export
 #'
@@ -15,18 +15,20 @@ SaveBaseSettings <- function(scenarioName = ""){
   # GPE = globalPackageEnvironment = source environment
   # BVE = baseValuesEnvironment = destination environment
 
+  .zeroExpBaseVariables()
+
   BVE$scenario <- .getScenarioConfig(scenarioName)
+
+  if (is.null(BVE$scenario)){
+    return(NULL)
+  }
 
   if (exists("populationChangeParameters", where = GPE)){
     BVE$populationChangeParameters <- GPE$populationChangeParameters
-  } else {
-    BVE$populationChangeParameters <- NULL
   }
 
   if (exists("initialPopulation", where = GPE)){
     BVE$initialPopulation <- GPE$initialPopulation
-  } else {
-    BVE$initialPopulation <- NULL
   }
 
   # Load Task parameter data from the appropriate Excel sheet, as specified
@@ -41,13 +43,20 @@ SaveBaseSettings <- function(scenarioName = ""){
   }
 
   if (!is.null(GPE$taskData)) {
+    GPE$taskDataDims <- dim(GPE$taskData)
+    GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
     m <- .convertTaskDfToMatrix(GPE$taskData)
     BVE$taskParameters <- TaskParameters(values = m)
-  } else {
-    BVE$taskParameters <- NULL
   }
 
-  return(invisible(BVE$scenario))
+  return(BVE$scenario)
+}
+
+.zeroExpBaseVariables <- function(){
+  BVE$scenario <- NULL
+  BVE$populationChangeParameters <- NULL
+  BVE$initialPopulation <- NULL
+  BVE$taskParameters <- NULL
 }
 
 .getScenarioConfig <- function(scenarioName){

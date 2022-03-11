@@ -10,7 +10,7 @@ SaveBaseSettings(scenarioName = "")
 \item{scenarioName}{Scenario name string}
 }
 \value{
-Scenario information (invisible)
+Scenario information, or NULL if the scenario is invalid
 }
 \description{
 Copy configuration parameters from the Global Package Environment to the

@@ -40,8 +40,6 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
     return(NULL)
   }
 
-#  taskData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-
   # Convert some of the NA values to sensible defaults
   assertthat::has_name(taskData, "StartingRateInPop")
   taskData$StartingRateInPop[is.na(taskData$StartingRateInPop)] <- 0

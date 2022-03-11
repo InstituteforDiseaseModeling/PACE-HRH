@@ -15,8 +15,7 @@ test_that("Scenario configuration: basic read from Excel", {
     }
   }
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
-  e$globalConfigLoaded <- TRUE # Fool the system into believing it has already processed the globalconfig.json file
+  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
 
   testthat::expect_true(is.null(e$scenarios))
@@ -24,6 +23,29 @@ test_that("Scenario configuration: basic read from Excel", {
   testthat::expect_false(is.null(e$scenarios))
   testthat::expect_equal(class(e$scenarios), c("tbl_df", "tbl", "data.frame"))
   testthat::expect_equal(names(e$scenarios[ehep:::.scenarioColumnNames]), ehep:::.scenarioColumnNames)
+
+  e$scenarios <- NULL
+})
+
+test_that("Scenario configuration: bad sheet name", {
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+
+  if (exists("scenarios", envir = e)){
+    if (!is.null(e$scenarios)){
+      local_vars("scenarios", envir = e)
+    }
+  }
+
+  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  e$scenarios <- NULL
+
+  testthat::expect_true(is.null(e$scenarios))
+  ehep::InitializeScenarios(sheetName = "notasheet")
+  testthat::expect_true(is.null(e$scenarios))
 
   e$scenarios <- NULL
 })
@@ -41,8 +63,7 @@ test_that("Scenario configuration: bad Excel file", {
     }
   }
 
-  e$inputExcelFile <- "./simple_config/notafile.xlsx"
-  e$globalConfigLoaded <- TRUE # Fool the system into believing it has already processed the globalconfig.json file
+  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/notafile.xlsx")
   e$scenarios <- NULL
 
   # This should fail (ie not return a scenario table) because the filename is bogus
@@ -66,8 +87,7 @@ test_that("Scenario configuration: non-Excel configuration", {
     }
   }
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
-  e$globalConfigLoaded <- TRUE # Fool the system into believing it has already processed the globalconfig.json file
+  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
 
   testthat::expect_true(is.null(e$scenarios))
