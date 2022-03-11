@@ -23,9 +23,35 @@ SaveBaseSettings <- function(scenarioName = ""){
     return(NULL)
   }
 
-  if (exists("populationChangeParameters", where = GPE)){
+  # Load Population change parameter data from the appropriate Excel sheet, as specified
+  # in the Scenarios sheet.
+
+  popValsSheet <- BVE$scenario$sheet_PopValues
+
+  if (!is.blank(popValsSheet)){
+    GPE$populationChangeParameters <- loadPopulationChangeParameters(popValsSheet)
+  } else {
+    GPE$populationChangeParameters <- loadPopulationChangeParameters()
+  }
+
+  if (!is.null(GPE$populationChangeParameters)) {
     BVE$populationChangeParameters <- GPE$populationChangeParameters
   }
+
+
+  # Load Population change parameter data from the appropriate Excel sheet, as specified
+  # in the Scenarios sheet.
+
+  seasonalitySheet <- BVE$scenario$sheet_SeasonalityCurves
+
+  if (!is.blank(seasonalitySheet)){
+    GPE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
+  } else {
+    GPE$seasonalityCurves <- loadSeasonalityCurves()
+  }
+
+
+
 
   if (exists("initialPopulation", where = GPE)){
     BVE$initialPopulation <- GPE$initialPopulation
