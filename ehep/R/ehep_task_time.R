@@ -186,6 +186,9 @@ TaskTimesGroup <- function(taskIDs, years){
   if (label == "adults 15-19") {
     return(sum(pop$Female[16:20] + pop$Male[16:20]))
   }
+  if (label == "18 yo adults") {
+    return(sum(pop$Female[19] + pop$Male[19]))
+  }
 
   TraceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
