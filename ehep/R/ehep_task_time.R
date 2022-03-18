@@ -156,8 +156,17 @@ TaskTimesGroup <- function(taskIDs, years){
   if (label == "adults 18+") {
     return(sum(pop$Female[19:101] + pop$Male[19:101]))
   }
+  if (label == "men 18+") {
+    return(sum(pop$Male[19:101]))
+  }
   if (label == "1-18") {
     return(sum(pop$Female[2:19] + pop$Male[2:19]))
+  }
+  if (label == "children 0-9") {
+    return(sum(pop$Female[1:10] + pop$Male[1:10]))
+  }
+  if (label == "5-18") {
+    return(sum(pop$Female[6:19] + pop$Male[6:19]))
   }
   if (label == "all") {
     return(sum(pop$Female + pop$Male))
@@ -176,6 +185,12 @@ TaskTimesGroup <- function(taskIDs, years){
   }
   if (label == "women 15-49") {
     return(sum(pop$Female[16:50]))
+  }
+  if (label == "women 30-49") {
+    return(sum(pop$Female[31:50]))
+  }
+  if (label == "men 15-49") {
+    return(sum(pop$Male[16:50]))
   }
   if (label == "children 5-9") {
     return(sum(pop$Female[6:10] + pop$Male[6:10]))
