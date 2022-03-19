@@ -4,12 +4,14 @@
 \alias{TaskTimesGroup}
 \title{Calculate Task Times For A Group Of Tasks}
 \usage{
-TaskTimesGroup(taskIDs, years)
+TaskTimesGroup(taskIDs, years, weeksPerYear = 48)
 }
 \arguments{
 \item{taskIDs}{Vector of task indices into \code{globalPackageEnvironment$taskData}}
 
 \item{years}{Vector of years (usually \code{globalPackageEnvironment$years})}
+
+\item{weeksPerYear}{Number of weeks per year (default = 48)}
 }
 \value{
 List with two matrices:

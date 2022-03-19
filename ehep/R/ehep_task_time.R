@@ -3,6 +3,8 @@
 #' @param taskID Index of row in task tables
 #' @param year Year (index into \code{demographics} list)
 #' @param debug Emit debugging information (default = FALSE)
+#' @param weeksPerYear Number of weeks per year (default = 48). This value is
+#' used to gross up TimeAddedOn tasks from weekly to annual.
 #'
 #' @return List of two vectors:
 #' Time - annual task times in minutes
@@ -10,7 +12,7 @@
 #'
 #' @export
 #'
-TaskTime <- function(taskID, year, debug = FALSE){
+TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   tp <- EXP$taskParameters
 
   # TODO: Insert check on length of task table
@@ -19,6 +21,17 @@ TaskTime <- function(taskID, year, debug = FALSE){
 
   if (debug){
     .dispTaskInfo(taskID, taskVals)
+  }
+
+  # TimeAddedOn tasks are simpler than other tasks; they aren't associated with
+  # a population segment, and they aren't dependent on prevalence. But time is
+  # returned in a different way: instead of total time required per yer to do
+  # the tasks, for TimeAddedOn tasks TaskTime returns time per year (in minutes)
+  # for the person doing the task.
+
+  if (GPE$taskData$computeMethod[taskID] == "TimeAddedOn"){
+    t = taskVals["HoursPerWeek"] * 60 * weeksPerYear
+    return(list(N = 1, Time = t))
   }
 
   # Determine whether this task is covered in the prevalence rates table
@@ -98,6 +111,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
 #'
 #' @param taskIDs Vector of task indices into \code{globalPackageEnvironment$taskData}
 #' @param years Vector of years (usually \code{globalPackageEnvironment$years})
+#' @param weeksPerYear Number of weeks per year (default = 48)
 #'
 #' @return List with two matrices:
 #' Time - annual task times in minutes
@@ -105,7 +119,7 @@ TaskTime <- function(taskID, year, debug = FALSE){
 #'
 #' @export
 #'
-TaskTimesGroup <- function(taskIDs, years){
+TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   m <- length(years)
   n <- length(taskIDs)
 
@@ -120,7 +134,7 @@ TaskTimesGroup <- function(taskIDs, years){
 
   for (i in seq_along(years)) {
     for (j in seq_along(taskIDs)) {
-      l <- TaskTime(taskIDs[j], years[i])
+      l <- TaskTime(taskIDs[j], years[i], weeksPerYear = weeksPerYear)
       mt[i, j] <- l$Time
       mn[i, j] <- l$N
     }

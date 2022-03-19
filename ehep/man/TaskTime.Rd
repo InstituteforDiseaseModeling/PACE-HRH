@@ -4,7 +4,7 @@
 \alias{TaskTime}
 \title{Calculate Annual Time For A Task}
 \usage{
-TaskTime(taskID, year, debug = FALSE)
+TaskTime(taskID, year, debug = FALSE, weeksPerYear = 48)
 }
 \arguments{
 \item{taskID}{Index of row in task tables}
@@ -12,6 +12,9 @@ TaskTime(taskID, year, debug = FALSE)
 \item{year}{Year (index into \code{demographics} list)}
 
 \item{debug}{Emit debugging information (default = FALSE)}
+
+\item{weeksPerYear}{Number of weeks per year (default = 48). This value is
+used to gross up TimeAddedOn tasks from weekly to annual.}
 }
 \value{
 List of two vectors:

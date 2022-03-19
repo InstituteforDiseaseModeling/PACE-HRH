@@ -29,6 +29,8 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   l <- lapply(seq_along(taskIds), function(i){
     taskName <- taskNames[i]
 
+    # GPE$.currentTaskName <- taskName
+
     if (length(seasonalityTaskIndex <- which(seasonalityTaskNames == taskName)) == 1){
       # Grab already computed annual data for this task
       annualTimes <- results$Clinical$Time[, taskName]
@@ -95,10 +97,10 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
         annualServices <- NULL
       }
 
-      tnames <- names(results$NonProductive)
+      tnames <- dimnames(results$NonProductive$Time)[[2]]
       if (length(taskIndex <- which(tnames == taskName)) == 1){
-        annualTimes <- results$NonProductive[[taskName]]
-        annualServices <- NULL
+        annualTimes <- results$NonProductive$Time[, taskName]
+        annualServices <- results$NonProductive$N[, taskName]
       }
 
       names(annualTimes) <- NULL
@@ -107,9 +109,10 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
       if (is.null(annualServices)){
         monthlyServices <- replicate(length(monthlyTimes), 0)
       } else {
+        names(annualServices) <- NULL
         monthlyServices <- .convertAnnualToMonthly(annualServices, dummyCurve)
-        names(monthlyServices) <- NULL
       }
+      names(monthlyServices) <- NULL
 
       return(list(Time = monthlyTimes, N = monthlyServices))
     }
@@ -121,6 +124,12 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 }
 
 .convertAnnualToMonthly <- function(values, curve){
+  # if (is.null(values)){
+  #   print("Something not right ...")
+  #   print(GPE$.currentTaskName)
+  #   return(NULL)
+  # }
+
   monthly <- unlist(lapply(values, function(v){
     return(curve * v)
   }))

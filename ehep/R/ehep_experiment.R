@@ -57,16 +57,20 @@ RunExperiment <- function(debug = FALSE){
     )
 
   # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
-  taskIds <- which(GPE$taskData$computeMethod == "TimePerTask" &
-                             GPE$taskData$Geography == scenario$PopType &
-                     GPE$taskData$ClinicalOrNon == "Clinical")
+  taskIds <- which(
+    GPE$taskData$computeMethod == "TimePerTask" &
+      GPE$taskData$Geography == scenario$PopType &
+      GPE$taskData$ClinicalOrNon == "Clinical"
+  )
 
   EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
 
   # STEP 2A - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
-  taskIds <- which(GPE$taskData$computeMethod == "TimePerTask" &
-                     GPE$taskData$Geography == scenario$PopType &
-                     GPE$taskData$ClinicalOrNon != "Clinical")
+  taskIds <- which(
+    GPE$taskData$computeMethod == "TimePerTask" &
+      GPE$taskData$Geography == scenario$PopType &
+      GPE$taskData$ClinicalOrNon != "Clinical"
+  )
 
   EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
 
@@ -91,9 +95,10 @@ RunExperiment <- function(debug = FALSE){
                      GPE$taskData$Geography == scenario$PopType)
 
   if (length(taskIds) > 0){
-    weeklyNonProductiveTime <- sum(GPE$taskData$HoursPerWeek[taskIds]) * 60
+    nonProductiveTaskTimes <-
+      TaskTimesGroup(taskIds, GPE$years, weeksPerYear = scenario$WeeksPerYr)
   } else {
-    weeklyNonProductiveTime <- 0
+    nonProductiveTaskTimes <- NULL
   }
 
   # STEP 6 - COMPUTE FTE EQUIVALENTS
@@ -114,21 +119,20 @@ RunExperiment <- function(debug = FALSE){
   annualWorkHours <- scenario$WeeksPerYr * scenario$HrsPerWeek
 
   R_total <- annualWorkHours * 60
-  R_np <- weeklyNonProductiveTime * scenario$WeeksPerYr
+
+  if (!is.null(nonProductiveTaskTimes)){
+    R_np <- apply(nonProductiveTaskTimes$Time, 1, sum)
+  } else {
+    R_np <- 0.0
+  }
 
   T_c <- aggAnnualClinicalTaskTimes
   T_nc <- aggAnnualNonClinicalTaskTimes + aggAnnualNonClinicalAllocationTimes
 
   N <- (T_c + T_nc) / (R_total - R_np)
 
-  T_np <- R_np * N
-
-
-  # HACK ALERT! Calling this field "Administration" lines it up with the
-  # only task currently generating these times ... a fact relied on
-  # in later code!
-  EXP$nonProductiveTimes <-
-    data.frame("Years" = GPE$years, "Administration" = T_np)
+  nonProductiveTaskTimes$Time <- nonProductiveTaskTimes$Time * N
+  EXP$nonProductiveTimes <- nonProductiveTaskTimes
 
   if (debug){
     print("T(c)")
