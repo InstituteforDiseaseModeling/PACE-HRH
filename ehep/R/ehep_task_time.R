@@ -239,22 +239,52 @@ AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
   return(baseTime * (fteRatio / (1 - fteRatio)))
 }
 
+
+
+
 AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
-  assertthat::assert_that(length(baseTimes) == length(years))
+  m <- length(years)
+  n <- length(taskIDs)
 
-  df <- data.frame(years)
+  mt <-
+    matrix(
+      nrow = m,
+      ncol = n,
+      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
+    )
 
-  nul <- lapply(taskIDs, function(id){
-    col <- sapply(seq_along(years), function(i){
-      AllocationTaskTime(id, years[i], baseTimes[i])
-    })
+  mn <- mt
 
-    df <<- cbind(df,col)
-    return(0)
-  })
+  for (i in seq_along(years)) {
+    for (j in seq_along(taskIDs)) {
+      mt[i, j] <- AllocationTaskTime(taskIDs[j], years[i], baseTimes[i])
+      mn[i, j] <- 1
+    }
+  }
 
-  taskNames <- GPE$taskData$Indicator[taskIDs]
-  names(df) <- c("Years", taskNames)
-
-  return(df)
+  return(list(Time = mt, N = mn))
 }
+
+
+
+
+
+# AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
+#   assertthat::assert_that(length(baseTimes) == length(years))
+#
+#   df <- data.frame(years)
+#
+#   nul <- lapply(taskIDs, function(id){
+#     col <- sapply(seq_along(years), function(i){
+#       AllocationTaskTime(id, years[i], baseTimes[i])
+#     })
+#
+#     df <<- cbind(df,col)
+#     return(0)
+#   })
+#
+#   taskNames <- GPE$taskData$Indicator[taskIDs]
+#   names(df) <- c("Years", taskNames)
+#
+#   return(df)
+# }

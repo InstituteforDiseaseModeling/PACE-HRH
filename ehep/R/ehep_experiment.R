@@ -86,9 +86,8 @@ RunExperiment <- function(debug = FALSE){
 
   EXP$nonClinicalAllocationTimes <-
     AllocationTaskTimesGroup(taskIds, GPE$years, aggAnnualClinicalTaskTimes)
-
-  m <- as.matrix(EXP$nonClinicalAllocationTimes)
-  aggAnnualNonClinicalAllocationTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
+  aggAnnualNonClinicalAllocationTimes <-
+    apply(EXP$nonClinicalAllocationTimes$Time, 1, sum)
 
   # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
   taskIds <- which(GPE$taskData$computeMethod == "TimeAddedOn" &
