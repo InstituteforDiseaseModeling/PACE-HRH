@@ -97,12 +97,18 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
 InitializeHealthcareTasks <- function(...){
   .checkAndLoadGlobalConfig()
 
-  taskData <- loadTaskParameters(...)
+  args = list(...)
 
-  # TODO: Insert error handling
+  if (length(args) == 0){
+    return(invisible(NULL))
+  } else {
+    taskData <- loadTaskParameters(...)
 
-  GPE$taskData <- taskData
-  GPE$taskDataDims <- dim(GPE$taskData)
-  GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
-  invisible(NULL)
+    # TODO: Insert error handling
+
+    GPE$taskData <- taskData
+    GPE$taskDataDims <- dim(GPE$taskData)
+    GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
+    return(invisible(NULL))
+  }
 }
