@@ -17,6 +17,7 @@ TaskTimesGroup(taskIDs, years, weeksPerYear = 48)
 List with two matrices:
 Time - annual task times in minutes
 N - number of times task was performed
+NULL if the list of task indices is blank
 }
 \description{
 Calculate clinical task times for a group of tasks over a spread of years

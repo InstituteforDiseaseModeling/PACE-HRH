@@ -116,10 +116,15 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
 #' @return List with two matrices:
 #' Time - annual task times in minutes
 #' N - number of times task was performed
+#' NULL if the list of task indices is blank
 #'
 #' @export
 #'
 TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
+  if (length(taskIDs) == 0){
+    return(NULL)
+  }
+
   m <- length(years)
   n <- length(taskIDs)
 
@@ -239,10 +244,11 @@ AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
   return(baseTime * (fteRatio / (1 - fteRatio)))
 }
 
-
-
-
 AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
+  if (length(taskIDs) == 0){
+    return(NULL)
+  }
+
   m <- length(years)
   n <- length(taskIDs)
 

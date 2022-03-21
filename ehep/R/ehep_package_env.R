@@ -34,6 +34,11 @@ GPE$ages <- seq(from = GPE$age_min,
 GPE$ratio_females_at_birth <- 0.5
 GPE$ratio_males_at_birth <- 1.0 - GPE$ratio_females_at_birth
 
+GPE$taskTypes <- c("Clinical",
+                   "NonClinical",
+                   "NonClinicalAllocation",
+                   "NonProductive")
+
 GPE$initialPopulation <- NULL
 GPE$populationChangeParameters <- NULL
 GPE$taskData <- NULL
