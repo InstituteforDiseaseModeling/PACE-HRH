@@ -76,29 +76,15 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 
       # Find the previous calculated values
 
-      # HACK ALERT: This ugly code assumes all four types of tasks are present
-      tnames <- dimnames(results$Clinical$Time)[[2]]
-      if (taskName %in% tnames){
-        annualTimes <- results$Clinical$Time[, taskName]
-        annualServices <- results$Clinical$N[, taskName]
-      }
-
-      tnames <- dimnames(results$NonClinical$Time)[[2]]
-      if (taskName %in% tnames){
-        annualTimes <- results$NonClinical$Time[, taskName]
-        annualServices <- results$NonClinical$N[, taskName]
-      }
-
-      tnames <- dimnames(results$NonClinicalAllocation$Time)[[2]]
-      if (taskName %in% tnames){
-        annualTimes <- results$NonClinicalAllocation$Time[, taskName]
-        annualServices <- results$NonClinicalAllocation$N[, taskName]
-      }
-
-      tnames <- dimnames(results$NonProductive$Time)[[2]]
-      if (taskName %in% tnames){
-        annualTimes <- results$NonProductive$Time[, taskName]
-        annualServices <- results$NonProductive$N[, taskName]
+      for (type in GPE$taskTypes){
+        if (!is.null(results[[type]])){
+          tnames <- dimnames(results[[type]]$Time)[[2]]
+          if (taskName %in% tnames){
+            annualTimes <- results[[type]]$Time[, taskName]
+            annualServices <- results[[type]]$N[, taskName]
+            break
+          }
+        }
       }
 
       names(annualTimes) <- NULL
