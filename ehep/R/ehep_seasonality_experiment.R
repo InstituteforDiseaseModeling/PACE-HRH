@@ -29,8 +29,6 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   l <- lapply(seq_along(taskIds), function(i){
     taskName <- taskNames[i]
 
-    # GPE$.currentTaskName <- taskName
-
     if (length(seasonalityTaskIndex <- which(seasonalityTaskNames == taskName)) == 1){
       # Grab already computed annual data for this task
       annualTimes <- results$Clinical$Time[, taskName]
@@ -78,29 +76,15 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 
       # Find the previous calculated values
 
-      # HACK ALERT: This ugly code assumes all four types of tasks are present
-      tnames <- dimnames(results$Clinical$Time)[[2]]
-      if (length(taskIndex <- which(tnames == taskName)) == 1){
-        annualTimes <- results$Clinical$Time[, taskName]
-        annualServices <- results$Clinical$N[, taskName]
-      }
-
-      tnames <- dimnames(results$NonClinical$Time)[[2]]
-      if (length(taskIndex <- which(tnames == taskName)) == 1){
-        annualTimes <- results$NonClinical$Time[, taskName]
-        annualServices <- results$NonClinical$N[, taskName]
-      }
-
-      tnames <- names(results$NonClinicalAllocation)
-      if (length(taskIndex <- which(tnames == taskName)) == 1){
-        annualTimes <- results$NonClinicalAllocation[[taskName]]
-        annualServices <- NULL
-      }
-
-      tnames <- dimnames(results$NonProductive$Time)[[2]]
-      if (length(taskIndex <- which(tnames == taskName)) == 1){
-        annualTimes <- results$NonProductive$Time[, taskName]
-        annualServices <- results$NonProductive$N[, taskName]
+      for (type in GPE$taskTypes){
+        if (!is.null(results[[type]])){
+          tnames <- dimnames(results[[type]]$Time)[[2]]
+          if (taskName %in% tnames){
+            annualTimes <- results[[type]]$Time[, taskName]
+            annualServices <- results[[type]]$N[, taskName]
+            break
+          }
+        }
       }
 
       names(annualTimes) <- NULL
@@ -124,12 +108,6 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 }
 
 .convertAnnualToMonthly <- function(values, curve){
-  # if (is.null(values)){
-  #   print("Something not right ...")
-  #   print(GPE$.currentTaskName)
-  #   return(NULL)
-  # }
-
   monthly <- unlist(lapply(values, function(v){
     return(curve * v)
   }))

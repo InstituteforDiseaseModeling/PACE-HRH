@@ -116,10 +116,15 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
 #' @return List with two matrices:
 #' Time - annual task times in minutes
 #' N - number of times task was performed
+#' NULL if the list of task indices is blank
 #'
 #' @export
 #'
 TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
+  if (length(taskIDs) == 0){
+    return(NULL)
+  }
+
   m <- length(years)
   n <- length(taskIDs)
 
@@ -240,21 +245,52 @@ AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
 }
 
 AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
-  assertthat::assert_that(length(baseTimes) == length(years))
+  if (length(taskIDs) == 0){
+    return(NULL)
+  }
 
-  df <- data.frame(years)
+  m <- length(years)
+  n <- length(taskIDs)
 
-  nul <- lapply(taskIDs, function(id){
-    col <- sapply(seq_along(years), function(i){
-      AllocationTaskTime(id, years[i], baseTimes[i])
-    })
+  mt <-
+    matrix(
+      nrow = m,
+      ncol = n,
+      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
+    )
 
-    df <<- cbind(df,col)
-    return(0)
-  })
+  mn <- mt
 
-  taskNames <- GPE$taskData$Indicator[taskIDs]
-  names(df) <- c("Years", taskNames)
+  for (i in seq_along(years)) {
+    for (j in seq_along(taskIDs)) {
+      mt[i, j] <- AllocationTaskTime(taskIDs[j], years[i], baseTimes[i])
+      mn[i, j] <- 1
+    }
+  }
 
-  return(df)
+  return(list(Time = mt, N = mn))
 }
+
+
+
+
+
+# AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
+#   assertthat::assert_that(length(baseTimes) == length(years))
+#
+#   df <- data.frame(years)
+#
+#   nul <- lapply(taskIDs, function(id){
+#     col <- sapply(seq_along(years), function(i){
+#       AllocationTaskTime(id, years[i], baseTimes[i])
+#     })
+#
+#     df <<- cbind(df,col)
+#     return(0)
+#   })
+#
+#   taskNames <- GPE$taskData$Indicator[taskIDs]
+#   names(df) <- c("Years", taskNames)
+#
+#   return(df)
+# }

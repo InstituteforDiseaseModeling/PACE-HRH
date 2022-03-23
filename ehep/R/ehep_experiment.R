@@ -63,32 +63,43 @@ RunExperiment <- function(debug = FALSE){
       GPE$taskData$ClinicalOrNon == "Clinical"
   )
 
-  EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+  if (length(taskIds) > 0){
+    EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+  } else {
+    EXP$clinicalTaskTimes <- NULL
+  }
 
-  # STEP 2A - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
+  aggAnnualClinicalTaskTimes <- .computeTotalTimes(EXP$clinicalTaskTimes)
+
+  # STEP 3 - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
   taskIds <- which(
     GPE$taskData$computeMethod == "TimePerTask" &
       GPE$taskData$Geography == scenario$PopType &
       GPE$taskData$ClinicalOrNon != "Clinical"
   )
 
-  EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+  if (length(taskIds) > 0){
+    EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+  } else {
+    EXP$nonClinicalTaskTimes <- NULL
+  }
 
-  # STEP 3 - TOTAL THE TASK TIMES
-  aggAnnualClinicalTaskTimes <- apply(EXP$clinicalTaskTimes$Time, 1, sum)
-  aggAnnualNonClinicalTaskTimes <- apply(EXP$nonClinicalTaskTimes$Time, 1, sum)
+  aggAnnualNonClinicalTaskTimes <- .computeTotalTimes(EXP$nonClinicalTaskTimes)
 
-  # STEP 4 - CORRECT FOR RATIO-BASED TIME ALLOCATION
+  # STEP 4 - COMPUTE TIMES FOR RATIO-BASED ALLOCATION TASKS
   taskIds <- which(
     GPE$taskData$computeMethod == "TimeRatio" &
       GPE$taskData$Geography == scenario$PopType
   )
 
-  EXP$nonClinicalAllocationTimes <-
-    AllocationTaskTimesGroup(taskIds, GPE$years, aggAnnualClinicalTaskTimes)
+  if (length(taskIds) > 0){
+    EXP$nonClinicalAllocationTimes <-
+      AllocationTaskTimesGroup(taskIds, GPE$years, aggAnnualClinicalTaskTimes)
+  } else {
+    EXP$nonClinicalAllocationTimes <- NULL
+  }
 
-  m <- as.matrix(EXP$nonClinicalAllocationTimes)
-  aggAnnualNonClinicalAllocationTimes <- apply(m, 1, function(x){return(sum(x[-1]))})
+  aggAnnualNonClinicalAllocationTimes <- .computeTotalTimes(EXP$nonClinicalAllocationTimes)
 
   # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
   taskIds <- which(GPE$taskData$computeMethod == "TimeAddedOn" &
@@ -100,6 +111,23 @@ RunExperiment <- function(debug = FALSE){
   } else {
     nonProductiveTaskTimes <- NULL
   }
+
+  aggAnnualAddOnTimesPerHcw <- .computeTotalTimes(nonProductiveTaskTimes)
+
+  # Note that at this point the calculation of add-on time is only
+  # half-complete. Other task calculations return the total amount of time
+  # required to perform a given task, based on the number of people needing the
+  # task and the task duration. Add-on tasks are initially computed as extra
+  # time required per-HCW (health-care worker). This reduces the availability of
+  # the HCWs to do the other tasks. To calculate the actual total amount
+  # of time spent doing add-on tasks, we need to compute the number of HCW's
+  # needed to perform all the other tasks.
+  #
+  # Example: let's say HCW's work a 40 hour week, but spend 10 of those hours
+  # doing add-on tasks. That means it will take 4 HCWs to do 120 hours of
+  # clinical, etc tasks in a week (120/(40 - 10)). Once we know the number of
+  # HCWs, we can finish the job and calculate that they will do 40 hours of
+  # add-on task work.
 
   # STEP 6 - COMPUTE FTE EQUIVALENTS
 
@@ -116,41 +144,21 @@ RunExperiment <- function(debug = FALSE){
   # And T(np) = N * R(np)
 
   # Compute available time per year per FTE (R_total)
-  annualWorkHours <- scenario$WeeksPerYr * scenario$HrsPerWeek
+  R_total <- scenario$WeeksPerYr * scenario$HrsPerWeek * 60
+  assertthat::assert_that(R_total > 0)
 
-  R_total <- annualWorkHours * 60
-
-  if (!is.null(nonProductiveTaskTimes)){
-    R_np <- apply(nonProductiveTaskTimes$Time, 1, sum)
-  } else {
-    R_np <- 0.0
-  }
+  R_np <- aggAnnualAddOnTimesPerHcw
 
   T_c <- aggAnnualClinicalTaskTimes
   T_nc <- aggAnnualNonClinicalTaskTimes + aggAnnualNonClinicalAllocationTimes
 
   N <- (T_c + T_nc) / (R_total - R_np)
 
-  nonProductiveTaskTimes$Time <- nonProductiveTaskTimes$Time * N
-  EXP$nonProductiveTimes <- nonProductiveTaskTimes
-
-  if (debug){
-    print("T(c)")
-    print(T_c)
-    print("Non-clinical allocation (MHH)")
-    print(aggAnnualNonClinicalAllocationTimes)
-    print("Travel + Record-Keeping")
-    print(aggAnnualNonClinicalTaskTimes)
-    print("T(nc)")
-    print(T_nc)
-    print("R(total)")
-    print(R_total)
-    print("R(np) (Admin)")
-    print(R_np)
-    print("T(np) (Admin)")
-    print(R_np * N)
-    print("FTEs")
-    print(N)
+  if (is.null(nonProductiveTaskTimes)){
+    EXP$nonProductiveTimes <- NULL
+  } else {
+    nonProductiveTaskTimes$Time <- nonProductiveTaskTimes$Time * N
+    EXP$nonProductiveTimes <- nonProductiveTaskTimes
   }
 
   results$Clinical <- EXP$clinicalTaskTimes
@@ -165,4 +173,19 @@ RunExperiment <- function(debug = FALSE){
   }
 
   return(results)
+}
+
+.computeTotalTimes <- function(resultsObj){
+  if (is.null(resultsObj)){
+    return(0)
+  }
+
+  retVal <- tryCatch({
+    apply(resultsObj[["Time"]], 1, sum)
+  },
+  error = function(e){
+    return(0)
+  })
+
+  return(retVal)
 }
