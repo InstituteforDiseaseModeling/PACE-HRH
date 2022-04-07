@@ -144,15 +144,24 @@ RunExperiment <- function(debug = FALSE){
   # And T(np) = N * R(np)
 
   # Compute available time per year per FTE (R_total)
-  R_total <- scenario$WeeksPerYr * scenario$HrsPerWeek * 60
-  assertthat::assert_that(R_total > 0)
 
-  R_np <- aggAnnualAddOnTimesPerHcw
+  # R_total <- scenario$WeeksPerYr * scenario$HrsPerWeek * 60
+  # assertthat::assert_that(R_total > 0)
+  #
+  # R_np <- aggAnnualAddOnTimesPerHcw
+  #
+  # T_c <- aggAnnualClinicalTaskTimes
+  # T_nc <- aggAnnualNonClinicalTaskTimes + aggAnnualNonClinicalAllocationTimes
+  #
+  # N <- (T_c + T_nc) / (R_total - R_np)
 
-  T_c <- aggAnnualClinicalTaskTimes
-  T_nc <- aggAnnualNonClinicalTaskTimes + aggAnnualNonClinicalAllocationTimes
 
-  N <- (T_c + T_nc) / (R_total - R_np)
+
+  # New approach: nonProductive times are reported as per-person.
+  N <- 1
+
+
+
 
   if (is.null(nonProductiveTaskTimes)){
     EXP$nonProductiveTimes <- NULL
