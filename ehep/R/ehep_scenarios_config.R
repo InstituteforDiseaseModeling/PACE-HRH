@@ -6,8 +6,6 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @importFrom testthat expect_named
-#'
 #' @return Data frame of experiment scenario parameters
 #'
 loadScenarios <- function(sheetName = "Scenarios") {
