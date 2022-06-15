@@ -7,7 +7,8 @@
 CheckInputExcelFileFormat(
   inputFile = NULL,
   outputFile = NULL,
-  scenarioSheet = "Scenarios"
+  scenarioSheet = "Scenarios",
+  seasonalityOffsetsSheet = "SeasonalityOffsets"
 )
 }
 \arguments{
