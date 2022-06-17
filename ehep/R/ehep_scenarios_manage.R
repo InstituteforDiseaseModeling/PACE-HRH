@@ -80,24 +80,24 @@ CreateScenariosTable <- function() {
 AddScenario <-
   function(tbl, UniqueID, ...) {
     if (missing(tbl)){
-      TraceMessage("Missing required tbl parameter in call to AddScenario()")
+      traceMessage("Missing required tbl parameter in call to AddScenario()")
       return(NULL)
     }
 
     if (missing(UniqueID)){
-      TraceMessage("Missing required UniqueID parameter in call to AddScenario()")
+      traceMessage("Missing required UniqueID parameter in call to AddScenario()")
       return(tbl)
     }
 
     if (!.isValidID(UniqueID)){
-      TraceMessage("Invalid scenario ID in call to AddScenario()")
+      traceMessage("Invalid scenario ID in call to AddScenario()")
       return(tbl)
     }
 
     n <- which(tbl$UniqueID == UniqueID)
 
     if (length(n) > 0){
-      TraceMessage(paste("AddScenario(): Scenario ", UniqueID, " already exists", sep = ""))
+      traceMessage(paste("AddScenario(): Scenario ", UniqueID, " already exists", sep = ""))
       return(tbl)
     }
 
@@ -109,10 +109,10 @@ AddScenario <-
       do.call(tibble::add_row, args)
     },
     warning = function(war) {
-      ehep::TraceMessage(paste("WARNING:", war))
+      traceMessage(paste("WARNING:", war))
     },
     error = function(err) {
-      ehep::TraceMessage(paste("ERROR:", err))
+      traceMessage(paste("ERROR:", err))
     },
     finally = {
 
@@ -137,17 +137,17 @@ AddScenario <-
 DeleteScenario <-
   function(tbl, UniqueID) {
     if (missing(tbl)){
-      TraceMessage("Missing required tbl parameter in call to DeleteScenario()")
+      traceMessage("Missing required tbl parameter in call to DeleteScenario()")
       return(NULL)
     }
 
     if (missing(UniqueID)){
-      TraceMessage("Missing required UniqueID parameter in call to DeleteScenario()")
+      traceMessage("Missing required UniqueID parameter in call to DeleteScenario()")
       return(tbl)
     }
 
     if (!.isValidID(UniqueID)){
-      TraceMessage("Invalid scenario ID in call to DeleteScenario()")
+      traceMessage("Invalid scenario ID in call to DeleteScenario()")
       return(tbl)
     }
 
@@ -188,17 +188,17 @@ DeleteScenario <-
 UpdateScenario <-
   function(tbl, UniqueID, ...) {
     if (missing(tbl)){
-      TraceMessage("Missing required tbl parameter in call to UpdateScenario()")
+      traceMessage("Missing required tbl parameter in call to UpdateScenario()")
       return(NULL)
     }
 
     if (missing(UniqueID)){
-      TraceMessage("Missing required UniqueID parameter in call to UpdateScenario()")
+      traceMessage("Missing required UniqueID parameter in call to UpdateScenario()")
       return(tbl)
     }
 
     if (!.isValidID(UniqueID)){
-      TraceMessage("Invalid scenario ID in call to UpdateScenario()")
+      traceMessage("Invalid scenario ID in call to UpdateScenario()")
       return(tbl)
     }
 

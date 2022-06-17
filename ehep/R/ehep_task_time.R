@@ -75,7 +75,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   names(numServices) <- NULL
 
   if (is.na(taskVals["MinsPerContact"])){
-    TraceMessage(paste("MinsPerContact missing for task ", GPE$taskData$Indicator[taskID], sep = ""))
     t = 0
   } else {
     t <- numServices * taskVals["MinsPerContact"]

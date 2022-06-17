@@ -18,7 +18,7 @@ RunExperiment <- function(debug = FALSE){
   scenario <- BVE$scenario
 
   if (is.null(scenario)){
-    TraceMessage(paste("No scenario specified"))
+    traceMessage(paste("No scenario specified"))
     return(NULL)
   }
 

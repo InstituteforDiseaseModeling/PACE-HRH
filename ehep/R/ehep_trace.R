@@ -26,9 +26,7 @@ Trace <- function(state = NULL){
 #' Log A Trace Message
 #'
 #' @param msgString Trace message
-#'
-#' @export
-TraceMessage <- function(msgString){
+traceMessage <- function(msgString){
   if (GPE$traceState == TRUE){
     message(msgString)
   }

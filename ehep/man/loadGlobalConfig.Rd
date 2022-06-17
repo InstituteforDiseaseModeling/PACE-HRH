@@ -14,5 +14,5 @@ NULL (invisible)
 }
 \description{
 Finds and loads global configuration data from a JSON file, including
-things like the default locations of data files.
+the location of the input Excel data file.
 }

@@ -19,11 +19,11 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
       },
       warning = function(war)
       {
-        ehep::TraceMessage(paste("WARNING:", war))
+        TraceMessage(paste("WARNING:", war))
       },
       error = function(err)
       {
-        ehep::TraceMessage(paste("ERROR:", err))
+        TraceMessage(paste("ERROR:", err))
       },
       finally =
         {
@@ -31,7 +31,7 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
         }
     )
   } else {
-    ehep::TraceMessage(paste("Could not find model input file ",
+    TraceMessage(paste("Could not find model input file ",
                              GPE$inputExcelFile,
                              sep = ""))
   }
