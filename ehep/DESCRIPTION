@@ -22,6 +22,14 @@ Imports:
     truncnorm
 Suggests: 
     testthat (>= 3.0.0)
+    roxytest
+Roxygen: list(roclets = c("namespace", "rd", 
+                          "roxytest::testthat_roclet",
+                          "roxytest::param_roclet",
+                          "roxytest::return_roclet",
+                          "roxytest::examples_roclet"
+                          )
+              )
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

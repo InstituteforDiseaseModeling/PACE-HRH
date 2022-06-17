@@ -13,6 +13,7 @@ packages = c(
   "truncnorm",
   "tibble",
   "testthat",
+  "roxytest",
   #------------
   "readr",
   "tidyr"
