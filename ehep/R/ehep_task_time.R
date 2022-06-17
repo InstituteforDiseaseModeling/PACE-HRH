@@ -42,7 +42,7 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   population <- EXP$demographics[[as.character(year)]]
 
   if (is.null(population)){
-    TraceMessage(paste("No demographic info for year ", year, sep = ""))
+    traceMessage(paste("No demographic info for year ", year, sep = ""))
     return(list(N = 0, Time = 0))
   }
 
@@ -229,7 +229,7 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
     return(sum(pop$Female[16] + pop$Male[16]))
   }
 
-  TraceMessage(paste("Unknown population group ", label, sep = ""))
+  traceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }
 

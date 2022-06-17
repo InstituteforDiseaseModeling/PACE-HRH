@@ -9,7 +9,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   scenario <- BVE$scenario
 
   if (is.null(scenario)){
-    TraceMessage(paste("No scenario data", scenarioName, sep = ""))
+    traceMessage(paste("No scenario data", scenarioName, sep = ""))
     return(NULL)
   }
 
@@ -147,7 +147,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   }
 
   if (is.null(curve)) {
-    TraceMessage(paste("Unknown seasonality curve: ", curveType, "/", popType,
+    traceMessage(paste("Unknown seasonality curve: ", curveType, "/", popType,
                  sep = ""))
     return(NULL)
   } else {

@@ -205,7 +205,7 @@ UpdateScenario <-
     rowNum <- which(tbl$UniqueID == UniqueID)
 
     if (length(rowNum) == 0){
-      TraceMessage(paste("UpdateScenario(): Scenario ", UniqueID, " doesn't already exist", sep = ""))
+      traceMessage(paste("UpdateScenario(): Scenario ", UniqueID, " doesn't already exist", sep = ""))
       return(tbl)
     }
 
@@ -242,24 +242,24 @@ UpdateScenario <-
 ReadScenario <-
   function(tbl, UniqueID) {
     if (missing(tbl)){
-      TraceMessage("Missing required tbl parameter in call to ReadScenario()")
+      traceMessage("Missing required tbl parameter in call to ReadScenario()")
       return(NULL)
     }
 
     if (missing(UniqueID)){
-      TraceMessage("Missing required UniqueID parameter in call to ReadScenario()")
+      traceMessage("Missing required UniqueID parameter in call to ReadScenario()")
       return(NULL)
     }
 
     if (!.isValidID(UniqueID)){
-      TraceMessage("Invalid scenario ID in call to ReadScenario()")
+      traceMessage("Invalid scenario ID in call to ReadScenario()")
       return(NULL)
     }
 
     rowNum <- which(tbl$UniqueID == UniqueID)
 
     if (length(rowNum) == 0){
-      TraceMessage(paste("ReadScenario(): Scenario ", UniqueID, " not found", sep = ""))
+      traceMessage(paste("ReadScenario(): Scenario ", UniqueID, " not found", sep = ""))
       return(NULL)
     }
 

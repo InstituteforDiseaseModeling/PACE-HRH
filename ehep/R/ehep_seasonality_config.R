@@ -19,11 +19,11 @@ loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
       },
       warning = function(war)
       {
-        TraceMessage(paste("WARNING:", war))
+        traceMessage(paste("WARNING:", war))
       },
       error = function(err)
       {
-        TraceMessage(paste("ERROR:", err))
+        traceMessage(paste("ERROR:", err))
       },
       finally =
         {
@@ -31,7 +31,7 @@ loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
         }
     )
   } else {
-    TraceMessage(paste("Could not find model input file ",
+    traceMessage(paste("Could not find model input file ",
                              GPE$inputExcelFile,
                              sep = ""))
   }
@@ -60,11 +60,11 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
       },
       warning = function(war)
       {
-        TraceMessage(paste("WARNING:", war))
+        traceMessage(paste("WARNING:", war))
       },
       error = function(err)
       {
-        TraceMessage(paste("ERROR:", err))
+        traceMessage(paste("ERROR:", err))
       },
       finally =
         {
@@ -72,7 +72,7 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
         }
     )
   } else {
-    TraceMessage(paste("Could not find model input file ",
+    traceMessage(paste("Could not find model input file ",
                              GPE$inputExcelFile,
                              sep = ""))
   }
