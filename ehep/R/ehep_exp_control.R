@@ -159,8 +159,6 @@ SaveBaseSettings <- function(scenarioName = ""){
 #' The Epsilon Values Environment gets its name from the practice
 #' of labeling statistical noise values with the variable name 'epsilon'
 #'
-#' @export
-#'
 ZeroEpsilons <- function(){
   EPS$populationChangeParameters <- .createZeroPopulationChangeParametersList()
   EPS$initialPopulation <- .createZeroPopulationPyramidList()
@@ -176,8 +174,6 @@ ZeroEpsilons <- function(){
 #' Initilialize Stochastic Variation System
 #'
 #' @return NULL (invisible)
-#'
-#' @export
 InitializeEpsilons <- function(){
   set.seed(12345)
   ZeroEpsilons()
@@ -187,8 +183,6 @@ InitializeEpsilons <- function(){
 #' Generate A New Set Of Stochastic Variations
 #'
 #' @return NULL (invisible)
-#'
-#' @export
 NextEpsilons <- function(){
   mf <- generateFertilityRatesMatrix()
   mm <- generateMortalityRatesMatrix()
@@ -210,14 +204,17 @@ NextEpsilons <- function(){
 #' adding together values from the Base Values Environment and the Epsilon
 #' Values Environment.
 #'
-#' @export
-#'
 ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
   # Combine populationChangeParameters values and copy to experimentValuesEnvironment
   bVar <- BVE$populationChangeParameters
   eVar <- EPS$populationChangeParameters
+
+
+# print(eVar)
+
+
   pcp = list(initValues = add(bVar$initValues, eVar$initValues),
              changeRates = add(bVar$changeRates, eVar$changeRates))
   EXP$populationChangeParameters <- pcp
@@ -225,6 +222,11 @@ ConfigureExperimentValues <- function(){
   # Combine initialPopulation values and copy to experimentValuesEnvironment
   bVar <- BVE$initialPopulation
   eVar <- EPS$initialPopulation
+
+
+# print(eVar)
+
+
   pp = list(age = GPE$ages,
             female = add(bVar$female, eVar$female),
             male = add(bVar$male, eVar$female),
