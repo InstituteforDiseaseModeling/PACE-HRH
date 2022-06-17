@@ -196,6 +196,9 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   if (label == "adults 50+") {
     return(sum(pop$Female[51:101] + pop$Male[51:101]))
   }
+  if (label == "adults 35+") {
+    return(sum(pop$Female[36:101] + pop$Male[36:101]))
+  }
   if (label == "30 yo adults") {
     return(pop$Female[31] + pop$Male[31])
   }
@@ -270,27 +273,3 @@ AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
 
   return(list(Time = mt, N = mn))
 }
-
-
-
-
-
-# AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
-#   assertthat::assert_that(length(baseTimes) == length(years))
-#
-#   df <- data.frame(years)
-#
-#   nul <- lapply(taskIDs, function(id){
-#     col <- sapply(seq_along(years), function(i){
-#       AllocationTaskTime(id, years[i], baseTimes[i])
-#     })
-#
-#     df <<- cbind(df,col)
-#     return(0)
-#   })
-#
-#   taskNames <- GPE$taskData$Indicator[taskIDs]
-#   names(df) <- c("Years", taskNames)
-#
-#   return(df)
-# }
