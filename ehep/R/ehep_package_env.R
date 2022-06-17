@@ -25,14 +25,14 @@ GPE$years <- seq(from = GPE$startYear,
                  to = GPE$endYear,
                  by = 1)
 
-GPE$age_min <- 0
-GPE$age_max <- 100
-GPE$ages <- seq(from = GPE$age_min,
-                to = GPE$age_max,
+GPE$ageMin <- 0
+GPE$ageMax <- 100
+GPE$ages <- seq(from = GPE$ageMin,
+                to = GPE$ageMax,
                 by = 1)
 
-GPE$ratio_females_at_birth <- 0.5
-GPE$ratio_males_at_birth <- 1.0 - GPE$ratio_females_at_birth
+GPE$ratioFemalesAtBirth <- 0.5
+GPE$ratioMalesAtBirth <- 1.0 - GPE$ratioFemalesAtBirth
 
 GPE$taskTypes <- c("Clinical",
                    "NonClinical",

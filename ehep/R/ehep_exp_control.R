@@ -89,12 +89,12 @@ SaveBaseSettings <- function(scenarioName = ""){
   n <- which(GPE$scenarios$UniqueID == scenarioName)
 
   if (length(n) == 0) {
-    TraceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
+    traceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
     return(NULL)
   }
 
   if (length(n) > 1) {
-    TraceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
+    traceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
   }
 
   return(GPE$scenarios[n[1], ])

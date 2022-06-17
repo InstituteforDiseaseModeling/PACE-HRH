@@ -200,8 +200,8 @@ ComputeDemographicsProjection <- function(initial_population_pyramid,
       fAverage <- (currentPyramid$Female + f) / 2
       births <- computeBirths(fAverage, current_year_fertility_rates$Female)
 
-      births.m <- births * GPE$ratio_males_at_birth
-      births.f <- births * GPE$ratio_females_at_birth
+      births.m <- births * GPE$ratioMalesAtBirth
+      births.f <- births * GPE$ratioFemalesAtBirth
 
       infantDeaths.m <- births.m * current_year_mortality_rates$Male[1] / 1000
       infantDeaths.f <- births.f * current_year_mortality_rates$Female[1] / 1000

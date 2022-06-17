@@ -60,10 +60,10 @@ setMethod(
     if (length(index) == 1){
       return(object@values[index])
     } else if (length(index) == 0){
-      TraceMessage(paste("Invalid task label: ", label, sep = ""))
+      traceMessage(paste("Invalid task label: ", label, sep = ""))
       return(NULL)
     } else {
-      TraceMessage(paste("Duplicate task label: ", label, ". Using first instance.", sep = ""))
+      traceMessage(paste("Duplicate task label: ", label, ". Using first instance.", sep = ""))
       return(object@values[index[1]])
     }
   }
