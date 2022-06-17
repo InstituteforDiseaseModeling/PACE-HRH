@@ -20,7 +20,10 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
 
   l <- lapply(seq_len(trials), function(trial){
     NextEpsilons()
+    ConfigureExperimentValues()
+
     results <- RunExperiment()
+
     results$Population <- EXP$demographics
     results$PopulationParams <- list(FRatesMatrix = EXP$fertilityRatesMatrix,
                                      MRatesMatrix = EXP$mortalityRatesMatrix)

@@ -28,9 +28,6 @@ RunExperiment <- function(debug = FALSE){
   # Create a results list
   results <- list()
 
-  # Combine base and epsilon environments to produce experiment parameters
-  ConfigureExperimentValues()
-
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- EXP$populationChangeParameters
 
