@@ -21,7 +21,7 @@ Imports:
     tibble,
     truncnorm
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
     roxytest
 Roxygen: list(roclets = c("namespace", "rd", 
                           "roxytest::testthat_roclet",
