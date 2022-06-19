@@ -4,13 +4,11 @@
 
 globalPackageEnvironment <- new.env(parent = parent.frame())
 baseValuesEnvironment <- new.env(parent = globalPackageEnvironment)
-epsilonValuesEnvironment <- new.env(parent = globalPackageEnvironment)
 experimentValuesEnvironment <- new.env(parent = globalPackageEnvironment)
 
 # Aliases for environments
 GPE <- globalPackageEnvironment
 BVE <- baseValuesEnvironment
-EPS <- epsilonValuesEnvironment
 EXP <- experimentValuesEnvironment
 
 GPE$globalConfigLoaded <- FALSE

@@ -7,12 +7,10 @@ cat("Running basic sanity checks ...\n")
 # Check that needed environments have been created
 assertthat::assert_that(is.environment(ehep:::globalPackageEnvironment))
 assertthat::assert_that(is.environment(ehep:::baseValuesEnvironment))
-assertthat::assert_that(is.environment(ehep:::epsilonValuesEnvironment))
 assertthat::assert_that(is.environment(ehep:::experimentValuesEnvironment))
 
 assertthat::assert_that(is.environment(ehep:::GPE))
 assertthat::assert_that(is.environment(ehep:::BVE))
-assertthat::assert_that(is.environment(ehep:::EPS))
 assertthat::assert_that(is.environment(ehep:::EXP))
 
 withr::local_dir("..")
