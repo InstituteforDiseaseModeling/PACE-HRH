@@ -16,9 +16,9 @@ CheckInputExcelFileFormat(
 
 \item{outputFile}{Results output file. If NULL, results are printed to the console.}
 
-\item{seasonalityOffsetsSheet}{Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"}
+\item{scenarioSheet}{Name of the sheet with scenario details. Default = "Scenarios".}
 
-\item{scenariosSheet}{Name of the sheet with scenario details. Default = "Scenarios".}
+\item{seasonalityOffsetsSheet}{Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"}
 }
 \value{
 Error code.

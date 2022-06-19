@@ -1,4 +1,4 @@
-#' @exportMethod setFromVector
+# #' @exportMethod setFromVector
 #'
 setGeneric(
   name = "setFromVector",

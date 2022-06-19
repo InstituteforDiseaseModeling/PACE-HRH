@@ -16,7 +16,7 @@
 #'
 #' @param inputFile Excel file to examine. If NULL, check the file defined in the global Configuration.
 #' @param outputFile Results output file. If NULL, results are printed to the console.
-#' @param scenariosSheet Name of the sheet with scenario details. Default = "Scenarios".
+#' @param scenarioSheet Name of the sheet with scenario details. Default = "Scenarios".
 #' @param seasonalityOffsetsSheet Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"
 #'
 #' @return Error code.

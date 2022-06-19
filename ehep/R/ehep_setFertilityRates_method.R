@@ -1,4 +1,4 @@
-#' @exportMethod setFertilityRates
+# #' @exportMethod setFertilityRates
 #'
 setGeneric(
   name = "setFertilityRates",

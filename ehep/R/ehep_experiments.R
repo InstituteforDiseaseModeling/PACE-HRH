@@ -16,10 +16,10 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
   assertthat::is.flag(debug)
 
   SaveBaseSettings(scenarioName)
-  InitializeEpsilons()
+
+  set.seed(12345)
 
   l <- lapply(seq_len(trials), function(trial){
-    NextEpsilons()
     ConfigureExperimentValues()
 
     results <- RunExperiment()

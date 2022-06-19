@@ -42,14 +42,15 @@ test_that("Experiment control: basic read from Excel", {
   testthat::expect_true(!is.null(result))
   testthat::expect_true(result$UniqueID == scenarioName)
 
+  print("TBD TBD TBD")
 
-  print(ehep:::GPE$taskData)
-  print(ehep:::BVE$taskParameters)
-
-  print(ehep:::GPE$populationChangeParameters)
-  print(ehep:::BVE$populationChangeParameters)
-
-  print(ehep:::GPE$seasonalityCurves)
+  # print(ehep:::GPE$taskData)
+  # print(ehep:::BVE$taskParameters)
+  #
+  # print(ehep:::GPE$populationChangeParameters)
+  # print(ehep:::BVE$populationChangeParameters)
+  #
+  # print(ehep:::GPE$seasonalityCurves)
 
   e$scenarios <- NULL
   e$populationChangeParameters <- NULL

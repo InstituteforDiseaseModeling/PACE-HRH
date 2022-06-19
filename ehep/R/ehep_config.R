@@ -98,9 +98,9 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/R Model Inputs.xlsx")
 #' Set Global Start And End Year Parameters
 #'
 #' @param start Starting year
-#' @param end Ending year (must be greater than \code{start} )
+#' @param end Ending year (must be greater than \code{start})
 #'
-#' @return Nothing
+#' @return NULL (invisible)
 #'
 #' @export
 SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
