@@ -1,6 +1,6 @@
-#' Display Environments
+#' Display Contents of the Working Environments
 #'
-#' @return
+#' @return NULL (invisible)
 dispEnvs <- function(){
   print("----- GLOBAL -----")
   print(ls.str(globalPackageEnvironment))
