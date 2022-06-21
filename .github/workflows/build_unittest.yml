@@ -22,7 +22,8 @@ jobs:
           extra-packages: |
             devtools
             rcmdcheck
-            
+          working-directory: 'ehep'
+          
       - name: Check Package     
         uses: r-lib/actions/check-r-package@v2
         with:
