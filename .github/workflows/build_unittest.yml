@@ -29,6 +29,7 @@ jobs:
           args: 'c("--no-manual", "--as-cran")'
           error-on: '"error"'
           check-dir: '"check"' 
+          working-directory: 'ehep'
          
       - name: Upload Check Log    
         uses: actions/upload-artifact@v3
