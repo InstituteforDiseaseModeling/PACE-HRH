@@ -1,30 +1,45 @@
-Package: ehep
 Type: Package
+Package: ehep
 Title: Ethiopia Health Extension Program Capacity Modelling
-Version: 0.2.21
+Version: 0.2.25
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
 Description: This work allows modeling of the burdens placed on healthcare
-    workers by the addition of new services to the Ethiopian healthcare system.
+    workers by the addition of new services to the Ethiopian healthcare
+    system.
 License: MIT + file LICENSE
+Imports:
+    assertthat,
+    data.table,
+    dplyr,
+    ggplot2,
+    jsonlite,
+    magrittr,
+    methods,
+    readxl,
+    scales,
+    tibble,
+    truncnorm
+Suggests: 
+    testthat (>= 3.0.0),
+    roxytest,
+    withr
+Roxygen: list(roclets = c("namespace", "rd", 
+                          "roxytest::testthat_roclet",
+                          "roxytest::param_roclet",
+                          "roxytest::return_roclet",
+                          "roxytest::examples_roclet"
+                          )
+              )
+Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
-Imports:
-    jsonlite,
-    readxl,
-    data.table,
-    assertthat,
-    dplyr,
-    magrittr,
-    ggplot2,
-    methods,
-    truncnorm,
-    tibble
+RoxygenNote: 7.2.0
 Collate: 
     'ehep_package_env.R'
     'ehep_debug_utils.R'
     'ehep_utils.R'
+    'ehep_lint.R'
     'ehep_trace.R'
     'ehep_pop_pyramid_class.R'
     'ehep_pop_change_params_class.R'
@@ -61,6 +76,3 @@ Collate:
     'ehep_scenarios_manage.R'
     'ehep_stochasticity_config.R'
     'ehep_save_results.R'
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3

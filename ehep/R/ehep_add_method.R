@@ -1,4 +1,4 @@
-#' @exportMethod add
+# #' @exportMethod add
 #'
 setGeneric(
   name = "add",

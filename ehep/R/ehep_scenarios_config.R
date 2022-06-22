@@ -6,8 +6,6 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @importFrom testthat expect_named
-#'
 #' @return Data frame of experiment scenario parameters
 #'
 loadScenarios <- function(sheetName = "Scenarios") {
@@ -21,11 +19,11 @@ loadScenarios <- function(sheetName = "Scenarios") {
       },
       warning = function(war)
       {
-        ehep::TraceMessage(paste("WARNING:", war))
+        traceMessage(paste("WARNING:", war))
       },
       error = function(err)
       {
-        ehep::TraceMessage(paste("ERROR:", err))
+        traceMessage(paste("ERROR:", err))
       },
       finally =
         {
@@ -33,7 +31,7 @@ loadScenarios <- function(sheetName = "Scenarios") {
         }
     )
   } else {
-    ehep::TraceMessage(paste("Could not find model input file ",
+    traceMessage(paste("Could not find model input file ",
                              GPE$inputExcelFile,
                              sep = ""))
   }

@@ -2,7 +2,7 @@
 #'
 #' @param tasks Task parameter value matrix
 #'
-#' @return
+#' @return Adjusted task parameters matrix
 generateTaskParameterEpsilons <- function(tasks){
   pars <- GPE$stochasticParams
 

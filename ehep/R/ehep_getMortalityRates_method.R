@@ -1,4 +1,4 @@
-#' @exportMethod getMortalityRates
+# #' @exportMethod getMortalityRates
 #'
 setGeneric(
   name = "getMortalityRates",

@@ -42,14 +42,15 @@ test_that("Experiment control: basic read from Excel", {
   testthat::expect_true(!is.null(result))
   testthat::expect_true(result$UniqueID == scenarioName)
 
+  print("TBD TBD TBD")
 
-  print(ehep:::GPE$taskData)
-  print(ehep:::BVE$taskParameters)
-
-  print(ehep:::GPE$populationChangeParameters)
-  print(ehep:::BVE$populationChangeParameters)
-
-  print(ehep:::GPE$seasonalityCurves)
+  # print(ehep:::GPE$taskData)
+  # print(ehep:::BVE$taskParameters)
+  #
+  # print(ehep:::GPE$populationChangeParameters)
+  # print(ehep:::BVE$populationChangeParameters)
+  #
+  # print(ehep:::GPE$seasonalityCurves)
 
   e$scenarios <- NULL
   e$populationChangeParameters <- NULL
@@ -58,9 +59,6 @@ test_that("Experiment control: basic read from Excel", {
 
 # test_that("Experiment control: Epsilon layer initialization", {
 #   testthat::expect_invisible(ehep::InitializeEpsilons())
-#   testthat::expect_null(ehep:::EPS$fertilityRatesMatrix)
-#   testthat::expect_null(ehep:::EPS$mortalityRatesMatrix)
-#   testthat::expect_null(ehep:::EPS$prevalenceRatesMatrix)
 #   testthat::expect_false(is.null(ehep:::populationChangeParameters))
 #   testthat::expect_false(is.null(ehep:::initialPopulation))
 #   testthat::expect_false(is.null(ehep:::taskParameters))

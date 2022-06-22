@@ -89,12 +89,12 @@ SaveBaseSettings <- function(scenarioName = ""){
   n <- which(GPE$scenarios$UniqueID == scenarioName)
 
   if (length(n) == 0) {
-    TraceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
+    traceMessage(paste("Could not find scenario ", scenarioName, sep = ""))
     return(NULL)
   }
 
   if (length(n) > 1) {
-    TraceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
+    traceMessage(paste("More than one scenario ", scenarioName, ". Using first one.", sep = ""))
   }
 
   return(GPE$scenarios[n[1], ])
@@ -150,96 +150,27 @@ SaveBaseSettings <- function(scenarioName = ""){
   )
 }
 
-#' Zero Epsilon Values
-#'
-#' Zero the configuration values in the Epsilon Values Environment. These
-#' values are added to the corresponding values from the Base Values Environment
-#' to produce varied parameters to model.
-#'
-#' The Epsilon Values Environment gets its name from the practice
-#' of labeling statistical noise values with the variable name 'epsilon'
-#'
-#' @export
-#'
-ZeroEpsilons <- function(){
-  EPS$populationChangeParameters <- .createZeroPopulationChangeParametersList()
-  EPS$initialPopulation <- .createZeroPopulationPyramidList()
-  EPS$taskParameters <- .createZeroTaskParametersObject()
-
-  EPS$fertilityRatesMatrix <- NULL
-  EPS$mortalityRatesMatrix <- NULL
-  EPS$prevalenceRatesMatrix <- NULL
-
-  return(invisible(NULL))
-}
-
-#' Initilialize Stochastic Variation System
-#'
-#' @return NULL (invisible)
-#'
-#' @export
-InitializeEpsilons <- function(){
-  set.seed(12345)
-  ZeroEpsilons()
-  return(invisible(NULL))
-}
-
 #' Generate A New Set Of Stochastic Variations
 #'
+#' Create the configuration values for an individual model experiment.
+#'
 #' @return NULL (invisible)
-#'
-#' @export
-NextEpsilons <- function(){
-  mf <- generateFertilityRatesMatrix()
-  mm <- generateMortalityRatesMatrix()
-  mp <- generatePrevalenceRatesMatrix()
-
-  EPS$fertilityRatesMatrix <- mf
-  EPS$mortalityRatesMatrix <- mm
-  EPS$prevalenceRatesMatrix <- mp
-
-  tp <- generateTaskParameterEpsilons(BVE$taskParameters)
-  EPS$taskParameters <- tp
-
-  return(invisible(NULL))
-}
-
-#' Combine Base and Epsilon Values
-#'
-#' Create the configuration values for an individual model experiment by
-#' adding together values from the Base Values Environment and the Epsilon
-#' Values Environment.
-#'
-#' @export
 #'
 ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
-  # Combine populationChangeParameters values and copy to experimentValuesEnvironment
-  bVar <- BVE$populationChangeParameters
-  eVar <- EPS$populationChangeParameters
-  pcp = list(initValues = add(bVar$initValues, eVar$initValues),
-             changeRates = add(bVar$changeRates, eVar$changeRates))
-  EXP$populationChangeParameters <- pcp
+  mf <- generateFertilityRatesMatrix()
+  mm <- generateMortalityRatesMatrix()
+  mp <- generatePrevalenceRatesMatrix()
+  tp <- generateTaskParameterEpsilons(BVE$taskParameters)
 
-  # Combine initialPopulation values and copy to experimentValuesEnvironment
-  bVar <- BVE$initialPopulation
-  eVar <- EPS$initialPopulation
-  pp = list(age = GPE$ages,
-            female = add(bVar$female, eVar$female),
-            male = add(bVar$male, eVar$female),
-            total = add(bVar$total, eVar$total))
-  EXP$initialPopulation <- pp
+  EXP$populationChangeParameters <- BVE$populationChangeParameters
+  EXP$initialPopulation <- BVE$initialPopulation
 
-  # Copy taskParameters values (computed in NextEpsilons()) to
-  # experimentValuesEnvironment. (No adding things together.)
-  EXP$taskParameters <- EPS$taskParameters
-
-  # Copy the rates matrices (computed in NextEpsilons())
-  # to experimentValuesEnvironment. (No adding things together.)
-  EXP$fertilityRatesMatrix = EPS$fertilityRatesMatrix
-  EXP$mortalityRatesMatrix = EPS$mortalityRatesMatrix
-  EXP$prevalenceRatesMatrix = EPS$prevalenceRatesMatrix
+  EXP$taskParameters <- tp
+  EXP$fertilityRatesMatrix = mf
+  EXP$mortalityRatesMatrix = mm
+  EXP$prevalenceRatesMatrix = mp
 
   invisible(NULL)
 }

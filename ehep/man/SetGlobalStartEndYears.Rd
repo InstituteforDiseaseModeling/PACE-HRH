@@ -9,10 +9,10 @@ SetGlobalStartEndYears(start = 2020, end = 2040)
 \arguments{
 \item{start}{Starting year}
 
-\item{end}{Ending year (must be greater than \code{start} )}
+\item{end}{Ending year (must be greater than \code{start})}
 }
 \value{
-Nothing
+NULL (invisible)
 }
 \description{
 Set Global Start And End Year Parameters

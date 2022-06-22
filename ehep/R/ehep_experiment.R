@@ -18,7 +18,7 @@ RunExperiment <- function(debug = FALSE){
   scenario <- BVE$scenario
 
   if (is.null(scenario)){
-    TraceMessage(paste("No scenario specified"))
+    traceMessage(paste("No scenario specified"))
     return(NULL)
   }
 
@@ -27,9 +27,6 @@ RunExperiment <- function(debug = FALSE){
 
   # Create a results list
   results <- list()
-
-  # Combine base and epsilon environments to produce experiment parameters
-  ConfigureExperimentValues()
 
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
   pcp <- EXP$populationChangeParameters

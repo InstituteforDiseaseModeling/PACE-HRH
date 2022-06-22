@@ -42,7 +42,7 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   population <- EXP$demographics[[as.character(year)]]
 
   if (is.null(population)){
-    TraceMessage(paste("No demographic info for year ", year, sep = ""))
+    traceMessage(paste("No demographic info for year ", year, sep = ""))
     return(list(N = 0, Time = 0))
   }
 
@@ -75,7 +75,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   names(numServices) <- NULL
 
   if (is.na(taskVals["MinsPerContact"])){
-    TraceMessage(paste("MinsPerContact missing for task ", GPE$taskData$Indicator[taskID], sep = ""))
     t = 0
   } else {
     t <- numServices * taskVals["MinsPerContact"]
@@ -196,6 +195,9 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   if (label == "adults 50+") {
     return(sum(pop$Female[51:101] + pop$Male[51:101]))
   }
+  if (label == "adults 35+") {
+    return(sum(pop$Female[36:101] + pop$Male[36:101]))
+  }
   if (label == "30 yo adults") {
     return(pop$Female[31] + pop$Male[31])
   }
@@ -227,7 +229,7 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
     return(sum(pop$Female[16] + pop$Male[16]))
   }
 
-  TraceMessage(paste("Unknown population group ", label, sep = ""))
+  traceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }
 
@@ -270,27 +272,3 @@ AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
 
   return(list(Time = mt, N = mn))
 }
-
-
-
-
-
-# AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
-#   assertthat::assert_that(length(baseTimes) == length(years))
-#
-#   df <- data.frame(years)
-#
-#   nul <- lapply(taskIDs, function(id){
-#     col <- sapply(seq_along(years), function(i){
-#       AllocationTaskTime(id, years[i], baseTimes[i])
-#     })
-#
-#     df <<- cbind(df,col)
-#     return(0)
-#   })
-#
-#   taskNames <- GPE$taskData$Indicator[taskIDs]
-#   names(df) <- c("Years", taskNames)
-#
-#   return(df)
-# }

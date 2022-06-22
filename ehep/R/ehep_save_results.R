@@ -4,7 +4,7 @@
 #' @param filename CSV file to write to
 #' @param breaks Vector of population bucket boundaries
 #'
-#' @return
+#' @return Generated output as a data frame (invisible)
 #' @export
 SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) {
   trials <- names(results)
@@ -167,10 +167,10 @@ SaveResults <- function(results, filepath, scenario, trial, run){
 
 #' Save Experiment Results As CSV File
 #'
-#' @param results TBD
-#' @param filepath TBD
-#' @param scenario TBD
-#' @param run TBD
+#' @param results Results structure as returned by \code{RunExperiments()}
+#' @param filepath Location to write CSV file
+#' @param scenario Name of experiments scenario, as passed to \code{RunExperiments()}
+#' @param run Run ID
 #'
 #' @return NULL (invisible)
 #'
@@ -180,73 +180,138 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
 
   l <- lapply(seq_along(trialIds), function(index){
     r <- results[[index]]
-    if (sum(names(r) == "SeasonalityResults") > 0){
-      return(func2(r, scenario, index, run))
+    if ("SeasonalityResults" %in% names(r)){
+      return(.saveSuiteResults2(r, scenario, index, run))
     } else {
-      return(func(r, scenario, index, run))
+      return(.saveSuiteResults1(r, scenario, index, run))
     }
   })
 
   out <- data.table::rbindlist(l)
 
-  write.csv(out, file = filepath, row.names = FALSE)
+#  write.csv(out, file = filepath, row.names = FALSE)
+
+  data.table::fwrite(out, file = filepath, row.names = FALSE, na = "NA")
 
   invisible(NULL)
 }
 
 # func2 ... SEASONALITY VERSION
-func2 <- function(results, scenario, trial, run){
-  s <- results$SeasonalityResults
-  taskIds <- names(s)
-  n = length(taskIds)
+.saveSuiteResults2 <- function(results, scenario, trial, run){
+  tasks <- names(results$SeasonalityResults)
+  ntasks <- length(tasks)
 
-  NAs <- replicate(n, NA)
-
-  dummyDf <- data.frame(
-    "Task_ID" = taskIds,
-    "Scenario_ID" = scenario,
-    "Trial_num" = trial,
-    "Run_num" = run
-  )
-
-  l <- lapply(1:252, function(t){
-    year <- ((t - 1) %/% 12) + GPE$startYear
-    month <- ((t - 1) %% 12) + 1
-
-    times <- sapply(taskIds, function(taskId){
-      time <- s[[taskId]]$Time[t]
-    })
-
-    Ns <- sapply(taskIds, function(taskId){
-      N <- s[[taskId]]$N[t]
-    })
-
-    retDf <- dummyDf
-    retDf$Year <- replicate(n, year)
-    retDf$Month <- replicate(n, month)
-    retDf$Num_services = Ns
-    retDf$Service_time = times
-    retDf$Health_benefit = NAs
-
-    return(retDf)
-
-    # return(data.frame("Task_ID" = taskIds,
-    #                   "Scenario_ID" = scenario,
-    #                   "Trial_num" = trial,
-    #                   "Run_num" = run,
-    #                   "Year" = year,
-    #                   "Month" = month,
-    #                   "Num_services" = Ns,
-    #                   "Service_time" = times,
-    #                   "Health_benefit" = NA))
+  l <- lapply(results$SeasonalityResults, function(r){
+    t(as.matrix(r$Time))
   })
 
-  df <- data.table::rbindlist(l)
+  mT <- do.call(rbind, l)
+
+  l <- lapply(results$SeasonalityResults, function(r){
+    t(as.matrix(r$N))
+  })
+
+  mN <- do.call(rbind, l)
+
+  rownames(mT) <- tasks
+  rownames(mN) <- tasks
+
+  msize <- dim(mT)[1] * dim(mT)[2]
+
+  len <- dim(mT)[2]
+  startYear <- GPE$startYear
+  startMonth <- 1
+  year <- ((1:len - 1) %/% 12) + startYear
+  month <- ((1:len - 1) %% 12) + 1
+
+  yearCol <- integer(length = msize)
+  monthCol <- integer(length = msize)
+  trialCol <- integer(length = msize)
+  runCol <- integer(length = msize)
+  taskIdCol <- character(length = msize)
+  timesCol <- integer(length = msize)
+  servicesCol <- integer(length = msize)
+  scenarioCol <- character(length = msize)
+
+  runCol[1:msize] <- run
+  scenarioCol[1:msize] <- scenario
+  trialCol[1:msize] <- trial
+
+  pos <- 1
+
+  for (i in 1:len){
+    endpos <- pos + ntasks - 1
+    yearCol[pos:endpos] <- year[i]
+    monthCol[pos:endpos] <- month[i]
+    taskIdCol[pos:endpos] <- tasks
+    timesCol[pos:endpos] <- mT[,i]
+    servicesCol[pos:endpos] <- mN[,i]
+
+    pos <- pos + ntasks
+  }
+
+  df <-
+    (data.frame("Task_ID" = taskIdCol,
+                "Scenario_ID" = scenarioCol,
+                "Trial_num" = trialCol,
+                "Run_num" = runCol,
+                "Year" = yearCol,
+                "Month" = monthCol,
+                "Num_services" = servicesCol,
+                "Service_time" = timesCol,
+                "Health_benefit" = NA))
+
+  # s <- results$SeasonalityResults
+  # taskIds <- names(s)
+  # n = length(taskIds)
+  #
+  # NAs <- replicate(n, NA)
+  #
+  # dummyDf <- data.frame(
+  #   "Task_ID" = taskIds,
+  #   "Scenario_ID" = scenario,
+  #   "Trial_num" = trial,
+  #   "Run_num" = run
+  # )
+  #
+  # l <- lapply(1:252, function(t){
+  #   year <- ((t - 1) %/% 12) + GPE$startYear
+  #   month <- ((t - 1) %% 12) + 1
+  #
+  #   times <- sapply(taskIds, function(taskId){
+  #     time <- s[[taskId]]$Time[t]
+  #   })
+  #
+  #   Ns <- sapply(taskIds, function(taskId){
+  #     N <- s[[taskId]]$N[t]
+  #   })
+  #
+  #   retDf <- dummyDf
+  #   retDf$Year <- replicate(n, year)
+  #   retDf$Month <- replicate(n, month)
+  #   retDf$Num_services = Ns
+  #   retDf$Service_time = times
+  #   retDf$Health_benefit = NAs
+  #
+  #   return(retDf)
+  #
+  #   # return(data.frame("Task_ID" = taskIds,
+  #   #                   "Scenario_ID" = scenario,
+  #   #                   "Trial_num" = trial,
+  #   #                   "Run_num" = run,
+  #   #                   "Year" = year,
+  #   #                   "Month" = month,
+  #   #                   "Num_services" = Ns,
+  #   #                   "Service_time" = times,
+  #   #                   "Health_benefit" = NA))
+  # })
+  #
+  # df <- data.table::rbindlist(l)
   return(df)
 }
 
 
-func <- function(results, scenario, trial, run){
+.saveSuiteResults1 <- function(results, scenario, trial, run){
   dfCsv <- data.frame()
 
   rows <- seq(1, dim(results$Clinical$Time)[1])

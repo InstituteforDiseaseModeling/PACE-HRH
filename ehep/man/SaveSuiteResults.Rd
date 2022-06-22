@@ -7,13 +7,13 @@
 SaveSuiteResults(results, filepath, scenario, run)
 }
 \arguments{
-\item{results}{TBD}
+\item{results}{Results structure as returned by \code{RunExperiments()}}
 
-\item{filepath}{TBD}
+\item{filepath}{Location to write CSV file}
 
-\item{scenario}{TBD}
+\item{scenario}{Name of experiments scenario, as passed to \code{RunExperiments()}}
 
-\item{run}{TBD}
+\item{run}{Run ID}
 }
 \value{
 NULL (invisible)

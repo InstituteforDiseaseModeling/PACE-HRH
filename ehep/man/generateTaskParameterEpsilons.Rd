@@ -10,7 +10,7 @@ generateTaskParameterEpsilons(tasks)
 \item{tasks}{Task parameter value matrix}
 }
 \value{
-
+Adjusted task parameters matrix
 }
 \description{
 Apply Stochasticisity To Select Task Parameters

@@ -14,7 +14,7 @@ SaveSuiteDemographics(results, filename = "out.csv", breaks = NULL)
 \item{breaks}{Vector of population bucket boundaries}
 }
 \value{
-
+Generated output as a data frame (invisible)
 }
 \description{
 Save Demographics Information From A Suite Of Experiments

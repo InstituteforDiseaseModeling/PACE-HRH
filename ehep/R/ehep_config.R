@@ -24,7 +24,7 @@
 #' Load Global Configuration
 #'
 #' Finds and loads global configuration data from a JSON file, including
-#' things like the default locations of data files.
+#' the location of the input Excel data file.
 #'
 #' @param path Location of global configuration file
 #'
@@ -51,14 +51,15 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 
         # TODO: Add code to configure start/end years
 
+        traceMessage(paste0("Global configuration loaded from ", path))
       },
       warning = function(war)
       {
-        ehep::TraceMessage(paste("WARNING:", war))
+        traceMessage(paste("WARNING:", war))
       },
       error = function(err)
       {
-        ehep::TraceMessage(paste("ERROR:", err))
+        traceMessage(paste("ERROR:", err))
       },
       finally =
         {
@@ -66,7 +67,7 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
         })
   }
   else {
-    ehep::TraceMessage("Could not find global configuration file - using defaults")
+    traceMessage("Could not find global configuration file - using defaults")
   }
 
   invisible(NULL)
@@ -97,9 +98,9 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/R Model Inputs.xlsx")
 #' Set Global Start And End Year Parameters
 #'
 #' @param start Starting year
-#' @param end Ending year (must be greater than \code{start} )
+#' @param end Ending year (must be greater than \code{start})
 #'
-#' @return Nothing
+#' @return NULL (invisible)
 #'
 #' @export
 SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
