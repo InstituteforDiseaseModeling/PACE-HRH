@@ -14,22 +14,23 @@ library(RColorBrewer)
 
 READ_IN = FALSE #Read in .csv files for summary stats, yes/no
 WRITE_OUT = TRUE #Write out .csv files for summary stats, yes/no
-date <- "March23_ECOruns"
+date <- "SNNPR0628_2022"
 #BaselineScenario <- "ExpectedValue_NtlRatio" #ExpectedValue_RuralRatio
 #NationalBaseline <- "ExpectedValue_NtlRatio"
 #StableFertility <- "NoFertilityChange_NR" #NoFertilityChange_RuralRatio
-GeoSelect <- "National"
 
 
 scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
 params <- read_xlsx("config/R Model Inputs.xlsx",sheet="StochasticParamaters")
+
+GeoSelect <- scenarios$Geography_dontedit[i]
 
 #load simulation data
 remove(DR)
 for (i in 1:nrow(scenarios)){
   print(paste("Loading scenario",i))
   scenario <- scenarios$UniqueID[i]
-  tempupload <- read.csv(paste("results/results_",scenario,"_",date,".csv",sep=""))
+  tempupload <- read.csv(paste("results/results_",scenario,"_",GeoSelect,"_",date,".csv",sep=""))
   if(!exists('DR')){
     DR <- tempupload
   }else{
@@ -257,21 +258,21 @@ if(READ_IN==FALSE){
 
 
   }else{
-  Mean_ServiceCat <- read.csv(paste("results/Mean_ServiceCat",date,".csv",sep=""))
-  Stats_TotClin <- read.csv(paste("results/Stats_TotClin",date,".csv",sep=""))
-  Mean_ClinCat <- read.csv(paste("results/Mean_ClinCat",date,".csv",sep=""))
-  Mean_Total <- read.csv(paste("results/Mean_Total",date,".csv",sep=""))
-  Stats_ClinMonth <- read.csv(paste("results/Stats_ClinMonth",date,".csv",sep=""))
-  Mean_Alloc <- read.csv(paste("results/Mean_Alloc",date,".csv",sep=""))
+  Mean_ServiceCat <- read.csv(paste("results/Mean_ServiceCat",GeoSelect,"_",date,".csv",sep=""))
+  Stats_TotClin <- read.csv(paste("results/Stats_TotClin",GeoSelect,"_",date,".csv",sep=""))
+  Mean_ClinCat <- read.csv(paste("results/Mean_ClinCat",GeoSelect,"_",date,".csv",sep=""))
+  Mean_Total <- read.csv(paste("results/Mean_Total",GeoSelect,"_",date,".csv",sep=""))
+  Stats_ClinMonth <- read.csv(paste("results/Stats_ClinMonth",GeoSelect,"_",date,".csv",sep=""))
+  Mean_Alloc <- read.csv(paste("results/Mean_Alloc",GeoSelect,"_",date,".csv",sep=""))
   }
 
 if(WRITE_OUT==TRUE){
-  write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat",date,".csv",sep=""))
-  write.csv(Stats_TotClin,paste("results/Stats_TotClin",date,".csv",sep=""))
-  write.csv(Mean_ClinCat,paste("results/Mean_ClinCat",date,".csv",sep=""))
-  write.csv(Mean_Total,paste("results/Mean_Total",date,".csv",sep=""))
-  write.csv(Stats_ClinMonth,paste("results/Stats_ClinMonth",date,".csv",sep=""))
-  write.csv(Mean_Alloc,paste("results/Mean_Alloc",date,".csv",sep=""))
+  write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Stats_TotClin,paste("results/Stats_TotClin",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Mean_ClinCat,paste("results/Mean_ClinCat",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Mean_Total,paste("results/Mean_Total",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Stats_ClinMonth,paste("results/Stats_ClinMonth",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Mean_Alloc,paste("results/Mean_Alloc",GeoSelect,"_",date,".csv",sep=""))
 }
 
 
@@ -355,7 +356,7 @@ for(sc in unique(DR$Scenario_ID)){
 
   print(plot1)
 
-  jpeg(paste("results/Weekly workload by Type","_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
+  jpeg(paste("results/Weekly workload by Type","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
   print(plot1)
   dev.off()
 
@@ -388,7 +389,7 @@ for(sc in unique(DR$Scenario_ID)){
 
   print(plot8)
 
-  jpeg(paste("results/Weekly workload by Cadre","_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
+  jpeg(paste("results/Weekly workload by Cadre","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
   print(plot8)
   dev.off()
 
@@ -426,7 +427,7 @@ for(sc in unique(DR$Scenario_ID)){
     scale_fill_viridis_d()
   print(plot9)
 
-  jpeg(paste("results/Time Mix 2021","_",date,"_",sc,".jpeg",sep=""), width = 5, height = 4, units = 'in', res = 700)
+  jpeg(paste("results/Time Mix 2021","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 5, height = 4, units = 'in', res = 700)
   print(plot2)
   print(plot9)
   dev.off()
@@ -478,7 +479,7 @@ for(sc in unique(DR$Scenario_ID)){
 
   print(plot3)
 
-  jpeg(paste("results/Time Mix Change Over Time","_",date,"_",sc,".jpeg",sep=""), width = 4.1, height = 3.5, units = 'in', res = 700)
+  jpeg(paste("results/Time Mix Change Over Time","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 4.1, height = 3.5, units = 'in', res = 700)
   print(plot3)
   dev.off()
 
