@@ -56,7 +56,6 @@ RunExperiment <- function(debug = FALSE){
   # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
   taskIds <- which(
     GPE$taskData$computeMethod == "TimePerTask" &
-      GPE$taskData$Geography == scenario$PopType &
       GPE$taskData$ClinicalOrNon == "Clinical"
   )
 
@@ -71,7 +70,6 @@ RunExperiment <- function(debug = FALSE){
   # STEP 3 - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
   taskIds <- which(
     GPE$taskData$computeMethod == "TimePerTask" &
-      GPE$taskData$Geography == scenario$PopType &
       GPE$taskData$ClinicalOrNon != "Clinical"
   )
 
@@ -84,10 +82,7 @@ RunExperiment <- function(debug = FALSE){
   aggAnnualNonClinicalTaskTimes <- .computeTotalTimes(EXP$nonClinicalTaskTimes)
 
   # STEP 4 - COMPUTE TIMES FOR RATIO-BASED ALLOCATION TASKS
-  taskIds <- which(
-    GPE$taskData$computeMethod == "TimeRatio" &
-      GPE$taskData$Geography == scenario$PopType
-  )
+  taskIds <- which(GPE$taskData$computeMethod == "TimeRatio")
 
   if (length(taskIds) > 0){
     EXP$nonClinicalAllocationTimes <-
@@ -99,8 +94,7 @@ RunExperiment <- function(debug = FALSE){
   aggAnnualNonClinicalAllocationTimes <- .computeTotalTimes(EXP$nonClinicalAllocationTimes)
 
   # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
-  taskIds <- which(GPE$taskData$computeMethod == "TimeAddedOn" &
-                     GPE$taskData$Geography == scenario$PopType)
+  taskIds <- which(GPE$taskData$computeMethod == "TimeAddedOn")
 
   if (length(taskIds) > 0){
     nonProductiveTaskTimes <-
