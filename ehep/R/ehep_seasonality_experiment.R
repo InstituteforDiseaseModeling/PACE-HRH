@@ -21,7 +21,13 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   dummyCurve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12
 
   # Look for seasonality-affected tasks in the task list for this scenario
-  taskIds <- which(GPE$taskData$Geography == scenario$PopType)
+#  taskIds <- which(GPE$taskData$Geography == scenario$PopType)
+
+
+  # Quick hack to remove PopType filter. TODO: better version!
+  taskIds <- seq_along(GPE$taskData$Geography)
+
+
   taskNames <- GPE$taskData$Indicator[taskIds]
   seasonalityTaskNames <- GPE$seasonalityOffsets$Task
   seasonalityTaskCurves <- GPE$seasonalityOffsets$Curve
