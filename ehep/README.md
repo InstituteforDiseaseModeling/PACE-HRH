@@ -76,43 +76,24 @@ ehep::SetGlobalStartEndYears(2025, 2030)
 
 ## Environments
 
-ehep uses four R environments.
+ehep uses three R environments.
 
 __ehep:::globalPackageEnvironment__ (alias ehep:::GPE) stores configuration 
-information.
+information for the entire package.
 
 __ehep:::baseValuesEnvironment__ (alias ehep:::BVE) stores the base values 
-on which to base stochastic trials. An _experiment_ is a set of stochastic
-trials based on a _scenario_. At the start of an experiment, baseline information
+on which to base stochastic trials. _Experiments_ are a set of stochastic
+trials based on a _scenario_. At the start of a set of experiments, baseline information
 is loaded into baseValuesEnvironment.
 
-__ehep:::epsilonValuesEnvironment__ (alias ehep:::EPS) stores stochastic changes to be
-applied to the base values in baseValuesEnvironment in order to produce the
-values for the experiment. The internal NextEpsilons()
-function is used to inject stochasticity.
-
 __ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
-after applying stochastic variation, used in experiment calculations. Experiment results 
-are written back to experimentValueEnvironment.
+after applying stochastic variation, used in experiment calculations. For each _experiment_ in 
+a suite of experiments, stochastic variations are applied to the parameters in the 
+baseValuesEnvironment, and the new parameters saved in base values saved in experimentValuesEnvironment.
+The experiment is run based on the values in experimentValuesEnvironment.
 
 You can view the current contents of any of the environments with R's
 `ls.str()` command.
-
-```
-> ls.str(ehep:::EPS)
-fertilityRatesMatrix :  num [1:7, 1:21] 0.0658 0.1826 0.222 0.1791 0.1055 ...
-initialPopulation : List of 4
- $ age   : num [1:101] 0 1 2 3 4 5 6 7 8 9 ...
- $ female:Formal class 'PopulationPyramid' [package "ehep"] with 1 slot
- $ male  :Formal class 'PopulationPyramid' [package "ehep"] with 1 slot
- $ total :Formal class 'PopulationPyramid' [package "ehep"] with 1 slot
-mortalityRatesMatrix :  num [1:8, 1:21] 30.97 3.604 1.168 0.989 1.645 ...
-populationChangeParameters : List of 2
- $ initValues :Formal class 'PopulationChangeParameters' [package "ehep"] with 1 slot
- $ changeRates:Formal class 'PopulationChangeParameters' [package "ehep"] with 1 slot
-prevalenceRatesMatrix :  num [1:72, 1:21] 1.9833 2.7244 0.4212 0.0963 0.0947 ...
-taskParameters : Formal class 'TaskParameters' [package "ehep"] with 1 slot
-```
 
 ## Population pyramids
 
