@@ -89,7 +89,7 @@ is loaded into baseValuesEnvironment.
 __ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
 after applying stochastic variation, used in experiment calculations. For each _experiment_ in 
 a suite of experiments, stochastic variations are applied to the parameters in the 
-baseValuesEnvironment, and the new parameters saved in base values saved in experimentValuesEnvironment.
+baseValuesEnvironment, and the new parameters saved in experimentValuesEnvironment.
 The experiment is run based on the values in experimentValuesEnvironment.
 
 You can view the current contents of any of the environments with R's
