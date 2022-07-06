@@ -1,27 +1,32 @@
-# Ethiopia Health Extension Program Capacity Modelling Package
+# Ethiopia Health Extension Program Capacity Modeling Package
 
 ## Installation
 
 ### Load the ehep package binary zip file
 
-If you're using RStudio, select __Install Packages ...__ from the __Tools__ menu. 
-Keeping the _Install dependencies_ option
-clicked should cause RStudio to download any other packages ehep requires.
-
-If you suspect you're missing a dependent package, run the _setup.R_ script 
-found in the _util_ subdirectory of the repository.
+1. In RStudio, from the __Tools__ menu, select __Install Packages ...__.
+2. Under __Install from:__, select __Package Archive File (.zip, .tar.gz)__.
+3. Under __Package archive__, select the version of the ehep package binary 
+   zip file you want to install. 
+4. Select the installation location and then click __Install__. 
+5. If you suspect you're missing a dependent package, from the __File__ menu 
+   select __Open File..__. From 
+   the repository, select _ehep/util/setup.R_.
+6. Click __Run__ to install all dependencies.
 
 ### Point ehep to the R model input spreadsheet
 
 ___You need to do this before you try to run anything.___
 
-By default, ehep looks for a model input file called _R Model Inputs.xlsx_ in a
-subdirectory of your R working directory called _config_.
+By default, ehep looks for a model input file called _R Model Inputs.xlsx_ 
+in a subdirectory of your R working directory called _config_.
 
-You can overwrite these assumptions by putting a _globalconfig.json_ file in
-your R working directory. There's a sample _globalconfig.json file_ in the
-repository's _util_ directory. You can edit it to set both the location and 
-name of the model input Excel file.
+If you want to override those default input values, you can point to a
+different model input Excel file. To do this, copy the
+sample _globalconfig.json_ file in the _util_ directory to your R working
+directory, editing the file to set both the location and name of the model
+input Excel file. For more information on the RStudio working directory,
+see [RStudio support](https://support.rstudio.com/hc/en-us/articles/200711843-Working-Directories-and-Workspaces-in-the-RStudio-IDE).
 
 ## Sample
 
@@ -56,7 +61,7 @@ results <-
 # Save the results to a CSV file
 ehep::SaveSuiteResults(results, "results.csv", scenario, run_number)
 ```
-## Global Parameters
+## Global parameters
 
 _DO NOT USE THIS FUNCTION_
 _Two problems. (1) Insufficiently tested. (2) Changing the start year without
@@ -71,24 +76,26 @@ ehep::SetGlobalStartEndYears(2025, 2030)
 
 ## Environments
 
-ehep uses 4 R environments.
+ehep uses three R environments.
 
 __ehep:::globalPackageEnvironment__ (alias ehep:::GPE) stores configuration 
-information.
+information for the entire package.
 
 __ehep:::baseValuesEnvironment__ (alias ehep:::BVE) stores the base values 
-on which to base stochastic trials. An _experiment_ is a set of stochastic
-trials based on a _scenario_. At the start of an experiment, baseline information
+on which to base stochastic trials. _Experiments_ are a set of stochastic
+trials based on a _scenario_. At the start of a set of experiments, baseline information
 is loaded into baseValuesEnvironment.
 
 __ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
-after applying stochastic variation, used in experiment calculations. Experiment results 
-are written back to experimentValueEnvironment.
+after applying stochastic variation, used in experiment calculations. For each _experiment_ in 
+a suite of experiments, stochastic variations are applied to the parameters in the 
+baseValuesEnvironment, and the new parameters saved in experimentValuesEnvironment.
+The experiment is run based on the values in experimentValuesEnvironment.
 
 You can view the current contents of any of the environments with R's
 `ls.str()` command.
 
-## Population Pyramids
+## Population pyramids
 
 The `ComputeDemographicsProjection()` function uses an initial population 
 pyramid, fertility rates, and mortality rates - all loaded through a call to 
@@ -121,13 +128,14 @@ List of 21
   ..$ Female: num [1:101] 1610656 1593593 1598655 1602277 1605128 ...
   ..$ Male  : num [1:101] 1610656 1593593 1598655 1602277 1605128 ...
 ```
-Each entry in the top-level list is a dataframe of population data for
+Each entry in the top-level list is a DataFrame of population data for
 females and males, stratified by age in years.
 
 ## globalconfig.json
 
-The file `globalconfig.json` defines certain global setting for ehep.
+The file `globalconfig.json` defines certain global settings for ehep.
 Importantly, this includes the location of the model input Excel file.
+This file must be placed in your working directory.
 
 ```
 {
