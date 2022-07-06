@@ -4,10 +4,10 @@
 \alias{explodeFertilityRates}
 \title{Convert Fertility Rates From Banded To Per-Age}
 \usage{
-explodeFertilityRates(banded_annual_rates)
+explodeFertilityRates(bandedAnnualRates)
 }
 \arguments{
-\item{banded_annual_rates}{Rates reported in age buckets}
+\item{bandedAnnualRates}{Rates reported in age buckets}
 }
 \value{
 List of vectors of per-year-of-age rates, for males and females

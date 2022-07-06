@@ -2,13 +2,13 @@
 % Please edit documentation in R/ehep_debug_utils.R
 \name{dispEnvs}
 \alias{dispEnvs}
-\title{Display Environments}
+\title{Display Contents of the Working Environments}
 \usage{
 dispEnvs()
 }
 \value{
-
+NULL (invisible)
 }
 \description{
-Display Environments
+Display Contents of the Working Environments
 }

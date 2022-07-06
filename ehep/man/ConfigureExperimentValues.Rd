@@ -2,12 +2,13 @@
 % Please edit documentation in R/ehep_exp_control.R
 \name{ConfigureExperimentValues}
 \alias{ConfigureExperimentValues}
-\title{Combine Base and Epsilon Values}
+\title{Generate A New Set Of Stochastic Variations}
 \usage{
 ConfigureExperimentValues()
 }
+\value{
+NULL (invisible)
+}
 \description{
-Create the configuration values for an individual model experiment by
-adding together values from the Base Values Environment and the Epsilon
-Values Environment.
+Create the configuration values for an individual model experiment.
 }

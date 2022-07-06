@@ -4,10 +4,10 @@
 \alias{explodeMortalityRates}
 \title{Convert Mortality Rates From Banded To Per-Age}
 \usage{
-explodeMortalityRates(banded_annual_rates)
+explodeMortalityRates(bandedAnnualRates)
 }
 \arguments{
-\item{banded_annual_rates}{Rates reported in age buckets}
+\item{bandedAnnualRates}{Rates reported in age buckets}
 }
 \value{
 List of vectors of per-year-of-age rates, for males and females

@@ -5,9 +5,9 @@
 \title{Compute Demographics Projection}
 \usage{
 ComputeDemographicsProjection(
-  initial_population_pyramid,
-  fertility_rates,
-  mortality_rates,
+  initialPopulationPyramid,
+  fertilityRates,
+  mortalityRates,
   years,
   normalize = NULL,
   growthFlag = TRUE,
@@ -15,12 +15,12 @@ ComputeDemographicsProjection(
 )
 }
 \arguments{
-\item{initial_population_pyramid}{Population pyramids dataframe. Must have
+\item{initialPopulationPyramid}{Population pyramids dataframe. Must have
 \code{$Age}, \code{$Male} and \code{$Female} fields.}
 
-\item{fertility_rates}{Fertility rates matrix}
+\item{fertilityRates}{Fertility rates matrix}
 
-\item{mortality_rates}{Mortality rates matrix}
+\item{mortalityRates}{Mortality rates matrix}
 
 \item{years}{Vector of years to model}
 

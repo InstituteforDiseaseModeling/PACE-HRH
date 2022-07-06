@@ -4,10 +4,10 @@
 \alias{computeBirths}
 \title{Compute Births}
 \usage{
-computeBirths(female_population, rates)
+computeBirths(femalePopulation, rates)
 }
 \arguments{
-\item{female_population}{Vector of female population pyramid}
+\item{femalePopulation}{Vector of female population pyramid}
 
 \item{rates}{Exploded vector of annual fertility rates}
 }

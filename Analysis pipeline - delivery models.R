@@ -14,22 +14,23 @@ library(RColorBrewer)
 
 READ_IN = FALSE #Read in .csv files for summary stats, yes/no
 WRITE_OUT = TRUE #Write out .csv files for summary stats, yes/no
-date <- "March23_ECOruns"
+date <- "SNNPR0628_2022"
 #BaselineScenario <- "ExpectedValue_NtlRatio" #ExpectedValue_RuralRatio
 #NationalBaseline <- "ExpectedValue_NtlRatio"
 #StableFertility <- "NoFertilityChange_NR" #NoFertilityChange_RuralRatio
-GeoSelect <- "National"
 
 
 scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
 params <- read_xlsx("config/R Model Inputs.xlsx",sheet="StochasticParamaters")
+
+GeoSelect <- scenarios$Geography_dontedit[i]
 
 #load simulation data
 remove(DR)
 for (i in 1:nrow(scenarios)){
   print(paste("Loading scenario",i))
   scenario <- scenarios$UniqueID[i]
-  tempupload <- read.csv(paste("results/results_",scenario,"_",date,".csv",sep=""))
+  tempupload <- read.csv(paste("results/results_",scenario,"_",GeoSelect,"_",date,".csv",sep=""))
   if(!exists('DR')){
     DR <- tempupload
   }else{
@@ -58,17 +59,17 @@ for(sc in 1:numscen){
   scntext <- scenarios$sheet_TaskValues[sc]
   taskvalues <- read_xlsx("config/R Model Inputs.xlsx",sheet=scntext)
   taskvalues <- subset(taskvalues,Geography==GeoSelect)
-  
+
   taskvalues$StartingRateInPop[is.na(taskvalues$StartingRateInPop)] = 0
   taskvalues$NumContactsAnnual[is.na(taskvalues$NumContactsAnnual)] = 0
   taskvalues$NumContactsPerUnit[is.na(taskvalues$NumContactsPerUnit)] = 0
   taskvalues$MinsPerContact[is.na(taskvalues$MinsPerContact)] = 0
   taskvalues$HoursPerWeek[is.na(taskvalues$HoursPerWeek)] = 0
   taskvalues$FTEratio[is.na(taskvalues$FTEratio)] = 0
- 
+
   #Prep to merge together data sets
   taskvalues$Task_ID <- taskvalues$Indicator
-  
+
   #Copy over scenario data
   DR$CommonName[DR$Scenario_ID==scenarios$UniqueID[sc]] <- taskvalues$CommonName[match(DR$Task_ID[DR$Scenario_ID==scenarios$UniqueID[sc]],taskvalues$Task_ID)]
   DR$ClinicalOrNon[DR$Scenario_ID==scenarios$UniqueID[sc]] <- taskvalues$ClinicalOrNon[match(DR$Task_ID[DR$Scenario_ID==scenarios$UniqueID[sc]],taskvalues$Task_ID)]
@@ -91,13 +92,13 @@ DR$RemoveCol[DR$DeliveryModel=="Merged" & DR$Task_ID=="Overhead_staff4"] = 1
 DR$RemoveCol[DR$DeliveryModel=="Merged" & DR$Task_ID=="Overhead_staff5"] = 1
 DR$RemoveCol[DR$DeliveryModel=="Merged" & DR$Task_ID=="Overhead_staff6"] = 1
 
-DR$RemoveCol[DR$DeliveryModel=="Basic" & DR$Task_ID=="Overhead_staff3" & Year < 2025] = 1
-DR$RemoveCol[DR$DeliveryModel=="Basic" & DR$Task_ID=="Overhead_staff4" & Year < 2030] = 1
+DR$RemoveCol[DR$DeliveryModel=="Basic" & DR$Task_ID=="Overhead_staff3" & DR$Year < 2025] = 1
+DR$RemoveCol[DR$DeliveryModel=="Basic" & DR$Task_ID=="Overhead_staff4" & DR$Year < 2030] = 1
 DR$RemoveCol[DR$DeliveryModel=="Basic" & DR$Task_ID=="Overhead_staff5"] = 1
 DR$RemoveCol[DR$DeliveryModel=="Basic" & DR$Task_ID=="Overhead_staff6"] = 1
 
-DR$RemoveCol[DR$DeliveryModel=="Comprehensive" & DR$Task_ID=="Overhead_staff3" & Year < 2025] = 1
-DR$RemoveCol[DR$DeliveryModel=="Comprehensive" & DR$Task_ID=="Overhead_staff4" & Year < 2025] = 1
+DR$RemoveCol[DR$DeliveryModel=="Comprehensive" & DR$Task_ID=="Overhead_staff3" & DR$Year < 2025] = 1
+DR$RemoveCol[DR$DeliveryModel=="Comprehensive" & DR$Task_ID=="Overhead_staff4" & DR$Year < 2025] = 1
 
 DR <- subset(DR,RemoveCol==0)
 
@@ -143,8 +144,7 @@ BasicCadre_melt$allocation[is.na(BasicCadre_melt$allocation)] = 0
 MergedCadre_melt$allocation[is.na(MergedCadre_melt$allocation)] = 0
 
 #Set up new dataframe for calculations
-DR$DeliveryModel <- scenarios$DeliveryModel[match(DR$Scenario_ID,scenarios$UniqueID)]
-AllocCalcs <- DR[ , c("Task_ID", "Scenario_ID","DeliveryModel","Trial_num","Year","Service_time","WeeksPerYr")] 
+AllocCalcs <- DR[ , c("Task_ID", "Scenario_ID","DeliveryModel","Trial_num","Year","Service_time","WeeksPerYr")]
 
 #Define match years for which delivery model will be in operation
 AllocCalcs$MatchYear <- 2020
@@ -221,32 +221,32 @@ if(READ_IN==FALSE){
   #Create summary tables
   #sumsub <- subset(DR,Scenario_ID==BaselineScenario | Scenario_ID==StableFertility)
   sumsub <- DR
-  
+
   #Definitely in use
   print("starting clinical cat")
   ByRun_ClinCat <- ddply(sumsub, .(Scenario_ID,Trial_num,Year,ClinicalCat,ClinicalOrNon,WeeksPerYr),summarize,TotHrs = sum(Service_time))
   Mean_ClinCat <- ddply(ByRun_ClinCat, .(Scenario_ID,Year,ClinicalCat,ClinicalOrNon,WeeksPerYr),summarize,MeanHrs = mean(TotHrs))
-  
+
   print("starting clinical month")
   ByRun_ClinMonth <- ddply(subset(sumsub,ClinicalOrNon=="Clinical"),.(Scenario_ID,Trial_num,Year,Month,WeeksPerYr,HrsPerWeek),summarize,TotHrs=sum(Service_time))
   Stats_ClinMonth <- ddply(ByRun_ClinMonth,.(Scenario_ID,Year,Month,WeeksPerYr,HrsPerWeek),summarize,CI05 = quantile(TotHrs,probs=c(.05)),CI50 = mean(TotHrs),CI95 = quantile(TotHrs,probs=c(.95)))
-  
+
   print("starting service cat")
   sumsub$ServiceCat[sumsub$ServiceCat=="Schisto MDA"] = "Campaign"
   sumsub$ServiceCat[sumsub$ServiceCat=="LLINs and IRS"] = "Campaign"
   sumsub$ServiceCat[sumsub$ServiceCat=="Vector control"] = "Campaign"
   ByRun_ServiceCat <- ddply(sumsub,.(Scenario_ID,Trial_num,Year,ServiceCat,ClinicalOrNon),summarize,TotHrs=sum(Service_time))
   Mean_ServiceCat <- ddply(ByRun_ServiceCat,.(Scenario_ID,Year,ServiceCat,ClinicalOrNon),summarize,MeanHrs=mean(TotHrs),CI95 = quantile(TotHrs,probs=c(.95)))
-  
+
   print("starting totals")
   ByRun_Total <- ddply(sumsub, .(Scenario_ID,Trial_num,Year,WeeksPerYr,HrsPerWeek),summarize,TotHrs = sum(Service_time))
   Mean_Total <- ddply(ByRun_Total, .(Scenario_ID,Year,WeeksPerYr,HrsPerWeek),summarize,MeanHrs = mean(TotHrs), CI05 = quantile(TotHrs,probs=c(.05)), CI95 = quantile(TotHrs,probs=c(.95)))
 
   sumsub <- subset(sumsub, ClinicalOrNon=="Clinical")
-  
+
   ByRun_TotClin <- ddply(sumsub,.(Scenario_ID,Trial_num,Year,WeeksPerYr,HrsPerWeek),summarize,AnnualHrs=sum(Service_time))
   Stats_TotClin <- ddply(ByRun_TotClin,.(Scenario_ID,Year,WeeksPerYr,HrsPerWeek),summarize,CI05 = quantile(AnnualHrs,probs=c(.05)),CI50 = mean(AnnualHrs),CI95 = quantile(AnnualHrs,probs=c(.95)))
-  
+
   #Summarize time by cadre
   print("starting by cadre")
   ByRun_Alloc <- ddply(AllocCalcs, .(Scenario_ID,DeliveryModel,Trial_num,Year,WeeksPerYr),summarize,
@@ -255,24 +255,24 @@ if(READ_IN==FALSE){
                            variable.name="Cadre",value.name="AnnualHrs")
   ByRun_Alloc_melt <- subset(ByRun_Alloc_melt,!is.na(AnnualHrs))
   Mean_Alloc <- ddply(ByRun_Alloc_melt, .(Scenario_ID,DeliveryModel,Year,WeeksPerYr,Cadre),summarize,CI05=quantile(AnnualHrs,probs=c(.05)),CI50 = mean(AnnualHrs),CI95 = quantile(AnnualHrs,probs=c(.95)))
-  
-  
+
+
   }else{
-  Mean_ServiceCat <- read.csv(paste("results/Mean_ServiceCat",date,".csv",sep=""))
-  Stats_TotClin <- read.csv(paste("results/Stats_TotClin",date,".csv",sep=""))
-  Mean_ClinCat <- read.csv(paste("results/Mean_ClinCat",date,".csv",sep=""))
-  Mean_Total <- read.csv(paste("results/Mean_Total",date,".csv",sep=""))
-  Stats_ClinMonth <- read.csv(paste("results/Stats_ClinMonth",date,".csv",sep=""))
-  Mean_Alloc <- read.csv(paste("results/Mean_Alloc",date,".csv",sep=""))
+  Mean_ServiceCat <- read.csv(paste("results/Mean_ServiceCat",GeoSelect,"_",date,".csv",sep=""))
+  Stats_TotClin <- read.csv(paste("results/Stats_TotClin",GeoSelect,"_",date,".csv",sep=""))
+  Mean_ClinCat <- read.csv(paste("results/Mean_ClinCat",GeoSelect,"_",date,".csv",sep=""))
+  Mean_Total <- read.csv(paste("results/Mean_Total",GeoSelect,"_",date,".csv",sep=""))
+  Stats_ClinMonth <- read.csv(paste("results/Stats_ClinMonth",GeoSelect,"_",date,".csv",sep=""))
+  Mean_Alloc <- read.csv(paste("results/Mean_Alloc",GeoSelect,"_",date,".csv",sep=""))
   }
 
 if(WRITE_OUT==TRUE){
-  write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat",date,".csv",sep=""))
-  write.csv(Stats_TotClin,paste("results/Stats_TotClin",date,".csv",sep=""))
-  write.csv(Mean_ClinCat,paste("results/Mean_ClinCat",date,".csv",sep=""))
-  write.csv(Mean_Total,paste("results/Mean_Total",date,".csv",sep=""))
-  write.csv(Stats_ClinMonth,paste("results/Stats_ClinMonth",date,".csv",sep=""))
-  write.csv(Mean_Alloc,paste("results/Mean_Alloc",date,".csv",sep=""))
+  write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Stats_TotClin,paste("results/Stats_TotClin",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Mean_ClinCat,paste("results/Mean_ClinCat",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Mean_Total,paste("results/Mean_Total",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Stats_ClinMonth,paste("results/Stats_ClinMonth",GeoSelect,"_",date,".csv",sep=""))
+  write.csv(Mean_Alloc,paste("results/Mean_Alloc",GeoSelect,"_",date,".csv",sep=""))
 }
 
 
@@ -328,7 +328,7 @@ maxyval <- max(Mean_Total$CI95/Mean_Total$WeeksPerYr)*1.05
 i=1
 
 for(sc in unique(DR$Scenario_ID)){
-  
+
   temp <- subset(Mean_ClinCat,Scenario_ID==sc)
   weeksperyear = mean(DR$WeeksPerYr[DR$Scenario_ID==sc])
   hoursperweek = mean(DR$HrsPerWeek[DR$Scenario_ID==sc])
@@ -339,9 +339,9 @@ for(sc in unique(DR$Scenario_ID)){
   temp$Alpha <- 1
   temp$Alpha[temp$ClinicalOrNon!="Clinical"] = .3
   temp <- subset(temp,Year<2036)
-  
+
   plottitle <- scenarios$UniqueID[i]
-  
+
   plot1 <- ggplot()+
     geom_bar(data=temp,aes(x=Year,y=MeanHrs/WeeksPerYr,fill=Category),stat="identity",alpha=.9)+
     geom_line(data=subset(Mean_Total,Scenario_ID==sc),aes(x=Year,y=MeanHrs/WeeksPerYr),size=1.2)+
@@ -353,46 +353,46 @@ for(sc in unique(DR$Scenario_ID)){
     theme(legend.title=element_blank(),axis.text.x = element_text(angle=-90, vjust = .5, hjust=1))+
     scale_fill_viridis_d()+
     ylab("Hours per Week per 2,500 Pop") + xlab("") + labs(title = plottitle)
-  
+
   print(plot1)
-  
-  jpeg(paste("results/Weekly workload by Type","_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
+
+  jpeg(paste("results/Weekly workload by Type","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
   print(plot1)
   dev.off()
-  
+
   i=i+1
-  
+
 }
 
 ############################################################################################################################################
-#graphic from slide 4, but broken down by cadre instead 
+#graphic from slide 4, but broken down by cadre instead
 colorlist <- viridis(6,1,0,1,1,"D")
 namelist <- c("MW_hrs","HO_hrs","RN_hrs","EH_hrs","FH_hrs","HEW_hrs")
 renamelist <- c("Midwife","Health Off.","Nurse","Env. Health","Fam. Health","HEW")
 
 for(sc in unique(DR$Scenario_ID)){
-  
+
   temp <- subset(Mean_Alloc,Scenario_ID==sc)
   weeksperyear = mean(DR$WeeksPerYr[DR$Scenario_ID==sc])
   hoursperweek = mean(DR$HrsPerWeek[DR$Scenario_ID==sc])
   temp$colorselect <- colorlist[match(temp$Cadre,namelist)]
   temp$rename <- renamelist[match(temp$Cadre,namelist)]
-  
+
   plot8 <- ggplot()+
     geom_bar(data=temp,aes(x=Year,y=CI50/WeeksPerYr,group=Cadre),fill=temp$colorselect,color="darkgrey",stat="identity",alpha=.9)+
     geom_line(data=subset(Mean_Total,Scenario_ID==sc),aes(x=Year,y=MeanHrs/WeeksPerYr),size=1.2)+
     theme_bw()+
     scale_x_continuous(breaks = seq(2021,max(temp$Year)))+
     theme(legend.title=element_blank(),axis.text.x = element_text(angle=-90, vjust = .5, hjust=1))+
-    ylab("Hours per Week per 2,500 Pop") + xlab("") + labs(title = paste("Time Allocation by Cadre",sc)) + 
+    ylab("Hours per Week per 2,500 Pop") + xlab("") + labs(title = paste("Time Allocation by Cadre",sc)) +
     scale_fill_discrete(labels=renamelist)
-  
+
   print(plot8)
-  
-  jpeg(paste("results/Weekly workload by Cadre","_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
+
+  jpeg(paste("results/Weekly workload by Cadre","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
   print(plot8)
   dev.off()
-  
+
 }
 
 
@@ -410,28 +410,28 @@ for(sc in unique(DR$Scenario_ID)){
   temp$ServiceCat[temp$ServiceCat=="Family planning"] = "FP"
   temp$ServiceCat[temp$ServiceCat=="Immunization"] = "RI"
   temp$ServiceCat[temp$ServiceCat=="Mental health"] = "Mental"
-  
+
   plot2 <- ggplot(temp,aes(area=MeanHrs,fill=ClinicalOrNon,label=ServiceCat,subgroup=ClinicalOrNon))+
     geom_treemap()+geom_treemap_text(color="darkgrey",place="center",size=14)+
     geom_treemap_subgroup_border(color="black",size=2.5)+
     theme_bw()+theme(legend.position = "none")+
     scale_fill_viridis_d()
   print(plot2)
-  
+
   temp <- subset(temp,ClinicalOrNon=="Clinical")
-  
+
   plot9 <- ggplot(temp,aes(area=MeanHrs,fill=ServiceCat,label=ServiceCat,subgroup=ServiceCat))+
     geom_treemap()+geom_treemap_text(color="black",place="center",size=14)+
     geom_treemap_subgroup_border(color="black",size=2.5)+
     theme_bw()+theme(legend.position = "none")+
     scale_fill_viridis_d()
   print(plot9)
-  
-  jpeg(paste("results/Time Mix 2021","_",date,"_",sc,".jpeg",sep=""), width = 5, height = 4, units = 'in', res = 700)
+
+  jpeg(paste("results/Time Mix 2021","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 5, height = 4, units = 'in', res = 700)
   print(plot2)
   print(plot9)
   dev.off()
-  
+
 }
 
 
@@ -449,7 +449,7 @@ plotsub$ServiceCat <- as.factor(plotsub$ServiceCat)
 ymaxdiff = max(plotsub$RatioTo1) - 1
 yplotmax = (ymaxdiff+1)*1.02
 yplotmin = (1-ymaxdiff)*1.02
-  
+
 for(sc in unique(DR$Scenario_ID)){
   temp <- subset(plotsub,Scenario_ID==sc)
 
@@ -465,10 +465,10 @@ for(sc in unique(DR$Scenario_ID)){
   temp$RatioLastYr[temp$ServiceCat=="Immunization"] = temp$RatioLastYr[temp$ServiceCat=="Immunization"] #separate overlapping labels
   temp$RatioLastYr[temp$ServiceCat=="NTDs (LF)"] = temp$RatioLastYr[temp$ServiceCat=="NTDs (LF)"] #separate overlapping labels
   temp$RatioLastYr[temp$ServiceCat=="HIV"] = temp$RatioLastYr[temp$ServiceCat=="HIV"] #separate overlapping labels
-  
+
   temp$Label <- ""
   temp$Label[temp$Year==max(temp$Year)] = paste(temp$ServiceCat[temp$Year==max(temp$Year)],", ",round(temp$RatioLastYr[temp$Year==max(temp$Year)],1),sep="")
-  
+
   plot3 <- ggplot(temp,aes(x=Year,y=RatioTo1,group=ServiceCat))+geom_line(aes(color=ServiceCat),size=1.1)+
     geom_hline(yintercept = 1,color="black",linetype="dashed")+
     theme_bw()+xlab("")+ylab("Ratio to Baseline Year")+theme(legend.position="none",axis.text.x = element_text(angle=-90, vjust = .5, hjust=1))+
@@ -476,13 +476,13 @@ for(sc in unique(DR$Scenario_ID)){
     geom_text(aes(x=max(Year)+.2,y=RatioLastYr,label=Label),color="darkgrey",size=2.8,hjust=0)+
     scale_x_continuous(breaks = seq(2021,2035),limits=c(2021,max(temp$Year)+6)) +
     scale_y_continuous(limits = c(yplotmin,yplotmax))+labs(title = paste(sc))
-    
+
   print(plot3)
-  
-  jpeg(paste("results/Time Mix Change Over Time","_",date,"_",sc,".jpeg",sep=""), width = 4.1, height = 3.5, units = 'in', res = 700)
+
+  jpeg(paste("results/Time Mix Change Over Time","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 4.1, height = 3.5, units = 'in', res = 700)
   print(plot3)
   dev.off()
-  
+
 }
 
 
@@ -494,19 +494,19 @@ for(sc in unique(DR$Scenario_ID)){
 # Stats_TotClin$FTE05 <- round(Stats_TotClin$CI05/Stats_TotClin$WeeksPerYr/Stats_TotClin$HrsPerWeek,2)
 # Stats_TotClin$FTE50 <- round(Stats_TotClin$CI50/Stats_TotClin$WeeksPerYr/Stats_TotClin$HrsPerWeek,2)
 # Stats_TotClin$FTE95 <- round(Stats_TotClin$CI95/Stats_TotClin$WeeksPerYr/Stats_TotClin$HrsPerWeek,2)
-# 
+#
 # #clinical FTE calcs
 # #First/Last Year Total clinical FTE, Baseline/Stable fertility
 # subset(Stats_TotClin,(Year==min(Stats_TotClin$Year) | Year==max(Stats_TotClin$Year)) & Scenario_ID==BaselineScenario)
 # subset(Stats_TotClin,(Year==min(Stats_TotClin$Year) | Year==max(Stats_TotClin$Year)) & Scenario_ID==StableFertility)
-# 
+#
 # #Annual hours of clinical work, fertility sensitivity plot
 # temp <- subset(Mean_ServiceCat,ClinicalOrNon=="Clinical")
 # temp$alphavalue <- 0
 # temp$alphavalue[temp$Scenario_ID==BaselineScenario] = 1
 # temp$alphavalue[temp$Scenario_ID==StableFertility] = .6
 # #temp$MeanHrs[temp$Scenario_ID==StableFertility] = temp$MeanHrs[temp$Scenario_ID==StableFertility]*1.2 #just for demo purposes to get a difference between scenarios
-# 
+#
 # #Box outline is stable fertility 95th percentile
 # #Light green is stable fertility scenario
 # #Dark green is continuing decline in fertility scenario (expected/baseline)
@@ -519,7 +519,7 @@ for(sc in unique(DR$Scenario_ID)){
 #   theme(axis.text.x = element_text(angle = 90,hjust=1,vjust=.5))+
 #   scale_y_continuous(labels=comma)
 # plot(plot4)
-# 
+#
 # jpeg(paste("results/Fertility Effects Over Time",date,".jpeg",sep=""), width = 5*4/5, height = 4*4/5, units = 'in', res = 700)
 # print(plot4)
 # dev.off()
@@ -545,10 +545,10 @@ Stats_ClinMonth$MonthlyAvg <- Stats_ClinMonth$MonthlyAvg/(Stats_ClinMonth$WeeksP
 
 
 ps <- subset(Stats_ClinMonth,Year==2021)
-plot6 <- ggplot(ps,aes(x=Month,y=CI50/MonthlyAvg,group=Scenario_ID,color=Scenario_ID,fill=Scenario_ID)) + 
+plot6 <- ggplot(ps,aes(x=Month,y=CI50/MonthlyAvg,group=Scenario_ID,color=Scenario_ID,fill=Scenario_ID)) +
   geom_line(aes(x=Month,y=CI50/MonthlyAvg))+
   theme_bw() + ylab("Ratio to Avg.")+ labs(title="Seasonality of Clinical Work (2021)") +
-  geom_ribbon(aes(ymin=CI05/MonthlyAvg,ymax=CI95/MonthlyAvg),alpha=.3) + 
+  geom_ribbon(aes(ymin=CI05/MonthlyAvg,ymax=CI95/MonthlyAvg),alpha=.3) +
   geom_hline(yintercept=1,color="black",linetype="dashed")+
   scale_x_continuous(breaks=seq(1,12))+theme(legend.title=element_blank(),legend.position = "bottom")+
   scale_y_continuous(labels=comma,limits=c(.5,1.5))
@@ -559,10 +559,10 @@ print(plot6)
 dev.off()
 
 ps <- subset(Stats_ClinMonth,Year==2035)
-plot7 <- ggplot(ps,aes(x=Month,y=CI50/MonthlyAvg,group=Scenario_ID,color=Scenario_ID,fill=Scenario_ID)) + 
+plot7 <- ggplot(ps,aes(x=Month,y=CI50/MonthlyAvg,group=Scenario_ID,color=Scenario_ID,fill=Scenario_ID)) +
   geom_line(aes(x=Month,y=CI50/MonthlyAvg))+
   theme_bw() + ylab("Ratio to Avg.")+ labs(title="Seasonality of Clinical Work (2035)") +
-  geom_ribbon(aes(ymin=CI05/MonthlyAvg,ymax=CI95/MonthlyAvg),alpha=.3) + 
+  geom_ribbon(aes(ymin=CI05/MonthlyAvg,ymax=CI95/MonthlyAvg),alpha=.3) +
   geom_hline(yintercept=1,color="black",linetype="dashed")+
   scale_x_continuous(breaks=seq(1,12))+theme(legend.title=element_blank(),legend.position = "bottom")+
   scale_y_continuous(labels=comma,limits=c(.5,1.5))
@@ -577,37 +577,37 @@ for(sc in unique(DR$Scenario_ID)){
 
   temp <- subset(Stats_ClinMonth,Scenario_ID==sc)
   temp <- subset(temp,Year==min(temp$Year) | Year==max(temp$Year))
-  
+
   #calculate FTE need differences
   # temp$FTE50 <- round(temp$CI50/temp$WeeksPerYr/temp$HrsPerWeek,2)
   # temp$FTE95 <- round(temp$CI95/temp$WeeksPerYr/temp$HrsPerWeek,2)
-  # 
+  #
   mean(subset(temp,Scenario_ID==sc & Year==min(temp$Year))$FTE50) #calculated on monthly average, expected value 2021
   max(subset(temp,Scenario_ID==sc & Year==min(temp$Year))$FTE50) #calculated on monthly maximum, expected value 2021
   max(subset(temp,Scenario_ID==sc & Year==min(temp$Year))$FTE95) #calculated on monthly maximum, 95th CI value 2021
-  
+
   mean(subset(temp,Scenario_ID==sc & Year==max(temp$Year))$FTE50) #calculated on monthly average, expected value 2035
   max(subset(temp,Scenario_ID==sc & Year==max(temp$Year))$FTE50) #calculated on monthly maximum, expected value 2035
   max(subset(temp,Scenario_ID==sc & Year==max(temp$Year))$FTE95) #calculated on monthly maximum, 95th CI value 2035
-  
+
   #monthly_avg_2021 <- mean(subset(temp,Year==2021)$CI50)
   #monthly_avg_2035 <- mean(subset(temp,Year==2035)$CI50)
-  
+
   #temp$MonthlyAvg <- 0
   #temp$MonthlyAvg[temp$Year==2021] = monthly_avg_2021
   #temp$MonthlyAvg[temp$Year==2035] = monthly_avg_2035
-  
+
   #Normalize everything to hours per week
   #temp$CI05 <- temp$CI05/(temp$WeeksPerYr/12)
   #temp$CI95 <- temp$CI95/(temp$WeeksPerYr/12)
   #temp$CI50 <- temp$CI50/(temp$WeeksPerYr/12)
   #temp$MonthlyAvg <- temp$MonthlyAvg/(temp$WeeksPerYr/12)
-  
+
   ggplot(temp,aes(x=Month,y=CI50,group=as.factor(Year)))+theme_bw()+ylab("Clinical Hours per Week")+
     geom_ribbon(aes(ymin=CI05,ymax=CI95,fill=as.factor(Year)),alpha=.3)+geom_line(aes(color=as.factor(Year)))+
     scale_x_continuous(breaks=seq(1,12))+theme(legend.title=element_blank())+
     scale_y_continuous(labels=comma) + facet_wrap(~Year)
-  
+
   temp <- subset(temp,Year==2021)
   plot5 <- ggplot(temp,aes(x=Month,y=CI50/MonthlyAvg))+theme_bw()+ylab("Ratio of Clinical Time: Monthly / Average") +
     geom_hline(yintercept=1,color="black",linetype="dashed")+
@@ -615,11 +615,11 @@ for(sc in unique(DR$Scenario_ID)){
     scale_x_continuous(breaks=seq(1,12))+theme(legend.title=element_blank())+
     scale_y_continuous(labels=scales::number_format(accuracy = 0.1),limits=c(.5,1.5))
   print(plot5)
-  
+
   jpeg(paste("results/Seasonality effect on clinical time","_",date,"_",sc,".jpeg"), width = 5*4/5, height = 4*4/5, units = 'in', res = 700)
   print(plot5)
   dev.off()
-    
+
 }
 
 
@@ -630,65 +630,65 @@ for(sc in unique(DR$Scenario_ID)){
 
 # #Set up dataframe
 # SC <- data.frame(sc_name=c("Baseline 2021","Seasonality","Pop growth","Decreases in U5 illness","Decreases in TB, HIV & malaria","Ongoing decrease fertility"))
-# SC$TotalTime_mean <- 0 
-# SC$TotalTime_95 <- 0 
-# SC$TotalTime_05 <- 0 
+# SC$TotalTime_mean <- 0
+# SC$TotalTime_95 <- 0
+# SC$TotalTime_05 <- 0
 # SC$Scenario_diff <- 0
 # SC$Base_value <- 0
 # SC$Delta_bar <- 0
-# 
+#
 # #Calculate and save baseline values from year 1, before anything has changed.
 # Baseline_byrun <- ddply(subset(DR,Year==2021 & Scenario_ID==BaselineScenario),.(Trial_num),summarize,TotHrs=sum(Service_time))
 # Baseline_stats <- ddply(Baseline_byrun,.(),summarize,MeanHrs = mean(TotHrs), CI05 = quantile(TotHrs,probs=c(.05)), CI95 = quantile(TotHrs,probs=c(.95)))
-# 
+#
 # SC$TotalTime_mean[1] = Baseline_stats$MeanHrs[1]
 # SC$TotalTime_95[1] = Baseline_stats$CI95[1]
 # SC$TotalTime_05[1] = Baseline_stats$CI05[1]
-# 
+#
 # #Calculate and save baseline values from year 1, factoring in seasonality (select max month).
 # Baseline_month_byrun <- ddply(subset(DR,Year==2021 & Scenario_ID==BaselineScenario),.(Trial_num,Month),summarize,TotHrs=sum(Service_time))
-# Baseline_month_max <- ddply(Baseline_month_byrun,.(Trial_num),summarize,MaxMonthHrs=max(TotHrs)) 
+# Baseline_month_max <- ddply(Baseline_month_byrun,.(Trial_num),summarize,MaxMonthHrs=max(TotHrs))
 # Baseline_month_stats <- ddply(Baseline_month_max,.(),summarize,AvgHighestMonth=mean(MaxMonthHrs), CI05= quantile(MaxMonthHrs,probs=c(.05)), CI95= quantile(MaxMonthHrs,probs=c(.95)))
-# 
+#
 # SC$TotalTime_mean[2] = Baseline_month_stats$AvgHighestMonth[1]*12
 # SC$TotalTime_95[2] = Baseline_month_stats$CI95[1]*12
 # SC$TotalTime_05[2] = Baseline_month_stats$CI05[1]*12
-# 
+#
 # #Calculate and save baseline values from the last year, factoring in seasonality (select max month).
 # Baseline_month_byrun <- ddply(subset(DR,Year==2035 & Scenario_ID==BaselineScenario),.(Trial_num,Month),summarize,TotHrs=sum(Service_time))
-# Baseline_month_max <- ddply(Baseline_month_byrun,.(Trial_num),summarize,MaxMonthHrs=max(TotHrs)) 
+# Baseline_month_max <- ddply(Baseline_month_byrun,.(Trial_num),summarize,MaxMonthHrs=max(TotHrs))
 # Baseline_month_stats <- ddply(Baseline_month_max,.(),summarize,AvgHighestMonth=mean(MaxMonthHrs), CI05= quantile(MaxMonthHrs,probs=c(.05)), CI95= quantile(MaxMonthHrs,probs=c(.95)))
-# 
+#
 # SC$TotalTime_mean[6] = Baseline_month_stats$AvgHighestMonth[1]*12
 # SC$TotalTime_95[6] = Baseline_month_stats$CI95[1]*12
 # SC$TotalTime_05[6] = Baseline_month_stats$CI05[1]*12
-# 
+#
 # #Calculate and save values from the no-improvements scenario, basically the worst possible outcome, final year
 # WorstCase_byrun <- ddply(subset(DR,Year==2035 & Scenario_ID=="p_Demographics_NR"),.(Trial_num),summarize,TotHrs=sum(Service_time))
 # WorstCase_stats <- ddply(WorstCase_byrun,.(),summarize,MeanHrs = mean(TotHrs), CI05 = quantile(TotHrs,probs=c(.05)), CI95 = quantile(TotHrs,probs=c(.95)))
-# 
+#
 # SC$TotalTime_mean[3] = WorstCase_stats$MeanHrs[1]
 # SC$TotalTime_95[3] = WorstCase_stats$CI95[1]
 # SC$TotalTime_05[3] = WorstCase_stats$CI05[1]
-# 
+#
 # #Calculate and save values from the child-health-improvement only scenario, final year
 # ChHealthImprv_byrun <- ddply(subset(DR,Year==2035 & Scenario_ID=="p_ChildHealthImp_NR"),.(Trial_num),summarize,TotHrs=sum(Service_time))
 # ChHealthImprv_stats <- ddply(ChHealthImprv_byrun,.(),summarize,MeanHrs = mean(TotHrs), CI05 = quantile(TotHrs,probs=c(.05)), CI95 = quantile(TotHrs,probs=c(.95)))
-# 
+#
 # SC$TotalTime_mean[4] = ChHealthImprv_stats$MeanHrs[1]
 # SC$TotalTime_95[4] = ChHealthImprv_stats$CI95[1]
 # SC$TotalTime_05[4] = ChHealthImprv_stats$CI05[1]
-# 
+#
 # #Calculate and save values from the Child Improvement + TB/M/HIV improvement scenario, final year
 # InfDisImprv_byrun <- ddply(subset(DR,Year==2035 & Scenario_ID=="NoFertilityChange_NR"),.(Trial_num),summarize,TotHrs=sum(Service_time))
 # InfDisImprv_stats <- ddply(InfDisImprv_byrun,.(),summarize,MeanHrs = mean(TotHrs), CI05 = quantile(TotHrs,probs=c(.05)), CI95 = quantile(TotHrs,probs=c(.95)))
-# 
+#
 # SC$TotalTime_mean[5] = InfDisImprv_stats$MeanHrs[1]
 # SC$TotalTime_95[5] = InfDisImprv_stats$CI95[1]
 # SC$TotalTime_05[5] = InfDisImprv_stats$CI05[1]
-# 
-# 
-# 
+#
+#
+#
 # for (rw in 1:nrow(SC)){
 #   if(rw==1){
 #     SC$Scenario_diff[1] = SC$TotalTime_mean[1]
@@ -703,7 +703,7 @@ for(sc in unique(DR$Scenario_ID)){
 #     SC$Delta_bar[rw] = abs(SC$Scenario_diff[rw])
 #   }
 # }
-# 
+#
 # SC$PosNeg <- "positive"
 # SC$PosNeg[SC$Scenario_diff < 0] = "negative"
 # SCM <- melt(SC,id=c("sc_name","PosNeg"))
@@ -715,7 +715,7 @@ for(sc in unique(DR$Scenario_ID)){
 # SCM$color[SCM$variable=="Base_value" | SCM$sc_name==SC$sc_name[1]] = "grey32"
 # SCM$alpha[SCM$sc_name!=SC$sc_name[1] & SCM$variable=="Base_value"] = .35
 # SCM$sc_name = factor(SCM$sc_name,levels=SC$sc_name,ordered=TRUE)
-# 
+#
 # plot6 <- ggplot()+
 #   geom_bar(data=SCM,aes(x=sc_name,y=value),stat="identity",alpha=SCM$alpha,fill=SCM$color)+
 #   geom_errorbar(data=SC,aes(x=sc_name,ymin=TotalTime_05, ymax=TotalTime_95), colour="black", width=.2)+
@@ -725,7 +725,7 @@ for(sc in unique(DR$Scenario_ID)){
 #   scale_y_continuous(labels=comma,breaks=seq(0,trunc(max(SC$TotalTime_95))+10,1500))
 # #  geom_line(data=SC,aes(x=seq(1,nrow(SC)),y=TotalTime_95),size=1)
 # print(plot6)
-# 
+#
 # jpeg(paste("results/Scenario sensitivity analysis",date,".jpeg",sep=""), width = 4.8, height = 3.2, units = 'in', res = 700)
 # print(plot6)
 # dev.off()

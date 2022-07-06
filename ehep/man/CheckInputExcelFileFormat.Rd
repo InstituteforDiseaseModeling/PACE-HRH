@@ -16,10 +16,15 @@ CheckInputExcelFileFormat(
 
 \item{outputFile}{Results output file. If NULL, results are printed to the console.}
 
-\item{scenariosSheet}{Name of the tab/sheet with scenario details. Default = "Scenarios".}
+\item{scenarioSheet}{Name of the sheet with scenario details. Default = "Scenarios".}
+
+\item{seasonalityOffsetsSheet}{Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"}
 }
 \value{
-Error code. 0 = Success, non-zero = Failure
+Error code.
+0 = Success
+< 0 (negative) = Fatal error. Nothing will work right.
+> 0 (positive) = Warning. Some scenarios might fail, some might succeed.
 }
 \description{
 Do a set of sanity checks on the input Excel file.

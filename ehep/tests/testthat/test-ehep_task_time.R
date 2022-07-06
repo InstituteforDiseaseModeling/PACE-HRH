@@ -44,4 +44,5 @@ test_that("Populations: read sub-ranges", {
   testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "18 yo adults"), 19 + 119)
 
   testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "15 yo"), 16 + 116)
+  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "adults 35+"), sum(36:101) + sum(136:201))
 })
