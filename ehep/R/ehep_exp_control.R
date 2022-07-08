@@ -39,7 +39,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   }
 
 
-  # Load Population change parameter data from the appropriate Excel sheet, as specified
+  # Load Seasonality parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
   seasonalitySheet <- BVE$scenario$sheet_SeasonalityCurves
