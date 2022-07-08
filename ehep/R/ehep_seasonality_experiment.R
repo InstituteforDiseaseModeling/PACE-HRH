@@ -128,29 +128,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 .getSeasonalityCurve <- function(curveType, popType) {
   curve = NULL
 
-  if (curveType == "Births") {
-    if (popType == "National") {
-      curve <- GPE$seasonalityCurves$`Births National`
-    } else if (popType == "Rural") {
-      curve <- GPE$seasonalityCurves$`Births Rural`
-    } else if (popType == "Urban") {
-      curve <- GPE$seasonalityCurves$`Births Urban`
-    }
-  } else if (curveType == "Malaria") {
-    if (popType == "Urban") {
-      curve <- GPE$seasonalityCurves$`Malaria Urban`
-    } else if (popType == "Rural") {
-      curve <- GPE$seasonalityCurves$`Malaria Rural`
-    } else if (popType == "National") {
-      # HACK ALERT! There's no Malaria National curve, but Urban and Rural
-      # curves are identical (as of 1/17/2022) so this will do.
-      curve <- GPE$seasonalityCurves$`Malaria Rural`
-    }
-  } else if (curveType == "Malnutrition") {
-    curve <- GPE$seasonalityCurves$`Malnutrition`
-  } else if (curveType == "TB") {
-    curve <- GPE$seasonalityCurves$`TB`
-  }
+  curve <- GPE$seasonalityCurves[[curveType]]
 
   if (is.null(curve)) {
     traceMessage(paste("Unknown seasonality curve: ", curveType, "/", popType,
