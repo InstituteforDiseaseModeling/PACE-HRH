@@ -34,5 +34,8 @@ Allowed fields (in the ... arguments):
 \item \strong{sheet_TaskValues} (character)
 \item \strong{sheet_PopValues} (character)
 \item \strong{sheet_SeasonalityCurves} (character)
+\item \strong{sheet_sheet_Cadre} (character)
+\item \strong{DeliveryModel} (character)
+\item \strong{Geography_dontedit} (character)
 }
 }

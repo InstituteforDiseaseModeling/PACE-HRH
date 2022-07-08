@@ -12,7 +12,10 @@
     "o_ChildDis_decr",
     "sheet_TaskValues",
     "sheet_PopValues",
-    "sheet_SeasonalityCurves"
+    "sheet_SeasonalityCurves",
+    "sheet_Cadre",
+    "DeliveryModel",
+    "Geography_dontedit"
   )
 
 .scenarioColumnTypes <-
@@ -27,6 +30,9 @@
     "logical",
     "logical",
     "logical",
+    "character",
+    "character",
+    "character",
     "character",
     "character",
     "character"
@@ -72,6 +78,9 @@ CreateScenariosTable <- function() {
 #' * __sheet_TaskValues__ (character)
 #' * __sheet_PopValues__ (character)
 #' * __sheet_SeasonalityCurves__ (character)
+#' * __sheet_sheet_Cadre__ (character)
+#' * __DeliveryModel__ (character)
+#' * __Geography_dontedit__ (character)
 #'
 #' @return Updated scenarios table
 #' @export
@@ -180,6 +189,9 @@ DeleteScenario <-
 #' * __sheet_TaskValues__ (character)
 #' * __sheet_PopValues__ (character)
 #' * __sheet_SeasonalityCurves__ (character)
+#' * __sheet_sheet_Cadre__ (character)
+#' * __DeliveryModel__ (character)
+#' * __Geography_dontedit__ (character)
 #'
 #' @return Updated scenarios table
 #' @export
