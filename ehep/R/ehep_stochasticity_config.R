@@ -5,7 +5,7 @@
 #' @return List with three \code{PopulationPyramid} objects:
 #' \code{female}, \code{male} and \code{total}
 #'
-loadStochasticParameters <- function(sheetName = "StochasticParamaters"){
+loadStochasticParameters <- function(sheetName = "StochasticParameters"){
   stochData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   # Keep the first three columns

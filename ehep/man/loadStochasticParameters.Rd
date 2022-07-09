@@ -4,7 +4,7 @@
 \alias{loadStochasticParameters}
 \title{Load Stochastic Parameters}
 \usage{
-loadStochasticParameters(sheetName = "StochasticParamaters")
+loadStochasticParameters(sheetName = "StochasticParameters")
 }
 \arguments{
 \item{sheetName}{Sheet name from the model input Excel file}
