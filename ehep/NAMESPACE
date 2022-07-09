@@ -2,6 +2,7 @@
 
 export(AddScenario)
 export(CheckInputExcelFileFormat)
+export(ComputeCadreAllocations)
 export(ComputeDemographicsProjection)
 export(CreateScenariosTable)
 export(DeleteScenario)
