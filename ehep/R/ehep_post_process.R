@@ -384,7 +384,7 @@ ComputeCadreAllocations <- function(DR = NULL){
       "MatchYear" = "Year"
     ), nomatch = NULL]
 
-  workerTypes <- c(HW = "HEW",
+  workerTypes <- c(HEW = "HEW",
                    MW = "Midwife",
                    HO = "HealthOfficer",
                    FH = "FamilyHealth",
@@ -393,7 +393,7 @@ ComputeCadreAllocations <- function(DR = NULL){
                    UN = "Unassigned")
 
   # Convert allocation percentages into allocated time
-  AllocCalcs[, HW_Alloc := HEW * Service_time / 100.0]
+  AllocCalcs[, HEW_Alloc := HEW * Service_time / 100.0]
   AllocCalcs[, MW_Alloc := Midwife * Service_time / 100.0]
   AllocCalcs[, HO_Alloc := HealthOfficer * Service_time / 100.0]
   AllocCalcs[, FH_Alloc := FamilyHealth * Service_time / 100.0]
@@ -402,4 +402,136 @@ ComputeCadreAllocations <- function(DR = NULL){
   AllocCalcs[, UN_Alloc := Unassigned * Service_time / 100.0]
 
   return(AllocCalcs)
+}
+
+#' Compute Summary Statistics
+#'
+#' @param DR From \code{ReadAndCollateSuiteResults()} function
+#' @param CA From \code{ComputeCadreAllocations()} function
+#'
+#' @return List of computed summary tables
+#' @export
+ComputeSummaryStats <- function(DR = NULL, CA = NULL){
+  if (is.null(DR) | is.null(CA)){
+    return(NULL)
+  }
+
+  traceMessage("Making ClinCat tables")
+  ByRun_ClinCat <-
+    DR[,
+       .(TotHrs = sum(Service_time)),
+       keyby = .(Scenario_ID, Trial_num, Year, ClinicalCat, ClinicalOrNon, WeeksPerYr)]
+
+
+  Mean_ClinCat <-
+    ByRun_ClinCat[,
+                  .(MeanHrs = mean(TotHrs)),
+                  keyby = .(Scenario_ID, Year, ClinicalCat, ClinicalOrNon, WeeksPerYr)]
+
+  traceMessage("Making ClinMonth tables")
+  ByRun_ClinMonth <-
+    DR[ClinicalOrNon == "Clinical",
+       .(TotHrs = sum(Service_time)),
+       keyby = .(Scenario_ID, Trial_num, Year, Month, WeeksPerYr, HrsPerWeek)]
+
+  Stats_ClinMonth <-
+    ByRun_ClinMonth[,
+                    .(
+                      CI05 = quantile(TotHrs, probs = c(.05)),
+                      CI50 = mean(TotHrs),
+                      CI95 = quantile(TotHrs, probs = c(.95))
+                    ),
+                    keyby = .(Scenario_ID, Year, Month, WeeksPerYr, HrsPerWeek)]
+
+  traceMessage("Making ServiceCat tables")
+  DR2 <- data.table::setDT(DR)
+  DR2[ServiceCat %in% c("Schisto MDA", "LLINs and IRS", "Vector control"), ServiceCat := "Campaign"]
+
+  ByRun_ServiceCat <-
+    DR2[,
+        .(TotHrs = sum(Service_time)),
+        keyby = .(Scenario_ID, Trial_num, Year, ServiceCat, ClinicalOrNon)]
+
+  Mean_ServiceCat <-
+    ByRun_ServiceCat[,
+                     .(MeanHrs = mean(TotHrs),
+                       CI95 = quantile(TotHrs, probs = c(.95))),
+                     keyby = .(Scenario_ID, Year, ServiceCat, ClinicalOrNon)]
+
+  traceMessage("Making Total tables")
+  ByRun_Total <-
+    DR2[,
+        .(TotHrs = sum(Service_time)),
+        keyby = .(Scenario_ID, Trial_num, Year, WeeksPerYr, HrsPerWeek)]
+
+  Mean_Total <-
+    ByRun_Total[,
+                .(
+                  MeanHrs = mean(TotHrs),
+                  CI05 = quantile(TotHrs, probs = c(.05)),
+                  CI95 = quantile(TotHrs, probs = c(.95))
+                ),
+                keyby = .(Scenario_ID, Year, WeeksPerYr, HrsPerWeek)]
+
+  traceMessage("Making TotClin tables")
+  ByRun_TotClin <-
+    DR2[ClinicalOrNon == "Clinical",
+        .(AnnualHrs = sum(Service_time)),
+        keyby = .(Scenario_ID, Trial_num, Year, WeeksPerYr, HrsPerWeek)]
+
+  Stats_TotClin <-
+    ByRun_TotClin[,
+                  .(
+                    CI05 = quantile(AnnualHrs, probs = c(.05)),
+                    CI50 = mean(AnnualHrs),
+                    CI95 = quantile(AnnualHrs, probs = c(.95))
+                  ),
+                  keyby = .(Scenario_ID, Year, WeeksPerYr, HrsPerWeek)]
+
+  traceMessage("Making Alloc tables")
+  ByRun_Alloc <-
+    CA[,
+       .(MW_hrs = sum(MW_Alloc),
+         HO_hrs = sum(HO_Alloc),
+         RN_hrs = sum(RN_Alloc),
+         EH_hrs = sum(EH_Alloc),
+         FH_hrs = sum(FH_Alloc),
+         UN_hrs = sum(UN_Alloc),
+         HEW_hrs = sum(HEW_Alloc)),
+       keyby = .(Scenario_ID, DeliveryModel, Trial_num, Year, WeeksPerYr)]
+
+
+  suppressWarnings(
+    ByRun_Alloc_melt <-
+      data.table::melt(
+        ByRun_Alloc,
+        id.vars = c("Scenario_ID", "DeliveryModel", "Trial_num", "Year", "WeeksPerYr"),
+        variable.name = "Cadre",
+        value.name = "AnnualHrs",
+        variable.factor = FALSE
+      )
+  )
+
+  ByRun_Alloc_melt <- ByRun_Alloc_melt[!is.na(AnnualHrs)]
+
+  Mean_Alloc <-
+    ByRun_Alloc_melt[,
+                     .(CI05 = quantile(AnnualHrs, probs = c(.05)),
+                       CI50 = mean(AnnualHrs),
+                       CI95 = quantile(AnnualHrs, probs = c(.95))),
+                     keyby = .(Scenario_ID, DeliveryModel, Year, WeeksPerYr, Cadre)]
+
+  return(list(
+    "ByRun_ClinCat" = ByRun_ClinCat,
+    "Mean_ClinCat" = Mean_ClinCat,
+    "ByRun_ClinMonth" = ByRun_ClinMonth,
+    "Stats_ClinMonth" = Stats_ClinMonth,
+    "ByRun_ServiceCat" = ByRun_ServiceCat,
+    "Mean_ServiceCat" = Mean_ServiceCat,
+    "ByRun_Total" = ByRun_Total,
+    "Mean_Total" = Mean_Total,
+    "ByRun_TotClin" = ByRun_TotClin,
+    "Stats_TotClin" = Stats_TotClin,
+    "ByRun_Alloc" = ByRun_Alloc,
+    "Mean_Alloc" = Mean_Alloc))
 }
