@@ -23,9 +23,9 @@ jobs:
       - run: Rscript -e 'R.version'
       
       - name: Setup Dependency
-        with:
-          working-directory: 'ehep/test'
+        working-directory: 'ehep/test'
         run: Rscript install_dep_for_tests.R
+        
       - name: Check Package     
         uses: r-lib/actions/check-r-package@v2
         with:
