@@ -1,5 +1,11 @@
-library(stringr)
-library(parallel)
+packages = c('stringr', 'parallel')
+for(i in packages){
+  if(!require(i, character.only = T)){
+    install.packages(i)
+    library(i, character.only = T)
+  }
+}
+
 getDepPackages = function(descriptionpath) {
   fp = file(descriptionpath, "r")
   start = F
