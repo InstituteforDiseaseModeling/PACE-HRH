@@ -1,3 +1,4 @@
+options(install.packages.compile.from.source = "always")
 packages = c('stringr', 'parallel', ' devtools', 'rcmdcheck')
 for(i in packages){
   if(!require(i, character.only = T)){
@@ -20,7 +21,6 @@ getDepPackages = function(descriptionpath) {
       if (!grepl(":", line)) {
         dep_name = gsub(',', '', str_trim(line))
         print(paste("install", dep_name, "with", detectCores(), "cores", sep=" "))
-        options(install.packages.compile.from.source = "always")
         cmd <- paste( "install.packages('", dep_name, "',", "Ncpus = ", detectCores(), ")", sep="")
         eval(parse(text=cmd))
       }
