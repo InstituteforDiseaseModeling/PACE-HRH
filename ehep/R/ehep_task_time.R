@@ -228,7 +228,65 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   if (label == "15 yo") {
     return(sum(pop$Female[16] + pop$Male[16]))
   }
-
+  if (label == "adults 15-24") {
+    return(sum(pop$Female[16:25] + pop$Male[16:25]))
+  }
+  if (label == "adults 25-34") {
+    return(sum(pop$Female[26:35] + pop$Male[26:35]))
+  }
+  if (label == "adults 35-44") {
+    return(sum(pop$Female[36:45] + pop$Male[36:45]))
+  }
+  if (label == "adults 45-54") {
+    return(sum(pop$Female[46:55] + pop$Male[46:55]))
+  }
+  if (label == "adults 55-64") {
+    return(sum(pop$Female[56:65] + pop$Male[56:65]))
+  }
+  if (label == "adults 65+") {
+    return(sum(pop$Female[66:101] + pop$Male[66:101]))
+  }
+  if (label == "adults 70+") {
+    return(sum(pop$Female[71:101] + pop$Male[71:101]))
+  }
+  if (label == "adults 18-30") {
+    return(sum(pop$Female[19:31] + pop$Male[19:31]))
+  }
+  if (label == "adults 31-44") {
+    return(sum(pop$Female[32:45] + pop$Male[32:45]))
+  }
+  if (label == "women 20-30") {
+    return(sum(pop$Female[21:31]))
+  }
+  if (label == "women 30-40") {
+    return(sum(pop$Female[31:41]))
+  }
+  if (label == "women 40-50") {
+    return(sum(pop$Female[41:51]))
+  }
+  if (label == "women 50-60") {
+    return(sum(pop$Female[51:61]))
+  }
+  if (label == "women 60-70") {
+    return(sum(pop$Female[61:71]))
+  }
+  if (label == "men 20-30") {
+    return(sum(pop$Male[21:31]))
+  }
+  if (label == "men 30-40") {
+    return(sum(pop$Male[31:41]))
+  }
+  if (label == "men 40-50") {
+    return(sum(pop$Male[41:51]))
+  }
+  if (label == "men 50-60") {
+    return(sum(pop$Male[51:61]))
+  }
+  if (label == "men 60-70") {
+    return(sum(pop$Male[61:71]))
+  }
+  
+  
   traceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }
