@@ -1,4 +1,4 @@
-packages = c('stringr', 'parallel')
+packages = c('stringr', 'parallel', ' devtools', 'rcmdcheck')
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
