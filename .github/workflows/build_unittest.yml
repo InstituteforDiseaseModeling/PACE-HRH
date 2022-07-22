@@ -7,6 +7,7 @@ on:
     branches:
       - "main"
 jobs:
+  if: ${{ false }}  # disable for now
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -23,7 +24,7 @@ jobs:
       - run: Rscript -e 'R.version'
       
       - name: Setup Dependency
-        working-directory: 'ehep/tests'
+        working-directory: 'tests/setup'
         run: |
           sudo apt-get install -y libcurl4-openssl-dev
           Rscript install_dep_for_tests.R

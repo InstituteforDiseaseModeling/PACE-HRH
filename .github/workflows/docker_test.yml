@@ -9,11 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-	container: r-base:latest
-      
-    steps:
-      - name: Install devtool
-        run: Rscript -e 'install.packages("devtools")'
+	container: mewu/rimage
+    steps: 
       - name: Check package
         working-directory: 'ehep'
         run:  Rscript -e 'devtools::check()'
