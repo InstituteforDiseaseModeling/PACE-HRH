@@ -10,11 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 	container: mewu/rimage
-    steps: 
+    steps:
       - name: Check package
         working-directory: 'ehep'
-        run:  Rscript -e 'devtools::check()'
+        run: Rscript -e 'devtools::check()'
       - name: Run unittest
         working-directory: 'ehep'
-        run:  Rscript -e 'devtools::test()'
-	
+        run: Rscript -e 'devtools::test()'
+        
