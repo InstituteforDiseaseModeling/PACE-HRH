@@ -24,7 +24,9 @@ jobs:
       
       - name: Setup Dependency
         working-directory: 'ehep/tests'
-        run: Rscript install_dep_for_tests.R
+        run: |
+          sudo apt-get install -y r-cran-rcmdcheck
+          Rscript install_dep_for_tests.R
         
       - name: Check Package     
         uses: r-lib/actions/check-r-package@v2
