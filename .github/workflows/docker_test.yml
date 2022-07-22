@@ -1,0 +1,27 @@
+name: EHEP Devtools build and test
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: mewu/rimage
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Dependency
+        working-directory: 'tests/setup'
+        run: |
+          Rscript install_dep_for_tests.R
+      - name: Check package
+        working-directory: 'ehep'
+        run: Rscript -e 'devtools::check(error_on = c("error"))'
+        env: 
+          NOT_CRAN: true
+      - name: Run unittest
+        working-directory: 'ehep'
+        run: Rscript -e 'devtools::test()'
