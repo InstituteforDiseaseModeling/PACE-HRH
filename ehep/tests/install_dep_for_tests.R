@@ -27,6 +27,7 @@ getDepPackages = function(descriptionpath) {
       else {
         start = F
         done = T
+        install.packages("rcmdcheck", Ncpus = detectCores())
         break
       }
     }
