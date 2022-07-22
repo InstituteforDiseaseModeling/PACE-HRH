@@ -19,11 +19,11 @@ Imports:
     readxl,
     scales,
     tibble,
-    truncnorm
+    truncnorm,
+    withr
 Suggests: 
     testthat (>= 3.0.0),
-    roxytest,
-    withr
+    roxytest
 Roxygen: list(roclets = c("namespace", "rd", 
                           "roxytest::testthat_roclet",
                           "roxytest::param_roclet",
