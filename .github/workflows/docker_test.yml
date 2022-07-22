@@ -9,8 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-	container: mewu/rimage
+	container:
+      image: mewu/rimage
     steps:
+      - uses: actions/checkout@v2
       - name: Check package
         working-directory: 'ehep'
         run: Rscript -e 'devtools::check()'
