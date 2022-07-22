@@ -1,5 +1,5 @@
 options(install.packages.compile.from.source = "always")
-packages = c('stringr', 'parallel', ' devtools', 'rcmdcheck')
+packages = c('stringr', 'parallel', 'rcmdcheck')
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
