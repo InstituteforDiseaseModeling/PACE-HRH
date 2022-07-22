@@ -25,6 +25,7 @@ jobs:
       - name: Setup Dependency
         working-directory: 'ehep/tests'
         run: |
+          apt-get install -y libcurl4-openssl-dev
           Rscript -e 'install.packages("rcmdcheck", repos="http://cran.us.r-project.org")'
           Rscript install_dep_for_tests.R
        
