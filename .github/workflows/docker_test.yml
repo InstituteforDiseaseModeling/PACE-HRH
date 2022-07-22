@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-	container: mewu/rimage
+    container: mewu/rimage
     steps:
       - name: Check package
         working-directory: 'ehep'
@@ -17,4 +17,3 @@ jobs:
       - name: Run unittest
         working-directory: 'ehep'
         run: Rscript -e 'devtools::test()'
-        
