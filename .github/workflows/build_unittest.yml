@@ -25,8 +25,7 @@ jobs:
       - name: Setup Dependency
         working-directory: 'ehep/tests'
         run: |
-          sudo apt-get install -y libgit2-dev
-          sudo apt-get install -y r-cran-rcmdcheck
+          Rscript -e 'install.packages("rcmdcheck", repos="http://cran.us.r-project.org")'
           Rscript install_dep_for_tests.R
        
         
