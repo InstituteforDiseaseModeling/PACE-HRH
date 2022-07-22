@@ -25,11 +25,9 @@ jobs:
       - name: Setup Dependency
         working-directory: 'ehep/tests'
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y r-cran-rcmdcheck
+          curl -o rcmdcheck.tar.gz https://cran.r-project.org/src/contrib/rcmdcheck_1.4.0.tar.gz
+          R CMD INSTALL rcmdcheck.tar.gz
           Rscript install_dep_for_tests.R
-        env:
-          NOT_CRAN: false
         
       - name: Check Package     
         uses: r-lib/actions/check-r-package@v2
