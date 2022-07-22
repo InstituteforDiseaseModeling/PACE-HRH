@@ -7,13 +7,13 @@ for(i in packages){
   }
 }
 
-getDepPackages = function(descriptionpath) {
+getDepPackages = function(descriptionpath, section='Imports:') {
   fp = file(descriptionpath, "r")
   start = F
   done = F
   while ( !done ) {
     line = readLines(fp, n = 1)
-    if (grepl("Imports:",line)) {
+    if (grepl(section,line)) {
       start = T
       next
     }
@@ -35,4 +35,5 @@ getDepPackages = function(descriptionpath) {
   close(fp)
 }
 
-getDepPackages("../DESCRIPTION")
+getDepPackages("../DESCRIPTION", section='Imports:')
+getDepPackages("../DESCRIPTION", section='Suggests:')

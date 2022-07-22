@@ -1,0 +1,23 @@
+name: EHEP Devtools build and test
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+	container: r-base:latest
+      
+    steps:
+      - name: Install devtool
+        run: Rscript -e 'install.packages("devtools")'
+      - name: Check package
+        working-directory: 'ehep'
+        run:  Rscript -e 'devtools::check()'
+      - name: Run unittest
+        working-directory: 'ehep'
+        run:  Rscript -e 'devtools::test()'
+	

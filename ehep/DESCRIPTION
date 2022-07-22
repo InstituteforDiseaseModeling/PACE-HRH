@@ -19,8 +19,7 @@ Imports:
     readxl,
     scales,
     tibble,
-    truncnorm,
-    withr
+    truncnorm
 Suggests: 
     testthat (>= 3.0.0),
     roxytest,
