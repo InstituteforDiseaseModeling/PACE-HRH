@@ -7,8 +7,8 @@ on:
     branches:
       - "main"
 jobs:
-  if: ${{ false }}  # disable for now
   build:
+    if: ${{ false }}  # disable for now
     runs-on: ubuntu-latest
     strategy:
       matrix:
