@@ -9,8 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-	container: r-base:latest
-      
+    container: r-base:latest
     steps:
       - name: Install devtool
         run: Rscript -e 'install.packages("devtools")'
