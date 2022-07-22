@@ -13,6 +13,10 @@ jobs:
       image: mewu/rimage
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Dependency
+        working-directory: 'tests/setup'
+        run: |
+          Rscript install_dep_for_tests.R
       - name: Check package
         working-directory: 'ehep'
         run: Rscript -e 'devtools::check()'
