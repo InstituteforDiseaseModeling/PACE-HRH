@@ -1,0 +1,144 @@
+---
+title: "Configure the model"
+author: "Jen Schripsema"
+date: '2022-07-27'
+output: html_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Configure the model
+
+The EHEP model simulates healthcare needs to enable better health system staffing decisions. EHEP is
+a stochastic, agent-based model, meaning the individual people accessing and working in the health
+system are simulated and there is randomness built into the model behavior. To configure the model,
+you input data in Excel spreadsheets that describes demographics, healthcare tasks, and available
+staff in the geographic region of interest. To begin, navigate to the "config" directory and open
+the Excel workbook "R Model Inputs.xlsx".
+
+<!--- Should we rename the file names to not include spaces? --->
+
+The workbook is initially configured to model the Ethiopian Health Extension Program and contains
+values relevant to that context. You should edit the workbook parameters for the particular context 
+you are working in. 
+
+The sections below describe each of the spreadsheets that are used as model inputs. You will see
+each of these sheets in tabs across the bottom of the Excel workbook.
+
+### Scenarios
+
+The **Scenarios** sheet is the primary sheet that controls inputs to the model. It lists the
+different healthcare scenarios you'd like to model. You may vary different parameters in each
+scenario to compare different proposed healthcare staffing options. For example, the default values
+hold the demographic and seasonality parameters consistent across scenarios but vary the healthcare
+tasks and staffing cadres to model different health system proposals.
+
+#### Parameters
+
+* **UniqueID**: The name of the scenario to model. The name must be unique and consistent across 
+  all sheets. 
+* **WeeksPerYr**: The number of working weeks in the year.
+* **HrsPerWeek**: The number of hours each week a typical healthcare worker is expected to work.
+* **BaselinePop**: The number of people in a typical healthcare catchment. Usually, these values are
+  set as targets by a government healthcare program, such as the size of the population each
+  primary healthcare facility is expected to serve. Value typically range from 10,000 to 20,000.
+* **PopType**: The type of population modeled.
+* **o_** columns F through J: (Optional) True/false binary values that turn on or off different 
+  features of the model; to be used for debugging.
+* **sheet_** columns K through N: The name of the sheets to use as inputs for **TaskValues**, 
+  **PopValues**, **SeasonalityCurves**, and **Cadres** in the model. The function and format of each of those sheets is described in more detail below.
+* **DeliveryModel**: The different healthcare delivery models for each of the scenarios.
+* **Geography_dontedit**: Informational field that is populated by the **RegionSelect** sheet.
+
+<!--- PopType wasn't covered in the video and I'm not entirely sure what this does in the model 
+    It's also not clear to me what DeliveryModel does if someone wants to edit the model for
+    other contexts --->
+
+### RegionSelect
+
+This sheet specifies the geographic region to be modeled. It's currently configured for Ethiopia, but can be configured for other regions.
+THe adminCode must be a unique ID. The adminNameAsUsed is the human-readable name to display. List all administrative districts in
+column F and G, then select the particular region to model from the drop-down menu in column B. This value will populate to the Scnearios sheet and other sheets. 
+
+### TotalPop
+
+Annual age bins that describe the number of people of male and female sex in each yearly age bin, from 0 to 100.
+
+### StochasticParameters
+
+p and q values that determine the width of the stochastic distributions around various paramter values. Brittany to provide more detail for each of these values. 
+
+### PopValues
+
+Columns A through F are typical/standard abuckets and shouldn't need to be modified unless you plan to add functionality to teh model itself.
+
+ Describes the basic demographics of hte population, including fertility and mortality rates. The first row, "annual birth rate male" is the fertility rate, applied to males (so it should be zero). This is necessary for running the model. Adding people to the population.
+
+Columns A and B are just for readability. C through H are entries into the model
+
+Blank is treated as a zero. ChangeRate of 1 is no change. ChangeRate below one is declining and above one is increasing.
+births per woman per year (fertility) change rate is annual delta. 0.072 x 0.9884, for example,. Change rate is also stochastic. You are specifying the mean of that distribution. 
+
+Values are sourced from DHS data but can be changed. If you look at the equation in Excel, you can see that the default data is being sourced from another sheet in the workbook, but this sheet is the one that the model uses so you can change the values here directly if you like.
+
+Mortality is similar, but removing people from the population. Rates are specified per individual per year and the changeRate and stochasticity around that rate are the same.
+
+### TaskValues
+
+Describes the specific healthcare tasks that are completed by the healthcare workers. Each task must have a unique identifier.  THe model provides a reference sheet (TaskValues_ref) that lists the indicator code and human-reacable common name of a comprehensive range of healthcare intervetions, such as vaccination, education about contraceptives, antinatal care, etc. 
+
+You can then provide one or more task value sheets that describe who provides this healthcare interventions, how often, and for how long. For example, by default the input worksheets describe three healthcare scenarios: TV_Basic, TV_Comprehensive, and TV_Merged. These each have their own task sheet and they are specified as inputs to the model via the Scenarios sheet. These are quite similar, but have different subsets of data to mimic the delivery models of the three different scenarios. You can set these sheets up to include whichever sets of healthcare services you are delivering in the scnearios you want to model. You could also have different heatlhcare services available for differetn regions as well.
+
+A - D are only for reference and don't feed into the model (to the original data source.)
+
+* Indicator is a unique ID. Family Health. Maternal and Newboarn. Antenatal. 1st task in sheet (FH.MN.ANC.1). Common name is for human readability. G-I don't change the way the model runs, but are useful for analysis post-hoc (you cna categorize tasks for summary statistics, for example).
+
+* J RelevantPop (dropdown) select the population to which this healthcare servcie applies. For example, antenatal care is proportional to number of births. Cervical cancer care is proporption to the population of women of child-bearing age. Changes which population the tasks are applied to. 
+
+* K Geography is automatically filled based on the region specified in the RegionSelect sheet. 
+
+* L-P determine jointly how many resources are required for a given task but specifying how many contacts with the health system are required for a given task, how long each contact takes, and the number of people that recieved a task. 
+
+* StartingRateInPop the proportion of hte relevant population that recieves this care. So for example, this value is 1 for antenatal care visits because every pregnant person requires those visits. (how does this account for miscarriage?)
+
+* RateMultiplier Multiplier that accounts for tasks that happen in excess of the number of people in the eligible population. For example, you would use HIV incidence rate as the StartRateInPop for HIV testing but some proporition of people that recieve tests will test negative. This proportion of true negatives will be the RateMultiplier such that StartRateinPop multiplied by RateMultipler will equal the number of people who will receive that care.
+
+* **AnnualDeltaRate** change year over year
+
+* NumContactsPerUnit The number of contacts with the healthcare system per person who is eligible for this task. In this example four antenatal care visits per birth are recommended. 
+
+* NumContactsAnnual functionally does the same thing but is indicated for routine preventive care that happens per an annual scheduled and is'nt based on a child's age or condition, for example
+
+* MinsPerContact The number of minutes required by teh clinician (of any type) to complete this task with an individual. 
+
+* HoursPerWeek: The estimated number of hours per week for non-clinical tasks that are not directly related to a population level. For example, there may be a few hours of administrative tasks required regardless of clinical care provided. 
+
+### SeasonalityCurves
+
+This sheet describes birth seasonality and the seasonality of conditions like malnutrition, TB, malaria, and diarrhea. Each month of the year is listed in a row and each cell in a given column represents the proportion of those births or conditions that occur in a given month. The values in each column should sum to 1. If they don't sum to 1, the model will normalize the values; however, this may be a source of bugs. So if you see unexpected behavior in the seasonality, we recommend verifying the values indicated there. You can add additional curves ifyou like, these are hte ones relevnat to this deefautl population. For example, you can see that malnutrition is highest between September and January and lower the rest of the year.
+
+### SeasonalityOffsets
+
+This sheet contains a list of the tasks that are affected by seasonality and their timing offsets from that seasonal curve, if any. Offsets are specified in months: negative values indicate the number of months prior to the event described by the seaosnal curve, positive values are after, and values of zero indicate there is no time offset from the curve.  The name of the curve listed in this sheet must match the name of hte curve in SeasonalityCurves sheet 
+
+For example, antenatal care visits are related to birth seasonality but precede those births by some period of time. The first round of treatment for malnutrition will not have an offset from the malnutriion seaosnal curve, but followup visits occur at the 1, 2, and 3 month offsets. The number of contacts listed in the offset table should match the number of contacts listed in teh TaskValue sheests for that particular tasks. In other words, if four antenatal care visits are recommended, four offsets should be listed in this sheet.
+
+Up to six offset contacts can be specified in the model; additional contacts would require
+
+### Cadres
+
+Cadre sheets define the type of clinician (community health worker, nurse, doctor, etc) responsible for each type of healthcare task. You may have one or more of these sheets for the scenarios you are modeling. THe cadre used for each scenario is defined in the **Scenarios** sheet in the column **sheet_Cadre**. 
+
+For example, the examples in the default Ethiopia model has some tasks being shifted from certain cadres of workers to other workers over time as staffing shifts, and each scenario models this shift in responsibilities slightly differently. The nubmers and names o fht ecolumns can be changed, but it must be consistent across sheets. The total column isnt' fed into the model but is a check to be sure the staff assignments sum to 100% correctly. 
+
+In the Cadres_Comprehensive sheet, you see the ANC visists start out as being soley the responsibiltiy of the Health Extension WOrkers (HEW) and then shift entirely to a cadre of new midwife staff members in 2025. A more complex example is the Pneumonia (ARI) tasks, which starts ad the responsibility of the Health Extension WOrkers and then gradually shifts the Health Officers, FamilyHealth Officer, and Nurses. 
+
+It's very important that every task value indicator appears in the Cadres sheets. 
+
+## REgionalData
+
+This is the source file for all of the region data V lookups. This is the source of truth for all of those values in other sheets. This includes starting rate in population (pulled in for ). If you want to retain the mlutigeography structure of how the model is currently set up, you can change the values here. Otherwise, youc an change the values in teh TaskValues sheetts

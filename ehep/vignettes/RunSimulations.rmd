@@ -1,0 +1,27 @@
+---
+title: "Configure the model"
+author: "Jen Schripsema"
+date: '2022-07-27'
+output: html_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Running the model
+
+Open the run simulations.R script
+
+1. Be sure to close the inputs file or RStudio will be unable to load it.
+1. Go to tools and install packages from the archive fiel optoin and select the most recept zip file of the model.
+2. You may see a banner at the top of the screen that indicates some depenent packages you need to install. Select yes to enable installation.
+*
+3. set numtrials to a value. 100 tends to be good. More values can take longer because of the stochasticity in the model.
+4. set date. This can be in any format, it's just for your abiltyt to name and control the versions of the model you have run. 
+5. Load the scnearios into the tab 
+6. Starting with line 18 is the code that actually runs the model. (for each scnenario)
+7. Results savled out to a csv.
+8. The console will beep at you when 
