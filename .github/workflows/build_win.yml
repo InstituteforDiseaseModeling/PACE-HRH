@@ -1,0 +1,75 @@
+name: EHEP Create Release and upload Windows Binary Build 
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  job_check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.setVersion.outputs.CUR_VERSION }}
+      tag_exist: ${{ steps.checkTag.outputs.exists }}
+    container:
+      image: mewu/rimage
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set current version
+        id: setVersion
+        run: |
+          CUR_VERSION=$(Rscript -e "library(desc); cat(toString(desc('ehep/DESCRIPTION')\$get_version()))")
+          echo $CUR_VERSION
+          echo "::set-output name=CUR_VERSION::$CUR_VERSION"
+      - name: Check variable is set
+        run: |
+          echo "Current version: ${{ steps.setVersion.outputs.CUR_VERSION }}"    
+      - uses: mukunku/tag-exists-action@v1.0.0
+        id: checkTag
+        with: 
+          tag: ${{ steps.setVersion.outputs.CUR_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check output
+        id: tagFound
+        run: |
+          echo "Is tag found? ${{ steps.checkTag.outputs.exists }}"
+      - name: Create tag if non-existent
+        if: steps.checkTag.outputs.exists == 'false'
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.setVersion.outputs.CUR_VERSION }}
+          tag_prefix: ''
+    
+  job_build:
+    runs-on: windows-latest
+    strategy:
+        matrix:
+          R: [ '4.2' ]
+    name: R ${{ matrix.R }} Binary Build      
+    needs: job_check
+    if: needs.job_check.outputs.tag_exist == 'false'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: ${{ matrix.R }}
+    - run: Rscript -e 'R.version'      
+    - name: Install devtools
+      run: |
+        Rscript -e "install.packages('devtools')"
+    - name: Setup Dependency
+      working-directory: 'tests/setup'
+      run: |
+        Rscript install_dep_for_tests.R    
+    - name: Build binary
+      run: |
+        Rscript -e "devtools::build(pkg='ehep', binary=TRUE)"
+    - name: Create Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo 'version: ${{ needs.job_check.outputs.version }}'
+        gh release create ${{ needs.job_check.outputs.version }} ehep_${{ needs.job_check.outputs.version }}.zip --generate-notes
+    
