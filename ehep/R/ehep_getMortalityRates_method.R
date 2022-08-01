@@ -1,6 +1,6 @@
 # #' @exportMethod getMortalityRates
 #'
-setGeneric(
+methods::setGeneric(
   name = "getMortalityRates",
   def = function(object)
   {
@@ -14,7 +14,7 @@ setGeneric(
 #'
 #' @return Labeled vector of mortality rates
 #'
-setMethod(
+methods::setMethod(
   f = "getMortalityRates",
   signature = c("PopulationChangeParameters"),
   definition = function(object)

@@ -396,6 +396,7 @@ PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
 #' @importFrom ggplot2 vars
 #' @importFrom ggplot2 ggtitle
 #' @importFrom ggplot2 scale_color_manual
+#' @importFrom tidyr pivot_longer
 #'
 PlotMortalityRates <- function(ratesMatrix, year){
   rates <- explodeMortalityRates(as.vector(ratesMatrix[, as.character(year)]))
@@ -427,6 +428,7 @@ PlotMortalityRates <- function(ratesMatrix, year){
 #' @importFrom ggplot2 vars
 #' @importFrom ggplot2 ggtitle
 #' @importFrom ggplot2 scale_color_manual
+#' @importFrom tidyr pivot_longer
 #'
 PlotFertilityRates <- function(ratesMatrix, year){
   rates <- explodeFertilityRates(as.vector(ratesMatrix[, as.character(year)]))

@@ -1,6 +1,6 @@
 # #' @exportMethod getValue
 #'
-setGeneric(
+methods::setGeneric(
   name = "getValue",
   def = function(object, label)
   {
@@ -37,7 +37,7 @@ setGeneric(
 #'
 #' @return Variable value
 #'
-setMethod(
+methods::setMethod(
   f = "getValue",
   signature = c("PopulationChangeParameters", "character"),
   definition = function(object, label)
@@ -48,7 +48,7 @@ setMethod(
   }
 )
 
-setMethod(
+methods::setMethod(
   f = "getValue",
   signature = c("TaskParameters", "character"),
   definition = function(object, label)
