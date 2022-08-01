@@ -25,6 +25,8 @@
 #'
 #' @return Data frame of fertility rates across all trials
 #'
+#' @importFrom tidyr pivot_longer
+#'
 .combineFRatesMatrices <- function(results) {
   l <- lapply(results, function(r) {
     df <- as.data.frame(r$PopulationParams$FRatesMatrix)
