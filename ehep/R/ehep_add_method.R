@@ -1,6 +1,6 @@
 # #' @exportMethod add
 #'
-setGeneric(
+methods::setGeneric(
   name = "add",
   def = function(obj1, obj2)
   {
@@ -15,7 +15,7 @@ setGeneric(
 #'
 #' @return Updated \code{PopulationChangeParameters} object
 #'
-setMethod(
+methods::setMethod(
   f = "add",
   signature = c("PopulationChangeParameters", "PopulationChangeParameters"),
   definition = function(obj1, obj2)
@@ -32,7 +32,7 @@ setMethod(
 #'
 #' @return Updated \code{PopulationPyramid} object
 #'
-setMethod(
+methods::setMethod(
   f = "add",
   signature = c("PopulationPyramid", "PopulationPyramid"),
   definition = function(obj1, obj2)
@@ -49,7 +49,7 @@ setMethod(
 #'
 #' @return Updated \code{TaskParameters} object
 #'
-setMethod(
+methods::setMethod(
   f = "add",
   signature = c("TaskParameters", "TaskParameters"),
   definition = function(obj1, obj2)

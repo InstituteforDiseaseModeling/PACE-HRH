@@ -1,6 +1,6 @@
 # #' @exportMethod setMortalityRates
 #'
-setGeneric(
+methods::setGeneric(
   name = "setMortalityRates",
   def = function(object, values)
   {
@@ -15,7 +15,7 @@ setGeneric(
 #'
 #' @return Updated \code{PopulationChangeParameters} object
 #'
-setMethod(
+methods::setMethod(
   f = "setMortalityRates",
   signature = c("PopulationChangeParameters", "numeric"),
   definition = function(object, values)

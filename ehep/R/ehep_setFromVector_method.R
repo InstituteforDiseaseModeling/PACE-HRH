@@ -1,6 +1,6 @@
 # #' @exportMethod setFromVector
 #'
-setGeneric(
+methods::setGeneric(
   name = "setFromVector",
   def = function(object, values)
   {
@@ -15,7 +15,7 @@ setGeneric(
 #'
 #' @return Updated \code{PopulationChangeParameters} object
 #'
-setMethod(
+methods::setMethod(
   f = "setFromVector",
   signature = c("PopulationChangeParameters", "numeric"),
   definition = function(object, values)
@@ -38,7 +38,7 @@ setMethod(
 #'
 #' @return Updated \code{PopulationPyramid} object
 #'
-setMethod(
+methods::setMethod(
   f = "setFromVector",
   signature = c("PopulationPyramid", "numeric"),
   definition = function(object, values)
