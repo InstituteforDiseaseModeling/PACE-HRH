@@ -66,7 +66,11 @@ test_that("Population configuration: InitializePopulation()", {
 
   testthat::expect_true(e$globalConfigLoaded)
   testthat::expect_true(!is.null(e$initialPopulation))
-  testthat::expect_true(!is.null(e$populationChangeParameters))
+
+  # 7/30/2022 Population change parameters are now loaded when an experiment
+  # suite is started with the SaveBaseSettings() function, based on the
+  # particular scenario being run.
+  testthat::expect_true(is.null(e$populationChangeParameters))
 
   testthat::expect_true(.validInitPopulation(e$initialPopulation))
 })
