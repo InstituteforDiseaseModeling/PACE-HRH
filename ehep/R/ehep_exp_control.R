@@ -39,6 +39,22 @@ SaveBaseSettings <- function(scenarioName = ""){
   }
 
 
+
+
+  # NEW NEW NEW - new population rates format
+
+  popValsSheet <- "newPopValues" # TEST TEST TEST
+
+  if (!is.blank(popValsSheet)) {
+    BVE$populationChangeRates <- loadPopulationChangeRates(popValsSheet)
+  } else {
+    BVE$populationChangeRates <- loadPopulationChangeRates()
+  }
+
+
+
+
+
   # Load Seasonality parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
