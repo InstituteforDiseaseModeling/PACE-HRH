@@ -13,18 +13,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Configure the model
 
-The EHEP model simulates healthcare needs to enable better health system staffing decisions. EHEP is
-a stochastic, agent-based model, meaning the individual people accessing and working in the health
-system are simulated and there is randomness built into the model behavior. To configure the model,
-you input data in Excel spreadsheets that describes demographics, healthcare tasks, and available
-staff in the geographic region of interest. To begin, navigate to the "config" directory and open
-the Excel workbook "R Model Inputs.xlsx".
+The PACE-HRH model simulates healthcare needs in a given populationto enable better health system
+staffing decisions. PACE-HRH is a stochastic, agent-based model, meaning the individual people
+accessing and working in the health system are simulated and there is randomness built into the
+model behavior. To configure the model, you input data in Excel spreadsheets that describe
+demographics, healthcare tasks, and available staff in the geographic region of interest. To begin,
+navigate to the "config" directory and open the Excel workbook "R Model Inputs.xlsx".
 
 <!--- Should we rename the file names to not include spaces? --->
 
-The workbook is initially configured to model the Ethiopian Health Extension Program and contains
-values relevant to that context. You should edit the workbook parameters for the particular context 
-you are working in. 
+The workbook is initially configured to model the Ethiopian Health Extension Program (HEP) and
+contains values relevant to that context. You should edit the workbook parameters for the
+particular context you are working in. 
 
 The sections below describe each of the spreadsheets that are used as model inputs. You will see
 each of these sheets in tabs across the bottom of the Excel workbook.
@@ -35,7 +35,7 @@ The **Scenarios** sheet is the primary sheet that controls inputs to the model. 
 different healthcare scenarios you'd like to model. You may vary different parameters in each
 scenario to compare different proposed healthcare staffing options. For example, the default values
 hold the demographic and seasonality parameters consistent across scenarios but vary the healthcare
-tasks and staffing cadres to model different health system proposals.
+tasks and staffing cadres to model proposed health system policies.
 
 #### Parameters
 
@@ -60,48 +60,101 @@ tasks and staffing cadres to model different health system proposals.
 
 ### RegionSelect
 
-This sheet specifies the geographic region to be modeled. It's currently configured for Ethiopia, but can be configured for other regions.
-THe adminCode must be a unique ID. The adminNameAsUsed is the human-readable name to display. List all administrative districts in
-column F and G, then select the particular region to model from the drop-down menu in column B. This value will populate to the Scnearios sheet and other sheets. 
+The **RegionSelect** sheet specifies the geographic region to be simulated.
+
+#### Parameters
+
+* **adminNameAsUsed**: The human-readable name for each administrative district. You may include 
+  districts at different levels, for example an entire country and also the administrative 
+  districts within that country. Provide the values in column F, which will populate the drop-down 
+  menu in column B. The selection you make in column B will populate to other sheets in the 
+  workbook. 
+* **adminCode**: The unique numerical code for the administrative district. Provide the values in
+  column G. Selecting from the drop-down menu in column B will populate the **adminCode** in column C. 
 
 ### TotalPop
 
-Annual age bins that describe the number of people of male and female sex in each yearly age bin, from 0 to 100.
+The **TotalPop** sheet lists the number of people (male, female, and total) in each annual age bin, 
+from 0 to 100.
 
 ### StochasticParameters
 
-p and q values that determine the width of the stochastic distributions around various paramter values. Brittany to provide more detail for each of these values. 
+The **StochasticParameters** sheet lists the **p** and **q** values that determine the width of the 
+stochastic distributions around various parameter values. 
+
+<!--- Brittany to provide more detail for each of these values. --->
 
 ### PopValues
 
-Columns A through F are typical/standard abuckets and shouldn't need to be modified unless you plan to add functionality to teh model itself.
+The **PopValues** sheet contains fertility and mortality rates for different groups in the
+population. Fertility rates are specified as births per woman per year and will add people to the
+simulated population. Mortality rates are specified per individual per year and will remove people.
+All rates (and rates of change) in the model are stochastic; the value you specify is the mean in a distribution.  The first row, "Annual birth rate male," is the fertility rate applied to males (so it should be zero); this is necessary for running the model. Blank values are treated as zeroes. 
 
- Describes the basic demographics of hte population, including fertility and mortality rates. The first row, "annual birth rate male" is the fertility rate, applied to males (so it should be zero). This is necessary for running the model. Adding people to the population.
+Columns A through F define standard categories and shouldn't need to be modified unless you plan to
+add functionality to the model itself. Default values are sourced from Ethiopian DHS data but
+should be changed for your context. If you look at the equation in each cell, you can see that the
+data is being sourced from another sheet in the workbook. However, the **PopValues** sheet is the
+one used as an input to the model, so values can be changed directly here if you prefer. 
 
-Columns A and B are just for readability. C through H are entries into the model
+#### Parameters
 
-Blank is treated as a zero. ChangeRate of 1 is no change. ChangeRate below one is declining and above one is increasing.
-births per woman per year (fertility) change rate is annual delta. 0.072 x 0.9884, for example,. Change rate is also stochastic. You are specifying the mean of that distribution. 
+* **Description**: The human-readable demographics category.
+* **Label**: The unique string that defines that category.
+* **Type**: The type of rate describes, mortality or fertility.
+* **Sex**: The sex to which the rate applies.
+* **BandStart**: The youngest age to which the rate applies.
+* **BandEnd**: The oldest age to which the rate applies.
+* **InitValue**: The rate value at the beginning of the simulation.
+* **ChangeRate**: The annual change in rate over the course of the simulation. A value of 1 
+  indicates no change, a value above 1 indicates the rate is increasing over time, and a value
+  below 1 indicates the rate is decreasing. For example, the age 15-19 initial fertility rate of 0.072 will be 0.0712 (0.72 * 0.988469278) after one year.
+* **ValueCode**: The unique string identifying the category. These are useful when analyzing model 
+  outputs. 
 
-Values are sourced from DHS data but can be changed. If you look at the equation in Excel, you can see that the default data is being sourced from another sheet in the workbook, but this sheet is the one that the model uses so you can change the values here directly if you like.
-
-Mortality is similar, but removing people from the population. Rates are specified per individual per year and the changeRate and stochasticity around that rate are the same.
 
 ### TaskValues
 
-Describes the specific healthcare tasks that are completed by the healthcare workers. Each task must have a unique identifier.  THe model provides a reference sheet (TaskValues_ref) that lists the indicator code and human-reacable common name of a comprehensive range of healthcare intervetions, such as vaccination, education about contraceptives, antinatal care, etc. 
+The **TaskValues** sheets describe the specific healthcare tasks that are completed by the
+healthcare workers. The model provides a reference sheet (**TaskValues_ref**) that lists a
+comprehensive range of healthcare tasks, such as vaccination, education about contraceptives,
+antinatal care, etc. 
 
-You can then provide one or more task value sheets that describe who provides this healthcare interventions, how often, and for how long. For example, by default the input worksheets describe three healthcare scenarios: TV_Basic, TV_Comprehensive, and TV_Merged. These each have their own task sheet and they are specified as inputs to the model via the Scenarios sheet. These are quite similar, but have different subsets of data to mimic the delivery models of the three different scenarios. You can set these sheets up to include whichever sets of healthcare services you are delivering in the scnearios you want to model. You could also have different heatlhcare services available for differetn regions as well.
+You can then provide one or more **TaskValues** sheets that describe who receives and performs the
+healthcare tasks, how often, and for how long. These sheets are specified as inputs to the model
+via the **Scenarios** sheet. For example, by default there are three **TaskValues**
+sheets: **TV_Basic**, **TV_Comprehensive**, and **TV_Merged**. These are quite similar, but have
+different subsets of data to mimic the delivery models of the three different scenarios. You can
+set these sheets up to include whichever sets of healthcare services you are delivering in the
+scenarios you want to model. You could also have different healthcare services available for
+different regions.
 
-A - D are only for reference and don't feed into the model (to the original data source.)
+Columns A through D are only for reference from the original data source and are not used as inputs
+to the model. Columns G through I are not used as inputs but can be valuable for post-hoc analysis
+and summary statistics. Columns L through P jointly determine how many resources are required for a given task by specifying how many contacts with the healthcare system are required for a given task, how long each contact takes, and the number of people that received care. 
 
-* Indicator is a unique ID. Family Health. Maternal and Newboarn. Antenatal. 1st task in sheet (FH.MN.ANC.1). Common name is for human readability. G-I don't change the way the model runs, but are useful for analysis post-hoc (you cna categorize tasks for summary statistics, for example).
+#### Parameters
 
-* J RelevantPop (dropdown) select the population to which this healthcare servcie applies. For example, antenatal care is proportional to number of births. Cervical cancer care is proporption to the population of women of child-bearing age. Changes which population the tasks are applied to. 
+* **Indicator**: A unique ID. For example, the indicator FH.MN.ANC.1 indicates Family Health, Maternal and Newborn, Antenatal, and first task. 
+* **CommonName**: The human-readable common name for the task.
+* **ClinicalOrNon**: Indicates if the task is clinical or non-clinical.
+* **ClinicalCat**: The clinical category for the task.
+* **ServiceCat**: The service category for the task.
+* **RelevantPop**: The population to which this healthcare task applies, selected via a drop-down 
+  menu. For example, antenatal care is proportional to the number of births. Cervical cancer care is proportional to the population of women of child-bearing age. The value changes which population the tasks are applied to in the model.
+  
+* **Geography** is automatically filled based on the region specified in the RegionSelect sheet. 
+* **StartingRateInPop**
+* **RateMultiplier**
+* **AnnualDeltaRatio**
+* **NumContactsPerUnit**:
+* **NumContactsAnnual**:
+* **MinsPerContact**:
+* **HoursPerWeek**:
+* **FTERatio**:
 
-* K Geography is automatically filled based on the region specified in the RegionSelect sheet. 
 
-* L-P determine jointly how many resources are required for a given task but specifying how many contacts with the health system are required for a given task, how long each contact takes, and the number of people that recieved a task. 
+* 
 
 * StartingRateInPop the proportion of hte relevant population that recieves this care. So for example, this value is 1 for antenatal care visits because every pregnant person requires those visits. (how does this account for miscarriage?)
 
