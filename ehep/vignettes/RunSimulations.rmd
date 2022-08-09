@@ -11,17 +11,28 @@ output: html_document:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Running the model
+## Run the model
+
+The PACE-HRH model simulates healthcare needs in a given population to enable
+better health system staffing decisions. The model is configured via Excel
+sheets (see Configure the model) and run via an R script. 
 
 Open the run simulations.R script
 
-1. Be sure to close the inputs file or RStudio will be unable to load it.
-1. Go to tools and install packages from the archive fiel optoin and select the most recept zip file of the model.
-2. You may see a banner at the top of the screen that indicates some depenent packages you need to install. Select yes to enable installation.
-*
-3. set numtrials to a value. 100 tends to be good. More values can take longer because of the stochasticity in the model.
-4. set date. This can be in any format, it's just for your abiltyt to name and control the versions of the model you have run. 
-5. Load the scnearios into the tab 
-6. Starting with line 18 is the code that actually runs the model. (for each scnenario)
-7. Results savled out to a csv.
-8. The console will beep at you when 
+1.  Close "R Model Inputs.xslx" in Excel. RStudio will be unable to load the input values
+    if the file is open. 
+2.  Open the "Run simulations.R" script in RStudio. 
+3.  From the **Tools** menu, select **Install Packages ...**.
+4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file.
+5.  Select the installation location and then click **Install**. 
+6.  You may see a banner at the top of the screen that indicates some dependent packages that are 
+    required. Select **Yes**. to enable installation.
+7.  In the R code, set *numtrials* to the number of simulations you want to run. 100 tends to be good; 
+    higher values can take longer because of the stochasticity in the model.
+8.  Set the *date*. This can be in any format; follow a version control naming convention that makes 
+    sense to you.
+9.  Run the script. 
+
+    The scenarios are loaded in line 16 and line 18 onward runs the model for each
+    scenario. The results are saved out to a CSV file. The console will beep at you when the model
+    has finished running. 
