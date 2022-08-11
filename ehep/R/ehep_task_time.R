@@ -255,35 +255,35 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   if (label == "adults 31-44") {
     return(sum(pop$Female[32:45] + pop$Male[32:45]))
   }
-  if (label == "women 20-30") {
-    return(sum(pop$Female[21:31]))
+  if (label == "women 20-29") {
+    return(sum(pop$Female[21:30]))
   }
-  if (label == "women 30-40") {
-    return(sum(pop$Female[31:41]))
+  if (label == "women 30-39") {
+    return(sum(pop$Female[31:40]))
   }
-  if (label == "women 40-50") {
-    return(sum(pop$Female[41:51]))
+  if (label == "women 40-49") {
+    return(sum(pop$Female[41:50]))
   }
-  if (label == "women 50-60") {
-    return(sum(pop$Female[51:61]))
+  if (label == "women 50-59") {
+    return(sum(pop$Female[51:60]))
   }
-  if (label == "women 60-70") {
-    return(sum(pop$Female[61:71]))
+  if (label == "women 60-69") {
+    return(sum(pop$Female[61:70]))
   }
-  if (label == "men 20-30") {
-    return(sum(pop$Male[21:31]))
+  if (label == "men 20-29") {
+    return(sum(pop$Male[21:30]))
   }
-  if (label == "men 30-40") {
-    return(sum(pop$Male[31:41]))
+  if (label == "men 30-39") {
+    return(sum(pop$Male[31:40]))
   }
-  if (label == "men 40-50") {
-    return(sum(pop$Male[41:51]))
+  if (label == "men 40-49") {
+    return(sum(pop$Male[41:50]))
   }
-  if (label == "men 50-60") {
-    return(sum(pop$Male[51:61]))
+  if (label == "men 50-59") {
+    return(sum(pop$Male[51:60]))
   }
-  if (label == "men 60-70") {
-    return(sum(pop$Male[61:71]))
+  if (label == "men 60-69") {
+    return(sum(pop$Male[61:70]))
   }
   
   
