@@ -425,7 +425,13 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
 
   Mean_ClinCat <-
     ByRun_ClinCat[,
-                  .(MeanHrs = mean(TotHrs)),
+                  .(
+                    CI05 = quantile(TotHrs, probs = c(.05)),
+                    CI25 = quantile(TotHrs, probs = c(.25)),
+                    MeanHrs = mean(TotHrs),
+                    CI75 = quantile(TotHrs, probs = c(.75)),
+                    CI95 = quantile(TotHrs, probs = c(.95))
+                  ),
                   keyby = .(Scenario_ID, Year, ClinicalCat, ClinicalOrNon, WeeksPerYr)]
 
   traceMessage("Making ClinMonth tables")
@@ -438,7 +444,9 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
     ByRun_ClinMonth[,
                     .(
                       CI05 = quantile(TotHrs, probs = c(.05)),
+                      CI25 = quantile(TotHrs, probs = c(.25)),
                       CI50 = mean(TotHrs),
+                      CI75 = quantile(TotHrs, probs = c(.75)),
                       CI95 = quantile(TotHrs, probs = c(.95))
                     ),
                     keyby = .(Scenario_ID, Year, Month, WeeksPerYr, HrsPerWeek)]
@@ -454,8 +462,13 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
 
   Mean_ServiceCat <-
     ByRun_ServiceCat[,
-                     .(MeanHrs = mean(TotHrs),
-                       CI95 = quantile(TotHrs, probs = c(.95))),
+                     .(
+                       CI05 = quantile(TotHrs, probs = c(.05)),
+                       CI25 = quantile(TotHrs, probs = c(.25)),
+                       MeanHrs = mean(TotHrs),
+                       CI75 = quantile(TotHrs, probs = c(.75)),
+                       CI95 = quantile(TotHrs, probs = c(.95))
+                      ),
                      keyby = .(Scenario_ID, Year, ServiceCat, ClinicalOrNon)]
 
   traceMessage("Making Total tables")
@@ -467,8 +480,10 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   Mean_Total <-
     ByRun_Total[,
                 .(
-                  MeanHrs = mean(TotHrs),
                   CI05 = quantile(TotHrs, probs = c(.05)),
+                  CI25 = quantile(TotHrs, probs = c(.25)),
+                  MeanHrs = mean(TotHrs),
+                  CI75 = quantile(TotHrs, probs = c(.75)),
                   CI95 = quantile(TotHrs, probs = c(.95))
                 ),
                 keyby = .(Scenario_ID, Year, WeeksPerYr, HrsPerWeek)]
@@ -483,7 +498,9 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
     ByRun_TotClin[,
                   .(
                     CI05 = quantile(AnnualHrs, probs = c(.05)),
+                    CI25 = quantile(AnnualHrs, probs = c(.25)),
                     CI50 = mean(AnnualHrs),
+                    CI75 = quantile(AnnualHrs, probs = c(.75)),
                     CI95 = quantile(AnnualHrs, probs = c(.95))
                   ),
                   keyby = .(Scenario_ID, Year, WeeksPerYr, HrsPerWeek)]
@@ -516,9 +533,13 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
 
   Mean_Alloc <-
     ByRun_Alloc_melt[,
-                     .(CI05 = quantile(AnnualHrs, probs = c(.05)),
+                     .(
+                       CI05 = quantile(AnnualHrs, probs = c(.05)),
+                       CI25 = quantile(AnnualHrs, probs = c(.25)),
                        CI50 = mean(AnnualHrs),
-                       CI95 = quantile(AnnualHrs, probs = c(.95))),
+                       CI75 = quantile(AnnualHrs, probs = c(.75)),
+                       CI95 = quantile(AnnualHrs, probs = c(.95))
+                       ),
                      keyby = .(Scenario_ID, DeliveryModel, Year, WeeksPerYr, Cadre)]
 
   return(list(
