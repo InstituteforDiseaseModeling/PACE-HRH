@@ -17,6 +17,8 @@ The PACE-HRH model simulates healthcare needs in a given population to enable
 better health system staffing decisions. The model is configured via Excel
 sheets (see Configure the model) and run via an R script. 
 
+<!--- Rui: Can you update this based on the new process, given Charles' new functions and our incorporation of the geography name in the file output names? --->
+
 Open the run simulations.R script
 
 1.  Close "R Model Inputs.xslx" in Excel. RStudio will be unable to load the input values
