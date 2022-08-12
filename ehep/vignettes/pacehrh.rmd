@@ -2,7 +2,8 @@
 title: "Configure the model"
 author: "Jen Schripsema"
 date: '2022-07-27'
-output: html_document:
+output: 
+    html_document:
     toc: true
     number_sections: true
 ---
@@ -10,6 +11,8 @@ output: html_document:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Getting started with the PACE-HRH model 
 
 ## Configure the model
 
@@ -38,8 +41,7 @@ The **Scenarios** sheet is the primary sheet that controls inputs to the model. 
 * **BaselinePop**: The number of people in a typical healthcare catchment. Usually, these values are
   set as targets by a government healthcare program, such as the size of the population each
   primary healthcare facility is expected to serve. Value typically range from 5,000 to 20,000.
-* **PopType**: The type of population modeled.
-* **o_PopGrowth** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the growth of the population. If set to TRUE, the population size will grow at a rate dependent on the fertility and mortality (set elsewhere). If set to FALSE, the population pyramid will evolve per the fertility and mortality, but the total population will be normlized to the BaselinePop value every year, stabilizing population size. This is to be used for debugging and sensitivity analysis.
+* **o_PopGrowth** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the growth of the population. If set to TRUE, the population size will grow at a rate dependent on the fertility and mortality (set elsewhere). If set to FALSE, the population pyramid will evolve per the fertility and mortality, but the total population will be normalized to the **BaselinePop** value every year, stabilizing population size. This is to be used for debugging and sensitivity analysis.
 * **o_Seasonality** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the seasonality. If set to TRUE, seasonality curves will be applied to the relevant tasks (set elsewhere). If set to FALSE, seasonality will be turned off. This is to be used for debugging and sensitivity analysis.
 * **o_Fertility_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the decline in the fertility rate. If set to TRUE, fertility rates will decline over time (set elsewhere). If set to FALSE, fertility will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
 * **o_MHIVTB_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the decline in the incidence rates for malaria, HIV, and TB. If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
@@ -49,10 +51,6 @@ The **Scenarios** sheet is the primary sheet that controls inputs to the model. 
 * **DeliveryModel**: A text description for the healthcare delivery model scenario. This is for user reference only and does not change how the model functions.
 * **Geography_dontedit**: Informational field that is populated by the **RegionSelect** sheet. Do not edit here, as it will not affect the functioning of the model but is automatically used for naming the results files and may result in confusion if it is changed manually.
 
-<!--- PopType wasn't covered in the video and I'm not entirely sure what this does in the model 
-    It's also not clear to me what DeliveryModel does if someone wants to edit the model for
-    other contexts. BH: I think we should remove PopType from the file and the docs, as I don't think it is functional anymore. ---> 
-
 ### RegionSelect
 
 The **RegionSelect** sheet specifies the geographic region to be simulated. 
@@ -61,7 +59,7 @@ The **RegionSelect** sheet specifies the geographic region to be simulated.
 
 * **adminNameAsUsed**: The human-readable name for each administrative unit. You may include 
   units at different levels, for example an entire country and also the administrative 
-  units within that country. Provide the values in column F, which will populate the drop-down 
+  districts within that country. Provide the values in column F, which will populate the drop-down 
   menu in column B. The selection you make in column B will populate to the relevant population, fertility, mortality, and incidence rates are updated throughout the workbook.
 * **adminCode**: The unique numerical code for the administrative district. Provide the values in
   column G. Selecting from the drop-down menu in column B will populate the **adminCode** in column C. 
@@ -69,14 +67,30 @@ The **RegionSelect** sheet specifies the geographic region to be simulated.
 ### TotalPop
 
 The **TotalPop** sheet lists the number of people (male, female, and total) in each annual age bin, 
-from 0 to 100. Optionally, multiple TotalPop tabs can be created and referenced in the Scenarios tab.
+from 0 to 100. Optionally, multiple **TotalPop** tabs can be created and referenced in the **Scenarios** tab.
 
 ### StochasticParameters
 
 The **StochasticParameters** sheet lists the **p** and **q** values that determine the width of the 
-stochastic distributions around various parameter values. 
+stochastic distributions around various parameter values. See the table below for more detail.
 
-<!--- Brittany to provide more detail for each of these values. --->
+| Value                                              | Distribution             | Value inputs     | Parameters                                       |
+|:-------------------------------------------------- |:-------------------------|:-----------------|:-------------------------------------------------|
+| Fertility rates                                               | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
+| Mortality rates                                               | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
+| Incidence rates <br />(**TaskValues** column H)               | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
+| Annual delta fertility rates                                  | Truncated normal*        | delta, p, q      | mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q  |
+| Annual delta mortality rates                                  | Truncated normal*        | delta, p, q      |  mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q | 
+| Annual delta incidence rates <br />(**TaskValues** column L)  | Truncated normal*        | delta, p, q      |  mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q |
+| Seasonality ratio to mean                                     | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
+| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | s = mean\*p <br /> meanlog = log(m)-12log[(s/m)2+1] <br /> sdlog = sqrt(log(s/m)^2 + 1 |
+| Hours per week <br />(optional; **TaskValues** column P)      | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |     
+
+\* Truncated normal can be done in R using the truncnorm package.  
+
+We are approximating a Markov random walk with drift. The error term is generally modeled with a normal 
+distribution, plus an additional drift distribution. Here we use just one parameter. There is some 
+evidence that a Weibull distribution is also a good option. 
 
 ### PopValues
 
@@ -201,7 +215,7 @@ scenarios you are modeling. The cadre used for each scenario is defined in the *
 in the column **sheet_Cadre**. It's very important that every task value unique identifier appears in
 the **Cadres** sheets because otherwise the tasks will be unassigned and thus uncounted. If you have unexpectedly low workload assigned to certain cadres of workers, this is a possible source of the error.
 
-For example, the examples in the default Ethiopian example has some tasks being shifted from certain
+For example, the default Ethiopian example has some tasks being shifted from certain
 cadres of workers to other workers over time as staffing shifts, and each scenario models this
 shift in responsibilities slightly differently. The numbers and names of the columns can be
 changed, but the must be consistent across all sheets and must use the format of YY_CadreName where YY is the last two digits in a year, such as YY=30 for 2030. The year represents the first year in which this allocation is made; the allocation remains in place for the remaining years unless an additional assignment is made. 
@@ -214,7 +228,7 @@ midwife staff members in 2025. A more complex example is the Pneumonia (ARI) tas
 the responsibility of the HEWs and then gradually shift to the Health Officers, Family Health
 Officer, and Nurses. 
 
-## RegionalData
+### RegionalData
 
 The **RegionalData** sheet is the source file for all of the regional data included in other sheets
 that is pulled in via VLOOKUP in Excel. For example, the **StartingRateInPop** used in
@@ -222,3 +236,31 @@ the **TaskValues** sheet comes from the source values in this sheet. If you want
 multi-geography structure currently used in the model, we recommend changing the values here.
 However, the model pulls from the sheets listed above, so you can also change the values directly
 in those sheets.
+
+## Run the model
+
+The PACE-HRH model simulates healthcare needs in a given population to enable
+better health system staffing decisions. The model is configured via Excel
+sheets and run via an R script. 
+
+<!--- Rui: Can you update this based on the new process, given Charles' new functions and our incorporation of the geography name in the file output names? --->
+
+Open the run simulations.R script
+
+1.  Close "R Model Inputs.xslx" in Excel. RStudio will be unable to load the input values
+    if the file is open. 
+2.  Open the "Run simulations.R" script in RStudio. 
+3.  From the **Tools** menu, select **Install Packages ...**.
+4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file.
+5.  Select the installation location and then click **Install**. 
+6.  You may see a banner at the top of the screen that indicates some dependent packages that are 
+    required. Select **Yes**. to enable installation.
+7.  In the R code, set *numtrials* to the number of simulations you want to run. 100 tends to be good; 
+    higher values can take longer because of the stochasticity in the model.
+8.  Set the *date*. This can be in any format; follow a version control naming convention that makes 
+    sense to you.
+9.  Run the script. 
+
+    The scenarios are loaded in line 16 and line 18 onward runs the model for each
+    scenario. The results are saved out to a CSV file. The console will beep at you when the model
+    has finished running. 
