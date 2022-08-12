@@ -1,196 +1,125 @@
-ages <- GPE$ages
+.explodeRates <- function(rates, year){
+  assertthat::assert_that(is.numeric(year))
+  assertthat::assert_that(year >= GPE$startYear & year <= GPE$endYear)
 
-.mratesExpansionMatrix <- .generateExpansionMatrix(ages = ages,
-                                                   breaks = c(0, 4, 9, 14, 19, 34, 49, 59, 74))
+  l <- lapply(rates, function(r){
+    if (!is.null(r$bandedRates)){
+      return(as.vector(r$bandedRates$expansionMatrix %*% r$ratesMatrix[, as.character(year)]))
+    } else {
+      return(vector(mode = "double", length = length(GPE$ages)))
+    }
+  })
 
-.fratesExpansionMatrix <- .generateExpansionMatrix(ages = ages,
-                                                   breaks = c(14, 19, 24, 29, 34, 39, 44, 49))
+  names(l) <- names(rates)
+  return(l)
+}
 
-# Expected fields: {
-# "MortalityInfants",
-# "Mortality1_4",
-# "Mortality5_9",
-# "Mortality10_14",
-# "Mortality15_19",
-# "Mortality20_34",
-# "Mortality35_49F",
-# "Mortality50_59F",
-# "Mortality60_74F",
-# "Mortality75+F",
-# "Mortality35_49M",
-# "Mortality50_59M",
-# "Mortality60_74M",
-# "Mortality75+M"
-# }
+.computeBirths <- function(femalePopulation, rates){
+  return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+}
 
-#' Convert Mortality Rates From Banded To Per-Age
-#'
-#' Mortality rates are reported in age bands - 1-4 years, 5-9 years, etc.
-#' \code{explodeMortalityRates} converts the vector of banded rates into a
-#' vector with one rate per year of age.
-#'
-#' @param bandedAnnualRates Rates reported in age buckets
-#'
-#' @return List of vectors of per-year-of-age rates, for males and females
-#'
-explodeMortalityRates <- function(bandedAnnualRates){
-  if (GPE$globalDebug){
-    assertthat::assert_that(length(bandedAnnualRates) == 14)
-    assertthat::assert_that(length(ages) > 75)
-  }
-
-  r <- bandedAnnualRates[1:10]
-  outf <- as.vector(.mratesExpansionMatrix %*% r)
-
-  r <- bandedAnnualRates[c(1:6, 11:14)]
-  outm <- as.vector(.mratesExpansionMatrix %*% r)
-
+.computeDeaths <- function(population, rates){
+  outf <- round(population$Female * rates[["femaleMortality"]], 0)
+  outm <- round(population$Male * rates[["maleMortality"]], 0)
   return(list(Female = outf, Male = outm))
 }
 
-# Expected fields:
-# {
-# "AnnualBirthRate15_19",
-# "AnnualBirthRate20_24",
-# "AnnualBirthRate25_29",
-# "AnnualBirthRate30_34",
-# "AnnualBirthRate35_39",
-# "AnnualBirthRate40_44",
-# "AnnualBirthRate45_49"
-# }
-
-#' Convert Fertility Rates From Banded To Per-Age
-#'
-#' Birth rates are reported in age bands - 15-19 years, 20-29 years, etc.
-#' \code{explodeFertilityRates} converts the vector of banded rates into a
-#' vector with one rate per year of age.
-#'
-#' @param bandedAnnualRates Rates reported in age buckets
-#'
-#' @return List of vectors of per-year-of-age rates, for males and females
-#'
-explodeFertilityRates <- function(bandedAnnualRates){
-  if (GPE$globalDebug){
-    assertthat::assert_that(length(bandedAnnualRates) == 7)
-    assertthat::assert_that(length(ages) > 50)
+.normalizationOn <- function(normalize) {
+  if (is.null(normalize)) {
+    return(FALSE)
   }
-
-  outm <- vector(mode = "double", length = length(ages))
-
-  r <- c(0, bandedAnnualRates, 0)
-  outf <- as.vector(.fratesExpansionMatrix %*% r)
-
-  return(list(Female = outf, Male = outm))
+  if (!is.numeric(normalize)) {
+    return(FALSE)
+  }
+  if (normalize < 0) {
+    return(FALSE)
+  }
+  return(TRUE)
 }
 
-#' Compute Births
-#'
-#' Compute the total number of births for a year, given the female population
-#' pyramid and the annual fertility rates per age.
-#'
-#' @param femalePopulation Vector of female population pyramid
-#' @param rates Exploded vector of annual fertility rates
-#'
-#' @return Total number of expected births
-#'
-computeBirths <- function(femalePopulation, rates){
-  if (GPE$globalDebug){
-    assertthat::assert_that(is.vector(femalePopulation))
-    assertthat::assert_that(is.vector(rates))
-    assertthat::assert_that(length(femalePopulation) == length(ages))
-    assertthat::assert_that(length(femalePopulation) == length(rates))
-  }
+.normalizePopulationEx <- function(pop, normalizedTotal){
+  total <- sum(pop$female@values) + sum(pop$male@values)
+  normFactor <- normalizedTotal / total
 
-  return(sum(round(femalePopulation * rates, 0)))
+  pop$male@values <- round(pop$male@values * normFactor, 0)
+  pop$female@values <- round(pop$female@values * normFactor, 0)
+  pop$total@values <- pop$male@values + pop$female@values
+
+  return(pop)
 }
 
-#' Compute Deaths
+#' Compute A Population Projection
 #'
-#' Compute the total number of deaths for a year, given the population
-#' pyramids for females and males, and the annual rates per age for both
-#' sexes.
-#'
-#' @param population Dataframe of female and male population pyramids
-#' @param rates List with exploded vectors of annual death rates, as returned by
-#' \code{explodeMortalityRates}
-#'
-#' @return List of expected deaths, one vector for each sex
-#'
-computeDeaths <- function(population, rates){
-  if (GPE$globalDebug){
-    assertthat::assert_that(length(rates$Female) == length(rates$Male))
-    assertthat::assert_that(length(rates$Female) == length(population$Female))
-    assertthat::assert_that(length(rates$Male) == length(population$Male))
-  }
-
-  outf <- round(population$Female * rates$Female / 1000, 0)
-  outm <- round(population$Male * rates$Male / 1000, 0)
-
-  return(list(Female = outf, Male = outm))
-}
-
-#' Compute Demographics Projection
-#'
-#' Use an initial population pyramid, fertility rates, and mortality rates
+#' Use an initial population pyramid and population change rates
 #' to predict future population pyramids.
 #'
-#' @param initialPopulationPyramid Population pyramids dataframe. Must have
-#' \code{$Age}, \code{$Male} and \code{$Female} fields.
-#' @param fertilityRates Fertility rates matrix
-#' @param mortalityRates Mortality rates matrix
+#' @param initialPopulation Population structure. The expected format is
+#' ```
+#' List of 4
+#' $ age   : num [1:101] 0 1 2 3 4 5 6 7 8 9 ...
+#' $ female:Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
+#' .. ..@ length: int 101
+#' .. ..@ values: num [1:101] 1739594 1677633 1647809 1617984 1588159 ...
+#' $ male  :Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
+#' .. ..@ length: int 101
+#' .. ..@ values: num [1:101] 1794566 1729423 1697431 1665439 1633447 ...
+#' $ total :Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
+#' .. ..@ length: int 101
+#' .. ..@ values: num [1:101] 3534160 3407056 3345240 3283423 3221606 ...
+#' ```
+#' @param rates Population change rates (both fertility and mortality)
 #' @param years Vector of years to model
 #' @param normalize Whether or not to normalize the initial population (default = NULL)
 #' @param growthFlag If FALSE, normalize each year to the same population as
 #' the initial year (default = TRUE)
-#' @param debug Flag for debugging output
 #'
 #' @return Demographics time-series
 #'
+#' @md
 #' @export
 #'
-ComputeDemographicsProjection <- function(initialPopulationPyramid,
-                                          fertilityRates,
-                                          mortalityRates,
-                                          years,
-                                          normalize = NULL,
-                                          growthFlag = TRUE,
-                                          debug = FALSE) {
+ComputePopulationProjection <- function(initialPopulation,
+                                            populationChangeRates,
+                                            years,
+                                            normalize = NULL,
+                                            growthFlag = TRUE){
   if (.normalizationOn(normalize)) {
-    initialPopulationPyramid <-
-      .normalizePopulation(initialPopulationPyramid, normalize)
+    initialPopulation <-
+      .normalizePopulationEx(initialPopulation, normalize)
   }
 
   initialPopulationTotal <-
-    sum(initialPopulationPyramid$Female) + sum(initialPopulationPyramid$Male)
+    sum(initialPopulation$female@values) + sum(initialPopulation$male@values)
 
-  previousPyramid = NULL
+  previousPyramid <- NULL
 
-  assertthat::has_name(initialPopulationPyramid, "Age")
-  range <- initialPopulationPyramid$Age
+  assertthat::has_name(initialPopulation, "age")
+  range <- initialPopulation$age
 
   projection <- lapply(years, function(currentYear){
     # Special case: the first element of the projection is just the population
     # pyramid for the starting year.
 
     if (is.null(previousPyramid)){
-      out <- data.frame(Range = range, Female = initialPopulationPyramid$Female, Male = initialPopulationPyramid$Male)
+      out <- data.frame(Range = range, Female = initialPopulation$female@values, Male = initialPopulation$male@values)
     } else {
       previousYear <- currentYear - 1
 
-      currentYearFertilityRates <- explodeFertilityRates(fertilityRates[, as.character(currentYear)])
-      currentYearMortalityRates <- explodeMortalityRates(mortalityRates[, as.character(currentYear)])
+      rates <- .explodeRates(populationChangeRates, currentYear)
+
+      # currentYearFertilityRates <- explodeFertilityRates(fertilityRates[, as.character(currentYear)])
+      # currentYearMortalityRates <- explodeMortalityRates(mortalityRates[, as.character(currentYear)])
 
       # Shuffle the end-of-year snapshots from the previous year to the next
       # population bucket
-      f <- c(0, previousPyramid$Female)[1:length(ages)]
-      m <- c(0, previousPyramid$Male)[1:length(ages)]
+      f <- c(0, previousPyramid$Female)[1:length(GPE$ages)]
+      m <- c(0, previousPyramid$Male)[1:length(GPE$ages)]
 
       currentPyramid <- data.frame(Range = range, Female = f, Male = m)
 
       # Compute deaths for all except the newborns (which were zeroed in the
       # previous step)
-      deaths <- computeDeaths(currentPyramid,
-                              currentYearMortalityRates)
+      deaths <- .computeDeaths(currentPyramid, rates)
 
       f <- f - deaths$Female
       m <- m - deaths$Male
@@ -198,24 +127,18 @@ ComputeDemographicsProjection <- function(initialPopulationPyramid,
       # Compute births for the current year, based on the average number of
       # fertile women alive during each time bucket.
       fAverage <- (currentPyramid$Female + f) / 2
-      births <- computeBirths(fAverage, currentYearFertilityRates$Female)
+      births <- .computeBirths(fAverage, rates)
 
       births.m <- births * GPE$ratioMalesAtBirth
       births.f <- births * GPE$ratioFemalesAtBirth
 
-      infantDeaths.m <- births.m * currentYearMortalityRates$Male[1] / 1000
-      infantDeaths.f <- births.f * currentYearMortalityRates$Female[1] / 1000
+      infantDeaths.m <- births.m * (rates[["maleMortality"]][1])
+      infantDeaths.f <- births.f * (rates[["femaleMortality"]][1])
 
       f[1] <- round(births.f - infantDeaths.f, 0)
       m[1] <- round(births.m - infantDeaths.m, 0)
 
-      if (!debug){
-        out <- data.frame(Range = range, Female = f, Male = m)
-      } else {
-        out <- data.frame(Range = range, Female = f, Male = m,
-                          frates = currentYearFertilityRates,
-                          mrates = currentYearMortalityRates)
-      }
+      out <- data.frame(Range = range, Female = f, Male = m, rates = rates)
     }
 
     previousPyramid <<- out
@@ -236,28 +159,4 @@ ComputeDemographicsProjection <- function(initialPopulationPyramid,
   }
 
   return(projection)
-}
-
-.normalizationOn <- function(normalize) {
-  if (is.null(normalize)) {
-    return(FALSE)
-  }
-  if (!is.numeric(normalize)) {
-    return(FALSE)
-  }
-  if (normalize < 0) {
-    return(FALSE)
-  }
-  return(TRUE)
-}
-
-.normalizePopulation <- function(popDf, normalizedTotal){
-  total <- sum(popDf$Female) + sum(popDf$Male)
-  normFactor <- normalizedTotal / total
-
-  popDf$Male <- round(popDf$Male * normFactor, 0)
-  popDf$Female <- round(popDf$Female * normFactor, 0)
-  popDf$Total <- popDf$Male + popDf$Female
-
-  return(popDf)
 }

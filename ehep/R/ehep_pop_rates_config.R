@@ -34,10 +34,12 @@
   assertthat::assert_that(nrow(p) > 0)
 
   p <- p[order(p$BandEnd),]
+  breaks <- p$BandEnd[1:nrow(p) - 1]
 
   return(
     list(
-      breaks = p$BandEnd[1:nrow(p) - 1],
+      breaks = breaks,
+      expansionMatrix = .generateExpansionMatrix(GPE$ages, breaks),
       initValues = p$InitValue,
       changeRates = p$ChangeRate,
       labels = p$Label
