@@ -19,9 +19,9 @@ Imports:
     readxl,
     scales,
     tibble,
+    tidyr,
     truncnorm,
-    withr,
-    tidyr
+    withr
 Suggests: 
     testthat (>= 3.0.0),
     roxytest
@@ -57,8 +57,6 @@ Collate:
     'ehep_config.R'
     'ehep_pop_rates_config.R'
     'ehep_exp_control.R'
-    'ehep_frates_matrix.R'
-    'ehep_mrates_matrix.R'
     'ehep_rates_matrix.R'
     'ehep_prevalence_matrix.R'
     'ehep_iterator.R'
