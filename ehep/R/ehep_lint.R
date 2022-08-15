@@ -434,7 +434,7 @@ ValidateInputExcelFileContent <- function(inputFile=NULL,
     inputFile <- GPE$inputExcelFile
   }
 
-  dir.create(outputDir, showWarnings = F)
+  dir.create(outputDir, showWarnings = FALSE)
 
   # loop over each sheet and apply corresponding rules
   result <- data.frame()
