@@ -69,3 +69,51 @@ test_that("Lint: stdout", {
   errCode <- ehep::CheckInputExcelFileFormat(inputFile = "notafile")
   testthat::expect_equal(errCode, ehep:::.errInputFileNotFound)
 })
+
+# test validate no rules
+test_that("Lint: Validation no rules", {
+  # test should fail if no rule is defined for the sheet
+  testthat::expect_error(ehep::ValidateInputExcelFileContent(inputFile = "./bad_config/Test_validation.xlsx", sheetNames = c("Total_Pop2")), "rule not found")
+
+})
+# test validation capture
+test_that("Lint: Validation capture", {
+  errCode <- ehep:::.errValidationRuleFailed
+  # In this example rules Total_diarrhea does not sum to 1, this is a table-wise error not row-wise error
+  # The error is captured and verified in _snaps/ehep_lint.md
+
+  logdir <- tempdir()
+  testthat::expect_snapshot(ehep::ValidateInputExcelFileContent(inputFile = "./bad_config/Test_validation.xlsx",
+                                                                          outputDir = logdir,
+                                                                          sheetNames = c("SeasonalityCurves")),
+                            error = TRUE)
+
+})
+# test validation success
+test_that("Lint: Validation capture Success", {
+  errCode <- ehep:::.Success
+
+  logdir <- tempdir()
+  testthat::expect_equal(errCode, ehep::ValidateInputExcelFileContent(inputFile = "./bad_config/Test_validation2.xlsx",
+                                                                outputDir = logdir,
+                                                                sheetNames = c("SeasonalityCurves")))
+
+})
+
+# test validation row-wise
+test_that("Lint: Validation capture Success", {
+  errCode <- ehep:::.Success
+  # In this example, rule is set as warning level so violation is not causing error but output files will be available
+  logdir <- tempdir()
+  testthat::expect_equal(errCode, ehep::ValidateInputExcelFileContent(inputFile = "./bad_config/Test_validation.xlsx",
+                                                                      outputDir = logdir,
+                                                                      sheetNames = c("TaskValues_ref")))
+  result_file <- paste(logdir, "violation_warning_Missing_parameter_value.csv", sep="/")
+  testthat::expect_true(file.exists(result_file))
+  violations <- read.csv(result_file)
+  # search for the row that fails Indicator = FH.MN.ANC.1XX
+  violating_row <- violations %>%
+    dplyr::filter(Indicator == "FH.MN.ANC.1XX")
+  testthat::expect_equal(nrow(violating_row ), 1)
+})
+

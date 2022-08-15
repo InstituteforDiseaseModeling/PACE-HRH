@@ -19,9 +19,10 @@ Imports:
     readxl,
     scales,
     tibble,
+    tidyr,
     truncnorm,
-    withr,
-    tidyr
+    validate,
+    withr
 Suggests: 
     testthat (>= 3.0.0),
     roxytest
