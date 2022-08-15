@@ -83,6 +83,7 @@ test_that("Lint: Validation capture", {
   # The error is captured and verified in _snaps/ehep_lint.md
 
   logdir <- tempdir()
+  skip_if(.Platform$OS.type != "windows")
   testthat::expect_snapshot(ehep::ValidateInputExcelFileContent(inputFile = "./bad_config/Test_validation.xlsx",
                                                                           outputDir = logdir,
                                                                           sheetNames = c("SeasonalityCurves")),

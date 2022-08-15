@@ -7,7 +7,7 @@
 .errScenarioSheetNotReadable <- -4L
 .errSeasonalityOffsetSheetNotFound <- -5L
 .errSeasonalityOffsetSheetNotReadable <- -6L
-.errValidationRuleFailed <- 11L
+.errValidationRuleFailed <- -11L
 
 .warnProblemsFound <- 1L
 
@@ -23,8 +23,7 @@
 #'
 #' @return Error code.
 #' 0 = Success
-#' < 0 (negative) = Fatal error. Nothing will work right.
-#' > 0 (positive) = Warning. Some scenarios might fail, some might succeed.
+#' -11 = Validtaion error
 #'
 #' @importFrom withr with_output_sink
 #'
@@ -465,7 +464,7 @@ ValidateInputExcelFileContent <- function(inputFile=NULL,
       }
       # Apply rules and save the violation results
       check <- .get_violation_rows(out, data_target, rules, outputDir)
-      errcode = errcode + check
+      errcode = min(errcode, check)
 
       # combine results in the loop
       if (length(result)==0){
