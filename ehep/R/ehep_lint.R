@@ -23,7 +23,8 @@
 #'
 #' @return Error code.
 #' 0 = Success
-#' -11 = Validtaion error
+#' < 0 (negative) = Fatal error. Nothing will work right.
+#' > 0 (positive) = Warning. Some scenarios might fail, some might succeed.
 #'
 #' @importFrom withr with_output_sink
 #'
@@ -421,8 +422,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 #'
 #' @return Error code.
 #' 0 = Success
-#' < 0 (negative) = Fatal error. Nothing will work right.
-#' > 0 (positive) = Warning. Some scenarios might fail, some might succeed.
+#' -11 = validation error
 #'
 #' @export
 ValidateInputExcelFileContent <- function(inputFile=NULL,
