@@ -28,6 +28,10 @@ Trace <- function(state = NULL){
 #' @param msgString Trace message
 traceMessage <- function(msgString){
   if (GPE$traceState == TRUE){
+    # o <- sys.calls()[[sys.nframe() - 1]]
+    # fname <- deparse(o[[1]])
+    # message(paste0(fname, ": ", msgString))
+    # message(traceback(x = 0))
     message(msgString)
   }
 }

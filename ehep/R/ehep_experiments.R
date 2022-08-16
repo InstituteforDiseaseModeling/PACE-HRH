@@ -25,8 +25,8 @@ RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FAL
     results <- RunExperiment()
 
     results$Population <- EXP$demographics
-    results$PopulationParams <- list(FRatesMatrix = EXP$fertilityRatesMatrix,
-                                     MRatesMatrix = EXP$mortalityRatesMatrix)
+    results$PopulationRates <- EXP$populationChangeRates
+
     return(results)
   })
 
