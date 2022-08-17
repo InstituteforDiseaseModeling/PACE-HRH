@@ -2,8 +2,7 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @return List with three \code{PopulationPyramid} objects:
-#' \code{female}, \code{male} and \code{total}
+#' @return Dataframe of stochastic parameters
 #'
 loadStochasticParameters <- function(sheetName = "StochasticParameters"){
   stochData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
@@ -18,7 +17,8 @@ loadStochasticParameters <- function(sheetName = "StochasticParameters"){
 #' Read the stochasticity information from the model inputs Excel file, and
 #' save to a location in the global package environment.
 #'
-#' @param sheetName Sheet name from the model input Excel file
+#' @md
+#' @param ... Parameters passed through to [loadStochasticParameters()]
 #'
 #' @export
 #'

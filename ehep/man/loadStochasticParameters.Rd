@@ -10,8 +10,7 @@ loadStochasticParameters(sheetName = "StochasticParameters")
 \item{sheetName}{Sheet name from the model input Excel file}
 }
 \value{
-List with three \code{PopulationPyramid} objects:
-\code{female}, \code{male} and \code{total}
+Dataframe of stochastic parameters
 }
 \description{
 Load Stochastic Parameters

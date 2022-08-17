@@ -6,6 +6,8 @@
 #'
 #' @return Generated output as a data frame (invisible)
 #' @export
+#'
+#' @importFrom magrittr %>%
 SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) {
   trials <- names(results)
 
@@ -21,8 +23,6 @@ SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) 
   return(invisible(outdf))
 }
 
-
-#' @importFrom magrittr %>%
 .formatTrialDemographics <- function(popData, trial, breaks) {
   if (is.null(popData)) {
     return(invisible(NULL))
@@ -85,9 +85,6 @@ SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) 
 
   return(data.table::rbindlist(l))
 }
-
-
-
 
 #' Save Experiment Results As CSV File
 #'
@@ -175,6 +172,27 @@ SaveResults <- function(results, filepath, scenario, trial, run){
 #' @return NULL (invisible)
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' runId <- 1
+#'
+#' ehep::SaveSuiteResults(results, "results.csv", scenario, runId)
+#' }
 SaveSuiteResults <- function(results, filepath, scenario, run){
   trialIds <- names(results)
 
