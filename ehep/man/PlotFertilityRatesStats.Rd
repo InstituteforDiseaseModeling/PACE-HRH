@@ -4,12 +4,16 @@
 \alias{PlotFertilityRatesStats}
 \title{Plot Fertility Rates Statistics}
 \usage{
-PlotFertilityRatesStats(results, se = FALSE, type = "lines")
+PlotFertilityRatesStats(results, se = FALSE, type = "lines", log = TRUE)
 }
 \arguments{
 \item{results}{Results list (as returned by \code{RunExperiments()})}
 
-\item{se}{Whether to show standard error intervals, or projection intervals}
+\item{se}{Whether to show standard error or standard deviation confidence intervals}
+
+\item{type}{Plot type (options = "lines", "ribbon", "boxplot")}
+
+\item{log}{Use log scale for rates (default = TRUE). Applies only to "boxplot" type.}
 }
 \value{
 ggplot grob
