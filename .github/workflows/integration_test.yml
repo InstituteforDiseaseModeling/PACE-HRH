@@ -10,6 +10,9 @@ on:
 jobs:
   install:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
       - uses: actions/checkout@v2
       - name: Setup R
