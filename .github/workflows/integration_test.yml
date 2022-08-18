@@ -10,8 +10,6 @@ on:
 jobs:
   install:
     runs-on: windows-latest
-    container:
-      image: mewu/rimage
     steps:
       - uses: actions/checkout@v2
       - name: Setup R
