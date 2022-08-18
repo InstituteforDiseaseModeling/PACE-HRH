@@ -21,11 +21,15 @@ jobs:
           r-version: ${{ matrix.R }}
       - name: Install devtools
         run: |
-          Rscript -e "install.packages('devtools')"    
+          Rscript -e "install.packages('devtools')"  
+      - name: Setup Dependency
+        working-directory: 'tests/setup'
+        run: |
+          Rscript install_dep_for_tests.R        
       - name: Install packages
         run: |
           # todo: using install_github when E2E tesst are available
-          Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always", repos = NULL, build=TRUE)'
+          # Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always", repos = NULL, build=TRUE)'
       - name: Ensure validation tool is working
         run: |
           Rscript -e 'testthat::test_dir("validation/tests", package=NULL)'
