@@ -28,14 +28,16 @@ $ total :Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
 .. ..@ values: num [1:101] 3534160 3407056 3345240 3283423 3221606 ...
 }\if{html}{\out{</div>}}}
 
+\item{populationChangeRates}{Population change rates (both fertility and mortality)}
+
 \item{years}{Vector of years to model}
 
-\item{normalize}{Whether or not to normalize the initial population (default = NULL)}
+\item{normalize}{Whether or not to normalize the initial population
+default = NULL, meaning don't normalize. A numeric value means normalize
+to that value.}
 
 \item{growthFlag}{If FALSE, normalize each year to the same population as
 the initial year (default = TRUE)}
-
-\item{rates}{Population change rates (both fertility and mortality)}
 }
 \value{
 Demographics time-series

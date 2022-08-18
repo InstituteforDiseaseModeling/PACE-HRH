@@ -67,9 +67,11 @@
 #' .. ..@ length: int 101
 #' .. ..@ values: num [1:101] 3534160 3407056 3345240 3283423 3221606 ...
 #' ```
-#' @param rates Population change rates (both fertility and mortality)
+#' @param populationChangeRates Population change rates (both fertility and mortality)
 #' @param years Vector of years to model
-#' @param normalize Whether or not to normalize the initial population (default = NULL)
+#' @param normalize Whether or not to normalize the initial population
+#' default = NULL, meaning don't normalize. A numeric value means normalize
+#' to that value.
 #' @param growthFlag If FALSE, normalize each year to the same population as
 #' the initial year (default = TRUE)
 #'
