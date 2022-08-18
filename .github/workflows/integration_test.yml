@@ -1,9 +1,12 @@
 name: EHEP Integration Tests
 # This job is used for all non-unit tests
 on:
-  pull_request::
+  # todo:  we need to decide later if these tests are only run on releases
+  pull_request:
     branches:
       - "main"
+    paths-ignore:
+      - 'ehep/**'  
 jobs:
   install:
     runs-on: ubuntu-latest
