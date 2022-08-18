@@ -1,0 +1,28 @@
+name: EHEP Integration Tests
+# This job is used for all non-unit tests
+on:
+  pull_request::
+    branches:
+      - "main"
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    container:
+      image: mewu/rimage
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install package
+        run: |
+          # todo: we may want to test using install_github when E2E tesst are available
+          # Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always")'
+      - name: Ensure validation tool is working
+        run: |
+          Rscript -e'testthat::test_dir("validation/tests")'
+      - name: Check input spreadsheet
+        run: |
+          Rscript -e 'source("validation/ValidateInput.R"); ValidateInputExcelFileContent("config/R Model Inputs.xlsx")'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: log
+     
