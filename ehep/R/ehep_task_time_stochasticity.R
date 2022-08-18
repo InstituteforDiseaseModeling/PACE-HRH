@@ -1,9 +1,9 @@
-#' Apply Stochasticisity To Select Task Parameters
+#' Apply Stochasticity To Select Task Parameters
 #'
 #' @param tasks Task parameter value matrix
 #'
 #' @return Adjusted task parameters matrix
-generateTaskParameterEpsilons <- function(tasks){
+varyTaskValues <- function(tasks){
   pars <- GPE$stochasticParams
 
   # Tweak MinsPerContact value

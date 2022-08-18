@@ -37,3 +37,46 @@ Data table.
 Combine a family of suite results into one big file, and join with scenario
 and task value data for further data analysis.
 }
+\examples{
+\dontrun{
+resultsFiles <- c("results/results_BasicModel_Jul04.csv",
+                  "results/results_ComprehensiveModel_Jul04.csv",
+                  "results/results_MergedModel_Jul04.csv")
+
+DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
+
+
+funcFilter1 <- function(dt){
+  dt <- subset(dt, (Trial_num == 2))
+  return(dt)
+}
+
+funcFilter2 <- function(dt){
+  keep <- vector(mode = "logical", length = nrow(dt))
+  keep[] <- TRUE
+
+  mask <- dt$DeliveryModel == "Merged" & (dt$Task_ID \%in\% c("Overhead_staff3", "Overhead_staff4", "Overhead_staff5", "Overhead_staff6"))
+  keep[mask] <- FALSE
+
+  mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID \%in\% c("Overhead_staff3") & dt$Year < 2025)
+  keep[mask] <- FALSE
+
+  mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID \%in\% c("Overhead_staff4") & dt$Year < 2030)
+  keep[mask] <- FALSE
+
+  mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID \%in\% c("Overhead_staff5", "Overhead_staff6"))
+  keep[mask] <- FALSE
+
+  mask <- dt$DeliveryModel == "Comprehensive" & (dt$Task_ID \%in\% c("Overhead_staff3", "Overhead_staff4") & dt$Year < 2025)
+  keep[mask] <- FALSE
+
+  dt <- dt[keep]
+  return(dt)
+}
+
+DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles,
+                                       preProcFunc = funcFilter1,
+                                       postProcFunc = funcFilter2)
+}
+
+}

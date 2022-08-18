@@ -29,29 +29,13 @@ RunExperiment <- function(debug = FALSE){
   results <- list()
 
   # STEP 1 - BUILD POPULATION DEMOGRAPHICS
-  pcp <- EXP$populationChangeParameters
-
-  # Convert the initial population data into a dataframe suitable to pass
-  # to the ComputeDemographicsProjection function.
-  popData <- EXP$initialPopulation
-
-  initialPopulationDf <- data.frame(
-    Age = popData$age,
-    Female = popData$female@values,
-    Male = popData$male@values,
-    Total = popData$total@values
+  EXP$demographics <- ComputePopulationProjection(
+    EXP$initialPopulation,
+    EXP$populationChangeRates,
+    GPE$years,
+    normalize = scenario$BaselinePop,
+    growthFlag = scenario$o_PopGrowth
   )
-
-  EXP$demographics <-
-    ComputeDemographicsProjection(
-      initialPopulationDf,
-      EXP$fertilityRatesMatrix,
-      EXP$mortalityRatesMatrix,
-      GPE$years,
-      normalize = scenario$BaselinePop,
-      growthFlag = scenario$o_PopGrowth,
-      debug = TRUE
-    )
 
   # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
   taskIds <- which(

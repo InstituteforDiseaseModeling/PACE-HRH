@@ -7,7 +7,8 @@
 InitializeSeasonality(...)
 }
 \arguments{
-\item{sheetName}{Sheet name from the model input Excel file}
+\item{...}{Parameters passed through to \code{\link[=loadSeasonalityCurves]{loadSeasonalityCurves()}} and
+\code{\link[=loadSeasonalityOffsets]{loadSeasonalityOffsets()}}}
 }
 \value{
 NULL (invisible)
