@@ -419,7 +419,7 @@ PlotMortalityRates <- function(ratesMatrix, year){
 
 #' Plot Fertility Rates
 #'
-#' @param ratesMatrix Matrix of banded fertility rates versus years
+#' @param populationRates Population rates list, as returned by \code{RunExperiments()}
 #' @param year Year
 #'
 #' @return ggplot grob
@@ -434,18 +434,53 @@ PlotMortalityRates <- function(ratesMatrix, year){
 #' @importFrom ggplot2 scale_color_manual
 #' @importFrom tidyr pivot_longer
 #'
-PlotFertilityRates <- function(ratesMatrix, year){
-  rates <- explodeFertilityRates(as.vector(ratesMatrix[, as.character(year)]))
-  rates$Age <- GPE$ages
-  x <- tidyr::pivot_longer(as.data.frame(rates), cols = c("Female", "Male"), names_to = "Sex", values_to = "Rate")
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' g <- ehep::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
+#' print(g)
+#' }
+PlotFertilityRates <- function(populationRates, year){
+  rates <- .explodeRates(populationRates, year)
+
+  df <- as.data.frame(rates)
+  df$Age <- GPE$ages
+  dff <-
+    tidyr::pivot_longer(
+      df,
+      cols = c(
+        "femaleFertility",
+        "maleFertility",
+        "femaleMortality",
+        "maleMortality"
+      ),
+      names_to = "Sex",
+      values_to = "Rate"
+    )
+
+  dff <- dff[dff$Sex %in% c("femaleFertility", "maleFertility"),]
 
   titleStr <- paste("Fertility Rates (", year, ")", sep = "")
 
-  g <- ggplot(x, aes(x = Age, y = Rate, color = Sex))
+  g <- ggplot(dff, aes(x = Age, y = Rate, color = Sex))
   g <- g + scale_color_manual(values = c(.colorF, .colorM))
+  g <- g + theme(legend.position = "none")
   g <- g + geom_point(alpha = 0.5)
   g <- g + facet_grid(cols = vars(Sex))
-  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Fertility Rate")
+  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Rate")
   return(g)
 }
 

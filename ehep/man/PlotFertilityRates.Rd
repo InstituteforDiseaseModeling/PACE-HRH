@@ -4,10 +4,10 @@
 \alias{PlotFertilityRates}
 \title{Plot Fertility Rates}
 \usage{
-PlotFertilityRates(ratesMatrix, year)
+PlotFertilityRates(populationRates, year)
 }
 \arguments{
-\item{ratesMatrix}{Matrix of banded fertility rates versus years}
+\item{populationRates}{Population rates list, as returned by \code{RunExperiments()}}
 
 \item{year}{Year}
 }
@@ -16,4 +16,24 @@ ggplot grob
 }
 \description{
 Plot Fertility Rates
+}
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = 100)
+
+g <- ehep::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
+print(g)
+}
 }
