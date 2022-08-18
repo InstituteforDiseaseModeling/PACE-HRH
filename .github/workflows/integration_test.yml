@@ -6,7 +6,7 @@ on:
     branches:
       - "main"
     paths-ignore:
-      - 'ehep/**'  
+      - 'ehep/**'
 jobs:
   install:
     runs-on: windows-latest
@@ -21,16 +21,21 @@ jobs:
           r-version: ${{ matrix.R }}
       - name: Install devtools
         run: |
-          Rscript -e "install.packages('devtools')"  
+          Rscript -e "install.packages('devtools')"
+      - name: Check workingdir
+        working-directory: $GITHUB_WORKSPACE
+        run: |
+          echo $GITHUB_WORKSPACE
       - name: Setup Dependency
         working-directory: 'tests/setup'
         run: |
-          Rscript install_dep_for_tests.R        
+          Rscript install_dep_for_tests.R
       - name: Install packages
         run: |
           # todo: using install_github when E2E tesst are available
           # Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always", repos = NULL, build=TRUE)'
       - name: Ensure validation tool is working
+        working-directory: $GITHUB_WORKSPACE
         run: |
           Rscript -e 'testthat::test_dir("validation/tests", package=NULL)'
       - name: Check input spreadsheet
@@ -40,4 +45,3 @@ jobs:
         with:
           name: validation-results
           path: log
-     
