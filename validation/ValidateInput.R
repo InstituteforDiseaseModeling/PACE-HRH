@@ -1,3 +1,4 @@
+options(install.packages.check.source = "no")
 packages = c("validate","tidyverse", "dplyr","ggplot2")
 for(i in packages){
   if(!require(i, character.only = T)){
