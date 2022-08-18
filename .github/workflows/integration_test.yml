@@ -1,0 +1,42 @@
+name: EHEP Integration Tests
+# This job is used for all non-unit tests
+on:
+  # todo:  we need to decide later if these tests are only run on releases
+  pull_request:
+    branches:
+      - "main"
+    paths-ignore:
+      - 'ehep/**'
+jobs:
+  install:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.R }}
+      - name: Install devtools
+        run: |
+          Rscript -e "install.packages('devtools')"
+      - name: Setup Dependency
+        working-directory: 'tests/setup'
+        run: |
+          Rscript install_dep_for_tests.R
+      - name: Install packages
+        run: |
+          # todo: using install_github when E2E tesst are available
+          # Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always", repos = NULL, build=TRUE)'
+      - name: Ensure validation tool is working
+        run: |
+          Rscript -e "testthat::test_file(file.path(getwd(), 'validation/tests/test_ValidateInput.R'))"
+      - name: Check input spreadsheet
+        run: |
+          Rscript -e "source('validation/ValidateInput.R'); ValidateInputExcelFileContent('config/R Model Inputs.xlsx')"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: log

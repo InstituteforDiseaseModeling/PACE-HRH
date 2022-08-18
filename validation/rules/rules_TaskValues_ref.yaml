@@ -1,0 +1,13 @@
+---
+options:
+  lin.eq.eps: 1e-08
+  lin.ineq.eps: 1e-08
+---
+rules:
+- expr: '(!is.na(AnnualDeltaRatio) & ! is.na(StartingRateInPop)) | !is.na(ValueCode) |  !is.na(References.Notes)'
+  name: Missing_parameter_value
+  label: Missing_parameter_value
+  description: |
+    Missing parameters must be explained by value code
+  meta:
+    severity: info
