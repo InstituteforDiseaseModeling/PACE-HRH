@@ -28,16 +28,11 @@ SaveBaseSettings <- function(scenarioName = ""){
 
   popValsSheet <- BVE$scenario$sheet_PopValues
 
-  if (!is.blank(popValsSheet)){
-    GPE$populationChangeParameters <- loadPopulationChangeParameters(popValsSheet)
+  if (!is.blank(popValsSheet)) {
+    BVE$populationChangeRates <- loadPopulationChangeRates(popValsSheet)
   } else {
-    GPE$populationChangeParameters <- loadPopulationChangeParameters()
+    BVE$populationChangeRates <- loadPopulationChangeRates()
   }
-
-  if (!is.null(GPE$populationChangeParameters)) {
-    BVE$populationChangeParameters <- GPE$populationChangeParameters
-  }
-
 
   # Load Seasonality parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
@@ -49,9 +44,6 @@ SaveBaseSettings <- function(scenarioName = ""){
   } else {
     GPE$seasonalityCurves <- loadSeasonalityCurves()
   }
-
-
-
 
   if (exists("initialPopulation", where = GPE)){
     BVE$initialPopulation <- GPE$initialPopulation
@@ -159,18 +151,20 @@ SaveBaseSettings <- function(scenarioName = ""){
 ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
-  mf <- generateFertilityRatesMatrix()
-  mm <- generateMortalityRatesMatrix()
-  mp <- generatePrevalenceRatesMatrix()
-  tp <- generateTaskParameterEpsilons(BVE$taskParameters)
+  pcr <- BVE$populationChangeRates
+
+  for (label in names(pcr)){
+    m <- generateRatesMatrix(label)
+    pcr[[label]]$ratesMatrix <- m
+  }
+
+  EXP$populationChangeRates <- pcr
 
   EXP$populationChangeParameters <- BVE$populationChangeParameters
   EXP$initialPopulation <- BVE$initialPopulation
 
-  EXP$taskParameters <- tp
-  EXP$fertilityRatesMatrix = mf
-  EXP$mortalityRatesMatrix = mm
-  EXP$prevalenceRatesMatrix = mp
+  EXP$taskParameters <- varyTaskValues(BVE$taskParameters)
+  EXP$prevalenceRatesMatrix = generatePrevalenceRatesMatrix()
 
   invisible(NULL)
 }

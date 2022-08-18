@@ -12,6 +12,10 @@ PlotResultsPopulationCurve(results, trial = 1, year = 2020, sex = "f", ...)
 \item{trial}{Trail number (index into the results list)}
 
 \item{year}{Year in trial timeseries to plot}
+
+\item{sex}{Sex to plot (from c("m", "M", "f", "F"), defaults to female)}
+
+\item{...}{Parameters passed to \code{\link[=PlotPopulationCurve]{PlotPopulationCurve()}}}
 }
 \value{
 ggplot grob, or NULL on error

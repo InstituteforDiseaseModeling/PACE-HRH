@@ -7,7 +7,7 @@
 InitializeHealthcareTasks(...)
 }
 \arguments{
-\item{sheetName}{Sheet name from the model input Excel file}
+\item{...}{Parameters passed through to \code{\link[=loadTaskParameters]{loadTaskParameters()}}}
 }
 \value{
 NULL (invisible)

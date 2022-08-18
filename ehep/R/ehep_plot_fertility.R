@@ -19,15 +19,9 @@
   return(.defaultFPlotType)
 }
 
-#' Extract And Combine Fertility Matrices Across Multiple Trials
-#'
-#' @param results Results list (as returned by \code{RunExperiments()})
-#'
-#' @return Data frame of fertility rates across all trials
-#'
 .combineFRatesMatrices <- function(results) {
   l <- lapply(results, function(r) {
-    df <- as.data.frame(r$PopulationParams$FRatesMatrix)
+    df <- as.data.frame(r$PopulationRates[["femaleFertility"]]$ratesMatrix)
     cols <- names(df)
     df$Label <- row.names(df)
     df <-
@@ -41,6 +35,7 @@
   })
 
   df <- data.table::rbindlist(l)
+  df <- subset(df, !startsWith(df$Label, "NA"))
   df$LogRate <- log10(df$Rate)
 
   # Label                Year Rate        LogRate
@@ -56,7 +51,10 @@
 #' Plot Fertility Rates Statistics
 #'
 #' @param results Results list (as returned by \code{RunExperiments()})
-#' @param se Whether to show standard error intervals, or projection intervals
+#' @param se Whether to show standard error or standard deviation confidence intervals.
+#' Note: the \code{se} parameter does not apply to the "boxplot" type.
+#' @param type Plot type (options = "lines", "ribbon", "boxplot")
+#' @param log Use log scale for rates (default = TRUE). Applies only to "boxplot" type.
 #'
 #' @return ggplot grob
 #' @export
@@ -74,8 +72,11 @@
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 ylab
 #' @importFrom ggplot2 xlab
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize
 #'
-PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines") {
+PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = TRUE) {
   if (is.null(results)) {
     return(NULL)
   }
@@ -91,7 +92,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines") {
   df <- .combineFRatesMatrices(results)
 
   if (type == "boxplot") {
-    return(.fRatesBoxPlot(df))
+    return(.fRatesBoxPlot(df, log))
   } else if (type == "ribbon") {
     return(.fRatesRibbonPlot(df, se, n))
   } else if (type == "lines") {
@@ -101,38 +102,36 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines") {
   }
 }
 
-#' Plot Fertility Rates Statistics As Box Plot
-#'
-#' @param results Results list (as returned by \code{RunExperiments()})
-#'
-#' @return ggplot grob
-#'
-.fRatesBoxPlot <- function(df) {
-  g <- ggplot(df, aes(
-    x = Year,
-    y = LogRate,
-    color = Label,
-    group = Year))
+.fRatesBoxPlot <- function(df, log) {
+  if (log){
+    g <- ggplot(df, aes(
+      x = Year,
+      y = LogRate,
+      color = Label,
+      group = Year))
+  } else {
+    g <- ggplot(df, aes(
+      x = Year,
+      y = Rate,
+      color = Label,
+      group = Year))
+  }
+
   g <- g + geom_boxplot()
-  g <- g + facet_wrap(vars(Label))
   g <- g + scale_x_discrete(breaks = c(2020, 2030, 2040))
   g <- g + theme(legend.position = "none")
-  g <- g + ylab("log10(Rate)") + xlab("Year")
+
+  if (log){
+    g <- g + facet_wrap(vars(Label))
+    g <- g + ylab("log10(Rate)") + xlab("Year")
+  } else {
+    g <- g + facet_wrap(vars(Label), scales = "free_y")
+    g <- g + ylab("Rate") + xlab("Year")
+  }
 
   return(g)
 }
 
-#' Plot Fertility Rates Statistics As Ribbon Plot
-#'
-#' @param results Results list (as returned by \code{RunExperiments()})
-#' @param se Whether to show standard error intervals
-#' @param trials Number of trials
-#'
-#' @return ggplot grob
-#'
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
-#'
 .fRatesRibbonPlot <- function(df, se, trials) {
   dff <- df %>% group_by(Label,Year) %>% summarize(m = mean(LogRate), sd = sd(LogRate))
 
@@ -162,17 +161,6 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines") {
   return(g)
 }
 
-#' Plot Fertility Rates Statistics As Error Bars Plot
-#'
-#' @param results Results list (as returned by \code{RunExperiments()})
-#' @param se Whether to show standard error intervals
-#' @param trials Number of trials
-#'
-#' @return ggplot grob
-#'
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
-#'
 .fRatesLinesPlot <- function(df, se, trials) {
   dff <- df %>% group_by(Label,Year) %>% summarize(m = mean(LogRate), sd = sd(LogRate))
 

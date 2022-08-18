@@ -88,7 +88,8 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
 #' Read the healthcare task information from the model inputs Excel file, and
 #' save to a location in the global package environment.
 #'
-#' @param sheetName Sheet name from the model input Excel file
+#' @md
+#' @param ... Parameters passed through to [loadTaskParameters()]
 #'
 #' @export
 #'

@@ -1,6 +1,6 @@
 # #' @exportMethod setValue
 #'
-setGeneric(
+methods::setGeneric(
   name = "setValue",
   def = function(object, label, value)
   {
@@ -16,7 +16,7 @@ setGeneric(
 #'
 #' @return Updated \code{PopulationChangeParameters} object
 #'
-setMethod(
+methods::setMethod(
   f = "setValue",
   signature = c("PopulationChangeParameters", "character", "numeric"),
   definition = function(object, label, value)

@@ -2,6 +2,9 @@ library(ehep)
 
 withr::local_dir("..")
 
+# Test that the correct sheets are read, based on the sheet names in the
+# scenarios record.
+
 test_that("Experiment control: basic read from Excel", {
   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
@@ -56,10 +59,3 @@ test_that("Experiment control: basic read from Excel", {
   e$populationChangeParameters <- NULL
   e$seasonalityCurves <- NULL
 })
-
-# test_that("Experiment control: Epsilon layer initialization", {
-#   testthat::expect_invisible(ehep::InitializeEpsilons())
-#   testthat::expect_false(is.null(ehep:::populationChangeParameters))
-#   testthat::expect_false(is.null(ehep:::initialPopulation))
-#   testthat::expect_false(is.null(ehep:::taskParameters))
-# })

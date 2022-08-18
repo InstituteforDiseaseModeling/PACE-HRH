@@ -62,6 +62,10 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 #' @param results Results list (as returned by \code{RunExperiments()})
 #' @param trial Trail number (index into the results list)
 #' @param year Year in trial timeseries to plot
+#' @param sex Sex to plot (from c("m", "M", "f", "F"), defaults to female)
+#' @param ... Parameters passed to [PlotPopulationCurve()]
+#'
+#' @md
 #'
 #' @return ggplot grob, or NULL on error
 #' @export
@@ -396,6 +400,7 @@ PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
 #' @importFrom ggplot2 vars
 #' @importFrom ggplot2 ggtitle
 #' @importFrom ggplot2 scale_color_manual
+#' @importFrom tidyr pivot_longer
 #'
 PlotMortalityRates <- function(ratesMatrix, year){
   rates <- explodeMortalityRates(as.vector(ratesMatrix[, as.character(year)]))
@@ -427,6 +432,7 @@ PlotMortalityRates <- function(ratesMatrix, year){
 #' @importFrom ggplot2 vars
 #' @importFrom ggplot2 ggtitle
 #' @importFrom ggplot2 scale_color_manual
+#' @importFrom tidyr pivot_longer
 #'
 PlotFertilityRates <- function(ratesMatrix, year){
   rates <- explodeFertilityRates(as.vector(ratesMatrix[, as.character(year)]))
