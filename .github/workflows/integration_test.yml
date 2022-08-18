@@ -20,7 +20,7 @@ jobs:
           # Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always")'
       - name: Ensure validation tool is working
         run: |
-          Rscript -e'testthat::test_dir("validation/tests")'
+          Rscript -e 'testthat::test_dir("validation/tests")'
       - name: Check input spreadsheet
         run: |
           Rscript -e 'source("validation/ValidateInput.R"); ValidateInputExcelFileContent("config/R Model Inputs.xlsx")'
