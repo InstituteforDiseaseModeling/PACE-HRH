@@ -19,7 +19,6 @@
   return(.defaultFPlotType)
 }
 
-#' @importFrom tidyr pivot_longer
 .combineFRatesMatrices <- function(results) {
   l <- lapply(results, function(r) {
     df <- as.data.frame(r$PopulationRates[["femaleFertility"]]$ratesMatrix)
@@ -52,7 +51,8 @@
 #' Plot Fertility Rates Statistics
 #'
 #' @param results Results list (as returned by \code{RunExperiments()})
-#' @param se Whether to show standard error or standard deviation confidence intervals
+#' @param se Whether to show standard error or standard deviation confidence intervals.
+#' Note: the \code{se} parameter does not apply to the "boxplot" type.
 #' @param type Plot type (options = "lines", "ribbon", "boxplot")
 #' @param log Use log scale for rates (default = TRUE). Applies only to "boxplot" type.
 #'
@@ -72,6 +72,9 @@
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 ylab
 #' @importFrom ggplot2 xlab
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize
 #'
 PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = TRUE) {
   if (is.null(results)) {
@@ -129,8 +132,6 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   return(g)
 }
 
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
 .fRatesRibbonPlot <- function(df, se, trials) {
   dff <- df %>% group_by(Label,Year) %>% summarize(m = mean(LogRate), sd = sd(LogRate))
 
@@ -160,8 +161,6 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   return(g)
 }
 
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
 .fRatesLinesPlot <- function(df, se, trials) {
   dff <- df %>% group_by(Label,Year) %>% summarize(m = mean(LogRate), sd = sd(LogRate))
 

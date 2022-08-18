@@ -85,7 +85,9 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
 #' Read the healthcare seasonality information from the model inputs Excel file, and
 #' save to a location in the global package environment.
 #'
-#' @param sheetName Sheet name from the model input Excel file
+#' @md
+#' @param ... Parameters passed through to [loadSeasonalityCurves()] and
+#' [loadSeasonalityOffsets()]
 #'
 #' @export
 #'

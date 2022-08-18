@@ -62,6 +62,10 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 #' @param results Results list (as returned by \code{RunExperiments()})
 #' @param trial Trail number (index into the results list)
 #' @param year Year in trial timeseries to plot
+#' @param sex Sex to plot (from c("m", "M", "f", "F"), defaults to female)
+#' @param ... Parameters passed to [PlotPopulationCurve()]
+#'
+#' @md
 #'
 #' @return ggplot grob, or NULL on error
 #' @export
