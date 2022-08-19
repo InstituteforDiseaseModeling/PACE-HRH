@@ -1,0 +1,38 @@
+name: EHEP Document testing
+on:
+  push:
+    branches:
+      - "update65"
+
+jobs:
+  build package with doc:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.R }}
+      - name: Install devtools
+        run: |
+          Rscript -e 'install.packages("devtools")'
+      - name: Setup Dependency
+        working-directory: 'tests/setup'
+        run: |
+          Rscript install_dep_for_tests.R
+      - name: Build docs
+        run: |
+          Rscript -e 'install.packages("pkgdown"); pkgdown::build_site(override = list(destination = c("inst/doc")))'
+      - name: Check Vignettes
+        run: |
+          Rscript -e 'devtools::load_all("."); v <- browseVignettes("ehep"); stopifnot(length(v)>0)'
+      - name: Build Binary
+        run: |
+          Rscript -e 'devtools::build(pkg="ehep", binary=TRUE)'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: windows-binary-with-vignettes
+          path: ehep_*.zip

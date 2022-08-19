@@ -77,4 +77,4 @@ Collate:
     'ehep_save_results.R'
     'ehep_sanity_checks.R'
     'ehep_post_process.R'
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
