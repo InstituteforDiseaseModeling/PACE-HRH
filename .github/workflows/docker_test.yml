@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: mewu/rimage
+      image: mewu/rimage:pandoc
     steps:
       - uses: actions/checkout@v2
       - name: Setup Dependency

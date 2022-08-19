@@ -41,7 +41,8 @@ jobs:
       - name: Check Vignettes
         working-directory: 'ehep'
         run: |
-          Rscript -e "devtools::load_all('.'); browseVignettes('ehep')"
+          Rscript -e "devtools::install_local('.', repos=NULL, build_vignettes = TRUE, force=TRUE)"
+          Rscript -e "library(ehep); browseVignettes('ehep')"
           Rscript -e "v <- vignette(package='ehep'); print(length(v))"
           Rscript -e "v <- browseVignettes('ehep'); stopifnot(length(v)>0)"
  
