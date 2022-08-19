@@ -5,7 +5,7 @@ on:
       - "update65"
 
 jobs:
-  build package with doc:
+  build_package_with_doc:
     runs-on: windows-latest
     defaults:
       run:
