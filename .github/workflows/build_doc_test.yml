@@ -18,20 +18,20 @@ jobs:
           r-version: ${{ matrix.R }}
       - name: Install devtools
         run: |
-          Rscript -e 'install.packages("devtools")'
+          Rscript -e "install.packages('devtools')"
       - name: Setup Dependency
         working-directory: 'tests/setup'
         run: |
           Rscript install_dep_for_tests.R
       - name: Build docs
         run: |
-          Rscript -e 'install.packages("pkgdown"); pkgdown::build_site(override = list(destination = c("inst/doc")))'
+          Rscript -e "install.packages('pkgdown'); pkgdown::build_site(override = list(destination = c('inst/doc')))"
       - name: Check Vignettes
         run: |
-          Rscript -e 'devtools::load_all("."); v <- browseVignettes("ehep"); stopifnot(length(v)>0)'
+          Rscript -e "devtools::load_all('.'); v <- browseVignettes('ehep'); stopifnot(length(v)>0)"
       - name: Build Binary
         run: |
-          Rscript -e 'devtools::build(pkg="ehep", binary=TRUE)'
+          Rscript -e "devtools::build(pkg='ehep', binary=TRUE)"
       - uses: actions/upload-artifact@v3
         with:
           name: windows-binary-with-vignettes
