@@ -76,6 +76,40 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarize
 #'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' g <- ehep::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
+#' print(g)
+#'
+#' g <- ehep::PlotFertilityRatesStats(results, type = "boxplot", log = TRUE)
+#' print(g)
+#'
+#' g <- ehep::PlotFertilityRatesStats(results, se = FALSE, type = "lines")
+#' print(g)
+#'
+#' g <- ehep::PlotFertilityRatesStats(results, se = TRUE, type = "lines")
+#' print(g)
+#'
+#' g <- ehep::PlotFertilityRatesStats(results, se = FALSE, type = "ribbon")
+#' print(g)
+#'
+#' g <- ehep::PlotFertilityRatesStats(results, se = TRUE, type = "ribbon")
+#' print(g)
+#' }
 PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = TRUE) {
   if (is.null(results)) {
     return(NULL)
@@ -188,3 +222,5 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
 
   return(g)
 }
+
+
