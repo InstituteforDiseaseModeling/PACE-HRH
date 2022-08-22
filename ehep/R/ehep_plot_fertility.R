@@ -223,4 +223,106 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   return(g)
 }
 
+#' Plot Fertility Rates
+#'
+#' @param populationRates Population rates list, as returned by \code{RunExperiments()}
+#' @param year Year
+#'
+#' @return ggplot grob
+#' @export
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 vars
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 scale_color_manual
+#' @importFrom tidyr pivot_longer
+#'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' g <- ehep::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
+#' print(g)
+#' }
+PlotFertilityRates <- function(populationRates, year){
+  rates <- .explodeRates(populationRates, year)
+
+  df <- as.data.frame(rates)
+  df$Age <- GPE$ages
+  dff <-
+    tidyr::pivot_longer(
+      df,
+      cols = c(
+        "femaleFertility",
+        "maleFertility",
+        "femaleMortality",
+        "maleMortality"
+      ),
+      names_to = "Sex",
+      values_to = "Rate"
+    )
+
+  dff <- dff[dff$Sex %in% c("femaleFertility", "maleFertility"),]
+
+  titleStr <- paste("Fertility Rates (", year, ")", sep = "")
+
+  g <- ggplot(dff, aes(x = Age, y = Rate, color = Sex))
+  g <- g + scale_color_manual(values = c(.colorF, .colorM))
+  g <- g + theme(legend.position = "none")
+  g <- g + geom_point(alpha = 0.5)
+  g <- g + facet_grid(cols = vars(Sex))
+  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Rate")
+  return(g)
+}
+
+#' Plot A Single Pair of Fertility Rates Curves From A Results List
+#'
+#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param trial Trail number (index into the results list)
+#' @param year Year in trial timeseries to plot
+#'
+#' @return ggplot grob, or NULL on error
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' g <- ehep::PlotResultsFertilityRates(results, 49, 2030)
+#' print(g)
+#' }
+PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
+  if (!.validResultsParams(results, trial, year)) {
+    return(NULL)
+  }
+
+  return(PlotFertilityRates(results[[trial]]$PopulationRates, year))
+}
 
