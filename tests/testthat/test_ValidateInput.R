@@ -40,12 +40,12 @@ test_that("Validation capture Success", {
   logdir <- tempdir()
   testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                       outputDir = logdir,
-                                                                      sheetNames = c("TaskValues_ref")))
-  result_file <- paste(logdir, "info_violation_Missing_parameter_value.csv", sep="/")
+                                                                      sheetNames = c("StochasticParameters")))
+  result_file <- paste(logdir, "info_violation_Large_SD_value.csv", sep="/")
   testthat::expect_true(file.exists(result_file))
   violations <- read.csv(result_file)
-  # search for the row that fails Indicator = FH.MN.ANC.1XX
+  # search for the row that fails as expected
   violating_row <- violations %>%
-    dplyr::filter(Indicator == "FH.MN.ANC.1XX")
+    dplyr::filter(Value == "Seasonality ratio to mean")
   testthat::expect_equal(nrow(violating_row ), 1)
 })
