@@ -2,10 +2,12 @@
 title: "Configure the model"
 author: "Jen Schripsema"
 date: '2022-07-27'
-output: 
-    html_document:
-    toc: true
-    number_sections: true
+output: rmarkdown::html_vignette
+vignette: >
+%\VignetteIndexEntry{The results structure}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+    
 ---
 
 ```{r setup, include=FALSE}
