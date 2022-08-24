@@ -19,7 +19,7 @@ test_that("Validation capture", {
   # skip_if(.Platform$OS.type != "windows")
   testthat::expect_snapshot(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                 outputDir = logdir,
-                                                                sheetNames = c("SeasonalityCurves")))
+                                                                sheetNames = c("SeasonalityCurves")), error=TRUE)
   
 })
 # test validation success

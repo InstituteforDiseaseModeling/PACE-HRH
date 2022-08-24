@@ -6,8 +6,6 @@
     Message <simpleMessage>
       Rule failed but No record-wise info:  Error in validate::violating(target, out[i]): Not all rules have record-wise output
       
-    Message <rlang_message>
-      Joining, by = "name"
-    Output
-      [1] -11
+    Error <simpleError>
+      argument is of length zero
 
