@@ -1,0 +1,57 @@
+---
+options:
+  lin.eq.eps: 1e-08
+  lin.ineq.eps: 1e-08
+---
+
+rules:
+- expr: '(!is.na(AnnualDeltaRatio) & ! is.na(StartingRateInPop)) | !is.na(ValueCode) |  !is.na(References.Notes)'
+  name: Missing_parameter_value
+  label: Missing_parameter_value
+  description: |
+    Missing parameters must be explained by value code
+  meta:
+    severity: info
+- expr: 'is.na(RateMultiplier)'
+  name: RateMultiplier
+  label: RateMultiplier
+  description: |
+    RateMultiplier is present
+  meta:
+    severity: info
+- expr: 'if(!is.na(StartingRateInPop)) !is.na(NumContactsPerUnit) | ! is.na(NumContactsAnnual)'
+  name: NumContacts_Frequency
+  label: NumContacts_Frequency
+  description: |
+    if startingRate is present, one of the column with task frequency must be present
+  meta:
+    severity: error
+- expr: 'if(!is.na(StartingRateInPop)) !is.na(MinsPerContact) | ! is.na(References.Notes)'
+  name: MinsPerContact
+  label: MinsPerContact
+  description: |
+    if startingRate is present, either MinsPerContact must have value or notes in reference
+  meta:
+    severity: error
+- expr: 'if(!is.na(StartingRateInPop)) !is.na(Indicator)'
+  name: Indicator
+  label: Indicator
+  description: |
+    if startingRate is present, Indicator must exist
+  meta:
+    severity: error
+- expr: '!is.na(RelevantPop)'
+  name: RelevantPop_missing
+  label: RelevantPop_missing
+  description: |
+    RelevantPop cannot be empty
+  meta:
+    severity: error
+- expr: 'if(!is.na(StartingRateInPop)) RelevantPop!="-"'
+  name: RelevantPop_undefined
+  label: RelevantPop_undefined
+  description: |
+    RelevantPop cannot be '-' if StartingRateInPop is present
+  meta:
+    severity: error
+

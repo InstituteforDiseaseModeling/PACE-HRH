@@ -40,3 +40,4 @@ rules:
     Total_Births seasonality must be 1
   meta:
     severity: error
+

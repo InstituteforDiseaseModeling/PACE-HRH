@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -32,7 +32,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   
   # check all available rules
   if (is.null(sheetNames)){
-    sheetNames <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", list.files("validation/rules"))
+    sheetNames <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", list.files("config/validation/rules"))
   }
   
   dir.create(outputDir, showWarnings = FALSE)
@@ -42,7 +42,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   rules_combined <- data.frame()
   plots <- vector()
   for (i in sheetNames){
-    f = file.path("validation/rules", paste("rules_", i, ".yaml", sep=""))
+    f = file.path("config/validation/rules", paste("rules_", i, ".yaml", sep=""))
     if (!file.exists(f)){
       stop(paste("rule not found for:", i))
     }
@@ -81,18 +81,19 @@ ValidateInputExcelFileContent <- function(inputFile,
   # summary and plot check result
   final_result <- rules_combined %>%
     dplyr::select(c("name", "severity")) %>%
-    dplyr::inner_join(result) %>%
+    inner_join(result) %>%
     dplyr::select(c("name", "severity", "items", "fails", "passes", "expression")) %>%
-    tidyr::pivot_longer(cols=c("passes", "fails"), names_to = "result", values_to = "total") %>%
-    dplyr::mutate(result = dplyr::if_else(severity != 'error' & result == 'fails', severity, result))
+    pivot_longer(cols=c("passes", "fails"), names_to = "result", values_to = "total") %>%
+    mutate(result = dplyr::if_else(severity != 'error' & result == 'fails', severity, result))
   
-  p <- ggplot2::ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
-    ggplot2::geom_bar(stat = "identity") +
-    ggplot2::scale_fill_manual(values = c("passes"="green", "fails"="red", "warning"="yellow", "info"="blue")) +
-    ggplot2::scale_x_continuous(labels=scales::percent) +
-    ggplot2::geom_text(data=subset(final_result,total> 0),ggplot2::aes(label=total, y =name), size=2, position=position_fill()) +
-    ggplot2::ggtitle("Input Spreadsheet Validation Results")
-  ggplot2::ggsave(file.path(outputDir, "input_validation_results.png"), p, width = 160, height = 100, units="mm")
+  outfile <- file.path(outputDir, "input_validation_results.png")
+  p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
+    geom_bar(stat = "identity") +
+    scale_fill_manual(values = c("passes"="green", "fails"="red", "warning"="yellow", "info"="blue")) +
+    scale_x_continuous(labels=scales::percent) +
+    geom_text(data=subset(final_result,total> 0),ggplot2::aes(label=total, y =name), size=2, position=position_fill()) +
+    ggtitle("Input Spreadsheet Validation Results")
+  ggsave(outfile, p, width = 160, height = 100, units="mm")
   
   return (errcode)
 }
@@ -117,7 +118,7 @@ ValidateInputExcelFileContent <- function(inputFile,
           return (df_violations)
         }
       )
-      if (!is.null(df_violations) & length(df_violations) > 0){
+      if (!is.null(df_violations) & nrow(df_violations) > 0){
         # only fail the validation for critical rules
         # severity <- validate::as.data.frame(rules) %>% dplyr::filter(name==i) %>% dplyr::select(severity)
        

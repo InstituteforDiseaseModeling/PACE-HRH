@@ -32,10 +32,10 @@ jobs:
           # Rscript -e 'devtools::install_local("ehep", force=TRUE, upgrade="always", repos = NULL, build=TRUE)'
       - name: Ensure validation tool is working
         run: |
-          Rscript -e "testthat::test_file(file.path(getwd(), 'validation/tests/test_ValidateInput.R'))"
+          Rscript -e "testthat::test_dir('tests/testthat/', reporter = 'stop')"
       - name: Check input spreadsheet
         run: |
-          Rscript -e "source('validation/ValidateInput.R'); ValidateInputExcelFileContent('config/R Model Inputs.xlsx')"
+          Rscript -e "source('src/ValidateInput.R'); ValidateInputExcelFileContent('config/R Model Inputs.xlsx')"
       - uses: actions/upload-artifact@v3
         with:
           name: validation-results

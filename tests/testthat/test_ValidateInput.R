@@ -1,12 +1,12 @@
 context("Test ValidateInputExcelFileContent")
 local_edition(3)
 setwd("../..")
-source("validation/ValidateInput.R")
+source("src/ValidateInput.R")
 
 # test validate no rules
 test_that("Validation no rules", {
   # test should fail if no rule is defined for the sheet
-  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "validation/tests/sample_config/Test_validation.xlsx", sheetNames = c("Total_Pop2")), "rule not found")
+  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx", sheetNames = c("Total_Pop2")), "rule not found")
   
 })
 # test validation capture
@@ -17,7 +17,7 @@ test_that("Validation capture", {
   
   logdir <- tempdir()
   # skip_if(.Platform$OS.type != "windows")
-  testthat::expect_snapshot(ValidateInputExcelFileContent(inputFile = "validation/tests/sample_config/Test_validation.xlsx",
+  testthat::expect_snapshot(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                 outputDir = logdir,
                                                                 sheetNames = c("SeasonalityCurves")))
   
@@ -27,7 +27,7 @@ test_that("Validation capture Success", {
   errCode <- .Success
   
   logdir <- tempdir()
-  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "validation/tests/sample_config/Test_validation2.xlsx",
+  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation2.xlsx",
                                                                       outputDir = logdir,
                                                                       sheetNames = c("SeasonalityCurves")))
   
@@ -38,7 +38,7 @@ test_that("Validation capture Success", {
   errCode <- .Success
   # In this example, rule is set as warning level so violation is not causing error but output files will be available
   logdir <- tempdir()
-  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "validation/tests/sample_config/Test_validation.xlsx",
+  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                       outputDir = logdir,
                                                                       sheetNames = c("TaskValues_ref")))
   result_file <- paste(logdir, "info_violation_Missing_parameter_value.csv", sep="/")

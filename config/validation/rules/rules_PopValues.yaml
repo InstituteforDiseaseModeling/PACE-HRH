@@ -1,0 +1,22 @@
+---
+options:
+  lin.eq.eps: 1e-08
+  lin.ineq.eps: 1e-08
+---
+
+rules:
+- expr: '!is.na("InitValue")'
+  name: InitValue_missing
+  label: InitValue_missing
+  description: |
+    InitValue must not be missing
+  meta:
+    severity: error
+- expr: '!is.na("ChangeRate")'
+  name: ChangeRate_missing
+  label: ChangeRate_missing
+  description: |
+    ChangeRate must not be missing
+  meta:
+    severity: error
+
