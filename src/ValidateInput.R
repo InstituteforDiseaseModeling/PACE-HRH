@@ -102,7 +102,7 @@ ValidateInputExcelFileContent <- function(inputFile,
 .get_violation_rows <- function(out, target, rules, outputDir){
   errcode <- .Success
   for (i in names(out)){
-    severity <- rules[[i]]@meta$severity
+    severity <- meta(rules[i])$severity
     df_violations <- NULL
     if (nrow(validate::values(out[i])) > 1 | validate::values(out[i])[[1]] == FALSE){
       if (severity == "error"){
