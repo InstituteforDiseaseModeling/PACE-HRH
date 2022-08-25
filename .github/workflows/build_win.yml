@@ -64,22 +64,21 @@ jobs:
       run: |
         Rscript install_dep_for_tests.R
     - name: Build docs
-        working-directory: 'ehep'
-        run: |
-          Rscript -e "install.packages('pkgdown'); pkgdown::build_site(override = list(destination = c('inst/doc')))"    
+      working-directory: 'ehep'
+      run: |
+        Rscript -e "install.packages('pkgdown'); pkgdown::build_site(override = list(destination = c('inst/doc')))"    
     - name: Build binary
       run: |
         Rscript -e "devtools::build(pkg='ehep', binary=TRUE)"
     - name: Check vignettes
-        working-directory: 'ehep'
-        run: |
-          Rscript -e "devtools::install_local('.', repos=NULL, build_vignettes = TRUE, force=TRUE); library(ehep)"
-          Rscript -e "v <- vignette(package='ehep'); stopifnot(length(v)>0)"
-          Rscript -e "v <- browseVignettes('ehep'); stopifnot(length(v)>0)"
+      working-directory: 'ehep'
+      run: |
+        Rscript -e "devtools::install_local('.', repos=NULL, build_vignettes = TRUE, force=TRUE); library(ehep)"
+        Rscript -e "v <- vignette(package='ehep'); stopifnot(length(v)>0)"
+        Rscript -e "v <- browseVignettes('ehep'); stopifnot(length(v)>0)"
     - name: Create Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo 'version: ${{ needs.job_check.outputs.version }}'
         gh release create ${{ needs.job_check.outputs.version }} ehep_${{ needs.job_check.outputs.version }}.zip --generate-notes
-    
