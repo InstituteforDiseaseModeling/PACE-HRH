@@ -4,10 +4,9 @@ author: "Jen Schripsema"
 date: '2022-07-27'
 output: rmarkdown::html_vignette
 vignette: >
-%\VignetteIndexEntry{Configure the model}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
-    
+  %\VignetteIndexEntry{Configure the model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
