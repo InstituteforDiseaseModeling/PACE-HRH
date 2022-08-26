@@ -22,3 +22,38 @@ ggplot grob
 \description{
 Plot Fertility Rates Statistics
 }
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = 100)
+
+g <- ehep::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
+print(g)
+
+g <- ehep::PlotFertilityRatesStats(results, type = "boxplot", log = TRUE)
+print(g)
+
+g <- ehep::PlotFertilityRatesStats(results, se = FALSE, type = "lines")
+print(g)
+
+g <- ehep::PlotFertilityRatesStats(results, se = TRUE, type = "lines")
+print(g)
+
+g <- ehep::PlotFertilityRatesStats(results, se = FALSE, type = "ribbon")
+print(g)
+
+g <- ehep::PlotFertilityRatesStats(results, se = TRUE, type = "ribbon")
+print(g)
+}
+}

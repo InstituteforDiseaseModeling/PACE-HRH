@@ -21,7 +21,7 @@ time each cadre spends per year on each healthcare task.
 }
 \examples{
 \dontrun{
-#' resultsFiles <- c("results/results_BasicModel_Jul04.csv",
+resultsFiles <- c("results/results_BasicModel_Jul04.csv",
                   "results/results_ComprehensiveModel_Jul04.csv",
                   "results/results_MergedModel_Jul04.csv")
 

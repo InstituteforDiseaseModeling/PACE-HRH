@@ -290,7 +290,7 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #'
 #' @examples
 #' \dontrun{
-#' #' resultsFiles <- c("results/results_BasicModel_Jul04.csv",
+#' resultsFiles <- c("results/results_BasicModel_Jul04.csv",
 #'                   "results/results_ComprehensiveModel_Jul04.csv",
 #'                   "results/results_MergedModel_Jul04.csv")
 #'
@@ -411,6 +411,17 @@ ComputeCadreAllocations <- function(DR = NULL){
 #'
 #' @return List of computed summary tables
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' resultsFiles <- c("results/results_BasicModel_Jul04.csv",
+#'                   "results/results_ComprehensiveModel_Jul04.csv",
+#'                   "results/results_MergedModel_Jul04.csv")
+#'
+#' DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
+#' CA <- ehep::ComputeCadreAllocations(DR)
+#' stats <- ehep::ComputeSummaryStats(DR,CA)
+#' }
 ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   if (is.null(DR) | is.null(CA)){
     return(NULL)

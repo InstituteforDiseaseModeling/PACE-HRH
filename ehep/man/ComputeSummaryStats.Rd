@@ -17,3 +17,14 @@ List of computed summary tables
 \description{
 Compute Summary Statistics
 }
+\examples{
+\dontrun{
+resultsFiles <- c("results/results_BasicModel_Jul04.csv",
+                  "results/results_ComprehensiveModel_Jul04.csv",
+                  "results/results_MergedModel_Jul04.csv")
+
+DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
+CA <- ehep::ComputeCadreAllocations(DR)
+stats <- ehep::ComputeSummaryStats(DR,CA)
+}
+}

@@ -62,6 +62,22 @@ loadScenarios <- function(sheetName = "Scenarios") {
 #'
 #' @return NULL (invisible)
 #'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#' }
 InitializeScenarios <- function(loadFromExcel = TRUE, ...){
   .checkAndLoadGlobalConfig()
 
