@@ -17,3 +17,12 @@ Updated scenarios table
 \description{
 Delete A Scenario From A Scenarios Table
 }
+\examples{
+\dontrun{
+tbl <- ehep::CreateScenariosTable()
+tbl <- ehep::AddScenario(tbl, "Scenario 1")
+tbl <- ehep::AddScenario(tbl, "Scenario 2")
+tbl <- ehep::AddScenario(tbl, "Scenario 3")
+tbl <- ehep::DeleteScenario(tbl, "Scenario 2")
+}
+}

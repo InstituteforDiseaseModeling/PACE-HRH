@@ -29,3 +29,8 @@ Error code.
 \description{
 Do a set of sanity checks on the input Excel file.
 }
+\examples{
+\dontrun{
+errCode <- ehep::CheckInputExcelFileFormat(outputFile = "config_file_check.txt")
+}
+}

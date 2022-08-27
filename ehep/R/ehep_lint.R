@@ -27,6 +27,11 @@
 #' @importFrom withr with_output_sink
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' errCode <- ehep::CheckInputExcelFileFormat(outputFile = "config_file_check.txt")
+#' }
 CheckInputExcelFileFormat <- function(inputFile = NULL,
                                       outputFile = NULL,
                                       scenarioSheet = "Scenarios",

@@ -8,12 +8,7 @@ test_that("Scenario configuration: basic read from Excel", {
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
-
-  if (exists("scenarios", envir = e)){
-    if (!is.null(e$scenarios)){
-      local_vars("scenarios", envir = e)
-    }
-  }
+  local_vars("scenarios", envir = e)
 
   ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
@@ -23,8 +18,6 @@ test_that("Scenario configuration: basic read from Excel", {
   testthat::expect_false(is.null(e$scenarios))
   testthat::expect_equal(class(e$scenarios), c("tbl_df", "tbl", "data.frame"))
   testthat::expect_equal(names(e$scenarios[ehep:::.scenarioColumnNames]), ehep:::.scenarioColumnNames)
-
-  e$scenarios <- NULL
 })
 
 test_that("Scenario configuration: bad sheet name", {
@@ -33,12 +26,7 @@ test_that("Scenario configuration: bad sheet name", {
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
-
-  if (exists("scenarios", envir = e)){
-    if (!is.null(e$scenarios)){
-      local_vars("scenarios", envir = e)
-    }
-  }
+  local_vars("scenarios", envir = e)
 
   ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
@@ -46,8 +34,6 @@ test_that("Scenario configuration: bad sheet name", {
   testthat::expect_true(is.null(e$scenarios))
   ehep::InitializeScenarios(sheetName = "notasheet")
   testthat::expect_true(is.null(e$scenarios))
-
-  e$scenarios <- NULL
 })
 
 test_that("Scenario configuration: bad Excel file", {
@@ -56,12 +42,7 @@ test_that("Scenario configuration: bad Excel file", {
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
-
-  if (exists("scenarios", envir = e)){
-    if (!is.null(e$scenarios)){
-      local_vars("scenarios", envir = e)
-    }
-  }
+  local_vars("scenarios", envir = e)
 
   ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/notafile.xlsx")
   e$scenarios <- NULL
@@ -70,8 +51,6 @@ test_that("Scenario configuration: bad Excel file", {
   testthat::expect_true(is.null(e$scenarios))
   ehep::InitializeScenarios()
   testthat::expect_true(is.null(e$scenarios))
-
-  e$scenarios <- NULL
 })
 
 test_that("Scenario configuration: non-Excel configuration", {
@@ -80,12 +59,7 @@ test_that("Scenario configuration: non-Excel configuration", {
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
-
-  if (exists("scenarios", envir = e)){
-    if (!is.null(e$scenarios)){
-      local_vars("scenarios", envir = e)
-    }
-  }
+  local_vars("scenarios", envir = e)
 
   ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
@@ -99,6 +73,4 @@ test_that("Scenario configuration: non-Excel configuration", {
   testthat::expect_equal(class(e$scenarios), c("tbl_df", "tbl", "data.frame"))
   testthat::expect_equal(names(e$scenarios[ehep:::.scenarioColumnNames]), ehep:::.scenarioColumnNames)
   testthat::expect_equal(nrow(e$scenarios), 0)
-
-  e$scenarios <- NULL
 })

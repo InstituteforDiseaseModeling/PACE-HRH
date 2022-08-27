@@ -10,6 +10,22 @@
 #'
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#' }
 RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FALSE){
   assertthat::is.number(trials)
   assertthat::assert_that(trials > 1)
