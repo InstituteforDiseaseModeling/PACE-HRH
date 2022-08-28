@@ -21,3 +21,19 @@ ggplot grob
 \description{
 Plot A Family Of Population Curves
 }
+\examples{
+\dontrun{
+g <- ehep::PlotPopulationCurves(
+  results[[26]]$Population[['2020']]$Male,
+  results[[26]]$Population[['2021']]$Male,
+  results[[26]]$Population[['2022']]$Male,
+  results[[26]]$Population[['2023']]$Male,
+  results[[26]]$Population[['2024']]$Male,
+  results[[26]]$Population[['2025']]$Male,
+  xaxis = ehep:::GPE$ages,
+  colors = c("royalblue4", "royalblue3", "royalblue2", "royalblue1"),
+  shapes = c(0, 1, 2, 5)
+)
+print(g)
+}
+}
