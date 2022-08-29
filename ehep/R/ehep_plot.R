@@ -269,6 +269,13 @@ gatherPopulation <- function(pops){
 #'
 #' @return Graphics grob
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' df <- ehep:::gatherPopulation(results[[1]]$Population)
+#' g <- ehep::PlotPyramid(df, 2021)
+#' print(g)
+#' }
 PlotPyramid <- function(df, year){
   df <- df[df$Year == year,]
   df.f <- df[df$Gender == 'F',]
