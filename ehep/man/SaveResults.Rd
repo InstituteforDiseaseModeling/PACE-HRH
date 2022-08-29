@@ -2,24 +2,43 @@
 % Please edit documentation in R/ehep_save_results.R
 \name{SaveResults}
 \alias{SaveResults}
-\title{Save Experiment Results As CSV File}
+\title{Save Individual Experiment Results From A Suite As CSV File}
 \usage{
-SaveResults(results, filepath = "out.csv", scenario, trial, run)
+SaveResults(results, filepath = "out.csv", scenario, trial = NULL, run)
 }
 \arguments{
 \item{results}{Results structure (as returned by [RunExperiments()])}
 
 \item{filepath}{CSV file to write to (default = "out.csv")}
 
-\item{scenario}{TBD}
+\item{scenario}{Name of experiments scenario, as passed to \code{RunExperiments()}}
 
-\item{trial}{TBD}
+\item{trial}{Integer index of trial in results structure}
 
-\item{run}{TBD}
+\item{run}{Run ID}
 }
 \value{
-NULL (invisible)
+CSV file contents as a data table
 }
 \description{
-Save Experiment Results As CSV File
+Save Individual Experiment Results From A Suite As CSV File
+}
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = 100)
+
+ehep::SaveResults(results, scenario = scenario, trial = 3, run = "RunID")
+}
 }
