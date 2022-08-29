@@ -14,8 +14,24 @@ SaveSuiteDemographics(results, filename = "out.csv", breaks = NULL)
 \item{breaks}{Vector of population bucket boundaries}
 }
 \value{
-Generated output as a data frame (invisible)
+Generated output as a data frame.AgeBucket values can be used to
+summarize the output, e.g. with dplyr.
 }
 \description{
 Save Demographics Information From A Suite Of Experiments
+}
+\examples{
+\dontrun{
+scenario <- "ScenarioName"
+
+results <-
+ ehep::RunExperiments(scenarioName = scenario,
+                      trials = 100)
+
+df <- ehep::SaveSuiteDemographics(results, breaks = c(50))
+
+df <- df \%>\%
+  dplyr::group_by(Trial, Year, AgeBucket) \%>\%
+  dplyr::summarize(Female = sum(Female), Male = sum(Male))
+}
 }

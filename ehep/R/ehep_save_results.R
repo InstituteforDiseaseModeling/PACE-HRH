@@ -4,23 +4,46 @@
 #' @param filename CSV file to write to
 #' @param breaks Vector of population bucket boundaries
 #'
-#' @return Generated output as a data frame (invisible)
+#' @return Generated output as a data frame.AgeBucket values can be used to
+#' summarize the output, e.g. with dplyr.
 #' @export
 #'
 #' @importFrom magrittr %>%
+#'
+#' @examples
+#' \dontrun{
+#' scenario <- "ScenarioName"
+#'
+#'results <-
+#'  ehep::RunExperiments(scenarioName = scenario,
+#'                       trials = 100)
+#'
+#' df <- ehep::SaveSuiteDemographics(results, breaks = c(50))
+#'
+#' df <- df %>%
+#'   dplyr::group_by(Trial, Year, AgeBucket) %>%
+#'   dplyr::summarize(Female = sum(Female), Male = sum(Male))
+#' }
 SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) {
   trials <- names(results)
 
   l <- lapply(trials, function(trial){
     trialResults <- results[[trial]]
     popData <- trialResults$Population
-
     .formatTrialDemographics(popData, trial, breaks)
   })
 
-  outdf <- data.table::rbindlist(l)
-  write.csv(outdf, file = filename, row.names = FALSE)
-  return(invisible(outdf))
+  # Combine the list of matrices returned in l, and convert to a data frame
+  outdf <- as.data.frame(do.call(rbind, l))
+
+  # Prune and rename the column set
+  colNames <- c("Trial", "Year", "AgeBucket", "Age", "Female", "Male")
+  outdf <- outdf[1:length(colNames)]
+  names(outdf) <- colNames
+
+  # Write to target file and return
+  data.table::fwrite(outdf, file = filename, row.names = FALSE, na = "NA")
+  return(outdf)
 }
 
 .formatTrialDemographics <- function(popData, trial, breaks) {
@@ -29,61 +52,60 @@ SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) 
   }
 
   ages <- GPE$ages
+  vsize <- length(ages)
 
-  # Bucketize age ranges according to the "breaks" variable
-  ageBucket <- 1:length(ages)
+  # Bucketize age ranges according to the "breaks" variable. Each value is the
+  # end of an age bucket, so breaks = c(50) divides the age range into two
+  # buckets: 0-50, 51-100
+  ageBucket <- 1:vsize
 
-  if (!is.null(breaks)){
-    # Both "ages" and "breaks" need to be in ascending numerical order
-    assertthat::assert_that(identical(breaks, breaks[order(breaks)]))
-    assertthat::assert_that(identical(ages, ages[order(ages)]))
+  if (is.null(breaks)){
+    breaks <- max(ages)
+  }
 
-    # Add a sentinel value to the breaks list
-    breaks <- c(breaks, max(c(max(ages), max(breaks))) + 1)
+  assertthat::assert_that(identical(breaks, breaks[order(breaks)]))
+  assertthat::assert_that(identical(ages, ages[order(ages)]))
 
-    nBucket <- 1L
-    compValue <- breaks[nBucket]
-    for (i in seq_along(ages)){
-      if (ages[i] > compValue){
-        nBucket <- nBucket + 1L
-        compValue <- breaks[nBucket]
-      }
+  # Add a sentinel value to the breaks list
+  breaks <- c(breaks, max(c(max(ages), max(breaks))) + 1)
 
-      ageBucket[i] <- nBucket
+  nBucket <- 1L
+  compValue <- breaks[nBucket]
+  for (i in seq_along(ages)){
+    if (ages[i] > compValue){
+      nBucket <- nBucket + 1L
+      compValue <- breaks[nBucket]
     }
+
+    ageBucket[i] <- nBucket
   }
 
   outdf <- NULL
   yearList <- names(popData)
 
+  trials <- vector(mode = "numeric", length = vsize)
+  years <- vector(mode = "numeric", length = vsize)
+  nas <- vector(mode = "numeric", length = vsize)
+
+  trials[] <- as.numeric(trial)
+  nas[] <- NA_real_
+
+  # The first year has no fertility/mortality rates, so add in some NA values.
+  # We're going to drop all these values later.
+  popData[[1]]$rates.femaleFertility <- nas
+  popData[[1]]$rates.maleFertility <- nas
+  popData[[1]]$rates.femaleMortality <- nas
+  popData[[1]]$rates.maleMortality <- nas
+
   l <- lapply(yearList, function(year) {
     pop <- popData[[year]]
-
-    trials <- replicate(nrow(pop), trial)
-    years <- replicate(nrow(pop), year)
-
-    # Emit population data
-    df <- data.frame(
-      Trial = trials,
-      Year = years,
-      Age = pop$Range,
-      Female = pop$Female,
-      Male = pop$Male
-    )
-
-    if (!is.null(breaks)){
-      df$AgeBucket <- ageBucket
-
-      df <-
-        df %>%
-        dplyr::group_by(Trial, Year, AgeBucket) %>%
-        dplyr::summarize(Female = sum(Female), Male = sum(Male))
-    }
-
-    return(df)
+    m <- as.matrix(pop)
+    years[] <- as.numeric(year)
+    m <- cbind(trials, years, ageBucket, m)
+    return(m)
   })
 
-  return(data.table::rbindlist(l))
+  return(do.call(rbind, l))
 }
 
 #' Save Experiment Results As CSV File
