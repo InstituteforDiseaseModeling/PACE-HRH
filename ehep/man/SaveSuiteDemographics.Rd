@@ -4,17 +4,17 @@
 \alias{SaveSuiteDemographics}
 \title{Save Demographics Information From A Suite Of Experiments}
 \usage{
-SaveSuiteDemographics(results, filename = "out.csv", breaks = NULL)
+SaveSuiteDemographics(results, filepath = "out.csv", breaks = NULL)
 }
 \arguments{
-\item{results}{Results structure}
+\item{results}{Results structure (as returned by \code{\link[=RunExperiments]{RunExperiments()}})}
 
-\item{filename}{CSV file to write to}
+\item{filepath}{CSV file to write to (default = "out.csv")}
 
 \item{breaks}{Vector of population bucket boundaries}
 }
 \value{
-Generated output as a data frame.AgeBucket values can be used to
+Generated output as a data frame. AgeBucket values can be used to
 summarize the output, e.g. with dplyr.
 }
 \description{

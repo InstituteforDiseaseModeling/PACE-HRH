@@ -4,12 +4,12 @@
 \alias{SaveResults}
 \title{Save Experiment Results As CSV File}
 \usage{
-SaveResults(results, filepath, scenario, trial, run)
+SaveResults(results, filepath = "out.csv", scenario, trial, run)
 }
 \arguments{
-\item{results}{TBD}
+\item{results}{Results structure (as returned by [RunExperiments()])}
 
-\item{filepath}{TBD}
+\item{filepath}{CSV file to write to (default = "out.csv")}
 
 \item{scenario}{TBD}
 

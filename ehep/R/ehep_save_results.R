@@ -1,15 +1,16 @@
 #' Save Demographics Information From A Suite Of Experiments
 #'
-#' @param results Results structure
-#' @param filename CSV file to write to
+#' @param results Results structure (as returned by [RunExperiments()])
+#' @param filepath CSV file to write to (default = "out.csv")
 #' @param breaks Vector of population bucket boundaries
 #'
-#' @return Generated output as a data frame.AgeBucket values can be used to
+#' @return Generated output as a data frame. AgeBucket values can be used to
 #' summarize the output, e.g. with dplyr.
 #' @export
 #'
 #' @importFrom magrittr %>%
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' scenario <- "ScenarioName"
@@ -24,7 +25,7 @@
 #'   dplyr::group_by(Trial, Year, AgeBucket) %>%
 #'   dplyr::summarize(Female = sum(Female), Male = sum(Male))
 #' }
-SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) {
+SaveSuiteDemographics <- function(results, filepath = "out.csv", breaks = NULL) {
   trials <- names(results)
 
   l <- lapply(trials, function(trial){
@@ -110,8 +111,8 @@ SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) 
 
 #' Save Experiment Results As CSV File
 #'
-#' @param results TBD
-#' @param filepath TBD
+#' @param results Results structure (as returned by [RunExperiments()])
+#' @param filepath CSV file to write to (default = "out.csv")
 #' @param scenario TBD
 #' @param trial TBD
 #' @param run TBD
@@ -119,7 +120,7 @@ SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) 
 #' @return NULL (invisible)
 #'
 #' @export
-SaveResults <- function(results, filepath, scenario, trial, run){
+SaveResults <- function(results, filepath = "out.csv", scenario, trial, run){
   dfCsv <- data.frame()
 
   rows <- seq(1, dim(results$Clinical$Time)[1])

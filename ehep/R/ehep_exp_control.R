@@ -128,34 +128,6 @@ SaveBaseSettings <- function(scenarioName = ""){
   return(m)
 }
 
-# .createZeroTaskParametersObject <- function(){
-#   m <- matrix(0.0,
-#               nrow = GPE$taskDataDims[1],
-#               ncol = length(.taskDataCols))
-#
-#   # TODO: If necessary, add row/column labels.
-#
-#   return(TaskParameters(values = m))
-# }
-
-# .createZeroPopulationChangeParametersList <- function(){
-#   return(
-#     list(initValues = PopulationChangeParameters(),
-#          changeRates = PopulationChangeParameters())
-#   )
-# }
-
-# .createZeroPopulationPyramidList <- function(){
-#   return(
-#     list(
-#       age = GPE$ages,
-#       female = PopulationPyramid(),
-#       male = PopulationPyramid(),
-#       total = PopulationPyramid()
-#     )
-#   )
-# }
-
 #' Generate A New Set Of Stochastic Variations
 #'
 #' Create the configuration values for an individual model experiment.
