@@ -55,22 +55,15 @@ test_that("Population configuration: InitializePopulation()", {
 
   local_vars("inputExcelFile", envir = e)
   local_vars("initialPopulation", envir = e)
-  local_vars("populationChangeParameters", envir = e)
   local_vars("globalConfigLoaded", envir = e)
 
   testthat::expect_false(e$globalConfigLoaded)
   testthat::expect_null(e$initialPopulation)
-  testthat::expect_null(e$populationChangeParameters)
 
   testthat::expect_invisible(ehep::InitializePopulation())
 
   testthat::expect_true(e$globalConfigLoaded)
   testthat::expect_true(!is.null(e$initialPopulation))
-
-  # 7/30/2022 Population change parameters are now loaded when an experiment
-  # suite is started with the SaveBaseSettings() function, based on the
-  # particular scenario being run.
-  testthat::expect_true(is.null(e$populationChangeParameters))
 
   testthat::expect_true(.validInitPopulation(e$initialPopulation))
 })

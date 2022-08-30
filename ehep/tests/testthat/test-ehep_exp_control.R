@@ -35,7 +35,6 @@ test_that("Experiment control: basic read from Excel", {
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
-  local_vars("populationChangeParameters", envir = e)
   local_vars("seasonalityCurves", envir = e)
 
   ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
@@ -56,9 +55,5 @@ test_that("Experiment control: basic read from Excel", {
 
   # print(ehep:::GPE$taskData)
   # print(ehep:::BVE$taskParameters)
-  #
-  # print(ehep:::GPE$populationChangeParameters)
-  # print(ehep:::BVE$populationChangeParameters)
-  #
   # print(ehep:::GPE$seasonalityCurves)
 })

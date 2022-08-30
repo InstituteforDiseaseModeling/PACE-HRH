@@ -86,7 +86,6 @@ SaveBaseSettings <- function(scenarioName = ""){
 
 .zeroExpBaseVariables <- function(){
   BVE$scenario <- NULL
-  BVE$populationChangeParameters <- NULL
   BVE$initialPopulation <- NULL
   BVE$taskParameters <- NULL
 }
@@ -166,12 +165,9 @@ ConfigureExperimentValues <- function(){
   }
 
   EXP$populationChangeRates <- pcr
-
-  EXP$populationChangeParameters <- BVE$populationChangeParameters
   EXP$initialPopulation <- BVE$initialPopulation
-
   EXP$taskParameters <- varyTaskValues(BVE$taskParameters)
-  EXP$prevalenceRatesMatrix = generatePrevalenceRatesMatrix()
+  EXP$prevalenceRatesMatrix <- generatePrevalenceRatesMatrix()
 
   return(invisible(NULL))
 }

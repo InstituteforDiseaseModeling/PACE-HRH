@@ -38,6 +38,7 @@ GPE$taskTypes <- c("Clinical",
                    "NonProductive")
 
 GPE$initialPopulation <- NULL
-GPE$populationChangeParameters <- NULL
 GPE$taskData <- NULL
 GPE$scenarios <- NULL
+GPE$populationLabels <- NULL
+
