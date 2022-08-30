@@ -10,8 +10,6 @@
 #' Time - annual task times in minutes
 #' N - number of times task was performed
 #'
-#' @export
-#'
 TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   tp <- EXP$taskParameters
 
@@ -116,8 +114,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
 #' Time - annual task times in minutes
 #' N - number of times task was performed
 #' NULL if the list of task indices is blank
-#'
-#' @export
 #'
 TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   if (length(taskIDs) == 0){
@@ -285,8 +281,8 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   if (label == "men 60-69") {
     return(sum(pop$Male[61:70]))
   }
-  
-  
+
+
   traceMessage(paste("Unknown population group ", label, sep = ""))
   return(0L)
 }

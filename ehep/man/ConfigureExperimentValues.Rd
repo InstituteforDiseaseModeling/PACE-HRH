@@ -12,3 +12,23 @@ NULL (invisible)
 \description{
 Create the configuration values for an individual model experiment.
 }
+\examples{
+\dontrun{
+library(ehep)
+ehep::Trace(TRUE)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+set.seed(54321)
+
+scenarioData <- SaveBaseSettings(scenario)
+ConfigureExperimentValues()
+results <- RunExperiment()
+}
+}

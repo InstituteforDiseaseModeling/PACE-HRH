@@ -21,3 +21,23 @@ ggplot grob
 \description{
 Plot A Single Population Curve
 }
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = 100)
+
+ehep::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
+}
+
+}

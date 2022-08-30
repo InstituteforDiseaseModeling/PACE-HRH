@@ -12,3 +12,9 @@ Blank scenarios table
 \description{
 Create A New Scenarios Table
 }
+\examples{
+\dontrun{
+tbl <- ehep::CreateScenariosTable()
+tbl <- ehep::AddScenario(tbl, "Scenario 1")
+}
+}

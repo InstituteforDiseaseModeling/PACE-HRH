@@ -46,3 +46,33 @@ Demographics time-series
 Use an initial population pyramid and population change rates
 to predict future population pyramids.
 }
+\examples{
+\dontrun{
+library(ehep)
+ehep::Trace(TRUE)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+set.seed(54321)
+
+scenarioData <- SaveBaseSettings(scenario)
+ConfigureExperimentValues()
+
+exp <- ehep:::EXP
+gpe <- ehep:::GPE
+
+population <- ComputePopulationProjection(
+  exp$initialPopulation,
+  exp$populationChangeRates,
+  gpe$years,
+  normalize = scenarioData$BaselinePop,
+  growthFlag = scenarioData$o_PopGrowth
+)
+}
+}

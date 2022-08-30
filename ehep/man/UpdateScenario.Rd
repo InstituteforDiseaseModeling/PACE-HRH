@@ -39,3 +39,10 @@ Allowed fields (in the ... arguments):
 \item \strong{Geography_dontedit} (character)
 }
 }
+\examples{
+\dontrun{
+tbl <- ehep::CreateScenariosTable()
+tbl <- ehep::AddScenario(tbl, "Scenario 1", HrsPerWeek = 35)
+tbl <- ehep::UpdateScenario(tbl, "Scenario 1", WeeksPerYr = 50, HrsPerWeek = 41)
+}
+}

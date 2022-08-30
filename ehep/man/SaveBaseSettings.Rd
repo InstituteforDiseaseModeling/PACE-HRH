@@ -16,3 +16,18 @@ Scenario information, or NULL if the scenario is invalid
 Copy configuration parameters from the Global Package Environment to the
 Base Values Environment.
 }
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+result <- ehep::SaveBaseSettings(scenario)
+}
+}

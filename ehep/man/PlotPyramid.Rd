@@ -17,3 +17,10 @@ Graphics grob
 \description{
 Plot A Single Population Pyramid
 }
+\examples{
+\dontrun{
+df <- ehep:::gatherPopulation(results[[1]]$Population)
+g <- ehep::PlotPyramid(df, 2021)
+print(g)
+}
+}
