@@ -34,13 +34,19 @@ test_that("Experiment control: basic read from Excel", {
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
+
+  local_vars("initialPopulation", envir = e)
+  local_vars("populationLabels", envir = e)
   local_vars("scenarios", envir = e)
   local_vars("seasonalityCurves", envir = e)
+  local_vars("seasonalityOffsets", envir = e)
 
   ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
 
+  ehep::InitializePopulation()
   ehep::InitializeScenarios()
+
   testthat::expect_true(!is.null(e$scenarios))
 
   scenarioName <- "TEST_CustomSheets_1"
@@ -51,7 +57,7 @@ test_that("Experiment control: basic read from Excel", {
   testthat::expect_true(!is.null(result))
   testthat::expect_true(result$UniqueID == scenarioName)
 
-  print("TBD TBD TBD")
+#  print("TBD TBD TBD")
 
   # print(ehep:::GPE$taskData)
   # print(ehep:::BVE$taskParameters)

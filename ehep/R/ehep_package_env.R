@@ -40,5 +40,7 @@ GPE$taskTypes <- c("Clinical",
 GPE$initialPopulation <- NULL
 GPE$taskData <- NULL
 GPE$scenarios <- NULL
+GPE$seasonalityCurves <- NULL
+GPE$seasonalityOffsets <- NULL
 GPE$populationLabels <- NULL
 

@@ -16,13 +16,10 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
   assertthat::has_name(popData, "Male")
   assertthat::has_name(popData, "Female")
 
-  # For consistency we use the integer range 0:100 to label age buckets. The
-  # character-string age bucket labels read from the model inputs file are saved
-  # for plotting, etc
+  # For consistency we use the integer range 0:100 to label age buckets.
   assertthat::assert_that(length(popData$Male) == length(popData$Female))
   assertthat::assert_that(length(popData$Male) == length(popData$Age))
   assertthat::assert_that(length(popData$Age) == length(GPE$ages))
-  GPE$ageLabels <- popData$Age
 
   male <- PopulationPyramid()
   female <- PopulationPyramid()
@@ -62,6 +59,36 @@ loadPopulationChangeParameters <- function(sheetName = "PopValues"){
   return(popValues)
 }
 
+.popLabelRawColumns <-
+  c("Relevant Population Labels", "Male", "Female", "Starting Age", "Ending Age")
+
+.popLabelColumns <-
+  c("Labels", "Male", "Female", "Start", "End")
+
+loadPopulationLabels <- function(sheetName = "Lookup"){
+  suppressMessages(
+    df <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  )
+
+  # TODO: include more explicit try-catch error handling. As is, when the read
+  # fails, GPE$populationLabels stays NULL, which eventually triggers a fatal
+  # error when RunExperiments() is called.
+
+  # Remove blank columns
+  df <- df[,apply(df,2,function(x){any(!is.na(x))})]
+  # Remove blank rows
+  df <- df[apply(df,1,function(x){any(!is.na(x))}),]
+
+  # Filter the columns, and rename
+  df <- df[,.popLabelRawColumns]
+  names(df) <- .popLabelColumns
+
+  dt <- data.table::setDT(df)
+  data.table::setkey(dt, Labels)
+
+  return(dt)
+}
+
 #' Initialize Population Data
 #'
 #' Load basic population information into the global package environment,
@@ -78,7 +105,11 @@ loadPopulationChangeParameters <- function(sheetName = "PopValues"){
 InitializePopulation <- function(){
   .checkAndLoadGlobalConfig()
 
+  GPE$initialPopulation <- NULL
+  GPE$populationLabels <- NULL
+
   GPE$initialPopulation <- loadInitialPopulation()
+  GPE$populationLabels <- loadPopulationLabels()
 
   return(invisible(NULL))
 }
