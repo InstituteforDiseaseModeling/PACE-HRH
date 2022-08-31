@@ -1,7 +1,13 @@
 context("Test minimum template")
 local_edition(3)
-library(testthat)
-library(dplyr)
+packages = c("dplyr","testthat")
+for(i in packages){
+  if(!require(i, character.only = T)){
+    install.packages(i)
+    library(i, character.only = T)
+  }
+}
+
 library(ehep)
 setwd("../..")
 minimum_input_file <- "ehep/inst/extdata/R Model Inputs_template_lean.xlsx"
@@ -44,7 +50,6 @@ test_that("simple regression", {
       cat(paste("output file should be created as:", filename, sep=""))
       SaveSuiteResults(results, filename, scenario, 1)
       expect_true(file.exists(filename))
-      browser()
       result <- read.csv(filename)
       result <- result %>% arrange("Task_ID", "Scenario_ID", "Trial_num", "Run_num", "Year", "Month")
       sorted_filename <- gsub("results_", "results_sorted_", filename)
