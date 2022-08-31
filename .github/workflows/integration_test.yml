@@ -20,10 +20,14 @@ jobs:
       - name: Install devtools
         run: |
           Rscript -e "install.packages('devtools')"
+      - name: Setup Dependency
+        working-directory: 'tests/setup'
+        run: |
+          Rscript install_dep_for_tests.R    
       - name: Install packages
         run: |
           # todo: using Readme instruction to install package
-          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE)"
+          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
       - name: Run Integration tests
         run: |
           Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'))"
