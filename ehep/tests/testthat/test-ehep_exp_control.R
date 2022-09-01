@@ -52,7 +52,7 @@ test_that("Experiment control: basic read from Excel", {
   testthat::expect_true(!is.null(result))
   testthat::expect_true(result$UniqueID == scenarioName)
 
-  print("TBD TBD TBD")
+#  print("TBD TBD TBD")
 
   # print(ehep:::GPE$taskData)
   # print(ehep:::BVE$taskParameters)

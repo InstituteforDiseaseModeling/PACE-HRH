@@ -41,3 +41,6 @@ GPE$initialPopulation <- NULL
 GPE$populationChangeParameters <- NULL
 GPE$taskData <- NULL
 GPE$scenarios <- NULL
+
+GPE$rngSeed <- 12345
+

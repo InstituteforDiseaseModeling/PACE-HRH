@@ -5,6 +5,8 @@
 #' @param scenarioName (default = "ScenarioA")
 #' @param trials (default = 100)
 #' @param debug (default = FALSE)
+#' @param seed Random number generator seed to be used for this suite.
+#' (default = `GPE$rngSeed`, as set up during package initialization)
 #'
 #' @return List of dataframes of per-task times, or NULL
 #'
@@ -26,27 +28,32 @@
 #'   ehep::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #' }
-RunExperiments <- function(scenarioName = "ScenarioA", trials = 100, debug = FALSE){
-  assertthat::is.number(trials)
-  assertthat::assert_that(trials > 1)
-  assertthat::is.flag(debug)
+RunExperiments <-
+  function(scenarioName = "ScenarioA",
+           trials = 100,
+           debug = FALSE,
+           seed = GPE$rngSeed) {
+    assertthat::is.number(trials)
+    assertthat::is.number(seed)
+    assertthat::assert_that(trials > 1)
+    assertthat::is.flag(debug)
 
-  SaveBaseSettings(scenarioName)
+    SaveBaseSettings(scenarioName)
 
-  set.seed(12345)
+    set.seed(seed)
 
-  l <- lapply(seq_len(trials), function(trial){
-    ConfigureExperimentValues()
+    l <- lapply(seq_len(trials), function(trial) {
+      ConfigureExperimentValues()
 
-    results <- RunExperiment()
+      results <- RunExperiment()
 
-    results$Population <- EXP$demographics
-    results$PopulationRates <- EXP$populationChangeRates
+      results$Population <- EXP$demographics
+      results$PopulationRates <- EXP$populationChangeRates
 
-    return(results)
-  })
+      return(results)
+    })
 
-  names(l) <- as.character(seq_len(trials))
+    names(l) <- as.character(seq_len(trials))
 
-  return(l)
-}
+    return(l)
+  }
