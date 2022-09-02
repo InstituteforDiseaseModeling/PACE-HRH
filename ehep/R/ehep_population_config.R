@@ -70,6 +70,12 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
     df <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
   )
 
+  if (!all(.popLabelRawColumns %in% colnames(df))){
+    warning(paste0("Invalid columns in population labels lookup sheet"))
+    warning(paste0("Expected: ", paste0(.popLabelRawColumns, collapse = ", ")))
+    return(NULL)
+  }
+
   # TODO: include more explicit try-catch error handling. As is, when the read
   # fails, GPE$populationLabels stays NULL, which eventually triggers a fatal
   # error when RunExperiments() is called.
