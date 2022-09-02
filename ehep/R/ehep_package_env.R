@@ -38,6 +38,9 @@ GPE$taskTypes <- c("Clinical",
                    "NonProductive")
 
 GPE$initialPopulation <- NULL
-GPE$populationChangeParameters <- NULL
 GPE$taskData <- NULL
 GPE$scenarios <- NULL
+GPE$seasonalityCurves <- NULL
+GPE$seasonalityOffsets <- NULL
+GPE$populationLabels <- NULL
+
