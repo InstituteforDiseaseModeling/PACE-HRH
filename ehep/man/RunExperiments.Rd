@@ -4,7 +4,12 @@
 \alias{RunExperiments}
 \title{Run A Suite Of EHEP Modeling Experiments}
 \usage{
-RunExperiments(scenarioName = "ScenarioA", trials = 100, debug = FALSE)
+RunExperiments(
+  scenarioName = "ScenarioA",
+  trials = 100,
+  debug = FALSE,
+  seed = GPE$rngSeed
+)
 }
 \arguments{
 \item{scenarioName}{(default = "ScenarioA")}
@@ -12,6 +17,9 @@ RunExperiments(scenarioName = "ScenarioA", trials = 100, debug = FALSE)
 \item{trials}{(default = 100)}
 
 \item{debug}{(default = FALSE)}
+
+\item{seed}{Random number generator seed to be used for this suite.
+(default = `GPE$rngSeed`, as set up during package initialization)}
 }
 \value{
 List of dataframes of per-task times, or NULL

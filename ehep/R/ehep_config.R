@@ -49,6 +49,13 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
                   sep = "/")
         }
 
+        if (!is.null(configInfo$suiteRngSeed)){
+          i <- as.integer(configInfo$suiteRngSeed)
+          if (!is.na(i)){
+            GPE$rngSeed <- i
+          }
+        }
+
         # TODO: Add code to configure start/end years
 
         traceMessage(paste0("Global configuration loaded from ", path))
