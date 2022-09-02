@@ -55,23 +55,47 @@ test_that("Population configuration: InitializePopulation()", {
 
   local_vars("inputExcelFile", envir = e)
   local_vars("initialPopulation", envir = e)
-  local_vars("populationChangeParameters", envir = e)
   local_vars("globalConfigLoaded", envir = e)
+  local_vars("populationLabels", envir = e)
 
   testthat::expect_false(e$globalConfigLoaded)
   testthat::expect_null(e$initialPopulation)
-  testthat::expect_null(e$populationChangeParameters)
 
   testthat::expect_invisible(ehep::InitializePopulation())
 
   testthat::expect_true(e$globalConfigLoaded)
   testthat::expect_true(!is.null(e$initialPopulation))
-
-  # 7/30/2022 Population change parameters are now loaded when an experiment
-  # suite is started with the SaveBaseSettings() function, based on the
-  # particular scenario being run.
-  testthat::expect_true(is.null(e$populationChangeParameters))
+  testthat::expect_true(!is.null(e$populationLabels))
 
   testthat::expect_true(.validInitPopulation(e$initialPopulation))
+})
+
+test_that("Population configuration: check labels", {
+  e <- ehep:::GPE
+
+  testthat::expect_equal(e$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_true(file.exists("globalconfig.json"))
+
+  local_vars("inputExcelFile", envir = e)
+  local_vars("initialPopulation", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("populationLabels", envir = e)
+
+  testthat::expect_false(e$globalConfigLoaded)
+  testthat::expect_null(e$initialPopulation)
+
+  testthat::expect_invisible(ehep::InitializePopulation())
+
+  testthat::expect_true(e$globalConfigLoaded)
+  testthat::expect_true(!is.null(e$initialPopulation))
+  testthat::expect_true(!is.null(e$populationLabels))
+
+  if (!is.null(e$populationLabels)){
+    df <- e$populationLabels
+    cols <- names(df)
+
+    testthat::expect_equal(length(cols), 5)
+    testthat::expect_true(all(cols %in% c("Labels", "Male", "Female", "Start", "End")))
+  }
 })
 

@@ -149,143 +149,185 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
 }
 
 .computeApplicablePopulation <- function(pop, label) {
-  if (label == "births") {
-    return(pop$Female[1] + pop$Male[1])
-  }
-  if (label == "1-4") {
-    return(sum(pop$Female[2:5] + pop$Male[2:5]))
-  }
-  if (label == "1 yo") {
-    return(pop$Female[2] + pop$Male[2])
-  }
-  if (label == "2 yo") {
-    return(pop$Female[3] + pop$Male[3])
-  }
-  if (label == "15 yo girls") {
-    return(pop$Female[16])
-  }
-  if (label == "-") {
+  # Fail in a big mess if the population labels lookup hasn't been loaded.
+  assertthat::assert_that(!is.null(GPE$populationLabels))
+
+  l <- GPE$populationLabels
+  i <- which(l$Labels == label)
+
+  if (length(i) == 0){
+    warning(paste0("Invalid population label: ", label, ". Returning 0 for applicable population."))
     return(0)
   }
-  if (label == "adults 18+") {
-    return(sum(pop$Female[19:101] + pop$Male[19:101]))
-  }
-  if (label == "men 18+") {
-    return(sum(pop$Male[19:101]))
-  }
-  if (label == "1-18") {
-    return(sum(pop$Female[2:19] + pop$Male[2:19]))
-  }
-  if (label == "children 0-9") {
-    return(sum(pop$Female[1:10] + pop$Male[1:10]))
-  }
-  if (label == "5-18") {
-    return(sum(pop$Female[6:19] + pop$Male[6:19]))
-  }
-  if (label == "all") {
-    return(sum(pop$Female + pop$Male))
-  }
-  if (label == "50 yo adults") {
-    return(pop$Female[51] + pop$Male[51])
-  }
-  if (label == "adults 50+") {
-    return(sum(pop$Female[51:101] + pop$Male[51:101]))
-  }
-  if (label == "adults 35+") {
-    return(sum(pop$Female[36:101] + pop$Male[36:101]))
-  }
-  if (label == "30 yo adults") {
-    return(pop$Female[31] + pop$Male[31])
-  }
-  if (label == "18 yo women") {
-    return(pop$Female[19])
-  }
-  if (label == "women 15-49") {
-    return(sum(pop$Female[16:50]))
-  }
-  if (label == "women 30-49") {
-    return(sum(pop$Female[31:50]))
-  }
-  if (label == "men 15-49") {
-    return(sum(pop$Male[16:50]))
-  }
-  if (label == "children 5-9") {
-    return(sum(pop$Female[6:10] + pop$Male[6:10]))
-  }
-  if (label == "children 10-14") {
-    return(sum(pop$Female[11:15] + pop$Male[11:15]))
-  }
-  if (label == "adults 15-19") {
-    return(sum(pop$Female[16:20] + pop$Male[16:20]))
-  }
-  if (label == "18 yo adults") {
-    return(sum(pop$Female[19] + pop$Male[19]))
-  }
-  if (label == "15 yo") {
-    return(sum(pop$Female[16] + pop$Male[16]))
-  }
-  if (label == "adults 15-24") {
-    return(sum(pop$Female[16:25] + pop$Male[16:25]))
-  }
-  if (label == "adults 25-34") {
-    return(sum(pop$Female[26:35] + pop$Male[26:35]))
-  }
-  if (label == "adults 35-44") {
-    return(sum(pop$Female[36:45] + pop$Male[36:45]))
-  }
-  if (label == "adults 45-54") {
-    return(sum(pop$Female[46:55] + pop$Male[46:55]))
-  }
-  if (label == "adults 55-64") {
-    return(sum(pop$Female[56:65] + pop$Male[56:65]))
-  }
-  if (label == "adults 65+") {
-    return(sum(pop$Female[66:101] + pop$Male[66:101]))
-  }
-  if (label == "adults 70+") {
-    return(sum(pop$Female[71:101] + pop$Male[71:101]))
-  }
-  if (label == "adults 18-30") {
-    return(sum(pop$Female[19:31] + pop$Male[19:31]))
-  }
-  if (label == "adults 31-44") {
-    return(sum(pop$Female[32:45] + pop$Male[32:45]))
-  }
-  if (label == "women 20-29") {
-    return(sum(pop$Female[21:30]))
-  }
-  if (label == "women 30-39") {
-    return(sum(pop$Female[31:40]))
-  }
-  if (label == "women 40-49") {
-    return(sum(pop$Female[41:50]))
-  }
-  if (label == "women 50-59") {
-    return(sum(pop$Female[51:60]))
-  }
-  if (label == "women 60-69") {
-    return(sum(pop$Female[61:70]))
-  }
-  if (label == "men 20-29") {
-    return(sum(pop$Male[21:30]))
-  }
-  if (label == "men 30-39") {
-    return(sum(pop$Male[31:40]))
-  }
-  if (label == "men 40-49") {
-    return(sum(pop$Male[41:50]))
-  }
-  if (label == "men 50-59") {
-    return(sum(pop$Male[51:60]))
-  }
-  if (label == "men 60-69") {
-    return(sum(pop$Male[61:70]))
+
+  if (length(i) > 1){
+    warning(paste0("Duplicate population label: ", label, ". Using first entry."))
+    i <- i[1]
   }
 
+  start <- l$Start[i]
+  if (is.na(start)){
+    start <- GPE$ageMin
+  }
 
-  traceMessage(paste("Unknown population group ", label, sep = ""))
-  return(0L)
+  end <- l$End[i]
+  if (is.na(end)){
+    end <- GPE$ageMax
+  }
+
+  total <- 0
+
+  if (l$Female[i]){
+    total <- total + sum(pop$Female[(start+1):(end+1)])
+  }
+
+  if (l$Male[i]){
+    total <- total + sum(pop$Male[(start+1):(end+1)])
+  }
+
+  return(total)
+
+  # print(paste0(label," : ",total," ? ",.computeApplicablePopulation_old(pop, label)))
+  # assertthat::assert_that(total == .computeApplicablePopulation_old(pop, label))
 }
+
+# .computeApplicablePopulation_old <- function(pop, label) {
+#   if (label == "births") {
+#     return(pop$Female[1] + pop$Male[1])
+#   }
+#   if (label == "1-4") {
+#     return(sum(pop$Female[2:5] + pop$Male[2:5]))
+#   }
+#   if (label == "1 yo") {
+#     return(pop$Female[2] + pop$Male[2])
+#   }
+#   if (label == "2 yo") {
+#     return(pop$Female[3] + pop$Male[3])
+#   }
+#   if (label == "15 yo girls") {
+#     return(pop$Female[16])
+#   }
+#   if (label == "-") {
+#     return(0)
+#   }
+#   if (label == "adults 18+") {
+#     return(sum(pop$Female[19:101] + pop$Male[19:101]))
+#   }
+#   if (label == "men 18+") {
+#     return(sum(pop$Male[19:101]))
+#   }
+#   if (label == "1-18") {
+#     return(sum(pop$Female[2:19] + pop$Male[2:19]))
+#   }
+#   if (label == "children 0-9") {
+#     return(sum(pop$Female[1:10] + pop$Male[1:10]))
+#   }
+#   if (label == "5-18") {
+#     return(sum(pop$Female[6:19] + pop$Male[6:19]))
+#   }
+#   if (label == "all") {
+#     return(sum(pop$Female + pop$Male))
+#   }
+#   if (label == "50 yo adults") {
+#     return(pop$Female[51] + pop$Male[51])
+#   }
+#   if (label == "adults 50+") {
+#     return(sum(pop$Female[51:101] + pop$Male[51:101]))
+#   }
+#   if (label == "adults 35+") {
+#     return(sum(pop$Female[36:101] + pop$Male[36:101]))
+#   }
+#   if (label == "30 yo adults") {
+#     return(pop$Female[31] + pop$Male[31])
+#   }
+#   if (label == "18 yo women") {
+#     return(pop$Female[19])
+#   }
+#   if (label == "women 15-49") {
+#     return(sum(pop$Female[16:50]))
+#   }
+#   if (label == "women 30-49") {
+#     return(sum(pop$Female[31:50]))
+#   }
+#   if (label == "men 15-49") {
+#     return(sum(pop$Male[16:50]))
+#   }
+#   if (label == "children 5-9") {
+#     return(sum(pop$Female[6:10] + pop$Male[6:10]))
+#   }
+#   if (label == "children 10-14") {
+#     return(sum(pop$Female[11:15] + pop$Male[11:15]))
+#   }
+#   if (label == "adults 15-19") {
+#     return(sum(pop$Female[16:20] + pop$Male[16:20]))
+#   }
+#   if (label == "18 yo adults") {
+#     return(sum(pop$Female[19] + pop$Male[19]))
+#   }
+#   if (label == "15 yo") {
+#     return(sum(pop$Female[16] + pop$Male[16]))
+#   }
+#   if (label == "adults 15-24") {
+#     return(sum(pop$Female[16:25] + pop$Male[16:25]))
+#   }
+#   if (label == "adults 25-34") {
+#     return(sum(pop$Female[26:35] + pop$Male[26:35]))
+#   }
+#   if (label == "adults 35-44") {
+#     return(sum(pop$Female[36:45] + pop$Male[36:45]))
+#   }
+#   if (label == "adults 45-54") {
+#     return(sum(pop$Female[46:55] + pop$Male[46:55]))
+#   }
+#   if (label == "adults 55-64") {
+#     return(sum(pop$Female[56:65] + pop$Male[56:65]))
+#   }
+#   if (label == "adults 65+") {
+#     return(sum(pop$Female[66:101] + pop$Male[66:101]))
+#   }
+#   if (label == "adults 70+") {
+#     return(sum(pop$Female[71:101] + pop$Male[71:101]))
+#   }
+#   if (label == "adults 18-30") {
+#     return(sum(pop$Female[19:31] + pop$Male[19:31]))
+#   }
+#   if (label == "adults 31-44") {
+#     return(sum(pop$Female[32:45] + pop$Male[32:45]))
+#   }
+#   if (label == "women 20-29") {
+#     return(sum(pop$Female[21:30]))
+#   }
+#   if (label == "women 30-39") {
+#     return(sum(pop$Female[31:40]))
+#   }
+#   if (label == "women 40-49") {
+#     return(sum(pop$Female[41:50]))
+#   }
+#   if (label == "women 50-59") {
+#     return(sum(pop$Female[51:60]))
+#   }
+#   if (label == "women 60-69") {
+#     return(sum(pop$Female[61:70]))
+#   }
+#   if (label == "men 20-29") {
+#     return(sum(pop$Male[21:30]))
+#   }
+#   if (label == "men 30-39") {
+#     return(sum(pop$Male[31:40]))
+#   }
+#   if (label == "men 40-49") {
+#     return(sum(pop$Male[41:50]))
+#   }
+#   if (label == "men 50-59") {
+#     return(sum(pop$Male[51:60]))
+#   }
+#   if (label == "men 60-69") {
+#     return(sum(pop$Male[61:70]))
+#   }
+#
+#   traceMessage(paste("Unknown population group ", label, sep = ""))
+#   return(0L)
+# }
 
 AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
   tp <- EXP$taskParameters

@@ -38,7 +38,10 @@ RunExperiments <-
     assertthat::assert_that(trials > 1)
     assertthat::is.flag(debug)
 
-    SaveBaseSettings(scenarioName)
+    if (is.null(SaveBaseSettings(scenarioName))){
+      warning("Critical failure. RunExperiments() ended.")
+      return(NULL)
+    }
 
     set.seed(seed)
 
