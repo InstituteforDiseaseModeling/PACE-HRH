@@ -1,4 +1,83 @@
-# Ethiopia Health Extension Program Capacity Modeling Package
+# The PACE-HRH Package
+
+This README describes the features and functions of the PACE-HRH package.
+
+## Global Configuration
+
+Global configuration refers to system-wide variables set up
+when the package is started. The most important of these is the location of the 
+__input data spreadsheet__ - the Excel spreadsheet that defines experiment scenarios, 
+baseline population data, clinical task descriptions, health-worker cadres, etc. 
+
+Global configuration variables are declared
+in a file called _globalconfig.json_. This
+file is read from the working directory (as reported by `getwd()`). 
+
+Once global configuration is completed, the variable 
+GPE$globalConfigLoaded is set to TRUE.
+
+```
+> ehep:::GPE$globalConfigLoaded
+[1] TRUE
+```
+
+### Default Global Configuration File
+
+```
+{
+  "configDirectoryLocation" : "./config",
+  "inputExcelFile" : "R Model Inputs.xlsx",
+  "suiteRngSeed" : 12345
+}
+```
+
+Global configuration can be set programmatically with the `setGlobalConfig()`
+function. 
+
+## Terminology
+
+
+- _Trial_: TBD
+- _Experiment_: synonym for _trial_.
+- _Suite_: A set of stochastic trials based on a scenario.
+- _Scenario_: TBD
+
+## Environments
+
+The PACE-HRH package uses three R environments.
+
+__ehep:::globalPackageEnvironment__ (alias ehep:::GPE) stores configuration 
+information for the entire package.
+
+__ehep:::baseValuesEnvironment__ (alias ehep:::BVE) stores the base values 
+for stochastic trials.
+
+__ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
+after applying stochastic variation, used in each trial.
+
+At the start of a suite of trials (`RunExperiments()`), 
+baseline information is loaded into the BVE environment. For each trial in the suite, 
+stochastic variations are applied to values in the 
+BVE, and the new values are saved in the EXP environment. The trial is then run 
+based on the values in the EXP environment.
+ 
+You can view the current contents of any of the environments with R's
+`ls.str()` command.
+
+
+
+
+
+# IGNORE BELOW HERE - OLD CONTENT
+
+
+
+
+The InitializeXXXX() functions depend on knowing where to find the input Excel
+file, so each point to a function .checkAndLoadGlobalConfig() to confirm that
+global configuration has been set. A useful side-effect is that the
+InitializeXXXX() functions can be called in any order.
+
 
 ## Installation
 
@@ -74,27 +153,6 @@ years for simulation.
 ehep::SetGlobalStartEndYears(2025, 2030)
 ```
 
-## Environments
-
-ehep uses three R environments.
-
-__ehep:::globalPackageEnvironment__ (alias ehep:::GPE) stores configuration 
-information for the entire package.
-
-__ehep:::baseValuesEnvironment__ (alias ehep:::BVE) stores the base values 
-on which to base stochastic trials. _Experiments_ are a set of stochastic
-trials based on a _scenario_. At the start of a set of experiments, baseline information
-is loaded into baseValuesEnvironment.
-
-__ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
-after applying stochastic variation, used in experiment calculations. For each _experiment_ in 
-a suite of experiments, stochastic variations are applied to the parameters in the 
-baseValuesEnvironment, and the new parameters saved in experimentValuesEnvironment.
-The experiment is run based on the values in experimentValuesEnvironment.
-
-You can view the current contents of any of the environments with R's
-`ls.str()` command.
-
 ## Population pyramids
 
 The `ComputeDemographicsProjection()` function uses an initial population 
@@ -130,17 +188,4 @@ List of 21
 ```
 Each entry in the top-level list is a DataFrame of population data for
 females and males, stratified by age in years.
-
-## globalconfig.json
-
-The file `globalconfig.json` defines certain global settings for ehep.
-Importantly, this includes the location of the model input Excel file.
-This file must be placed in your working directory.
-
-```
-{
-  "configDirectoryLocation" : "./config",
-  "inputExcelFile" : "R Model Inputs.xlsx"
-}
-```
 
