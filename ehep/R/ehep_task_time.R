@@ -150,7 +150,10 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
 
 .computeApplicablePopulation <- function(pop, label) {
   # Fail in a big mess if the population labels lookup hasn't been loaded.
-  assertthat::assert_that(!is.null(GPE$populationLabels))
+  if (is.null(GPE$populationLabels)){
+    warning(paste0("Population labels not loaded! Returning 0 for applicable population."))
+    return(0)
+  }
 
   l <- GPE$populationLabels
   i <- which(l$Labels == label)
