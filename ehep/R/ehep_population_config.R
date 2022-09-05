@@ -36,29 +36,6 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
               total = total))
 }
 
-#' Load Population Change Parameters
-#'
-#' @param sheetName Sheet name from model input Excel file.
-#'
-#' @return List with two \code{PopulationChangeParameters} objects:
-#' \code{initValues} and \code{changeRates}
-#'
-loadPopulationChangeParameters <- function(sheetName = "PopValues"){
-  popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-
-  if (!is.null(popValues)){
-    initValues <- PopulationChangeParameters()
-    changeRates <- PopulationChangeParameters()
-
-    initValues <- setFromVector(initValues, popValues$Value2020)
-    changeRates <- setFromVector(changeRates, popValues$AnnualChange)
-
-    popValues <- list(initValues = initValues, changeRates = changeRates)
-  }
-
-  return(popValues)
-}
-
 .popLabelRawColumns <-
   c("Relevant Population Labels", "Male", "Female", "Starting Age", "Ending Age")
 

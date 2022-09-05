@@ -5,42 +5,6 @@ e <- ehep:::GPE
 local_vars("globalDebug", envir = e)
 GPE$globalDebug <- TRUE
 
-# test_that("explodeMortalityRates: basic", {
-#   refFemale <- c(1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5,
-#                  6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7,
-#                  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-#                  9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10,
-#                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10)
-#
-#   refMale <- c(1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5,
-#                6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 11, 11, 11, 11, 11,
-#                11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-#                13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14,
-#                14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14)
-#
-#   results <- ehep:::explodeMortalityRates(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14))
-#
-#   testthat::expect_true(!is.null(results))
-#   testthat::expect_named(results, c("Female", "Male"))
-#   testthat::expect_equal(results$Female, refFemale)
-#   testthat::expect_equal(results$Male, refMale)
-# })
-
-# test_that("explodeFertilityRates: basic", {
-#   refFemale <- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-#                  2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5,
-#                  6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-#
-#   results <- ehep:::explodeFertilityRates(c(1,2,3,4,5,6,7))
-#
-#   testthat::expect_true(!is.null(results))
-#   testthat::expect_named(results, c("Female", "Male"))
-#   testthat::expect_equal(results$Female, refFemale)
-#   testthat::expect_true(all(results$Male == 0))
-# })
-
 test_that("computeBirths: basic", {
   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
