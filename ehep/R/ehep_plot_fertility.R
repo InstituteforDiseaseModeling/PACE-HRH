@@ -152,7 +152,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   }
 
   g <- g + geom_boxplot()
-  g <- g + scale_x_discrete(breaks = c(2020, 2030, 2040))
+  g <- g + scale_x_discrete(breaks = seq(2000, 2100, 5))
   g <- g + theme(legend.position = "none")
 
   if (log){
@@ -187,7 +187,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   g <- g + geom_ribbon(aes(ymin = m - CI, ymax = m + CI, fill = Label), alpha = 0.5)
   g <- g + geom_line(size = .5)
   g <- g + facet_wrap(vars(Label))
-  g <- g + scale_x_discrete(breaks = c(2020, 2030, 2040))
+  g <- g + scale_x_discrete(breaks = seq(2000, 2100, 5))
   g <- g + theme(legend.position = "none")
   g <- g + ylab(ylabel) + xlab("Year")
   g <- g + xlab("Year")
@@ -215,7 +215,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   ))
   g <- g + geom_pointrange(aes(ymin = m - CI, ymax = m + CI), size = 0.5)
   g <- g + facet_wrap(vars(Label))
-  g <- g + scale_x_discrete(breaks = c(2020, 2030, 2040))
+  g <- g + scale_x_discrete(breaks = seq(2000, 2100, 5))
   g <- g + theme(legend.position = "none")
   g <- g + ylab(ylabel) + xlab("Year")
   g <- g + xlab("Year")
