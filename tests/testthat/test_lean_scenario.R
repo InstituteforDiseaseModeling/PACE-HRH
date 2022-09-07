@@ -22,6 +22,7 @@ test_template <- function(){
     InitializeScenarios()
     InitializeStochasticParameters()
     InitializeSeasonality()
+    SetGlobalStartEndYears(start = 2020, end = 2040)
     withr::defer_parent(unlink("tests/results", recursive = TRUE,  force = TRUE))
 }
 
