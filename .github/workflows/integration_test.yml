@@ -34,3 +34,11 @@ jobs:
         env:
           NOT_CRAN: true
           
+      - name: Check input spreadsheet
+        run: |
+          Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/R Model Inputs.xlsx', outputDir='log'), output_dir='validation-results')"
+          Rscript -e "rmarkdown::render('validation_report.Rmd', 'word_document', params=list(inputFile='config/R Model Inputs.xlsx', outputDir='log'), output_dir='validation-results')"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: log

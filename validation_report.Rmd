@@ -1,0 +1,53 @@
+---
+title: ''
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+     toc: true
+     df_print: paged
+params:
+  inputFile: config/R Model Inputs.xlsx
+  outputDir: log
+---
+
+# Validation Results
+
+## Model Requirement Check:
+
+```{r}
+ehep::CheckInputExcelFileFormat(inputFile = params$inputFile)
+```
+
+## Input Data Check:
+
+```{r, results='hide',  message=FALSE, warning=FALSE}
+source("ValidateInput.R")
+ValidateInputExcelFileContent(inputFile = params$inputFile, outputDir = params$outputDir)
+```
+
+```{r echo=FALSE, results='asis'}
+fr <- paste(params$outputDir, "input_validation_results.png", sep="/")
+knitr::include_graphics(normalizePath(fr))
+
+```
+
+-   Please check below csv files in `r params$outputDir` folder for any row based validation issue:
+
+```{r echo=FALSE}
+files <- list.files(path=params$outputDir, pattern = "(info|warning|error).*.csv")
+
+metadata <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
+for (f in files){
+  cat(paste0("check: ", normalizePath(paste(params$outputDir, f, sep="/")), "\n"))
+  rule_name <- gsub('^.+?_violation_(.+?).csv', '\\1', f)
+  exp <- metadata %>%
+    filter(name == rule_name) %>%
+    select(expression) %>%
+    unique() %>% 
+   .$expression
+  cat(paste0("expression: ", exp, "\n"))
+  data <- read.csv(paste(params$outputDir, f, sep="/"))
+  knitr::kable(head(data), caption=exp)
+}
+```

@@ -1,12 +1,12 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
     library(i, character.only = T)
   }
 }
-
+library(ehep)
 .Success <- 0L
 .errValidationRuleFailed <- -11L
 
@@ -77,6 +77,8 @@ ValidateInputExcelFileContent <- function(inputFile,
       
     }
   }
+  result_file <- file.path(outputDir, "input_validation_results.csv")
+  write.csv(result, result_file)
   
   # summary and plot check result
   final_result <- rules_combined %>%
