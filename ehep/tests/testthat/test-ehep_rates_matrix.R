@@ -11,11 +11,8 @@ test_that("Fertility rates matrix: basic", {
   e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
 
   pars <- ehep:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
-  pcp <- ehep:::loadPopulationChangeParameters(sheetName = "TEST_PopValues")
-  rates <- ehep:::loadPopulationChangeRates(sheetName = "EXP_PopValues")
+  rates <- ehep:::loadPopulationChangeRates(sheetName = "TEST_PopValues")
   years <- ehep:::GPE$years
-
-  testthat::expect_named(pcp, c("initValues", "changeRates"))
 
   # CASE A
 

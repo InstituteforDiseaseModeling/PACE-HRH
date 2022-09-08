@@ -17,3 +17,8 @@ NULL (invisible)
 \description{
 Set Global Start And End Year Parameters
 }
+\examples{
+\dontrun{
+ehep::SetGlobalStartEndYears(2020, 2035)
+}
+}

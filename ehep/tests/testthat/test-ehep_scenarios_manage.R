@@ -9,7 +9,7 @@ test_that("Scenario management: startup default", {
 })
 
 test_that("Scenario management: create empty scenarios table", {
-  tbl <- ehep:::CreateScenariosTable()
+  tbl <- ehep::CreateScenariosTable()
 
   testthat::expect_equal(class(tbl), c("tbl_df", "tbl", "data.frame"))
   testthat::expect_equal(nrow(tbl), 0L)
@@ -23,7 +23,7 @@ test_that("Scenario management: AddScenario", {
   # withr::defer(ehep::Trace(originalTraceState))
   # originalTraceState <- ehep::Trace(TRUE)
 
-  tbl <- ehep:::CreateScenariosTable()
+  tbl <- ehep::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
 
   # The following tests should all fail for invalid arguments, either too
@@ -77,7 +77,7 @@ test_that("Scenario management: DeleteScenario", {
   # withr::defer(ehep::Trace(originalTraceState))
   # originalTraceState <- ehep::Trace(TRUE)
 
-  tbl <- ehep:::CreateScenariosTable()
+  tbl <- ehep::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
 
   # Add scenarios
@@ -122,7 +122,7 @@ test_that("Scenario management: UpdateScenario", {
   # withr::defer(ehep::Trace(originalTraceState))
   # originalTraceState <- ehep::Trace(TRUE)
 
-  tbl <- ehep:::CreateScenariosTable()
+  tbl <- ehep::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
 
   # Add scenarios
@@ -173,7 +173,7 @@ test_that("Scenario management: ReadScenario", {
   # withr::defer(ehep::Trace(originalTraceState))
   # originalTraceState <- ehep::Trace(TRUE)
 
-  tbl <- ehep:::CreateScenariosTable()
+  tbl <- ehep::CreateScenariosTable()
   testthat::expect_equal(nrow(tbl), 0)
 
   # Add scenarios

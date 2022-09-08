@@ -12,6 +12,7 @@ withr::local_dir("..")
 
 configDir = "dir"
 configFile = "file"
+seed = 142857L
 
 test_that("Global configuration: default", {
   globalConfigFile = "globalconfig.json"
@@ -32,12 +33,14 @@ test_that("Global configuration: default", {
 
     testJson <-
       list(configDirectoryLocation = configDir,
-           inputExcelFile = configFile)
+           inputExcelFile = configFile,
+           suiteRngSeed = seed)
     write_json(testJson, globalConfigFile)
 
     testthat::expect_invisible(ehep:::loadGlobalConfig())
     testthat::expect_equal(ehep:::GPE$inputExcelFile,
                            paste(configDir, configFile, sep = "/"))
+    testthat::expect_equal(ehep:::GPE$rngSeed, seed)
   }
 
   .doTest()
@@ -57,12 +60,57 @@ test_that("Global configuration: basic", {
 
   testJson <-
     list(configDirectoryLocation = configDir,
-         inputExcelFile = configFile)
+         inputExcelFile = configFile,
+         suiteRngSeed = seed)
   write_json(testJson, globalConfigFile)
 
   testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
   testthat::expect_equal(ehep:::GPE$inputExcelFile,
                          paste(configDir, configFile, sep = "/"))
+  testthat::expect_equal(ehep:::GPE$rngSeed, seed)
+})
+
+test_that("Global configuration: bad seed", {
+  globalConfigFile = "in.json"
+  withr::local_file(globalConfigFile)
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("rngSeed", envir = e)
+
+  originalSeed <- e$rngSeed
+
+  testJson <-
+    list(configDirectoryLocation = configDir,
+         inputExcelFile = configFile,
+         suiteRngSeed = "notanumber")
+  write_json(testJson, globalConfigFile)
+
+  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(e$inputExcelFile,
+                         paste(configDir, configFile, sep = "/"))
+  testthat::expect_equal(e$rngSeed, originalSeed)
+})
+
+test_that("Global configuration: missing seed", {
+  globalConfigFile = "in.json"
+  withr::local_file(globalConfigFile)
+
+  e <- ehep:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("rngSeed", envir = e)
+
+  originalSeed <- e$rngSeed
+
+  testJson <-
+    list(configDirectoryLocation = configDir,
+         inputExcelFile = configFile)
+  write_json(testJson, globalConfigFile)
+
+  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(e$inputExcelFile,
+                         paste(configDir, configFile, sep = "/"))
+  testthat::expect_equal(e$rngSeed, originalSeed)
 })
 
 test_that("Global configuration: missing file", {

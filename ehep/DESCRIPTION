@@ -1,7 +1,7 @@
 Type: Package
 Package: ehep
 Title: Ethiopia Health Extension Program Capacity Modelling
-Version: 0.3.1
+Version: 0.3.4
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
 Description: This work allows modeling of the burdens placed on healthcare
@@ -24,7 +24,9 @@ Imports:
     withr
 Suggests: 
     testthat (>= 3.0.0),
-    roxytest
+    roxytest,
+    knitr,
+    rmarkdown
 Roxygen: list(roclets = c("namespace", "rd", 
                           "roxytest::testthat_roclet",
                           "roxytest::param_roclet",
@@ -75,3 +77,4 @@ Collate:
     'ehep_save_results.R'
     'ehep_sanity_checks.R'
     'ehep_post_process.R'
+VignetteBuilder: knitr

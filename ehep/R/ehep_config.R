@@ -49,6 +49,13 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
                   sep = "/")
         }
 
+        if (!is.null(configInfo$suiteRngSeed)){
+          i <- as.integer(configInfo$suiteRngSeed)
+          if (!is.na(i)){
+            GPE$rngSeed <- i
+          }
+        }
+
         # TODO: Add code to configure start/end years
 
         traceMessage(paste0("Global configuration loaded from ", path))
@@ -74,6 +81,8 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 }
 
 # Note: this function does not check that the file path is valid.
+# This function is intended to support unit tests to force the system to
+# initialize based on a different configuration than is in globalconfig.json.
 setGlobalConfig <- function(inputExcelFilePath = "./config/R Model Inputs.xlsx"){
   if (!is.blank(inputExcelFilePath)){
     GPE$inputExcelFile <- inputExcelFilePath
@@ -103,6 +112,11 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/R Model Inputs.xlsx")
 #' @return NULL (invisible)
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' ehep::SetGlobalStartEndYears(2020, 2035)
+#' }
 SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
   if (!assertthat::is.number(start)) {
     return(invisible(NULL))

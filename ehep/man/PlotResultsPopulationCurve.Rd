@@ -9,7 +9,7 @@ PlotResultsPopulationCurve(results, trial = 1, year = 2020, sex = "f", ...)
 \arguments{
 \item{results}{Results list (as returned by \code{RunExperiments()})}
 
-\item{trial}{Trail number (index into the results list)}
+\item{trial}{Trial number (index into the results list)}
 
 \item{year}{Year in trial timeseries to plot}
 
@@ -21,5 +21,12 @@ PlotResultsPopulationCurve(results, trial = 1, year = 2020, sex = "f", ...)
 ggplot grob, or NULL on error
 }
 \description{
-Plot A Single Population Curve From A Results List
+More intuitive interface to \code{\link[=PlotPopulationCurve]{PlotPopulationCurve()}}
+}
+\examples{
+\dontrun{
+# These two function calls produce the same output:
+ehep::PlotResultsPopulationCurve(results, trial = 26, year = 2025, sex = "m")
+ehep::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
+}
 }

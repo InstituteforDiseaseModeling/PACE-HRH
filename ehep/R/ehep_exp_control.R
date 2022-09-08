@@ -7,10 +7,25 @@
 #'
 #' @param scenarioName Scenario name string
 #'
-#' @return Scenario information, or NULL if the scenario is invalid
+#' @return Scenario information, or NULL in case of error (such as an invalid
+#' scenario)
 #'
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' result <- ehep::SaveBaseSettings(scenario)
+#' }
 SaveBaseSettings <- function(scenarioName = ""){
   # GPE = globalPackageEnvironment = source environment
   # BVE = baseValuesEnvironment = destination environment
@@ -60,6 +75,21 @@ SaveBaseSettings <- function(scenarioName = ""){
     GPE$taskData <- loadTaskParameters()
   }
 
+  # Check that all the population labels in the tasks list are included in
+  # the populationLabels lookup. (This connection is also enforced by logic
+  # in the input spreadsheet.)
+  #
+  # Note that this test will fail if the Lookup table wasn't loaded during
+  # initialization.
+
+  s <- setdiff(GPE$taskData$RelevantPop, GPE$populationLabels$Labels)
+  if (!.okLabels(s)){
+    warning(paste0("Invalid population labels: ", paste0(s, collapse = ", ")))
+    return(NULL)
+  }
+
+  # Set up baseline task data
+
   if (!is.null(GPE$taskData)) {
     GPE$taskDataDims <- dim(GPE$taskData)
     GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
@@ -70,9 +100,16 @@ SaveBaseSettings <- function(scenarioName = ""){
   return(BVE$scenario)
 }
 
+.okLabels <- function(diffOutput){
+  if (length(diffOutput) == 0){
+    return(TRUE)
+  }
+
+  return(FALSE)
+}
+
 .zeroExpBaseVariables <- function(){
   BVE$scenario <- NULL
-  BVE$populationChangeParameters <- NULL
   BVE$initialPopulation <- NULL
   BVE$taskParameters <- NULL
 }
@@ -114,40 +151,33 @@ SaveBaseSettings <- function(scenarioName = ""){
   return(m)
 }
 
-.createZeroTaskParametersObject <- function(){
-  m <- matrix(0.0,
-              nrow = GPE$taskDataDims[1],
-              ncol = length(.taskDataCols))
-
-  # TODO: If necessary, add row/column labels.
-
-  return(TaskParameters(values = m))
-}
-
-.createZeroPopulationChangeParametersList <- function(){
-  return(
-    list(initValues = PopulationChangeParameters(),
-         changeRates = PopulationChangeParameters())
-  )
-}
-
-.createZeroPopulationPyramidList <- function(){
-  return(
-    list(
-      age = GPE$ages,
-      female = PopulationPyramid(),
-      male = PopulationPyramid(),
-      total = PopulationPyramid()
-    )
-  )
-}
-
 #' Generate A New Set Of Stochastic Variations
 #'
 #' Create the configuration values for an individual model experiment.
 #'
 #' @return NULL (invisible)
 #'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#' ehep::Trace(TRUE)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' set.seed(54321)
+#'
+#' scenarioData <- SaveBaseSettings(scenario)
+#' ConfigureExperimentValues()
+#' results <- RunExperiment()
+#' }
 ConfigureExperimentValues <- function(){
   # TODO: Insert check that all the needed values exist
 
@@ -159,12 +189,9 @@ ConfigureExperimentValues <- function(){
   }
 
   EXP$populationChangeRates <- pcr
-
-  EXP$populationChangeParameters <- BVE$populationChangeParameters
   EXP$initialPopulation <- BVE$initialPopulation
-
   EXP$taskParameters <- varyTaskValues(BVE$taskParameters)
-  EXP$prevalenceRatesMatrix = generatePrevalenceRatesMatrix()
+  EXP$prevalenceRatesMatrix <- generatePrevalenceRatesMatrix()
 
-  invisible(NULL)
+  return(invisible(NULL))
 }

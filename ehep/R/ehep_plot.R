@@ -20,6 +20,25 @@
 #' @importFrom ggplot2 ylab
 #' @importFrom ggplot2 ggtitle
 #'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' ehep::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
+#' }
+#'
 PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 
   if (is.null(xaxis)){
@@ -59,8 +78,10 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 
 #' Plot A Single Population Curve From A Results List
 #'
+#' More intuitive interface to [PlotPopulationCurve()]
+#'
 #' @param results Results list (as returned by \code{RunExperiments()})
-#' @param trial Trail number (index into the results list)
+#' @param trial Trial number (index into the results list)
 #' @param year Year in trial timeseries to plot
 #' @param sex Sex to plot (from c("m", "M", "f", "F"), defaults to female)
 #' @param ... Parameters passed to [PlotPopulationCurve()]
@@ -70,6 +91,12 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 #' @return ggplot grob, or NULL on error
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' # These two function calls produce the same output:
+#' ehep::PlotResultsPopulationCurve(results, trial = 26, year = 2025, sex = "m")
+#' ehep::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
+#' }
 PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f", ...){
   if (!.validResultsParams(results, trial, year)){
     return(NULL)
@@ -116,6 +143,21 @@ PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_y_continuous
 #'
+#' @examples
+#' \dontrun{
+#' g <- ehep::PlotPopulationCurves(
+#'   results[[26]]$Population[['2020']]$Male,
+#'   results[[26]]$Population[['2021']]$Male,
+#'   results[[26]]$Population[['2022']]$Male,
+#'   results[[26]]$Population[['2023']]$Male,
+#'   results[[26]]$Population[['2024']]$Male,
+#'   results[[26]]$Population[['2025']]$Male,
+#'   xaxis = ehep:::GPE$ages,
+#'   colors = c("royalblue4", "royalblue3", "royalblue2", "royalblue1"),
+#'   shapes = c(0, 1, 2, 5)
+#' )
+#' print(g)
+#' }
 PlotPopulationCurves <- function(... , xaxis = NULL, colors = NULL, shapes = NULL){
   pops <- list(...)
 
@@ -227,6 +269,13 @@ gatherPopulation <- function(pops){
 #'
 #' @return Graphics grob
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' df <- ehep:::gatherPopulation(results[[1]]$Population)
+#' g <- ehep::PlotPyramid(df, 2021)
+#' print(g)
+#' }
 PlotPyramid <- function(df, year){
   df <- df[df$Year == year,]
   df.f <- df[df$Gender == 'F',]
@@ -360,34 +409,36 @@ PlotPyramids <- function(df) {
 #' @return ggplot grob, or NULL on error
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' g <- ehep::PlotResultsMortalityRates(results, 49, 2030)
+#' print(g)
+#' }
 PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
   if (!.validResultsParams(results, trial, year)) {
     return(NULL)
   }
 
-  return(PlotMortalityRates(results[[trial]]$PopulationParams$MRatesMatrix, year))
-}
-
-#' Plot A Single Pair of Fertility Rates Curves From A Results List
-#'
-#' @param results Results list (as returned by \code{RunExperiments()})
-#' @param trial Trail number (index into the results list)
-#' @param year Year in trial timeseries to plot
-#'
-#' @return ggplot grob, or NULL on error
-#' @export
-#'
-PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
-  if (!.validResultsParams(results, trial, year)) {
-    return(NULL)
-  }
-
-  return(PlotFertilityRates(results[[trial]]$PopulationParams$FRatesMatrix, year))
+  return(PlotMortalityRates(results[[trial]]$PopulationRates, year))
 }
 
 #' Plot Mortality Rates
 #'
-#' @param ratesMatrix Matrix of banded mortality rates versus years
+#' @param populationRates Population rates list, as returned by \code{RunExperiments()}
 #' @param year Year
 #'
 #' @return ggplot grob
@@ -402,50 +453,52 @@ PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
 #' @importFrom ggplot2 scale_color_manual
 #' @importFrom tidyr pivot_longer
 #'
-PlotMortalityRates <- function(ratesMatrix, year){
-  rates <- explodeMortalityRates(as.vector(ratesMatrix[, as.character(year)]))
-  rates$Age <- GPE$ages
-  x <- tidyr::pivot_longer(as.data.frame(rates), cols = c("Female", "Male"), names_to = "Sex", values_to = "Rate")
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' g <- ehep::PlotMortalityRates(results[[49]]$PopulationRates, 2030)
+#' print(g)
+#' }
+PlotMortalityRates <- function(populationRates, year){
+  rates <- .explodeRates(populationRates, year)
+
+  df <- as.data.frame(rates)
+  df$Age <- GPE$ages
+  dff <-
+    tidyr::pivot_longer(
+      df,
+      cols = c(
+        "femaleFertility",
+        "maleFertility",
+        "femaleMortality",
+        "maleMortality"
+      ),
+      names_to = "Sex",
+      values_to = "Rate"
+    )
+
+  dff <- dff[dff$Sex %in% c("femaleMortality", "maleMortality"),]
 
   titleStr <- paste("Mortality Rates (", year, ")", sep = "")
 
-  g <- ggplot(x, aes(x = Age, y = Rate/1000, color = Sex))
+  g <- ggplot(dff, aes(x = Age, y = Rate, color = Sex))
   g <- g + scale_color_manual(values = c(.colorF, .colorM))
+  g <- g + theme(legend.position = "none")
   g <- g + geom_point(alpha = 0.5)
   g <- g + facet_grid(cols = vars(Sex))
-  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Mortality Rate")
+  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Rate")
   return(g)
 }
-
-#' Plot Fertility Rates
-#'
-#' @param ratesMatrix Matrix of banded fertility rates versus years
-#' @param year Year
-#'
-#' @return ggplot grob
-#' @export
-#'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_point
-#' @importFrom ggplot2 facet_grid
-#' @importFrom ggplot2 vars
-#' @importFrom ggplot2 ggtitle
-#' @importFrom ggplot2 scale_color_manual
-#' @importFrom tidyr pivot_longer
-#'
-PlotFertilityRates <- function(ratesMatrix, year){
-  rates <- explodeFertilityRates(as.vector(ratesMatrix[, as.character(year)]))
-  rates$Age <- GPE$ages
-  x <- tidyr::pivot_longer(as.data.frame(rates), cols = c("Female", "Male"), names_to = "Sex", values_to = "Rate")
-
-  titleStr <- paste("Fertility Rates (", year, ")", sep = "")
-
-  g <- ggplot(x, aes(x = Age, y = Rate, color = Sex))
-  g <- g + scale_color_manual(values = c(.colorF, .colorM))
-  g <- g + geom_point(alpha = 0.5)
-  g <- g + facet_grid(cols = vars(Sex))
-  g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Fertility Rate")
-  return(g)
-}
-

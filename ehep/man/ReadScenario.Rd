@@ -17,3 +17,10 @@ Scenario record (as a tibble)
 \description{
 Read A Scenario Record
 }
+\examples{
+\dontrun{
+tbl <- ehep::CreateScenariosTable()
+tbl <- ehep::AddScenario(tbl, "Scenario 1", HrsPerWeek = 35)
+scenario <- ehep::ReadScenario(tbl, "Scenario 1")
+}
+}

@@ -44,37 +44,35 @@ local_vars <- function(vars = vector(), envir = parent.frame(), .local_envir = p
 }
 
 .saveVars <- function(vars, envir = parent.frame()){
-  varCache <- list()
+  varCache <- rlang::env()
 
-  nul <- sapply(vars, function(var){
+  for (var in vars){
     out <- tryCatch({
-      expr <- paste("get('", var, "', envir = envir)", sep = "")
-      value <- eval(parse(text = expr))
-      expr <- paste("varCache$`", var, "` <<- value", sep = "")
-      eval(parse(text = expr))
+      value = get(var, pos = envir)
+      assign(var, value, pos = varCache)
     },
     warning = function(war) {
-      cat(paste("WARNING: ", war, "\n", sep = ""))
+      cat(paste0("WARNING: ", war, "\n"))
     },
     error = function(err) {
-      cat(paste("ERROR: ", err, "\n", sep = ""))
+      cat(paste0("ERROR: ", err, "\n"))
     },
     finally = {
 
     })
-  })
+  }
 
   return(varCache)
 }
 
 .restoreVars <- function(varCache, envir = parent.frame()){
-  varNames <- names(varCache)
-  nul <- sapply(varNames, function(var){
-    value <- varCache[[var]]
-    if (is.character(value)){value <- paste("'", value, "'", sep = "")}
-    expr <- paste("assign('", var, "', ", value, ", envir = envir)", sep = "")
-    eval(parse(text = expr))
-  })
+  varNames <- rlang::env_names(varCache)
+  for (var in varNames){
+    value <- get(var, pos = varCache)
+    assign(var, value, envir = envir)
+  }
+
+  rm(varCache)
 
   return(invisible(NULL))
 }

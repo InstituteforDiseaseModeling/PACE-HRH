@@ -19,3 +19,23 @@ ggplot grob, or NULL on error
 \description{
 Plot A Single Pair of Mortality Rates Curves From A Results List
 }
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = 100)
+
+g <- ehep::PlotResultsMortalityRates(results, 49, 2030)
+print(g)
+}
+}

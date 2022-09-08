@@ -1,26 +1,50 @@
 #' Save Demographics Information From A Suite Of Experiments
 #'
-#' @param results Results structure
-#' @param filename CSV file to write to
+#' @param results Results structure (as returned by [RunExperiments()])
+#' @param filepath CSV file to write to (default = "out.csv")
 #' @param breaks Vector of population bucket boundaries
 #'
-#' @return Generated output as a data frame (invisible)
+#' @return Generated output as a data frame. AgeBucket values can be used to
+#' summarize the output, e.g. with dplyr.
 #' @export
 #'
 #' @importFrom magrittr %>%
-SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) {
+#'
+#' @md
+#' @examples
+#' \dontrun{
+#' scenario <- "ScenarioName"
+#'
+#'results <-
+#'  ehep::RunExperiments(scenarioName = scenario,
+#'                       trials = 100)
+#'
+#' df <- ehep::SaveSuiteDemographics(results, breaks = c(50))
+#'
+#' df <- df %>%
+#'   dplyr::group_by(Trial, Year, AgeBucket) %>%
+#'   dplyr::summarize(Female = sum(Female), Male = sum(Male))
+#' }
+SaveSuiteDemographics <- function(results, filepath = "out.csv", breaks = NULL) {
   trials <- names(results)
 
   l <- lapply(trials, function(trial){
     trialResults <- results[[trial]]
     popData <- trialResults$Population
-
     .formatTrialDemographics(popData, trial, breaks)
   })
 
-  outdf <- data.table::rbindlist(l)
-  write.csv(outdf, file = filename, row.names = FALSE)
-  return(invisible(outdf))
+  # Combine the list of matrices returned in l, and convert to a data frame
+  outdf <- as.data.frame(do.call(rbind, l))
+
+  # Prune and rename the column set
+  colNames <- c("Trial", "Year", "AgeBucket", "Age", "Female", "Male")
+  outdf <- outdf[1:length(colNames)]
+  names(outdf) <- colNames
+
+  # Write to target file and return
+  data.table::fwrite(outdf, file = filename, row.names = FALSE, na = "NA")
+  return(outdf)
 }
 
 .formatTrialDemographics <- function(popData, trial, breaks) {
@@ -29,140 +53,172 @@ SaveSuiteDemographics <- function(results, filename = "out.csv", breaks = NULL) 
   }
 
   ages <- GPE$ages
+  vsize <- length(ages)
 
-  # Bucketize age ranges according to the "breaks" variable
-  ageBucket <- 1:length(ages)
+  # Bucketize age ranges according to the "breaks" variable. Each value is the
+  # end of an age bucket, so breaks = c(50) divides the age range into two
+  # buckets: 0-50, 51-100
+  ageBucket <- 1:vsize
 
-  if (!is.null(breaks)){
-    # Both "ages" and "breaks" need to be in ascending numerical order
-    assertthat::assert_that(identical(breaks, breaks[order(breaks)]))
-    assertthat::assert_that(identical(ages, ages[order(ages)]))
+  if (is.null(breaks)){
+    breaks <- max(ages)
+  }
 
-    # Add a sentinel value to the breaks list
-    breaks <- c(breaks, max(c(max(ages), max(breaks))) + 1)
+  assertthat::assert_that(identical(breaks, breaks[order(breaks)]))
+  assertthat::assert_that(identical(ages, ages[order(ages)]))
 
-    nBucket <- 1L
-    compValue <- breaks[nBucket]
-    for (i in seq_along(ages)){
-      if (ages[i] > compValue){
-        nBucket <- nBucket + 1L
-        compValue <- breaks[nBucket]
-      }
+  # Add a sentinel value to the breaks list
+  breaks <- c(breaks, max(c(max(ages), max(breaks))) + 1)
 
-      ageBucket[i] <- nBucket
+  nBucket <- 1L
+  compValue <- breaks[nBucket]
+  for (i in seq_along(ages)){
+    if (ages[i] > compValue){
+      nBucket <- nBucket + 1L
+      compValue <- breaks[nBucket]
     }
+
+    ageBucket[i] <- nBucket
   }
 
   outdf <- NULL
   yearList <- names(popData)
 
+  trials <- vector(mode = "numeric", length = vsize)
+  years <- vector(mode = "numeric", length = vsize)
+  nas <- vector(mode = "numeric", length = vsize)
+
+  trials[] <- as.numeric(trial)
+  nas[] <- NA_real_
+
+  # The first year has no fertility/mortality rates, so add in some NA values.
+  # We're going to drop all these values later.
+  popData[[1]]$rates.femaleFertility <- nas
+  popData[[1]]$rates.maleFertility <- nas
+  popData[[1]]$rates.femaleMortality <- nas
+  popData[[1]]$rates.maleMortality <- nas
+
   l <- lapply(yearList, function(year) {
     pop <- popData[[year]]
-
-    trials <- replicate(nrow(pop), trial)
-    years <- replicate(nrow(pop), year)
-
-    # Emit population data
-    df <- data.frame(
-      Trial = trials,
-      Year = years,
-      Age = pop$Range,
-      Female = pop$Female,
-      Male = pop$Male
-    )
-
-    if (!is.null(breaks)){
-      df$AgeBucket <- ageBucket
-
-      df <-
-        df %>%
-        dplyr::group_by(Trial, Year, AgeBucket) %>%
-        dplyr::summarize(Female = sum(Female), Male = sum(Male))
-    }
-
-    return(df)
+    m <- as.matrix(pop)
+    years[] <- as.numeric(year)
+    m <- cbind(trials, years, ageBucket, m)
+    return(m)
   })
 
-  return(data.table::rbindlist(l))
+  return(do.call(rbind, l))
 }
 
-#' Save Experiment Results As CSV File
+#' Save Individual Experiment Results From A Suite As CSV File
 #'
-#' @param results TBD
-#' @param filepath TBD
-#' @param scenario TBD
-#' @param trial TBD
-#' @param run TBD
+#' @param results Results structure (as returned by [RunExperiments()])
+#' @param filepath CSV file to write to (default = "out.csv")
+#' @param scenario Name of experiments scenario, as passed to \code{RunExperiments()}
+#' @param trial Integer index of trial in results structure
+#' @param run Run ID
 #'
-#' @return NULL (invisible)
+#' @return CSV file contents as a data table
 #'
 #' @export
-SaveResults <- function(results, filepath, scenario, trial, run){
-  dfCsv <- data.frame()
+#'
+#' @examples
+#' \dontrun{
+#' library(ehep)
+#'
+#' ehep::InitializePopulation()
+#' ehep::InitializeHealthcareTasks()
+#' ehep::InitializeScenarios()
+#' ehep::InitializeStochasticParameters()
+#' ehep::InitializeSeasonality()
+#'
+#' scenario <- "ScenarioName"
+#'
+#' results <-
+#'   ehep::RunExperiments(scenarioName = scenario,
+#'                        trials = 100)
+#'
+#' ehep::SaveResults(results, scenario = scenario, trial = 3, run = "RunID")
+#' }
+SaveResults <- function(results, filepath = "out.csv", scenario, trial = NULL, run){
+  if (is.null(trial)) {
+    traceMessage(paste0("SaveResults() requires a trial= parameter value"))
+    return(NULL)
+  }
 
-  rows <- seq(1, dim(results$Clinical$Time)[1])
-  years <- dimnames(results$Clinical$Time)[[1]]
+  if (!assertthat::is.count(trial)) {
+    traceMessage(paste0("SaveResults() trial parameter must be a positive integer"))
+    return(NULL)
+  }
 
-  l <- lapply(rows, function(i) {
-    year <- years[i]
-
-    timeRowData <- results$Clinical$Time[i, ]
-    countRowData <- results$Clinical$N[i, ]
-    df1 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
-
-    timeRowData <- results$NonClinical$Time[i, ]
-    countRowData <- results$NonClinical$N[i, ]
-    df2 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
-
-    rowData <- results$NonClinicalAllocation[i, ]
-    rowData <- rowData[-1]
-    df3 <- .emitRowList(rowData, NULL, scenario, trial, run, year)
-
-    rowData <- results$NonProductive[i, ]
-    rowData <- rowData[-1]
-    df4 <- .emitRowList(rowData, NULL, scenario, trial, run, year)
-
-    if (nrow(dfCsv) == 0){
-      dfCsv <<- data.table::rbindlist(list(df1, df2, df3, df4))
-    } else {
-      dfCsv <<- data.table::rbindlist(list(dfCsv, df1, df2, df3, df4))
-    }
-
-    return(1)
-  })
-
-  write.csv(dfCsv, file = filepath, row.names = FALSE)
-
-  invisible(NULL)
-}
-
-.emitRowList <- function(timeRowData, countRowData, scenario, trial, run, year){
-  taskNames <- names(timeRowData)
-
-  l <- lapply(seq_along(timeRowData), function(i) {
-    if (is.null(countRowData)){
-      count <- 0
-    } else {
-      count <- countRowData[[i]]
-    }
-
-    dfOut <- data.frame(
-      "Task_ID" = taskNames[[i]],
-      "Scenario_ID" = scenario,
-      "Trial_num" = trial,
-      "Run_num" = run,
-      "Year" = year,
-      "Month" = NA,
-      "Num_services" = count,
-      "Service_time" = timeRowData[[i]],
-      "Health_benefit" = NA
+  if (trial < 1 | trial > length(results)) {
+    traceMessage(
+      paste0(
+        "SaveResults() trial parameter out of range. Must be between ",
+        1,
+        " and ",
+        length(results),
+        "."
+      )
     )
+    return(NULL)
+  }
+
+  r <- results[[trial]]
+  r <- r[1:4]
+
+  # Transpose the task times matrices from (years x tasks) to (tasks x rows),
+  # then stitch into a long concatenated version.
+  l <- lapply(r, function(taskType){
+    m <- t(taskType$Time)
   })
 
-  return(data.table::rbindlist(l))
+  mt <- do.call(rbind, l)
+
+  # Do the same thing for the task resource counts (no longer necessary, but
+  # still computed.)
+  l <- lapply(r, function(taskType){
+    m <- t(taskType$N)
+  })
+
+  mn <- do.call(rbind, l)
+
+  # Convert the task times matrix to a data table, then melt the table so
+  # each row is a {year, taskID, service_time} tuple. Then do the same
+  # for the task resource counts. (Note: keep.rownames preserves the matrix
+  # row names in a column called "rn")
+  DTt <- data.table::as.data.table(mt, keep.rownames = TRUE)
+  DT <- data.table::melt(DTt, c("rn"))
+  names(DT) <- c("Task_ID", "Year", "Service_time")
+  DTn <- as.data.table(mn, keep.rownames = TRUE)
+  DTn <- data.table::melt(DTn, c("rn"))
+
+  assertthat::are_equal(nrow(DT), length(DTn$value))
+
+  # Add the column of service resource counts column to the output data
+  # table (DT). Then add a bunch of fixed value columns.
+  DT[, ':=' (Num_services = DTn$value)]
+  DT[, ':=' (Scenario_ID = scenario)]
+  DT[, ':=' (Trial_num = trial)]
+  DT[, ':=' (Run_num = run)]
+  DT[, ':=' (Month = NA_integer_)]
+  DT[, ':=' (Health_benefit = NA)]
+
+  data.table::setcolorder(DT, c("Task_ID",
+                                "Scenario_ID",
+                                "Trial_num",
+                                "Run_num",
+                                "Year",
+                                "Month",
+                                "Num_services",
+                                "Service_time",
+                                "Health_benefit"))
+
+  data.table::fwrite(DT, file = filepath, row.names = FALSE, na = "NA")
+
+  return(DT)
 }
 
-#' Save Experiment Results As CSV File
+#' Save Experiment Suite Results As CSV File
 #'
 #' @param results Results structure as returned by \code{RunExperiments()}
 #' @param filepath Location to write CSV file
@@ -206,12 +262,9 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
   })
 
   out <- data.table::rbindlist(l)
-
-#  write.csv(out, file = filepath, row.names = FALSE)
-
   data.table::fwrite(out, file = filepath, row.names = FALSE, na = "NA")
 
-  invisible(NULL)
+  return(invisible(NULL))
 }
 
 # func2 ... SEASONALITY VERSION
@@ -279,89 +332,82 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
                 "Service_time" = timesCol,
                 "Health_benefit" = NA))
 
-  # s <- results$SeasonalityResults
-  # taskIds <- names(s)
-  # n = length(taskIds)
-  #
-  # NAs <- replicate(n, NA)
-  #
-  # dummyDf <- data.frame(
-  #   "Task_ID" = taskIds,
-  #   "Scenario_ID" = scenario,
-  #   "Trial_num" = trial,
-  #   "Run_num" = run
-  # )
-  #
-  # l <- lapply(1:252, function(t){
-  #   year <- ((t - 1) %/% 12) + GPE$startYear
-  #   month <- ((t - 1) %% 12) + 1
-  #
-  #   times <- sapply(taskIds, function(taskId){
-  #     time <- s[[taskId]]$Time[t]
-  #   })
-  #
-  #   Ns <- sapply(taskIds, function(taskId){
-  #     N <- s[[taskId]]$N[t]
-  #   })
-  #
-  #   retDf <- dummyDf
-  #   retDf$Year <- replicate(n, year)
-  #   retDf$Month <- replicate(n, month)
-  #   retDf$Num_services = Ns
-  #   retDf$Service_time = times
-  #   retDf$Health_benefit = NAs
-  #
-  #   return(retDf)
-  #
-  #   # return(data.frame("Task_ID" = taskIds,
-  #   #                   "Scenario_ID" = scenario,
-  #   #                   "Trial_num" = trial,
-  #   #                   "Run_num" = run,
-  #   #                   "Year" = year,
-  #   #                   "Month" = month,
-  #   #                   "Num_services" = Ns,
-  #   #                   "Service_time" = times,
-  #   #                   "Health_benefit" = NA))
-  # })
-  #
-  # df <- data.table::rbindlist(l)
   return(df)
 }
 
-
 .saveSuiteResults1 <- function(results, scenario, trial, run){
-  dfCsv <- data.frame()
+  if (is.null(trial)) {
+    traceMessage(paste0("SaveResults() requires a trial= parameter value"))
+    return(NULL)
+  }
 
-  rows <- seq(1, dim(results$Clinical$Time)[1])
-  years <- dimnames(results$Clinical$Time)[[1]]
+  if (!assertthat::is.count(trial)) {
+    traceMessage(paste0("SaveResults() trial parameter must be a positive integer"))
+    return(NULL)
+  }
 
-  l <- lapply(rows, function(i) {
-    year <- years[i]
+  if (trial < 1 | trial > length(results)) {
+    traceMessage(
+      paste0(
+        "SaveResults() trial parameter out of range. Must be between ",
+        1,
+        " and ",
+        length(results),
+        "."
+      )
+    )
+    return(NULL)
+  }
 
-    timeRowData <- results$Clinical$Time[i, ]
-    countRowData <- results$Clinical$N[i, ]
-    df1 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
+  r <- results[[trial]]
+  r <- r[1:4]
 
-    timeRowData <- results$NonClinical$Time[i, ]
-    countRowData <- results$NonClinical$N[i, ]
-    df2 <- .emitRowList(timeRowData, countRowData, scenario, trial, run, year)
-
-    rowData <- results$NonClinicalAllocation[i, ]
-    rowData <- rowData[-1]
-    df3 <- .emitRowList(rowData, NULL, scenario, trial, run, year)
-
-    rowData <- results$NonProductive[i, ]
-    rowData <- rowData[-1]
-    df4 <- .emitRowList(rowData, NULL, scenario, trial, run, year)
-
-    if (nrow(dfCsv) == 0){
-      dfCsv <<- data.table::rbindlist(list(df1, df2, df3, df4))
-    } else {
-      dfCsv <<- data.table::rbindlist(list(dfCsv, df1, df2, df3, df4))
-    }
-
-    return(1)
+  # Transpose the task times matrices from (years x tasks) to (tasks x rows),
+  # then stitch into a long concatenated version.
+  l <- lapply(r, function(taskType){
+    m <- t(taskType$Time)
   })
 
-  return(dfCsv)
+  mt <- do.call(rbind, l)
+
+  # Do the same thing for the task resource counts (no longer necessary, but
+  # still computed.)
+  l <- lapply(r, function(taskType){
+    m <- t(taskType$N)
+  })
+
+  mn <- do.call(rbind, l)
+
+  # Convert the task times matrix to a data table, then melt the table so
+  # each row is a {year, taskID, service_time} tuple. Then do the same
+  # for the task resource counts. (Note: keep.rownames preserves the matrix
+  # row names in a column called "rn")
+  DTt <- data.table::as.data.table(mt, keep.rownames = TRUE)
+  DT <- data.table::melt(DTt, c("rn"))
+  names(DT) <- c("Task_ID", "Year", "Service_time")
+  DTn <- as.data.table(mn, keep.rownames = TRUE)
+  DTn <- data.table::melt(DTn, c("rn"))
+
+  assertthat::are_equal(nrow(DT), length(DTn$value))
+
+  # Add the column of service resource counts column to the output data
+  # table (DT). Then add a bunch of fixed value columns.
+  DT[, ':=' (Num_services = DTn$value)]
+  DT[, ':=' (Scenario_ID = scenario)]
+  DT[, ':=' (Trial_num = trial)]
+  DT[, ':=' (Run_num = run)]
+  DT[, ':=' (Month = NA_integer_)]
+  DT[, ':=' (Health_benefit = NA)]
+
+  data.table::setcolorder(DT, c("Task_ID",
+                                "Scenario_ID",
+                                "Trial_num",
+                                "Run_num",
+                                "Year",
+                                "Month",
+                                "Num_services",
+                                "Service_time",
+                                "Health_benefit"))
+
+  return(data.table::setDF(DT))
 }

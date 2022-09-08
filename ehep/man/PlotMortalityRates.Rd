@@ -4,10 +4,10 @@
 \alias{PlotMortalityRates}
 \title{Plot Mortality Rates}
 \usage{
-PlotMortalityRates(ratesMatrix, year)
+PlotMortalityRates(populationRates, year)
 }
 \arguments{
-\item{ratesMatrix}{Matrix of banded mortality rates versus years}
+\item{populationRates}{Population rates list, as returned by \code{RunExperiments()}}
 
 \item{year}{Year}
 }
@@ -16,4 +16,24 @@ ggplot grob
 }
 \description{
 Plot Mortality Rates
+}
+\examples{
+\dontrun{
+library(ehep)
+
+ehep::InitializePopulation()
+ehep::InitializeHealthcareTasks()
+ehep::InitializeScenarios()
+ehep::InitializeStochasticParameters()
+ehep::InitializeSeasonality()
+
+scenario <- "ScenarioName"
+
+results <-
+  ehep::RunExperiments(scenarioName = scenario,
+                       trials = 100)
+
+g <- ehep::PlotMortalityRates(results[[49]]$PopulationRates, 2030)
+print(g)
+}
 }

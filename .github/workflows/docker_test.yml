@@ -7,12 +7,12 @@ on:
     branches:
       - "main"
     paths:
-      - 'ehep/**'  
+      - 'ehep/**'
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: mewu/rimage
+      image: mewu/rimage:pandoc
     steps:
       - uses: actions/checkout@v2
       - name: Setup Dependency
@@ -22,7 +22,7 @@ jobs:
       - name: Check package
         working-directory: 'ehep'
         run: Rscript -e 'devtools::check(error_on = c("error"))'
-        env: 
+        env:
           NOT_CRAN: true
       - name: Run unittest
         working-directory: 'ehep'

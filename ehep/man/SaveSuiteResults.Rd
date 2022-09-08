@@ -2,7 +2,7 @@
 % Please edit documentation in R/ehep_save_results.R
 \name{SaveSuiteResults}
 \alias{SaveSuiteResults}
-\title{Save Experiment Results As CSV File}
+\title{Save Experiment Suite Results As CSV File}
 \usage{
 SaveSuiteResults(results, filepath, scenario, run)
 }
@@ -19,7 +19,7 @@ SaveSuiteResults(results, filepath, scenario, run)
 NULL (invisible)
 }
 \description{
-Save Experiment Results As CSV File
+Save Experiment Suite Results As CSV File
 }
 \examples{
 \dontrun{
