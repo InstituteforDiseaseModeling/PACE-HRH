@@ -1,7 +1,7 @@
 context("Test ValidateInputExcelFileContent")
 local_edition(3)
 setwd("../..")
-source("src/ValidateInput.R")
+source("ValidateInput.R")
 
 # test validate no rules
 test_that("Validation no rules", {
