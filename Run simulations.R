@@ -9,6 +9,8 @@ library(tidyverse)
 #############################################################
 rm(list = ls())
 
+# Pandoc is required to generate validation reports: https://pandoc.org/installing.html
+# Please examine the report before running simulation to prevent data issue
 rmarkdown::render("validation_report.Rmd", "word_document", params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
 shell.exec("validation_report.docx")
 
