@@ -9,8 +9,8 @@ library(tidyverse)
 #############################################################
 rm(list = ls())
 
-#source("ValidateInput.R")
-#ValidateInputExcelFileContent("config/R Model Inputs.xlsx")
+rmarkdown::render("validation_report.Rmd", "word_document", params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
+shell.exec("validation_report.docx")
 
 ehep::Trace(TRUE)
 ehep::InitializePopulation()
