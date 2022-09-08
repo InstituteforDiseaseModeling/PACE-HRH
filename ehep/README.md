@@ -20,6 +20,8 @@ ehep::InitializeScenarios()
 ehep::InitializeStochasticParameters()
 ehep::InitializeSeasonality()
 
+ehep::SetGlobalStartEndYears(2020, 2040)
+
 # Set the name of a scenario to run. The scenario must be in the list defined
 # in the input data spreadsheet.
 scenario <- "ScenarioA"
@@ -63,7 +65,9 @@ default values.
 {
   "configDirectoryLocation" : "./config",
   "inputExcelFile" : "R Model Inputs.xlsx",
-  "suiteRngSeed" : 12345
+  "suiteRngSeed" : 12345,
+  "startYear" : 2020,
+  "endYear" : 2040
 }
 ```
 
@@ -82,6 +86,9 @@ generation. Before each suite of stochastic trials, the system calls the
 R function `set.seed()` with a random number seed value. The system uses
 a seed value provided by the user in the `seed =` parameter of the `RunExperiments()`
 function, or this global configuration value.
+- _startYear_: Starting year for simulations. Default = 2020.
+- _endYear_: Ending year for simulations. Default = 2040. Note: Users can also
+use the `SetGlobalStartEndYears()` function to set start and end years.
 
 ### Setting global configuration variables programmatically
 

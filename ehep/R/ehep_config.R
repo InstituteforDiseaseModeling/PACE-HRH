@@ -56,7 +56,24 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
           }
         }
 
-        # TODO: Add code to configure start/end years
+        start <- GPE$startYear
+        end <- GPE$endYear
+
+        if (!is.null(configInfo$startYear)){
+          i <- as.integer(configInfo$startYear)
+          if (!is.na(i)){
+            start <- i
+          }
+        }
+
+        if (!is.null(configInfo$endYear)){
+          i <- as.integer(configInfo$endYear)
+          if (!is.na(i)){
+            end <- i
+          }
+        }
+
+        SetGlobalStartEndYears(start, end)
 
         traceMessage(paste0("Global configuration loaded from ", path))
       },
