@@ -1,5 +1,5 @@
 ---
-title: ''
+title: 'Validation report'
 output:
   word_document: default
   pdf_document: default
@@ -46,7 +46,7 @@ for (f in files){
     select(expression) %>%
     unique() %>% 
    .$expression
-  cat(paste0("expression: ", exp, "\n"))
+  cat(paste0("expression: ", exp, "\n\n"))
   data <- read.csv(paste(params$outputDir, f, sep="/"))
   knitr::kable(head(data), caption=exp)
 }

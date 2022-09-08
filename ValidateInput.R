@@ -93,7 +93,7 @@ ValidateInputExcelFileContent <- function(inputFile,
     geom_bar(stat = "identity") +
     scale_fill_manual(values = c("passes"="green", "fails"="red", "warning"="yellow", "info"="blue")) +
     scale_x_continuous(labels=scales::percent) +
-    geom_text(data=subset(final_result,total> 0),ggplot2::aes(label=total, y =name), size=2, position=position_fill()) +
+    geom_text(data=subset(final_result,total> 0),ggplot2::aes(label=total, y =name), size=1.5, position=position_fill()) +
     ggtitle("Input Spreadsheet Validation Results")
   ggsave(outfile, p, width = 160, height = 100, units="mm")
   
