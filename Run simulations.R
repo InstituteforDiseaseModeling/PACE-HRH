@@ -4,9 +4,6 @@ library(devtools)
 library(beepr)
 library(tidyverse)
 
-dirs = "C:/Users/ruiha/OneDrive - Bill & Melinda Gates Foundation/Documents/GitHub/Ethiopia-HEP-Capacity-Analysis"
-setwd(dirs)
-
 #############################################################
 #Run the lines below after changing R Model Inputs.xlsx file#
 #############################################################
