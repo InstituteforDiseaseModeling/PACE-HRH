@@ -20,6 +20,10 @@ jobs:
       - name: Install devtools
         run: |
           Rscript -e "install.packages('devtools')"
+      - name: Install pandoc
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: install pandoc  
       - name: Setup Dependency
         working-directory: 'tests/setup'
         run: |
