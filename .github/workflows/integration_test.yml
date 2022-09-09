@@ -25,13 +25,13 @@ jobs:
         run: |
           Rscript install_dep_for_tests.R    
       - name: Install packages
+      # todo: using Readme instruction to install package
         run: |
-          # todo: using Readme instruction to install package
-          Rscript -e "options(install.packages.check.source = 'both')"
-          Rscript -e "devtools::install.version('httpuv', version='1.6.5')"
+          Rscript -e "options(install.packages.check.source = 'no')"
+          Rscript -e "install.packages('httpuv')"
           Rscript -e "library(httpuv)"
-          Rscript -e "mylibs <- list.dirs(.libPaths()); mylibs[grep('httpuv', mylibs)]"
-          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='never', repos = NULL, build=TRUE, dependencies=TRUE)"
+          Rscript -e "mylibs <- list.dirs(.libPaths()); print(mylibs[grep('httpuv', mylibs)])"
+          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
         shell: cmd
       - name: Run Integration tests
         run: |
