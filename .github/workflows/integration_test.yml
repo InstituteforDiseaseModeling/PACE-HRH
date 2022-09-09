@@ -29,6 +29,8 @@ jobs:
           # todo: using Readme instruction to install package
           Rscript -e "options(install.packages.check.source = 'both')"
           Rscript -e "devtools::install.version('httpuv', version='1.6.5')"
+          Rscript -e "library(httpuv)"
+          Rscript -e "mylibs <- list.dirs(.libPaths()); mylibs[grep('httpuv', mylibs)]"
           Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='never', repos = NULL, build=TRUE, dependencies=TRUE)"
       - name: Run Integration tests
         run: |
