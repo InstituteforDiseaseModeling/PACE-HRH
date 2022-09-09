@@ -28,7 +28,7 @@ jobs:
       # todo: using Readme instruction to install package
         run: |
           Rscript -e "options(install.packages.check.source = 'no')"
-          Rscript -e "install.packages("httpuv", build = FALSE, type = 'win.binary')"
+          Rscript -e "install.packages('httpuv', build = FALSE, type = 'win.binary')"
           Rscript -e "library(httpuv)"
           Rscript -e "mylibs <- list.dirs(.libPaths()); print(mylibs[grep('httpuv', mylibs)])"
           Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
