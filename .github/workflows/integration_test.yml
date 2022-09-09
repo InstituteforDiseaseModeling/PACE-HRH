@@ -32,6 +32,7 @@ jobs:
           Rscript -e "library(httpuv)"
           Rscript -e "mylibs <- list.dirs(.libPaths()); mylibs[grep('httpuv', mylibs)]"
           Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='never', repos = NULL, build=TRUE, dependencies=TRUE)"
+        shell: cmd
       - name: Run Integration tests
         run: |
           Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'))"
