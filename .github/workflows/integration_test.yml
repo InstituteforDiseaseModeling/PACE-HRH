@@ -27,7 +27,7 @@ jobs:
       - name: Install packages
         run: |
           # todo: using Readme instruction to install package
-          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=NA)"
+          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='never', repos = NULL, build=TRUE, dependencies=NA)"
       - name: Run Integration tests
         run: |
           Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'))"
