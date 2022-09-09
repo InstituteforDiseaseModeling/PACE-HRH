@@ -17,7 +17,7 @@ rmarkdown::render(input = "validation_report.Rmd",
                   output_format = "html_document", 
                   output_dir = "log",
                   params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
-shell.exec("log/validation_report.html")
+shell.exec(normalizePath("log/validation_report.html"))
 # source("ValidateInput.R")
 # result <- Validate(inputFile="config/R Model Inputs.xlsx")
 print("Please check validation results in \"log\" folder", quote=FALSE)
