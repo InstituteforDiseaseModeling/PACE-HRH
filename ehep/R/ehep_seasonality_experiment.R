@@ -13,20 +13,13 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
     return(NULL)
   }
 
-  # Boots and braces stuff: this function should never be called on a scenario
-  # that isn't set up for seasonality.
-  assertthat::assert_that(scenario$o_Seasonality == TRUE)
-
   # The seasonality "curve" used when we don't know the seasonality
   dummyCurve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12
 
   # Look for seasonality-affected tasks in the task list for this scenario
-#  taskIds <- which(GPE$taskData$Geography == scenario$PopType)
-
 
   # Quick hack to remove PopType filter. TODO: better version!
   taskIds <- seq_along(GPE$taskData$Geography)
-
 
   taskNames <- GPE$taskData$Indicator[taskIds]
   seasonalityTaskNames <- GPE$seasonalityOffsets$Task
@@ -42,8 +35,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 
       # Find the appropriate seasonality curve
       curve <-
-        .getSeasonalityCurve(seasonalityTaskCurves[seasonalityTaskIndex],
-                             scenario$PopType)
+        .getSeasonalityCurve(seasonalityTaskCurves[seasonalityTaskIndex])
 
       # Renormalize the seasonality curve if necessary
       if (abs(sum(curve) - 1.0) > 1e-6){
@@ -125,14 +117,13 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   return(round(monthly, 0))
 }
 
-.getSeasonalityCurve <- function(curveType, popType) {
+.getSeasonalityCurve <- function(curveType) {
   curve = NULL
 
   curve <- GPE$seasonalityCurves[[curveType]]
 
   if (is.null(curve)) {
-    traceMessage(paste("Unknown seasonality curve: ", curveType, "/", popType,
-                 sep = ""))
+    traceMessage(paste0("Unknown seasonality curve: ", curveType))
     return(NULL)
   } else {
     return(curve)

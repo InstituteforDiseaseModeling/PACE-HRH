@@ -151,10 +151,8 @@ RunExperiment <- function(debug = FALSE){
   results$NonProductive <- EXP$nonProductiveTimes
   results$FTEs <- data.frame("Years" = GPE$years, "FTEs" = N)
 
-  if (scenario$o_Seasonality){
-    seasonalityResults <- runSeasonalityExperiment(results)
-    results$SeasonalityResults <- seasonalityResults
-  }
+  seasonalityResults <- runSeasonalityExperiment(results)
+  results$SeasonalityResults <- seasonalityResults
 
   return(results)
 }

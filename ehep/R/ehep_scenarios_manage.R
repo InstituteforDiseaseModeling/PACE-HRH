@@ -4,9 +4,7 @@
     "WeeksPerYr",
     "HrsPerWeek",
     "BaselinePop",
-    "PopType",
     "o_PopGrowth",
-    "o_Seasonality",
     "o_Fertility_decr",
     "o_MHIVTB_decr",
     "o_ChildDis_decr",
@@ -24,8 +22,6 @@
     "double",
     "double",
     "double",
-    "character",
-    "logical",
     "logical",
     "logical",
     "logical",
@@ -74,9 +70,7 @@ CreateScenariosTable <- function() {
 #' * __WeeksPerYr__ (double)
 #' * __HrsPerWeek__ (double)
 #' * __BaselinePop__ (double)
-#' * __PopType__ (character)
 #' * __o_PopGrowth__ (logical)
-#' * __o_Seasonality__ (logical)
 #' * __o_Fertility_decr__ (logical)
 #' * __o_MHIVTB_decr__ (logical)
 #' * __o_ChildDis_decr__ (logical)
@@ -198,9 +192,7 @@ DeleteScenario <-
 #' * __WeeksPerYr__ (double)
 #' * __HrsPerWeek__ (double)
 #' * __BaselinePop__ (double)
-#' * __PopType__ (character)
 #' * __o_PopGrowth__ (logical)
-#' * __o_Seasonality__ (logical)
 #' * __o_Fertility_decr__ (logical)
 #' * __o_MHIVTB_decr__ (logical)
 #' * __o_ChildDis_decr__ (logical)
