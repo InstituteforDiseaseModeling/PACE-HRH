@@ -43,7 +43,6 @@ jobs:
       - name: Check input spreadsheet
         run: |
           Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/R Model Inputs.xlsx', outputDir='log'), output_dir='log')"
-          Rscript -e "rmarkdown::render('validation_report.Rmd', 'word_document', params=list(inputFile='config/R Model Inputs.xlsx', outputDir='log'), output_dir='log')"
       - uses: actions/upload-artifact@v3
         with:
           name: validation-results
