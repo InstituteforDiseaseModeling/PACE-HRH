@@ -10,7 +10,6 @@ library(ehep)
 .Success <- 0L
 .errValidationRuleFailed <- -11L
 
-
 #' Perform Validation on Input Excel File
 #'
 #' @description
@@ -18,13 +17,31 @@ library(ehep)
 #'
 #' @param inputFile Excel file to examine. If NULL, check the file defined in the global Configuration.
 #' @param outputDir Results output directory. default is in log folder
-#' @param sheetNames A vector of names of the sheets to be validate
 #'
 #' @return Error code.
 #' 0 = Success
 #' -1 = validation error
-#'
-#' @export
+Validate <- function(inputFile, outputDir = "log"){
+  
+  # Make sure outputDir is empty
+  tryCatch(
+    {
+      unlink(outputDir,recursive=TRUE)
+    },
+    error=function(cond){
+      message(cond)
+    }
+  )
+  dir.create(outputDir, showWarnings = FALSE)
+  
+  result_d <- ValidateInputExcelFileContent(inputFile = inputFile, outputDir = outputDir, sheetNames = NULL)
+  sink(file = paste(outputDir, "model_input_check.log", sep = "/"))
+  result_m <- ehep::CheckInputExcelFileFormat(inputFile = inputFile)
+  sink()
+  return (if (result_d==0 & result_m==0) 0 else (-1))
+}
+
+
 ValidateInputExcelFileContent <- function(inputFile,
                                           outputDir = "log",
                                           sheetNames = NULL){
@@ -34,9 +51,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   if (is.null(sheetNames)){
     sheetNames <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", list.files("config/validation/rules"))
   }
-  
-  dir.create(outputDir, showWarnings = FALSE)
-  
+ 
   # loop over each sheet and apply corresponding rules
   result <- data.frame()
   rules_combined <- data.frame()

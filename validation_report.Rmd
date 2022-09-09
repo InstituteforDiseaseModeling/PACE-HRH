@@ -1,11 +1,11 @@
 ---
 title: 'Validation report'
 output:
-  word_document: default
-  pdf_document: default
   html_document:
      toc: true
      df_print: paged
+  pdf_document: default
+  word_document: default
 params:
   inputFile: config/R Model Inputs.xlsx
   outputDir: log
@@ -13,17 +13,12 @@ params:
 
 # Validation Results
 
-## Model Requirement Check:
-
-```{r}
-ehep::CheckInputExcelFileFormat(inputFile = params$inputFile)
-```
 
 ## Input Data Check:
 
 ```{r, results='hide',  message=FALSE, warning=FALSE}
 source("ValidateInput.R")
-ValidateInputExcelFileContent(inputFile = params$inputFile, outputDir = params$outputDir)
+Validate(inputFile = params$inputFile, outputDir = params$outputDir)
 ```
 
 ```{r echo=FALSE, results='asis'}
@@ -34,20 +29,30 @@ knitr::include_graphics(normalizePath(fr))
 
 -   Please check below csv files in `r params$outputDir` folder for any row based validation issue:
 
-```{r echo=FALSE}
+
+```{r echo=FALSE, comment='', results='asis'}
 files <- list.files(path=params$outputDir, pattern = "(info|warning|error).*.csv")
 
 metadata <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
 for (f in files){
-  cat(paste0("check: ", normalizePath(paste(params$outputDir, f, sep="/")), "\n"))
+  filename <- normalizePath(paste(params$outputDir, f, sep="/"))
+  print(paste0(filename,"\n\n"))
   rule_name <- gsub('^.+?_violation_(.+?).csv', '\\1', f)
   exp <- metadata %>%
     filter(name == rule_name) %>%
     select(expression) %>%
     unique() %>% 
    .$expression
-  cat(paste0("expression: ", exp, "\n\n"))
+  # print(paste0("expression: ", exp, "\n\n"))
   data <- read.csv(paste(params$outputDir, f, sep="/"))
-  knitr::kable(head(data), caption=exp)
+  print(knitr::kable(head(data), caption=exp) 
+        %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
+  print("\n")
 }
+```
+
+## Model Requirement Check:
+
+```{r echo=FALSE, comment=''}
+cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep = '\n')
 ```
