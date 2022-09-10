@@ -30,24 +30,23 @@ knitr::include_graphics(normalizePath(fr))
 -   Please check below csv files in `r params$outputDir` folder for any row based validation issue:
 
 
-```{r echo=FALSE, comment='', results='asis'}
+```{r echo=FALSE, comment='', results='asis', warning=FALSE, message=TRUE, paged.print=TRUE}
 files <- list.files(path=params$outputDir, pattern = "(info|warning|error).*.csv")
 
 metadata <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
 for (f in files){
   filename <- normalizePath(paste(params$outputDir, f, sep="/"))
-  print(paste0(filename,"\n\n"))
+  message(paste0(filename,"\n\n"))
   rule_name <- gsub('^.+?_violation_(.+?).csv', '\\1', f)
   exp <- metadata %>%
     filter(name == rule_name) %>%
     select(expression) %>%
     unique() %>% 
    .$expression
-  # print(paste0("expression: ", exp, "\n\n"))
+  
   data <- read.csv(paste(params$outputDir, f, sep="/"))
-  print(knitr::kable(head(data), caption=exp) 
+  print(kableExtra::kbl(head(data), caption=exp, format='pipe') 
         %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
-  print("\n")
 }
 ```
 
