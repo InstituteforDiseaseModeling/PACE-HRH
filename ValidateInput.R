@@ -8,14 +8,14 @@ for(i in packages){
 }
 library(ehep)
 .Success <- 0L
-.errValidationRuleFailed <- -11L
+.errValidationRuleFailed <- -1L
 
 #' Perform Validation on Input Excel File
 #'
 #' @description
 #' Validate if all inputs comply with parameter rules
 #'
-#' @param inputFile Excel file to examine. If NULL, check the file defined in the global Configuration.
+#' @param inputFile Excel file to examine.
 #' @param outputDir Results output directory. default is in log folder
 #'
 #' @return Error code.
@@ -38,7 +38,7 @@ Validate <- function(inputFile, outputDir = "log"){
   sink(file = paste(outputDir, "model_input_check.log", sep = "/"))
   result_m <- ehep::CheckInputExcelFileFormat(inputFile = inputFile)
   sink()
-  return (if (result_d==0 & result_m==0) 0 else (-1))
+  return (if (result_d==.Success & result_m==ehep:::.Success) .Success else (.errValidationRuleFailed))
 }
 
 
@@ -62,7 +62,7 @@ ValidateInputExcelFileContent <- function(inputFile,
       stop(paste("rule not found for:", i))
     }
     else{
-      rules <- validate::validator(.file=f)
+      rules <- validator(.file=f)
       if (length(rules_combined)==0){
         rules_combined <- validate::as.data.frame(rules)
       }
@@ -70,11 +70,11 @@ ValidateInputExcelFileContent <- function(inputFile,
         rules_combined <- rbind(rules_combined, validate::as.data.frame(rules))
       }
       
-      data <- readxl::read_xlsx(inputFile, sheet = i)
+      data <- read_xlsx(inputFile, sheet = i)
       data_target <- data.frame(data)
       
       # Confront the rules and check if any error occurs
-      out <- validate::confront(data_target, rules,  lin.ineq.eps=0, lin.eq.eps=1e-08)
+      out <- confront(data_target, rules,  lin.ineq.eps=0, lin.eq.eps=1e-08)
       if(TRUE %in% validate::summary(out)$error){
         stop(paste("Some error occurred evaluating rules:", i))
       }
@@ -97,18 +97,18 @@ ValidateInputExcelFileContent <- function(inputFile,
   
   # summary and plot check result
   final_result <- rules_combined %>%
-    dplyr::select(c("name", "severity")) %>%
+    select(c("name", "severity")) %>%
     inner_join(result) %>%
-    dplyr::select(c("name", "severity", "items", "fails", "passes", "expression")) %>%
+    select(c("name", "severity", "items", "fails", "passes", "expression")) %>%
     pivot_longer(cols=c("passes", "fails"), names_to = "result", values_to = "total") %>%
-    mutate(result = dplyr::if_else(severity != 'error' & result == 'fails', severity, result))
+    mutate(result = if_else(severity != 'error' & result == 'fails', severity, result))
   
   outfile <- file.path(outputDir, "input_validation_results.png")
   p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
     geom_bar(stat = "identity") +
     scale_fill_manual(values = c("passes"="green", "fails"="red", "warning"="yellow", "info"="blue")) +
     scale_x_continuous(labels=scales::percent) +
-    geom_text(data=subset(final_result,total> 0),ggplot2::aes(label=total, y =name), size=1.5, position=position_fill()) +
+    geom_text(data=subset(final_result,total> 0), aes(label=total, y =name), size=1.5, position=position_fill()) +
     ggtitle("Input Spreadsheet Validation Results")
   ggsave(outfile, p, width = 160, height = 100, units="mm")
   
@@ -127,7 +127,7 @@ ValidateInputExcelFileContent <- function(inputFile,
       }
       tryCatch(
         {
-          df_violations <- validate::violating(target, out[i])
+          df_violations <- violating(target, out[i])
         },
         error=function(e){
           message(paste("Rule failed but No record-wise info: ", e))
@@ -137,7 +137,6 @@ ValidateInputExcelFileContent <- function(inputFile,
       )
       if (!is.null(df_violations) & nrow(df_violations) > 0){
         # only fail the validation for critical rules
-        # severity <- validate::as.data.frame(rules) %>% dplyr::filter(name==i) %>% dplyr::select(severity)
        
         if (severity == "error"){
           errcode <- .errValidationRuleFailed
