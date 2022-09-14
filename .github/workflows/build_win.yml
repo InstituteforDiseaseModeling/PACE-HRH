@@ -43,6 +43,8 @@ jobs:
 
   job_build:
     runs-on: windows-latest
+    permissions:
+      contents: write
     strategy:
         matrix:
           R: [ '4.2' ]
