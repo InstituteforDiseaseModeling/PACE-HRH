@@ -86,3 +86,9 @@ jobs:
       run: |
         echo 'version: ${{ needs.job_check.outputs.version }}'
         gh release create ${{ needs.job_check.outputs.version }} ehep_${{ needs.job_check.outputs.version }}.zip --generate-notes
+    - name: Publish gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ehep/inst/doc
