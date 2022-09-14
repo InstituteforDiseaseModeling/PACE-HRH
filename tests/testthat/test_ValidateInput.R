@@ -41,7 +41,7 @@ test_that("Validation capture Success", {
   testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                       outputDir = logdir,
                                                                       sheetNames = c("StochasticParameters")))
-  result_file <- paste(logdir, "info_violation_Large_SD_value.csv", sep="/")
+  result_file <- paste(logdir, "StochasticParameters_info_violation_Large_SD_value.csv", sep="/")
   testthat::expect_true(file.exists(result_file))
   violations <- read.csv(result_file)
   # search for the row that fails as expected
