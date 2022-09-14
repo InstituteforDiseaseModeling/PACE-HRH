@@ -5,13 +5,20 @@ options:
 ---
 
 rules:
-- expr: '(!is.na(AnnualDeltaRatio) & ! is.na(StartingRateInPop)) | !is.na(ValueCode) |  !is.na(References.Notes)'
-  name: Missing_parameter_value
-  label: Missing_parameter_value
+- expr: 'if(!is.na(StartingRateInPop)) !is.na(AnnualDeltaRatio)'
+  name: Missing_AnnualDeltaRatio_value
+  label: Missing_AnnualDeltaRatio_value
   description: |
-    Missing parameters must be explained by value code
+    AnnualDeltaRatio Should not be empty if StartingRateInPop contains value.
   meta:
-    severity: info
+    severity: error
+- expr: 'if(!is.na(StartingRateInPop)) !is.na(Indicator)'
+  name: Indicator
+  label: Indicator
+  description: |
+    Indicator should not be empty if StartingRateInPop contains value.
+  meta:
+    severity: error
 - expr: 'is.na(RateMultiplier)'
   name: RateMultiplier
   label: RateMultiplier
@@ -23,23 +30,30 @@ rules:
   name: NumContacts_Frequency
   label: NumContacts_Frequency
   description: |
-    if startingRate is present, one of the column with task frequency must be present
+    If StartingRateInPop contains value, NumContactsPerUnit and NumContactsAnnual should not both be empty.
   meta:
     severity: error
-- expr: 'if(!is.na(StartingRateInPop)) !is.na(MinsPerContact) | ! is.na(References.Notes)'
+- expr: '!(!is.na(NumContactsPerUnit) & !is.na(NumContactsAnnual))'
+  name: NumContacts_Frequency_Duplicate
+  label: NumContacts_Frequency_Duplicate
+  description: |
+    NumContactsPerUnit and NumContactsAnnual should not both contain value.
+  meta:
+    severity: warning
+- expr: 'if(!is.na(StartingRateInPop)) !is.na(MinsPerContact)'
   name: MinsPerContact
   label: MinsPerContact
   description: |
-    if startingRate is present, either MinsPerContact must have value or notes in reference
+    MinsPerContact should not be empty if StartingRateInPop contains value.
   meta:
     severity: error
-- expr: 'if(!is.na(StartingRateInPop)) !is.na(Indicator)'
-  name: Indicator
-  label: Indicator
+- expr: 'if(is.na(StartingRateInPop)) !is.na(References.Notes)'
+  name: Missing_StartingRateInPop
+  label: Missing_StartingRateInPop
   description: |
-    if startingRate is present, Indicator must exist
+    References/Notes should not be empty, if StartingRateInPop is empty.
   meta:
-    severity: error
+    severity: warning  
 - expr: '!is.na(RelevantPop)'
   name: RelevantPop_missing
   label: RelevantPop_missing
@@ -54,4 +68,10 @@ rules:
     RelevantPop cannot be '-' if StartingRateInPop is present
   meta:
     severity: error
-
+- expr: 'if (!is.na(AnnualDeltaRatio)) in_range(AnnualDeltaRatio, min=0.98, max=1.02)'
+  name: AnnualDeltaRatio_value_Range
+  label: AnnualDeltaRatio_value_Range
+  description: |
+    AnnualDeltaRatio typically within 1.0 +/- 2%. Large value compounded over long time horizon produces questionable predictions.
+  meta:
+    severity: info

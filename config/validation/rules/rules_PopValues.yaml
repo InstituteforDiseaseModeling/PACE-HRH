@@ -5,14 +5,14 @@ options:
 ---
 
 rules:
-- expr: '!is.na("InitValue")'
+- expr: '!is.na(InitValue)'
   name: InitValue_missing
   label: InitValue_missing
   description: |
     InitValue must not be missing
   meta:
     severity: error
-- expr: '!is.na("ChangeRate")'
+- expr: '!is.na(ChangeRate)'
   name: ChangeRate_missing
   label: ChangeRate_missing
   description: |

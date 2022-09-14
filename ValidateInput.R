@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -9,6 +9,12 @@ for(i in packages){
 library(ehep)
 .Success <- 0L
 .errValidationRuleFailed <- -1L
+
+# define key columns for each sheet (use for reporting)
+key_cols <- list (PopValues = c("Description"), 
+                  StochasticParameters = c("value"),
+                  TaskValues_ref = c("Indicator"))
+
 
 #' Perform Validation on Input Excel File
 #'
@@ -79,7 +85,7 @@ ValidateInputExcelFileContent <- function(inputFile,
         stop(paste("Some error occurred evaluating rules:", i))
       }
       # Apply rules and save the violation results
-      check <- .get_violation_rows(out, data_target, rules, outputDir)
+      check <- .get_violation_rows(out, data_target, rules, outputDir, i)
       errcode = min(errcode, check)
       
       # combine results in the loop
@@ -93,7 +99,10 @@ ValidateInputExcelFileContent <- function(inputFile,
     }
   }
   result_file <- file.path(outputDir, "input_validation_results.csv")
-  write.csv(result, result_file)
+  result_details <- result %>% 
+    inner_join(rules_combined, by = c("name")) %>%
+    select(-c("language","created"))
+  write.csv(result_details, result_file)
   
   # summary and plot check result
   final_result <- rules_combined %>%
@@ -116,7 +125,7 @@ ValidateInputExcelFileContent <- function(inputFile,
 }
 
 
-.get_violation_rows <- function(out, target, rules, outputDir){
+.get_violation_rows <- function(out, target, rules, outputDir, sheetName){
   errcode <- .Success
   for (i in names(out)){
     severity <- meta(rules[i])$severity
@@ -141,7 +150,7 @@ ValidateInputExcelFileContent <- function(inputFile,
         if (severity == "error"){
           errcode <- .errValidationRuleFailed
         }
-        write.csv(df_violations, file.path(outputDir, paste(severity, "_violation_", i, ".csv", sep="")))
+        write.csv(df_violations, file.path(outputDir, paste(sheetName, "_", severity, "_violation_", i, ".csv", sep="")))
       }
     }
   }

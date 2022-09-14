@@ -3,7 +3,7 @@ title: 'Validation report'
 output:
   html_document:
      toc: true
-     df_print: paged
+     df_print: kable
   pdf_document: default
   word_document: default
 params:
@@ -16,7 +16,7 @@ params:
 
 ## Input Data Check:
 
-```{r, results='hide',  message=FALSE, warning=FALSE}
+```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE}
 source("ValidateInput.R")
 Validate(inputFile = params$inputFile, outputDir = params$outputDir)
 ```
@@ -38,14 +38,23 @@ for (f in files){
   filename <- normalizePath(paste(params$outputDir, f, sep="/"))
   message(paste0(filename,"\n\n"))
   rule_name <- gsub('^.+?_violation_(.+?).csv', '\\1', f)
-  exp <- metadata %>%
-    filter(name == rule_name) %>%
-    select(expression) %>%
+  sheet_name <- stringr::str_replace(f, gsub('^.+?(_(error|info|warning))', '\\1', f), "")
+  info <- metadata %>%
+    filter(name == rule_name)
+  tbl_description <- info %>%
+    select(description) %>%
     unique() %>% 
-   .$expression
+   .$description
+  vars <- all.vars(as.formula(
+    info %>% 
+    mutate(expression = paste("~ ", expression, sep="")) %>%
+    select(expression) %>%
+    .$expression))
+  key <- key_cols[sheet_name][[1]]
   
   data <- read.csv(paste(params$outputDir, f, sep="/"))
-  print(kableExtra::kbl(head(data), caption=exp, format='pipe') 
+  data <- data %>% select(c(all_of(key), all_of(vars)))
+  print(kableExtra::kbl(data, caption=tbl_description, format='pipe', align = "l") 
         %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
 }
 ```

@@ -9,19 +9,12 @@ library(tidyverse)
 #############################################################
 rm(list = ls())
 
-# Pandoc is required to generate validation reports: https://pandoc.org/installing.html
-# Run install.packages("installr");installr::install.pandoc()
-# Please examine the report before running simulation to prevent data issue
-
 rmarkdown::render(input = "validation_report.Rmd", 
                   output_format = "html_document", 
                   output_dir = "log",
                   params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
 shell.exec(normalizePath("log/validation_report.html"))
-# source("ValidateInput.R")
-# result <- Validate(inputFile="config/R Model Inputs.xlsx")
 print("Please check validation results in \"log\" folder", quote=FALSE)
-# stopifnot(result==0)
 
 ehep::Trace(TRUE)
 ehep::InitializePopulation()

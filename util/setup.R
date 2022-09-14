@@ -16,15 +16,20 @@ packages = c(
   "roxytest",
   #------------
   "readr",
-  "tidyr"
+  "tidyr",
+  "installr"
   )
 
 package.check <- lapply(
   packages,
   FUN = function(name) {
     if (!require(name, character.only = TRUE)) {
-      install.packages(name, dependencies = TRUE)
+      install.packages(name, dependencies = TRUE)2
+      
       library(name, character.only = TRUE)
     }
   }
 )
+
+# Pandoc is required to generate validation reports: https://pandoc.org/installing.html
+installr::install.pandoc(to_restart=FALSE)
