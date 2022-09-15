@@ -11,7 +11,7 @@ library(ehep)
 .errValidationRuleFailed <- -1L
 
 # define key columns for each sheet (use for reporting)
-key_cols <- list (PopValues = c("Description"), 
+key_cols <- list (PopValues = c("Description", "Sex", "InitValue", "ChangeRate"), 
                   StochasticParameters = c("value"),
                   TaskValues_ref = c("Indicator", "CommonName"))
 # define rule-specific extra columns (use for reporting)
