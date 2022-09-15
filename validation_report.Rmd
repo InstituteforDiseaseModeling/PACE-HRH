@@ -18,12 +18,15 @@ params:
 
 ```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE}
 source("ValidateInput.R")
+source("ValidateInput_plot.R")
 Validate(inputFile = params$inputFile, outputDir = params$outputDir)
 ```
 
 ```{r echo=FALSE, results='asis'}
-fr <- paste(params$outputDir, "input_validation_results.png", sep="/")
-knitr::include_graphics(normalizePath(fr))
+result <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
+outfile <- paste(params$outputDir, "input_validation_results.png", sep="/")
+plot_result(result, outfile)
+knitr::include_graphics(normalizePath(outfile))
 
 ```
 

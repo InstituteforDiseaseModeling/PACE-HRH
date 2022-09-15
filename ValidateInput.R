@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "showtext")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -103,24 +103,6 @@ ValidateInputExcelFileContent <- function(inputFile,
     inner_join(rules_combined, by = c("name")) %>%
     select(-c("language","created"))
   write.csv(result_details, result_file)
-  
-  # summary and plot check result
-  final_result <- rules_combined %>%
-    select(c("name", "severity")) %>%
-    inner_join(result) %>%
-    select(c("name", "severity", "items", "fails", "passes", "expression")) %>%
-    pivot_longer(cols=c("passes", "fails"), names_to = "result", values_to = "total") %>%
-    mutate(result = if_else(severity != 'error' & result == 'fails', severity, result))
-  
-  outfile <- file.path(outputDir, "input_validation_results.png")
-  p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
-    geom_bar(stat = "identity") +
-    scale_fill_manual(values = c("passes"="green", "fails"="red", "warning"="yellow", "info"="blue")) +
-    scale_x_continuous(labels=scales::percent) +
-    geom_text(data=subset(final_result,total> 0), aes(label=total, y =name), size=1.5, position=position_fill()) +
-    ggtitle("Input Spreadsheet Validation Results")
-  ggsave(outfile, p, width = 160, height = 100, units="mm")
-  
   return (errcode)
 }
 
@@ -155,4 +137,23 @@ ValidateInputExcelFileContent <- function(inputFile,
     }
   }
   return (errcode)
+}
+
+.simple_plot <- function(result_details){
+  
+  # summary and plot check result
+  final_result <- result_details %>%
+    select(c("name", "severity", "items", "fails", "passes", "expression")) %>%
+    pivot_longer(cols=c("passes", "fails"), names_to = "result", values_to = "total") %>%
+    mutate(result = if_else(severity != 'error' & result == 'fails', severity, result))
+  
+  outfile <- file.path(outputDir, "input_validation_results.png")
+  p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
+    geom_bar(stat = "identity") +
+    scale_fill_manual(values = c("passes"="green", "fails"="red", "warning"="yellow", "info"="blue")) +
+    scale_x_continuous(labels=scales::percent) +
+    geom_text(data=subset(final_result,total> 0), aes(label=total, y =name), size=1.5, position=position_fill()) +
+    ggtitle("Input Spreadsheet Validation Results")
+  ggsave(outfile, p, width = 160, height = 100, units="mm")
+  
 }
