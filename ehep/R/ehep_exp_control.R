@@ -75,6 +75,18 @@ SaveBaseSettings <- function(scenarioName = ""){
     GPE$taskData <- loadTaskParameters()
   }
 
+
+
+
+  if (!is.blank(taskSheet)){
+    BVE$taskData <- loadTaskParameters(taskSheet)
+  } else {
+    BVE$taskData <- loadTaskParameters()
+  }
+
+
+
+
   # Check that all the population labels in the tasks list are included in
   # the populationLabels lookup. (This connection is also enforced by logic
   # in the input spreadsheet.)
@@ -97,6 +109,15 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskParameters <- TaskParameters(values = m)
   }
 
+
+
+  if (!is.null(BVE$taskData)) {
+    BVE$taskDataDims <- dim(BVE$taskData)
+    BVE$stochasticTasks <- which(BVE$taskData$applyStochasticity)
+  }
+
+
+
   return(BVE$scenario)
 }
 
@@ -112,6 +133,9 @@ SaveBaseSettings <- function(scenarioName = ""){
   BVE$scenario <- NULL
   BVE$initialPopulation <- NULL
   BVE$taskParameters <- NULL
+  BVE$taskData <- NULL
+  BVE$taskDataDims <- NULL
+  BVE$stochasticTasks <- NULL
 }
 
 .getScenarioConfig <- function(scenarioName){
