@@ -54,9 +54,9 @@ for (f in files){
     select(expression) %>%
     .$expression))
   key <- key_cols[sheet_name][[1]]
-  
+  extra_cols <- rule_cols[rule_name][[1]]
   data <- read.csv(paste(params$outputDir, f, sep="/"))
-  data <- data %>% select(c(all_of(key), all_of(vars)))
+  data <- data %>% select(c(all_of(key), all_of(extra_cols), all_of(vars)))
   print(kableExtra::kbl(data, caption=tbl_description, format='pipe', align = "l") 
         %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
 }

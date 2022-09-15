@@ -18,7 +18,7 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
     p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
       geom_bar(stat = "identity") +
       xlab(NULL) + ylab(NULL) +
-      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod", "info"="dodgerblue")) +
+      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue")) +
       scale_x_continuous(labels=scales::percent) +
       scale_y_discrete(position = "right") +
       geom_text(data=subset(final_result,total> 0), aes(label=total, y=name), size=3, position=position_fill(), hjust=1.4, color="white") +
@@ -44,7 +44,7 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
     p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
       geom_bar(stat = "identity") +
       xlab(NULL) + ylab(NULL) +
-      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod", "info"="dodgerblue")) +
+      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue")) +
       scale_x_continuous(labels=scales::percent) +
       scale_y_discrete(position = "right") +
       geom_text(data=subset(final_result,total> 0), aes(label=total, y=name), size=9, position=position_fill(), hjust=1.4, color="white") +

@@ -13,7 +13,11 @@ library(ehep)
 # define key columns for each sheet (use for reporting)
 key_cols <- list (PopValues = c("Description"), 
                   StochasticParameters = c("value"),
-                  TaskValues_ref = c("Indicator"))
+                  TaskValues_ref = c("Indicator", "CommonName"))
+# define rule-specific extra columns (use for reporting)
+rule_cols <- list(AnnualDeltaRatio_value_Range = c("StartingRateInPop"),
+                  RateMultiplier = c("StartingRateInPop", "MultiplierReason")
+                  )
 
 
 #' Perform Validation on Input Excel File
