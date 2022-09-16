@@ -1,6 +1,6 @@
 Type: Package
 Package: pacehrh
-Title: Ethiopia Health Extension Program Capacity Modelling
+Title: Population-Aware Capacity Estimator for Human Resources for Health
 Version: 0.4.0
 Authors: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
