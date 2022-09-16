@@ -3,7 +3,7 @@ library(ehep)
 withr::local_dir("..")
 
 test_that("Scenario configuration: basic read from Excel", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -21,7 +21,7 @@ test_that("Scenario configuration: basic read from Excel", {
 })
 
 test_that("Scenario configuration: bad sheet name", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -37,7 +37,7 @@ test_that("Scenario configuration: bad sheet name", {
 })
 
 test_that("Scenario configuration: bad Excel file", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -54,7 +54,7 @@ test_that("Scenario configuration: bad Excel file", {
 })
 
 test_that("Scenario configuration: non-Excel configuration", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)

@@ -3,7 +3,7 @@ library(ehep)
 withr::local_dir("..")
 
 test_that("Experiment control: bad scenarios", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -29,7 +29,7 @@ test_that("Experiment control: bad scenarios", {
 # scenarios record.
 
 test_that("Experiment control: basic read from Excel", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)

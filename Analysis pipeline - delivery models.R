@@ -20,8 +20,8 @@ date <- "SNNPR0628_2022"
 #StableFertility <- "NoFertilityChange_NR" #NoFertilityChange_RuralRatio
 
 
-scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
-params <- read_xlsx("config/R Model Inputs.xlsx",sheet="StochasticParamaters")
+scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
+params <- read_xlsx("config/model_inputs.xlsx",sheet="StochasticParamaters")
 
 GeoSelect <- scenarios$Geography_dontedit[i]
 

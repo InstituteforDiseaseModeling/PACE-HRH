@@ -1,5 +1,5 @@
 {
   "configDirectoryLocation" : "./config",
-  "inputExcelFile" : "R Model Inputs.xlsx"
+  "inputExcelFile" : "model_inputs.xlsx"
   "suiteRngSeed" : 12345
 }

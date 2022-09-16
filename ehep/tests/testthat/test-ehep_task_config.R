@@ -4,7 +4,7 @@ withr::local_dir("..")
 
 # This test loads and validates a simplified version of the task data.
 test_that("Task configuration: basic data", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -37,13 +37,13 @@ test_that("Task configuration: basic data", {
 })
 
 test_that("Task configuration: confirm cleanup 1", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 })
 
 
 
 test_that("Task configuration: InitializeHealthcareTasks", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -64,7 +64,7 @@ test_that("Task configuration: InitializeHealthcareTasks", {
 
 
 test_that("Task configuration: invalid sheet name", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -76,7 +76,7 @@ test_that("Task configuration: invalid sheet name", {
 })
 
 test_that("Task configuration: invalid file name", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
