@@ -1,0 +1,69 @@
+---
+title: 'Validation report'
+output:
+  html_document:
+     toc: true
+     df_print: kable
+  pdf_document: default
+  word_document: default
+params:
+  inputFile: config/R Model Inputs.xlsx
+  outputDir: log
+---
+
+# Validation Results
+
+
+## Input Data Check:
+
+```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE}
+source("ValidateInput.R")
+source("ValidateInput_plot.R")
+Validate(inputFile = params$inputFile, outputDir = params$outputDir)
+```
+
+```{r echo=FALSE, results='asis'}
+result <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
+outfile <- paste(params$outputDir, "input_validation_results.png", sep="/")
+plot_result(result, outfile)
+knitr::include_graphics(normalizePath(outfile))
+
+```
+
+-   Please check below csv files in `r params$outputDir` folder for any row based validation issue:
+
+
+```{r echo=FALSE, comment='', results='asis', warning=FALSE, message=TRUE, paged.print=TRUE}
+files <- list.files(path=params$outputDir, pattern = "(info|warning|error).*.csv")
+
+metadata <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
+for (f in files){
+  filename <- normalizePath(paste(params$outputDir, f, sep="/"))
+  message(paste0(filename,"\n\n"))
+  rule_name <- gsub('^.+?_violation_(.+?).csv', '\\1', f)
+  sheet_name <- stringr::str_replace(f, gsub('^.+?(_(error|info|warning))', '\\1', f), "")
+  info <- metadata %>%
+    filter(name == rule_name)
+  tbl_description <- info %>%
+    select(description) %>%
+    unique() %>% 
+   .$description
+  vars <- all.vars(as.formula(
+    info %>% 
+    mutate(expression = paste("~ ", expression, sep="")) %>%
+    select(expression) %>%
+    .$expression))
+  key <- key_cols[sheet_name][[1]]
+  extra_cols <- rule_cols[rule_name][[1]]
+  data <- read.csv(paste(params$outputDir, f, sep="/"))
+  data <- data %>% select(unique(c(all_of(key), all_of(extra_cols), all_of(vars))))
+  print(kableExtra::kbl(data, caption=tbl_description, format='pipe', align = "l") 
+        %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
+}
+```
+
+## Model Requirement Check:
+
+```{r echo=FALSE, comment=''}
+cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep = '\n')
+```

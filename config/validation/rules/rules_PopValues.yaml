@@ -1,0 +1,28 @@
+---
+options:
+  lin.eq.eps: 1e-08
+  lin.ineq.eps: 1e-08
+---
+
+rules:
+- expr: '!is.na(InitValue)'
+  name: InitValue_missing
+  label: InitValue_missing
+  description: |
+    InitValue must not be missing
+  meta:
+    severity: error
+- expr: '!is.na(ChangeRate)'
+  name: ChangeRate_missing
+  label: ChangeRate_missing
+  description: |
+    ChangeRate must not be missing
+  meta:
+    severity: error
+- expr: 'in_range(ChangeRate, min=0.98, max=1.02)'
+  name: ChangeRate_Range
+  label: ChangeRate_Range
+  description: |
+    ChangeRate is typically within 1.0 +/- 2%. Large value compounded over long time horizon produces questionable predictions.
+  meta:
+    severity: info

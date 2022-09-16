@@ -9,8 +9,12 @@ library(tidyverse)
 #############################################################
 rm(list = ls())
 
-#source("ValidateInput.R")
-#ValidateInputExcelFileContent("config/R Model Inputs.xlsx")
+rmarkdown::render(input = "validation_report.Rmd", 
+                  output_format = "html_document", 
+                  output_dir = "log",
+                  params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
+shell.exec(normalizePath("log/validation_report.html"))
+print("Please check validation results in \"log\" folder", quote=FALSE)
 
 ehep::Trace(TRUE)
 ehep::InitializePopulation()
