@@ -1,4 +1,4 @@
-name: EHEP Create Release and upload Windows Binary Build
+name: PACE-HRH Create Release and upload Windows Binary Build
 on:
   push:
     branches:
@@ -16,7 +16,7 @@ jobs:
       - name: Set current version
         id: setVersion
         run: |
-          CUR_VERSION=$(Rscript -e "library(desc); cat(toString(desc('ehep/DESCRIPTION')\$get_version()))")
+          CUR_VERSION=$(Rscript -e "library(desc); cat(toString(desc('pacehrh/DESCRIPTION')\$get_version()))")
           echo $CUR_VERSION
           echo "::set-output name=CUR_VERSION::$CUR_VERSION"
       - name: Check variable is set
@@ -43,6 +43,8 @@ jobs:
 
   job_build:
     runs-on: windows-latest
+    permissions:
+      contents: write
     strategy:
         matrix:
           R: [ '4.2' ]
@@ -68,21 +70,27 @@ jobs:
       run: |
         Rscript install_dep_for_tests.R
     - name: Build docs
-      working-directory: 'ehep'
+      working-directory: 'pacehrh'
       run: |
         Rscript -e "install.packages('pkgdown'); pkgdown::build_site(override = list(destination = c('inst/doc')))"
     - name: Build binary
       run: |
-        Rscript -e "devtools::build(pkg='ehep', binary=TRUE)"
+        Rscript -e "devtools::build(pkg='pacehrh', binary=TRUE)"
     - name: Check vignettes
-      working-directory: 'ehep'
+      working-directory: 'pacehrh'
       run: |
-        Rscript -e "devtools::install_local('.', repos=NULL, build_vignettes = TRUE, force=TRUE); library(ehep)"
-        Rscript -e "v <- vignette(package='ehep'); stopifnot(length(v)>0)"
-        Rscript -e "v <- browseVignettes('ehep'); stopifnot(length(v)>0)"
+        Rscript -e "devtools::install_local('.', repos=NULL, build_vignettes = TRUE, force=TRUE); library(pacehrh)"
+        Rscript -e "v <- vignette(package='pacehrh'); stopifnot(length(v)>0)"
+        Rscript -e "v <- browseVignettes('pacehrh'); stopifnot(length(v)>0)"
     - name: Create Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo 'version: ${{ needs.job_check.outputs.version }}'
-        gh release create ${{ needs.job_check.outputs.version }} ehep_${{ needs.job_check.outputs.version }}.zip --generate-notes
+        gh release create ${{ needs.job_check.outputs.version }} pacehrh_${{ needs.job_check.outputs.version }}.zip --generate-notes
+    - name: Publish gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: pacehrh/inst/doc

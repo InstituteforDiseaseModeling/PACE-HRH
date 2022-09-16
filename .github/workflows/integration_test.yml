@@ -1,4 +1,4 @@
-name: EHEP Integration Tests
+name: PACE-HRH Integration Tests
 # This job is used for all non-unit tests
 on:
   # todo:  we need to decide later if these tests are only run on releases
@@ -20,6 +20,10 @@ jobs:
       - name: Install devtools
         run: |
           Rscript -e "install.packages('devtools')"
+      - name: Install pandoc
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: install pandoc  
       - name: Setup Dependency
         working-directory: 'tests/setup'
         run: |
@@ -28,7 +32,7 @@ jobs:
       # todo: using Readme instruction to install package
         run: |
           Rscript -e "install.packages('httpuv', build = FALSE, type = 'win.binary')"
-          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
+          Rscript -e "devtools::install_local('pacehrh', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
         shell: cmd
       - name: Run Integration tests
         run: |
@@ -36,3 +40,10 @@ jobs:
         env:
           NOT_CRAN: true
           
+      - name: Check input spreadsheet
+        run: |
+          Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/R Model Inputs.xlsx', outputDir='log'), output_dir='log')"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: log

@@ -1,0 +1,15 @@
+---
+options:
+  lin.eq.eps: 1e-08
+  lin.ineq.eps: 1e-08
+---
+
+rules:
+- expr: 'p <= 0.25'
+  name: Large_SD_value
+  label: Large_SD_value
+  description: |
+    Report standard deviation larger than 0.25
+  meta:
+    severity: info
+
