@@ -19,10 +19,8 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   # Look for seasonality-affected tasks in the task list for this scenario
 
   # Quick hack to remove PopType filter. TODO: better version!
-#  taskIds <- seq_along(GPE$taskData$Geography)
   taskIds <- seq_along(BVE$taskData$Geography)
 
-#  taskNames <- GPE$taskData$Indicator[taskIds]
   taskNames <- BVE$taskData$Indicator[taskIds]
   seasonalityTaskNames <- GPE$seasonalityOffsets$Task
   seasonalityTaskCurves <- GPE$seasonalityOffsets$Curve

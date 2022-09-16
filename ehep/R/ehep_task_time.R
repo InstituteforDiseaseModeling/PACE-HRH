@@ -23,11 +23,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   # the tasks, for TimeAddedOn tasks TaskTime returns time per year (in minutes)
   # for the person doing the task.
 
-  # if (GPE$taskData$computeMethod[taskID] == "TimeAddedOn"){
-  #   t = taskVals["HoursPerWeek"] * 60 * weeksPerYear
-  #   return(list(N = 1, Time = t))
-  # }
-
   if (BVE$taskData$computeMethod[taskID] == "TimeAddedOn"){
     t = taskVals["HoursPerWeek"] * 60 * weeksPerYear
     return(list(N = 1, Time = t))
@@ -35,7 +30,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
 
 
   # Determine whether this task is covered in the prevalence rates table
-#  prevalenceRatesTableRow <- which(GPE$stochasticTasks == taskID)
   prevalenceRatesTableRow <- which(BVE$stochasticTasks == taskID)
   prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
 
@@ -50,7 +44,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   n = 0L
 
   # Applicable population
-#  n <- .computeApplicablePopulation(population, GPE$taskData$RelevantPop[taskID])
   n <- .computeApplicablePopulation(population, BVE$taskData$RelevantPop[taskID])
 
   if (debug){
@@ -117,7 +110,6 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
     matrix(
       nrow = m,
       ncol = n,
-#      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
       dimnames = list(years, BVE$taskData$Indicator[taskIDs])
     )
 
@@ -344,7 +336,6 @@ AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
     matrix(
       nrow = m,
       ncol = n,
-#      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
       dimnames = list(years, BVE$taskData$Indicator[taskIDs])
     )
 
