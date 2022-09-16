@@ -6,7 +6,7 @@ for(i in packages){
     library(i, character.only = T)
   }
 }
-library(ehep)
+library(pacehrh)
 .Success <- 0L
 .errValidationRuleFailed <- -1L
 
@@ -46,9 +46,9 @@ Validate <- function(inputFile, outputDir = "log"){
   
   result_d <- ValidateInputExcelFileContent(inputFile = inputFile, outputDir = outputDir, sheetNames = NULL)
   sink(file = paste(outputDir, "model_input_check.log", sep = "/"))
-  result_m <- ehep::CheckInputExcelFileFormat(inputFile = inputFile)
+  result_m <- pacehrh::CheckInputExcelFileFormat(inputFile = inputFile)
   sink()
-  return (if (result_d==.Success & result_m==ehep:::.Success) .Success else (.errValidationRuleFailed))
+  return (if (result_d==.Success & result_m==pacehrh:::.Success) .Success else (.errValidationRuleFailed))
 }
 
 
