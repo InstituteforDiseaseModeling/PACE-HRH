@@ -13,7 +13,7 @@ test_that("Validation no rules", {
 test_that("Validation capture", {
   errCode <- .errValidationRuleFailed
   # In this example rules Total_diarrhea does not sum to 1, this is a table-wise error not row-wise error
-  # The error is captured and verified in _snaps/ehep_lint.md
+  # The error is captured and verified in _snaps/pacehrh_lint.md
   
   logdir <- tempdir()
   # skip_if(.Platform$OS.type != "windows")

@@ -1,0 +1,80 @@
+Type: Package
+Package: pacehrh
+Title: Population-Aware Capacity Estimator for Human Resources for Health
+Version: 0.5.0
+Author: Charles Eliot, Brittany Hagedorn
+Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
+Description: This work allows modeling of the burdens placed on healthcare
+    workers by the addition of new services to an existing healthcare
+    system.
+License: MIT + file LICENSE
+Imports:
+    assertthat,
+    data.table,
+    dplyr,
+    ggplot2,
+    jsonlite,
+    magrittr,
+    methods,
+    readxl,
+    scales,
+    tibble,
+    tidyr,
+    truncnorm,
+    withr
+Suggests: 
+    testthat (>= 3.0.0),
+    roxytest,
+    knitr,
+    rmarkdown
+Roxygen: list(roclets = c("namespace", "rd", 
+                          "roxytest::testthat_roclet",
+                          "roxytest::param_roclet",
+                          "roxytest::return_roclet",
+                          "roxytest::examples_roclet"
+                          )
+              )
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.1
+Collate: 
+    'pace_package_env.R'
+    'pace_debug_utils.R'
+    'pace_utils.R'
+    'pace_lint.R'
+    'pace_trace.R'
+    'pace_pop_pyramid_class.R'
+    'pace_pop_change_params_class.R'
+    'pace_task_params_class.R'
+    'pace_add_method.R'
+    'pace_zero_method.R'
+    'pace_getValue_method.R'
+    'pace_setFromVector_method.R'
+    'pace_setValue_method.R'
+    'pace_config.R'
+    'pace_pop_rates_config.R'
+    'pace_exp_control.R'
+    'pace_rates_matrix.R'
+    'pace_prevalence_matrix.R'
+    'pace_iterator.R'
+    'pace_plot.R'
+    'pace_plot_fertility.R'
+    'pace_population_config.R'
+    'pace_expansion_matrix.R'
+    'pace_population_predict.R'
+    'pace_seasonality_config.R'
+    'pace_seasonality_experiment.R'
+    'pace_task_config.R'
+    'pace_task_manage.R'
+    'pace_task_time.R'
+    'pace_task_time_stochasticity.R'
+    'pace_experiment.R'
+    'pace_experiments.R'
+    'pace_scenarios_config.R'
+    'pace_scenarios_manage.R'
+    'pace_stochasticity_config.R'
+    'pace_save_results.R'
+    'pace_sanity_checks.R'
+    'pace_post_process.R'
+VignetteBuilder: knitr
