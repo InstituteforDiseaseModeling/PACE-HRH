@@ -20,6 +20,10 @@ jobs:
       - name: Install devtools
         run: |
           Rscript -e "install.packages('devtools')"
+      - name: Install pandoc
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: install pandoc  
       - name: Setup Dependency
         working-directory: 'tests/setup'
         run: |
@@ -36,3 +40,10 @@ jobs:
         env:
           NOT_CRAN: true
           
+      - name: Check input spreadsheet
+        run: |
+          Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/R Model Inputs.xlsx', outputDir='log'), output_dir='log')"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: log
