@@ -17,23 +17,19 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
 
   taskVals <- tp@values[taskID,]
 
-  if (debug){
-    .dispTaskInfo(taskID, taskVals)
-  }
-
   # TimeAddedOn tasks are simpler than other tasks; they aren't associated with
   # a population segment, and they aren't dependent on prevalence. But time is
-  # returned in a different way: instead of total time required per yer to do
+  # returned in a different way: instead of total time required per year to do
   # the tasks, for TimeAddedOn tasks TaskTime returns time per year (in minutes)
   # for the person doing the task.
 
-  if (GPE$taskData$computeMethod[taskID] == "TimeAddedOn"){
+  if (BVE$taskData$computeMethod[taskID] == "TimeAddedOn"){
     t = taskVals["HoursPerWeek"] * 60 * weeksPerYear
     return(list(N = 1, Time = t))
   }
 
   # Determine whether this task is covered in the prevalence rates table
-  prevalenceRatesTableRow <- which(GPE$stochasticTasks == taskID)
+  prevalenceRatesTableRow <- which(BVE$stochasticTasks == taskID)
   prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
 
   # Look up the population pyramid for this year
@@ -47,7 +43,7 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   n = 0L
 
   # Applicable population
-  n <- .computeApplicablePopulation(population, GPE$taskData$RelevantPop[taskID])
+  n <- .computeApplicablePopulation(population, BVE$taskData$RelevantPop[taskID])
 
   if (debug){
     cat(paste("Applicable pop = ", n, "\n", sep = ""))
@@ -88,20 +84,6 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   return(list(N = numServices, Time = t))
 }
 
-.dispTaskInfo <- function(taskId, taskVals) {
-  cat(paste("ID:", GPE$taskData$Indicator[taskId], "\n", sep = ""))
-  cat(paste("CommonName:", GPE$taskData$CommonName[taskId], "\n", sep = ""))
-  cat(paste("RelevantPop:", GPE$taskData$RelevantPop[taskId], "\n", sep = ""))
-  cat(paste("StartingRateInPop:", taskVals["StartingRateInPop"], "\n", sep = ""))
-  cat(paste("RateMultiplier:", taskVals["RateMultiplier"], "\n", sep = ""))
-  cat(paste("AnnualDeltaRatio:", taskVals["AnnualDeltaRatio"], "\n", sep = ""))
-  cat(paste("NumContactsPerUnit:", taskVals["NumContactsPerUnit"], "\n", sep = ""))
-  cat(paste("NumContactsAnnual:", taskVals["NumContactsAnnual"], "\n", sep = ""))
-  cat(paste("MinsPerContact:", taskVals["MinsPerContact"], "\n", sep = ""))
-  cat(paste("HoursPerWeek:", taskVals["HoursPerWeek"], "\n", sep = ""))
-  cat(paste("FTEratio:", taskVals["FTEratio"], "\n", sep = ""))
-}
-
 #' Calculate Task Times For A Group Of Tasks
 #'
 #' Calculate clinical task times for a group of tasks over a spread of years
@@ -127,7 +109,7 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
     matrix(
       nrow = m,
       ncol = n,
-      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
+      dimnames = list(years, BVE$taskData$Indicator[taskIDs])
     )
 
   mn <- mt
@@ -336,10 +318,6 @@ AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
   tp <- EXP$taskParameters
   taskVals <- tp@values[taskID, ]
 
-  if (debug) {
-    .dispTaskInfo(taskID, taskVals)
-  }
-
   fteRatio <- taskVals["FTEratio"]
   assertthat::assert_that(fteRatio < 1)
   return(baseTime * (fteRatio / (1 - fteRatio)))
@@ -357,7 +335,7 @@ AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
     matrix(
       nrow = m,
       ncol = n,
-      dimnames = list(years, GPE$taskData$Indicator[taskIDs])
+      dimnames = list(years, BVE$taskData$Indicator[taskIDs])
     )
 
   mn <- mt

@@ -59,7 +59,7 @@ test_that("Experiment control: basic read from Excel", {
 
 #  print("TBD TBD TBD")
 
-  # print(pacehrh:::GPE$taskData)
+  # print(pacehrh:::BVE$taskData)
   # print(pacehrh:::BVE$taskParameters)
   # print(pacehrh:::GPE$seasonalityCurves)
 })

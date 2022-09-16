@@ -83,6 +83,11 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
   return(taskData)
 }
 
+
+# TODO: Remove InitializeHealthcareTasks() function completely!
+
+
+
 #' Initialize Healthcare Task Information
 #'
 #' Read the healthcare task information from the model inputs Excel file, and
@@ -116,16 +121,9 @@ InitializeHealthcareTasks <- function(...){
 
   args = list(...)
 
-  if (length(args) == 0){
-    return(invisible(NULL))
-  } else {
+  if (length(args) > 0){
     taskData <- loadTaskParameters(...)
-
-    # TODO: Insert error handling
-
-    GPE$taskData <- taskData
-    GPE$taskDataDims <- dim(GPE$taskData)
-    GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
-    return(invisible(NULL))
   }
+
+  return(invisible(NULL))
 }

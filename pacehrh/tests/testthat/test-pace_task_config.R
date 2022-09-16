@@ -42,22 +42,22 @@ test_that("Task configuration: confirm cleanup 1", {
 
 
 
-test_that("Task configuration: InitializeHealthcareTasks", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
-
-  e <- pacehrh:::GPE
-  local_vars("inputExcelFile", envir = e)
-
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
-
-  pacehrh::InitializeHealthcareTasks(sheetName = "TEST_TaskValues")
-
-  td <- pacehrh:::GPE$taskData
-  testthat::expect_true(!is.null(td))
-  testthat::expect_equal(class(td), c("tbl_df", "tbl", "data.frame"))
-  testthat::expect_equal(names(td[pacehrh:::.taskColumnNames]), pacehrh:::.taskColumnNames)
-  testthat::expect_error(td["notacolumn"])
-})
+# test_that("Task configuration: InitializeHealthcareTasks", {
+#   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+#
+#   e <- pacehrh:::GPE
+#   local_vars("inputExcelFile", envir = e)
+#
+#   pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+#
+#   pacehrh::InitializeHealthcareTasks(sheetName = "TEST_TaskValues")
+#
+#   td <- pacehrh:::GPE$taskData
+#   testthat::expect_true(!is.null(td))
+#   testthat::expect_equal(class(td), c("tbl_df", "tbl", "data.frame"))
+#   testthat::expect_equal(names(td[pacehrh:::.taskColumnNames]), pacehrh:::.taskColumnNames)
+#   testthat::expect_error(td["notacolumn"])
+# })
 
 
 
