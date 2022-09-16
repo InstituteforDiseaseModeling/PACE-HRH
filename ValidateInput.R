@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "showtext")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)

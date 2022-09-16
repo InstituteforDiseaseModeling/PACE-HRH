@@ -1,5 +1,11 @@
-library(tidyverse)
-library(showtext)
+options(install.packages.check.source = "no")
+packages = c("tidyverse", "showtext")
+for(i in packages){
+  if(!require(i, character.only = T)){
+    install.packages(i)
+    library(i, character.only = T)
+  }
+}
 
 plot_result <- function(result_file, outfile, fancy = TRUE){
   
