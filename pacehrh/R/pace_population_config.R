@@ -83,7 +83,7 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
 #'
 #' @examples
 #' \dontrun{
-#' ehep::InitializePopulation()
+#' pacehrh::InitializePopulation()
 #' }
 InitializePopulation <- function(){
   .checkAndLoadGlobalConfig()

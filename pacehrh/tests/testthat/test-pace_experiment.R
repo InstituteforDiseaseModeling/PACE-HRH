@@ -1,18 +1,18 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Experiments: aggregate times", {
-  testthat::expect_equal(ehep:::.computeTotalTimes(NULL), 0)
+  testthat::expect_equal(pacehrh:::.computeTotalTimes(NULL), 0)
 
-  badList <- list(notTime = ehep:::GPE$years)
-  testthat::expect_equal(ehep:::.computeTotalTimes(badList), 0)
+  badList <- list(notTime = pacehrh:::GPE$years)
+  testthat::expect_equal(pacehrh:::.computeTotalTimes(badList), 0)
 
   # Create a test times list structure: two elements, Time and N, each containing
   # matrices of size {years x tasks}
   timeVal <- 100
   NVal <- 2
-  years <- ehep:::GPE$years
+  years <- pacehrh:::GPE$years
 
   m <- length(years)
   n <- 2
@@ -27,5 +27,5 @@ test_that("Experiments: aggregate times", {
   names(testResult) <- years
 
   goodList <- list(Time = testTimes, N = testNs)
-  testthat::expect_equal(ehep:::.computeTotalTimes(goodList), testResult)
+  testthat::expect_equal(pacehrh:::.computeTotalTimes(goodList), testResult)
 })

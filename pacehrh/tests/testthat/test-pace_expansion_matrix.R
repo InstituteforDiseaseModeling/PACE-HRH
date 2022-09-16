@@ -1,11 +1,11 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Expansion matrix: basic generation", {
   breaks <- c(0,4,9,14,19,24)
   ages <- 0:100
-  m <- ehep:::.generateExpansionMatrix(ages = ages, breaks = breaks)
+  m <- pacehrh:::.generateExpansionMatrix(ages = ages, breaks = breaks)
 
   # Every row should have exactly one 1 and the rest zeros
   testthat::expect_true(all(apply(m, 1, sum) == 1))
@@ -20,7 +20,7 @@ test_that("Expansion matrix: basic generation", {
 test_that("Expansion matrix: NULL and zero-length breaks parameter", {
   breaks <- NULL
   ages <- 0:100
-  m <- ehep:::.generateExpansionMatrix(ages = ages, breaks = breaks)
+  m <- pacehrh:::.generateExpansionMatrix(ages = ages, breaks = breaks)
 
   # R x 1 matrix
   testthat::expect_equal(dim(m), c(length(ages), 1))
@@ -30,7 +30,7 @@ test_that("Expansion matrix: NULL and zero-length breaks parameter", {
 
   breaks <- vector()
   ages <- 0:10
-  m <- ehep:::.generateExpansionMatrix(ages = ages, breaks = breaks)
+  m <- pacehrh:::.generateExpansionMatrix(ages = ages, breaks = breaks)
 
   # R x 1 matrix
   testthat::expect_equal(dim(m), c(length(ages), 1))

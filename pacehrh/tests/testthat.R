@@ -1,4 +1,4 @@
 library(testthat)
-library(ehep)
+library(pacehrh)
 
-test_check("ehep")
+test_check("pacehrh")

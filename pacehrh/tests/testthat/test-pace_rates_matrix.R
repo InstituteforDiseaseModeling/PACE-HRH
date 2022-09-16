@@ -1,25 +1,25 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Fertility rates matrix: basic", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
   e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
 
-  pars <- ehep:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
-  rates <- ehep:::loadPopulationChangeRates(sheetName = "TEST_PopValues")
-  years <- ehep:::GPE$years
+  pars <- pacehrh:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
+  rates <- pacehrh:::loadPopulationChangeRates(sheetName = "TEST_PopValues")
+  years <- pacehrh:::GPE$years
 
   # CASE A
 
   rates <- rates[["femaleFertility"]]
 
   mBaseline <-
-    ehep:::.generateRatesMatrix(pars,
+    pacehrh:::.generateRatesMatrix(pars,
                                 years,
                                 rates,
                                 stochasticity = FALSE,
@@ -44,7 +44,7 @@ test_that("Fertility rates matrix: basic", {
   # CASE B
 
   mDecreasing <-
-    ehep:::.generateRatesMatrix(pars,
+    pacehrh:::.generateRatesMatrix(pars,
                                 years,
                                 rates,
                                 stochasticity = FALSE,
@@ -78,7 +78,7 @@ test_that("Fertility rates matrix: basic", {
 
   for (n in 1:10) {
     mFull <-
-      ehep:::.generateRatesMatrix(pars,
+      pacehrh:::.generateRatesMatrix(pars,
                                   years,
                                   rates,
                                   stochasticity = TRUE,

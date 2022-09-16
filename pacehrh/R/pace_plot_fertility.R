@@ -78,36 +78,36 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' g <- ehep::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
+#' g <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
 #' print(g)
 #'
-#' g <- ehep::PlotFertilityRatesStats(results, type = "boxplot", log = TRUE)
+#' g <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = TRUE)
 #' print(g)
 #'
-#' g <- ehep::PlotFertilityRatesStats(results, se = FALSE, type = "lines")
+#' g <- pacehrh::PlotFertilityRatesStats(results, se = FALSE, type = "lines")
 #' print(g)
 #'
-#' g <- ehep::PlotFertilityRatesStats(results, se = TRUE, type = "lines")
+#' g <- pacehrh::PlotFertilityRatesStats(results, se = TRUE, type = "lines")
 #' print(g)
 #'
-#' g <- ehep::PlotFertilityRatesStats(results, se = FALSE, type = "ribbon")
+#' g <- pacehrh::PlotFertilityRatesStats(results, se = FALSE, type = "ribbon")
 #' print(g)
 #'
-#' g <- ehep::PlotFertilityRatesStats(results, se = TRUE, type = "ribbon")
+#' g <- pacehrh::PlotFertilityRatesStats(results, se = TRUE, type = "ribbon")
 #' print(g)
 #' }
 PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = TRUE) {
@@ -242,21 +242,21 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' g <- ehep::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
+#' g <- pacehrh::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
 #' print(g)
 #' }
 PlotFertilityRates <- function(populationRates, year){
@@ -301,21 +301,21 @@ PlotFertilityRates <- function(populationRates, year){
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' g <- ehep::PlotResultsFertilityRates(results, 49, 2030)
+#' g <- pacehrh::PlotResultsFertilityRates(results, 49, 2030)
 #' print(g)
 #' }
 PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){

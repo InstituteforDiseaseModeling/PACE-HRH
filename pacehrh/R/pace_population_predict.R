@@ -53,20 +53,7 @@
 #' Use an initial population pyramid and population change rates
 #' to predict future population pyramids.
 #'
-#' @param initialPopulation Population structure. The expected format is
-#' ```
-#' List of 4
-#' $ age   : num [1:101] 0 1 2 3 4 5 6 7 8 9 ...
-#' $ female:Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
-#' .. ..@ length: int 101
-#' .. ..@ values: num [1:101] 1739594 1677633 1647809 1617984 1588159 ...
-#' $ male  :Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
-#' .. ..@ length: int 101
-#' .. ..@ values: num [1:101] 1794566 1729423 1697431 1665439 1633447 ...
-#' $ total :Formal class 'PopulationPyramid' [package "ehep"] with 2 slots
-#' .. ..@ length: int 101
-#' .. ..@ values: num [1:101] 3534160 3407056 3345240 3283423 3221606 ...
-#' ```
+#' @param initialPopulation Population structure
 #' @param populationChangeRates Population change rates (both fertility and mortality)
 #' @param years Vector of years to model
 #' @param normalize Whether or not to normalize the initial population
@@ -82,14 +69,14 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
-#' ehep::Trace(TRUE)
+#' library(pacehrh)
+#' pacehrh::Trace(TRUE)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
@@ -98,8 +85,8 @@
 #' scenarioData <- SaveBaseSettings(scenario)
 #' ConfigureExperimentValues()
 #'
-#' exp <- ehep:::EXP
-#' gpe <- ehep:::GPE
+#' exp <- pacehrh:::EXP
+#' gpe <- pacehrh:::GPE
 #'
 #' population <- ComputePopulationProjection(
 #'   exp$initialPopulation,

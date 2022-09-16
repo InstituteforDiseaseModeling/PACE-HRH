@@ -22,21 +22,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' ehep::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
+#' pacehrh::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
 #' }
 #'
 PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
@@ -94,8 +94,8 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 #' @examples
 #' \dontrun{
 #' # These two function calls produce the same output:
-#' ehep::PlotResultsPopulationCurve(results, trial = 26, year = 2025, sex = "m")
-#' ehep::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
+#' pacehrh::PlotResultsPopulationCurve(results, trial = 26, year = 2025, sex = "m")
+#' pacehrh::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
 #' }
 PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f", ...){
   if (!.validResultsParams(results, trial, year)){
@@ -145,14 +145,14 @@ PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f
 #'
 #' @examples
 #' \dontrun{
-#' g <- ehep::PlotPopulationCurves(
+#' g <- pacehrh::PlotPopulationCurves(
 #'   results[[26]]$Population[['2020']]$Male,
 #'   results[[26]]$Population[['2021']]$Male,
 #'   results[[26]]$Population[['2022']]$Male,
 #'   results[[26]]$Population[['2023']]$Male,
 #'   results[[26]]$Population[['2024']]$Male,
 #'   results[[26]]$Population[['2025']]$Male,
-#'   xaxis = ehep:::GPE$ages,
+#'   xaxis = pacehrh:::GPE$ages,
 #'   colors = c("royalblue4", "royalblue3", "royalblue2", "royalblue1"),
 #'   shapes = c(0, 1, 2, 5)
 #' )
@@ -272,8 +272,8 @@ gatherPopulation <- function(pops){
 #'
 #' @examples
 #' \dontrun{
-#' df <- ehep:::gatherPopulation(results[[1]]$Population)
-#' g <- ehep::PlotPyramid(df, 2021)
+#' df <- pacehrh:::gatherPopulation(results[[1]]$Population)
+#' g <- pacehrh::PlotPyramid(df, 2021)
 #' print(g)
 #' }
 PlotPyramid <- function(df, year){
@@ -411,21 +411,21 @@ PlotPyramids <- function(df) {
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' g <- ehep::PlotResultsMortalityRates(results, 49, 2030)
+#' g <- pacehrh::PlotResultsMortalityRates(results, 49, 2030)
 #' print(g)
 #' }
 PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
@@ -455,21 +455,21 @@ PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' g <- ehep::PlotMortalityRates(results[[49]]$PopulationRates, 2030)
+#' g <- pacehrh::PlotMortalityRates(results[[49]]$PopulationRates, 2030)
 #' print(g)
 #' }
 PlotMortalityRates <- function(populationRates, year){

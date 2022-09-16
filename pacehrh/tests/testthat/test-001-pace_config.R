@@ -1,4 +1,4 @@
-library(ehep)
+library(pacehrh)
 library(withr)
 library(jsonlite)
 
@@ -27,7 +27,7 @@ test_that("Global configuration: default", {
   .doTest <- function(){
     withr::local_file(globalConfigFile)
 
-    e <- ehep:::GPE
+    e <- pacehrh:::GPE
     withr::defer(e$inputExcelFile <- originalInputExcelFile)
     originalInputExcelFile <- e$inputExcelFile
 
@@ -37,10 +37,10 @@ test_that("Global configuration: default", {
            suiteRngSeed = seed)
     write_json(testJson, globalConfigFile)
 
-    testthat::expect_invisible(ehep:::loadGlobalConfig())
-    testthat::expect_equal(ehep:::GPE$inputExcelFile,
+    testthat::expect_invisible(pacehrh:::loadGlobalConfig())
+    testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
                            paste(configDir, configFile, sep = "/"))
-    testthat::expect_equal(ehep:::GPE$rngSeed, seed)
+    testthat::expect_equal(pacehrh:::GPE$rngSeed, seed)
   }
 
   .doTest()
@@ -54,7 +54,7 @@ test_that("Global configuration: basic", {
   globalConfigFile = "in.json"
   withr::local_file(globalConfigFile)
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
   originalInputExcelFile <- e$inputExcelFile
 
@@ -64,17 +64,17 @@ test_that("Global configuration: basic", {
          suiteRngSeed = seed)
   write_json(testJson, globalConfigFile)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(ehep:::GPE$inputExcelFile,
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
                          paste(configDir, configFile, sep = "/"))
-  testthat::expect_equal(ehep:::GPE$rngSeed, seed)
+  testthat::expect_equal(pacehrh:::GPE$rngSeed, seed)
 })
 
 test_that("Global configuration: bad seed", {
   globalConfigFile = "in.json"
   withr::local_file(globalConfigFile)
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("rngSeed", envir = e)
 
@@ -86,7 +86,7 @@ test_that("Global configuration: bad seed", {
          suiteRngSeed = "notanumber")
   write_json(testJson, globalConfigFile)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
   testthat::expect_equal(e$inputExcelFile,
                          paste(configDir, configFile, sep = "/"))
   testthat::expect_equal(e$rngSeed, originalSeed)
@@ -96,7 +96,7 @@ test_that("Global configuration: missing seed", {
   globalConfigFile = "in.json"
   withr::local_file(globalConfigFile)
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("rngSeed", envir = e)
 
@@ -107,7 +107,7 @@ test_that("Global configuration: missing seed", {
          inputExcelFile = configFile)
   write_json(testJson, globalConfigFile)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
   testthat::expect_equal(e$inputExcelFile,
                          paste(configDir, configFile, sep = "/"))
   testthat::expect_equal(e$rngSeed, originalSeed)
@@ -116,15 +116,15 @@ test_that("Global configuration: missing seed", {
 test_that("Global configuration: missing file", {
   globalConfigFile = "notafile.json"
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
   originalInputExcelFile <- e$inputExcelFile
 
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  withr::defer(pacehrh::Trace(originalTraceState))
+  originalTraceState <- pacehrh::Trace(TRUE)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(ehep:::GPE$inputExcelFile,
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
                          originalInputExcelFile)
 })
 
@@ -134,15 +134,15 @@ test_that("Global configuration: bad file", {
 
   writeLines("this is not JSON!!!", globalConfigFile)
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
   originalInputExcelFile <- e$inputExcelFile
 
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  withr::defer(pacehrh::Trace(originalTraceState))
+  originalTraceState <- pacehrh::Trace(TRUE)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(ehep:::GPE$inputExcelFile,
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
                          originalInputExcelFile)
 })
 
@@ -154,15 +154,15 @@ test_that("Global configuration: missing element", {
     list(inputExcelFile = configFile)
   write_json(testJson, globalConfigFile)
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
   originalInputExcelFile <- e$inputExcelFile
 
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  withr::defer(pacehrh::Trace(originalTraceState))
+  originalTraceState <- pacehrh::Trace(TRUE)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, paste(".", configFile, sep = "/"))
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, paste(".", configFile, sep = "/"))
 })
 
 test_that("Global configuration: misnamed element", {
@@ -174,30 +174,30 @@ test_that("Global configuration: misnamed element", {
          inputExcelFile_xxx = configFile)
   write_json(testJson, globalConfigFile)
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
   originalInputExcelFile <- e$inputExcelFile
 
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  withr::defer(pacehrh::Trace(originalTraceState))
+  originalTraceState <- pacehrh::Trace(TRUE)
 
-  testthat::expect_invisible(ehep:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, paste(configDir, configFile, sep = "/"))
+  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, paste(configDir, configFile, sep = "/"))
 })
 
 test_that("Global configuration: check-and-load", {
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
   originalInputExcelFile <- e$inputExcelFile
   withr::defer(e$globalConfigLoaded <- originalLoadedFlag)
   originalLoadedFlag <- e$globalConfigLoaded
 
-  testthat::expect_invisible(ehep:::.checkAndLoadGlobalConfig())
-  testthat::expect_true(ehep:::GPE$globalConfigLoaded)
+  testthat::expect_invisible(pacehrh:::.checkAndLoadGlobalConfig())
+  testthat::expect_true(pacehrh:::GPE$globalConfigLoaded)
 })
 
 test_that("Global configuration: SetGlobalStartEndYears", {
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
 
   withr::defer(e$startYear <- originalStartYear)
   originalStartYear <- e$startYear
@@ -206,24 +206,24 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   withr::defer(e$years <- originalYears)
   originalYears <- e$years
 
-  testthat::expect_invisible(ehep::SetGlobalStartEndYears("a", 1))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears("a", 1))
   testthat::expect_equal(e$startYear, originalStartYear)
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
-  testthat::expect_invisible(ehep::SetGlobalStartEndYears(2, "b"))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(2, "b"))
   testthat::expect_equal(e$startYear, originalStartYear)
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
-  testthat::expect_invisible(ehep::SetGlobalStartEndYears(120, 100))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(120, 100))
   testthat::expect_equal(e$startYear, originalStartYear)
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
   start = 100
   end = 120
-  testthat::expect_invisible(ehep::SetGlobalStartEndYears(start, end))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start, end))
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
@@ -231,7 +231,7 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   # Defaults
   start = 2020
   end = 2040
-  testthat::expect_invisible(ehep::SetGlobalStartEndYears())
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears())
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)

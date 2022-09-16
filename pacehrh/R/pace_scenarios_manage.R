@@ -44,8 +44,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' tbl <- ehep::CreateScenariosTable()
-#' tbl <- ehep::AddScenario(tbl, "Scenario 1")
+#' tbl <- pacehrh::CreateScenariosTable()
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 1")
 #' }
 CreateScenariosTable <- function() {
   l <- lapply(1:length(.scenarioColumnNames), function(i) {
@@ -87,8 +87,8 @@ CreateScenariosTable <- function() {
 #'
 #' @examples
 #' \dontrun{
-#' tbl <- ehep::CreateScenariosTable()
-#' tbl <- ehep::AddScenario(tbl, "Scenario 1")
+#' tbl <- pacehrh::CreateScenariosTable()
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 1")
 #' }
 AddScenario <-
   function(tbl, UniqueID, ...) {
@@ -149,11 +149,11 @@ AddScenario <-
 #'
 #' @examples
 #' \dontrun{
-#' tbl <- ehep::CreateScenariosTable()
-#' tbl <- ehep::AddScenario(tbl, "Scenario 1")
-#' tbl <- ehep::AddScenario(tbl, "Scenario 2")
-#' tbl <- ehep::AddScenario(tbl, "Scenario 3")
-#' tbl <- ehep::DeleteScenario(tbl, "Scenario 2")
+#' tbl <- pacehrh::CreateScenariosTable()
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 1")
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 2")
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 3")
+#' tbl <- pacehrh::DeleteScenario(tbl, "Scenario 2")
 #' }
 DeleteScenario <-
   function(tbl, UniqueID) {
@@ -209,9 +209,9 @@ DeleteScenario <-
 #'
 #' @examples
 #' \dontrun{
-#' tbl <- ehep::CreateScenariosTable()
-#' tbl <- ehep::AddScenario(tbl, "Scenario 1", HrsPerWeek = 35)
-#' tbl <- ehep::UpdateScenario(tbl, "Scenario 1", WeeksPerYr = 50, HrsPerWeek = 41)
+#' tbl <- pacehrh::CreateScenariosTable()
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 1", HrsPerWeek = 35)
+#' tbl <- pacehrh::UpdateScenario(tbl, "Scenario 1", WeeksPerYr = 50, HrsPerWeek = 41)
 #' }
 UpdateScenario <-
   function(tbl, UniqueID, ...) {
@@ -269,9 +269,9 @@ UpdateScenario <-
 #'
 #' @examples
 #' \dontrun{
-#' tbl <- ehep::CreateScenariosTable()
-#' tbl <- ehep::AddScenario(tbl, "Scenario 1", HrsPerWeek = 35)
-#' scenario <- ehep::ReadScenario(tbl, "Scenario 1")
+#' tbl <- pacehrh::CreateScenariosTable()
+#' tbl <- pacehrh::AddScenario(tbl, "Scenario 1", HrsPerWeek = 35)
+#' scenario <- pacehrh::ReadScenario(tbl, "Scenario 1")
 #' }
 ReadScenario <-
   function(tbl, UniqueID) {

@@ -1,4 +1,4 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
@@ -7,15 +7,14 @@ test_that("Full experiment: basic", {
   return
 
 
-  ehep::InitializePopulation()
-  ehep::InitializeHealthcareTasks()
-  ehep::InitializeScenarios()
-  ehep::InitializeStochasticParameters()
-  ehep::InitializeSeasonality()
+  pacehrh::InitializePopulation()
+  pacehrh::InitializeScenarios()
+  pacehrh::InitializeStochasticParameters()
+  pacehrh::InitializeSeasonality()
 
   scenario <- "ScenarioA"
   results <-
-    ehep::RunExperiments(scenarioName = scenario,
+    pacehrh::RunExperiments(scenarioName = scenario,
                          trials = 2,
                          debug = FALSE)
 

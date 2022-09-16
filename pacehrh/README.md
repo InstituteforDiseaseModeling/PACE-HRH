@@ -5,22 +5,21 @@ This README describes the features and functions of the PACE-HRH package.
 ## Sample
 
 ```
-# Load the ehep library
-library(ehep)
+# Load the pacehrh library
+library(pacehrh)
 
 # [OPTIONAL] Turn on tracing if you want the package to tell you more
 # about what it's doing and any problems it encounters
 
-# ehep::Trace(TRUE)
+# pacehrh::Trace(TRUE)
 
 # Initialize the package
-ehep::InitializePopulation()
-ehep::InitializeHealthcareTasks()
-ehep::InitializeScenarios()
-ehep::InitializeStochasticParameters()
-ehep::InitializeSeasonality()
+pacehrh::InitializePopulation()
+pacehrh::InitializeScenarios()
+pacehrh::InitializeStochasticParameters()
+pacehrh::InitializeSeasonality()
 
-ehep::SetGlobalStartEndYears(2020, 2040)
+pacehrh::SetGlobalStartEndYears(2020, 2040)
 
 # Set the name of a scenario to run. The scenario must be in the list defined
 # in the input data spreadsheet.
@@ -30,11 +29,11 @@ run_id <- 1
 
 # Run the scenario
 results <-
-  ehep::RunExperiments(scenarioName = scenario,
+  pacehrh::RunExperiments(scenarioName = scenario,
                        trials = num_trials)
 
 # Save the results to a CSV file
-ehep::SaveSuiteResults(results, "results.csv", scenario, run_number)
+pacehrh::SaveSuiteResults(results, "results.csv", scenario, run_number)
 ```
 
 ## Global configuration
@@ -52,7 +51,7 @@ The package sets the variable GPE$globalConfigLoaded to TRUE once _globalconfig.
 has been read.
 
 ```
-> ehep:::GPE$globalConfigLoaded
+> pacehrh:::GPE$globalConfigLoaded
 [1] TRUE
 ```
 
@@ -109,13 +108,13 @@ in the _Scenario_ sheet of the input data spreadsheet.
 
 The PACE-HRH package uses three R environments.
 
-__ehep:::globalPackageEnvironment__ (alias ehep:::GPE) stores configuration 
+__pacehrh:::globalPackageEnvironment__ (alias pacehrh:::GPE) stores configuration 
 information for the entire package.
 
-__ehep:::baseValuesEnvironment__ (alias ehep:::BVE) stores the base values 
+__pacehrh:::baseValuesEnvironment__ (alias pacehrh:::BVE) stores the base values 
 for stochastic trials.
 
-__ehep:::experimentValuesEnvironment__ (alias ehep:::EXP) stores the actual values, 
+__pacehrh:::experimentValuesEnvironment__ (alias pacehrh:::EXP) stores the actual values, 
 after applying stochastic variation, used in each trial.
 
 At the start of a suite of trials (`RunExperiments()`), 

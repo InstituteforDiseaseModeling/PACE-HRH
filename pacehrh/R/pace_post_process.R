@@ -99,7 +99,7 @@
 #'                   "results/results_ComprehensiveModel_Jul04.csv",
 #'                   "results/results_MergedModel_Jul04.csv")
 #'
-#' DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
+#' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
 #'
 #'
 #' funcFilter1 <- function(dt){
@@ -130,7 +130,7 @@
 #'   return(dt)
 #' }
 #'
-#' DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles,
+#' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles,
 #'                                        preProcFunc = funcFilter1,
 #'                                        postProcFunc = funcFilter2)
 #' }
@@ -294,8 +294,8 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #'                   "results/results_ComprehensiveModel_Jul04.csv",
 #'                   "results/results_MergedModel_Jul04.csv")
 #'
-#' DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
-#' CA <- ehep:::ComputeCadreAllocations(DR)
+#' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
+#' CA <- pacehrh:::ComputeCadreAllocations(DR)
 #' }
 ComputeCadreAllocations <- function(DR = NULL){
   if (is.null(DR)){
@@ -418,9 +418,9 @@ ComputeCadreAllocations <- function(DR = NULL){
 #'                   "results/results_ComprehensiveModel_Jul04.csv",
 #'                   "results/results_MergedModel_Jul04.csv")
 #'
-#' DR <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
-#' CA <- ehep::ComputeCadreAllocations(DR)
-#' stats <- ehep::ComputeSummaryStats(DR,CA)
+#' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
+#' CA <- pacehrh::ComputeCadreAllocations(DR)
+#' stats <- pacehrh::ComputeSummaryStats(DR,CA)
 #' }
 ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   if (is.null(DR) | is.null(CA)){

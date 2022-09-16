@@ -1,4 +1,4 @@
-#' Run A Suite Of EHEP Modeling Experiments
+#' Run A Suite Of PACE-HRH Modeling Experiments
 #'
 #' Results are written back into \code{experimentValuesEnvironment}.
 #'
@@ -14,18 +14,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #' }
 RunExperiments <-

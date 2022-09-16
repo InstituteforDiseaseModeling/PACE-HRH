@@ -1,16 +1,16 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 # This test loads and validates a simplified version of the input population data.
 test_that("Population configuration: basic population", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
   e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
-  pop <- ehep:::loadInitialPopulation(sheetName = "TEST_TotalPop")
+  pop <- pacehrh:::loadInitialPopulation(sheetName = "TEST_TotalPop")
 
   pseq <- seq(10000, 0, -100)
   testthat::expect_equal(pop$female@values, pseq)
@@ -18,7 +18,7 @@ test_that("Population configuration: basic population", {
 })
 
 test_that("Population configuration: confirm cleanup 1", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 })
 
 .validInitPopulation <- function(pop) {
@@ -26,7 +26,7 @@ test_that("Population configuration: confirm cleanup 1", {
 }
 
 test_that("Population configuration: InitializePopulation()", {
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
 
   testthat::expect_equal(e$inputExcelFile, "./config/R Model Inputs.xlsx")
   testthat::expect_true(file.exists("globalconfig.json"))
@@ -39,7 +39,7 @@ test_that("Population configuration: InitializePopulation()", {
   testthat::expect_false(e$globalConfigLoaded)
   testthat::expect_null(e$initialPopulation)
 
-  testthat::expect_invisible(ehep::InitializePopulation())
+  testthat::expect_invisible(pacehrh::InitializePopulation())
 
   testthat::expect_true(e$globalConfigLoaded)
   testthat::expect_true(!is.null(e$initialPopulation))
@@ -49,7 +49,7 @@ test_that("Population configuration: InitializePopulation()", {
 })
 
 test_that("Population configuration: check labels", {
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
 
   testthat::expect_equal(e$inputExcelFile, "./config/R Model Inputs.xlsx")
   testthat::expect_true(file.exists("globalconfig.json"))
@@ -62,7 +62,7 @@ test_that("Population configuration: check labels", {
   testthat::expect_false(e$globalConfigLoaded)
   testthat::expect_null(e$initialPopulation)
 
-  testthat::expect_invisible(ehep::InitializePopulation())
+  testthat::expect_invisible(pacehrh::InitializePopulation())
 
   testthat::expect_true(e$globalConfigLoaded)
   testthat::expect_true(!is.null(e$initialPopulation))

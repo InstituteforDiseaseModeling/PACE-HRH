@@ -1,18 +1,18 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Experiment control: bad scenarios", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
 
-  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
 
-  ehep::InitializeScenarios()
+  pacehrh::InitializeScenarios()
   testthat::expect_true(!is.null(e$scenarios))
 
   out <- SaveBaseSettings(scenarioName = "")
@@ -29,9 +29,9 @@ test_that("Experiment control: bad scenarios", {
 # scenarios record.
 
 test_that("Experiment control: basic read from Excel", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
 
@@ -41,25 +41,25 @@ test_that("Experiment control: basic read from Excel", {
   local_vars("seasonalityCurves", envir = e)
   local_vars("seasonalityOffsets", envir = e)
 
-  ehep:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
 
-  ehep::InitializePopulation()
-  ehep::InitializeScenarios()
+  pacehrh::InitializePopulation()
+  pacehrh::InitializeScenarios()
 
   testthat::expect_true(!is.null(e$scenarios))
 
   scenarioName <- "TEST_CustomSheets_1"
   assertthat::assert_that(scenarioName %in% e$scenarios$UniqueID)
 
-  result <- ehep::SaveBaseSettings(scenarioName)
+  result <- pacehrh::SaveBaseSettings(scenarioName)
 
   testthat::expect_true(!is.null(result))
   testthat::expect_true(result$UniqueID == scenarioName)
 
 #  print("TBD TBD TBD")
 
-  # print(ehep:::GPE$taskData)
-  # print(ehep:::BVE$taskParameters)
-  # print(ehep:::GPE$seasonalityCurves)
+  # print(pacehrh:::GPE$taskData)
+  # print(pacehrh:::BVE$taskParameters)
+  # print(pacehrh:::GPE$seasonalityCurves)
 })

@@ -1,4 +1,4 @@
-#' Run An EHEP Modeling Experiment
+#' Run A PACE-HRH Modeling Experiment
 #'
 #' Combine the parameter values in the Base and Epsilon environments, save the
 #' new parameter values to \code{experimentValuesEnvironment}, then run a full

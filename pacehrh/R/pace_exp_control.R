@@ -1,4 +1,4 @@
-# The functions in this module control how EHEP handles stochastic experiments.
+# The functions in this module control how PACE-HRH handles stochastic experiments.
 
 #' Save Base Values For A Stochastic Experiment
 #'
@@ -14,17 +14,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
-#' result <- ehep::SaveBaseSettings(scenario)
+#' result <- pacehrh::SaveBaseSettings(scenario)
 #' }
 SaveBaseSettings <- function(scenarioName = ""){
   # GPE = globalPackageEnvironment = source environment
@@ -161,14 +161,14 @@ SaveBaseSettings <- function(scenarioName = ""){
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
-#' ehep::Trace(TRUE)
+#' library(pacehrh)
+#' pacehrh::Trace(TRUE)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'

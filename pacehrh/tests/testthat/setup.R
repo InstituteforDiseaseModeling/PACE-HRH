@@ -1,37 +1,37 @@
-library(ehep)
+library(pacehrh)
 library(withr)
 library(assertthat)
 
 cat("Running basic sanity checks ...\n")
 
 # Check that needed environments have been created
-assertthat::assert_that(is.environment(ehep:::globalPackageEnvironment))
-assertthat::assert_that(is.environment(ehep:::baseValuesEnvironment))
-assertthat::assert_that(is.environment(ehep:::experimentValuesEnvironment))
+assertthat::assert_that(is.environment(pacehrh:::globalPackageEnvironment))
+assertthat::assert_that(is.environment(pacehrh:::baseValuesEnvironment))
+assertthat::assert_that(is.environment(pacehrh:::experimentValuesEnvironment))
 
-assertthat::assert_that(is.environment(ehep:::GPE))
-assertthat::assert_that(is.environment(ehep:::BVE))
-assertthat::assert_that(is.environment(ehep:::EXP))
+assertthat::assert_that(is.environment(pacehrh:::GPE))
+assertthat::assert_that(is.environment(pacehrh:::BVE))
+assertthat::assert_that(is.environment(pacehrh:::EXP))
 
 withr::local_dir("..")
 
 # Check that unit test setup is basically correct
 assertthat::assert_that(file.exists("globalconfig.json"))
 
-assertthat::assert_that(exists("inputExcelFile", where = ehep:::GPE))
-assertthat::are_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+assertthat::assert_that(exists("inputExcelFile", where = pacehrh:::GPE))
+assertthat::are_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
-assertthat::assert_that(exists("globalConfigLoaded", where = ehep:::GPE))
-assertthat::assert_that(ehep:::GPE$globalConfigLoaded == FALSE)
+assertthat::assert_that(exists("globalConfigLoaded", where = pacehrh:::GPE))
+assertthat::assert_that(pacehrh:::GPE$globalConfigLoaded == FALSE)
 
-assertthat::assert_that(exists("startYear", where = ehep:::GPE))
-assertthat::assert_that(ehep:::GPE$startYear == 2020)
+assertthat::assert_that(exists("startYear", where = pacehrh:::GPE))
+assertthat::assert_that(pacehrh:::GPE$startYear == 2020)
 
-assertthat::assert_that(exists("endYear", where = ehep:::GPE))
-assertthat::assert_that(ehep:::GPE$endYear == 2040)
+assertthat::assert_that(exists("endYear", where = pacehrh:::GPE))
+assertthat::assert_that(pacehrh:::GPE$endYear == 2040)
 
-assertthat::assert_that(exists("years", where = ehep:::GPE))
-assertthat::assert_that(identical(as.numeric(ehep:::GPE$years), as.numeric(2020:2040)))
+assertthat::assert_that(exists("years", where = pacehrh:::GPE))
+assertthat::assert_that(identical(as.numeric(pacehrh:::GPE$years), as.numeric(2020:2040)))
 
 # ----------------------------------------------------------------
 

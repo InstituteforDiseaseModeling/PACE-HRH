@@ -1,9 +1,9 @@
-library(ehep)
+library(pacehrh)
 
 test_that("Iterator: basic operation", {
   n <- 10
   values <- runif(n)
-  iterObj <- ehep:::iter(values)
+  iterObj <- pacehrh:::iter(values)
 
   testthat::expect_true(!is.null(iterObj))
   testthat::expect_named(iterObj, c("state", "length", "recycle"))
@@ -22,7 +22,7 @@ test_that("Iterator: recycling", {
   n <- 10
   m <- 3
   values <- runif(n)
-  iterObj <- ehep:::iter(values, recycle = TRUE)
+  iterObj <- pacehrh:::iter(values, recycle = TRUE)
 
   testthat::expect_true(!is.null(iterObj))
 

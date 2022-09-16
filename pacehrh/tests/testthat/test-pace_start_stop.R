@@ -1,13 +1,12 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Full suite: basic", {
-  ehep::InitializePopulation()
-  ehep::InitializeHealthcareTasks()
-  ehep::InitializeScenarios()
-  ehep::InitializeStochasticParameters()
-  ehep::InitializeSeasonality()
+  pacehrh::InitializePopulation()
+  pacehrh::InitializeScenarios()
+  pacehrh::InitializeStochasticParameters()
+  pacehrh::InitializeSeasonality()
 
   # Make sure to use a scenario that has seasonality results!
   scenario <- "MergedModel"
@@ -16,10 +15,10 @@ test_that("Full suite: basic", {
   endYear <- 2050
   nMonths <- 12 * length(startYear:endYear)
 
-  ehep::SetGlobalStartEndYears(startYear, endYear)
+  pacehrh::SetGlobalStartEndYears(startYear, endYear)
 
   results <-
-    ehep::RunExperiments(scenarioName = scenario,
+    pacehrh::RunExperiments(scenarioName = scenario,
                          trials = nTrials)
 
   # Check that the results structure elements are the correct size and number
@@ -30,7 +29,7 @@ test_that("Full suite: basic", {
   testthat::expect_equal(length(results[[1]]$SeasonalityResults[[1]]$Time), nMonths)
 
   # ---------------------------------
-  ehep::SaveSuiteResults(results, "results.csv", scenario, 1)
+  pacehrh::SaveSuiteResults(results, "results.csv", scenario, 1)
   csvResults <- data.table::fread(file = "results.csv")
 
   # Test that the saved CSV has the correct number of rows and columns

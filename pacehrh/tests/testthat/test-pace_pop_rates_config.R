@@ -1,25 +1,25 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Population rates configuration: Load and compute", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
 
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
   e$inputExcelFile <- "./simple_config/Population Rates Test Data.xlsx"
 
-  withr::defer(ehep::Trace(originalTraceState))
-  originalTraceState <- ehep::Trace(TRUE)
+  withr::defer(pacehrh::Trace(originalTraceState))
+  originalTraceState <- pacehrh::Trace(TRUE)
 
-  popRates <- ehep:::loadPopulationChangeRates(sheetName = "newPopValues")
+  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "newPopValues")
   testthat::expect_true(!is.null(popRates))
 
   # Check that the banded rates and full rates agree
   results <- sapply(popRates, function(r){
     if (!is.null(r$prt)){
-      A <- ehep:::.generateExpansionMatrix(breaks = r$bandedRates$breaks)
+      A <- pacehrh:::.generateExpansionMatrix(breaks = r$bandedRates$breaks)
       b <- r$bandedRates$changeRates
       x <- as.vector(A %*% b)
       ref <- r$fullRates$changeRates
@@ -31,13 +31,13 @@ test_that("Population rates configuration: Load and compute", {
 
   testthat::expect_true(all(results))
 
-  popRates <- ehep:::loadPopulationChangeRates(sheetName = "badPopValues")
+  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues")
   testthat::expect_true(!is.null(popRates))
 
   # Check that the banded rates and full rates agree
   results <- sapply(popRates, function(r){
     if (!is.null(r$prt)){
-      A <- ehep:::.generateExpansionMatrix(breaks = r$bandedRates$breaks)
+      A <- pacehrh:::.generateExpansionMatrix(breaks = r$bandedRates$breaks)
       b <- r$bandedRates$changeRates
       x <- as.vector(A %*% b)
       ref <- r$fullRates$changeRates
@@ -50,11 +50,11 @@ test_that("Population rates configuration: Load and compute", {
   testthat::expect_true(all(results))
 
   # Sheet unusable - missing columns
-  popRates <- ehep:::loadPopulationChangeRates(sheetName = "badPopValues_2")
+  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_2")
   testthat::expect_true(is.null(popRates))
 
   # Sheet incomplete - no femaleFertility values
-  popRates <- ehep:::loadPopulationChangeRates(sheetName = "badPopValues_3")
+  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_3")
   testthat::expect_true(!is.null(popRates))
 
   n <- sapply(popRates, function(r){

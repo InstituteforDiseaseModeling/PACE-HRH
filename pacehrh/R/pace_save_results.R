@@ -16,10 +16,10 @@
 #' scenario <- "ScenarioName"
 #'
 #'results <-
-#'  ehep::RunExperiments(scenarioName = scenario,
+#'  pacehrh::RunExperiments(scenarioName = scenario,
 #'                       trials = 100)
 #'
-#' df <- ehep::SaveSuiteDemographics(results, breaks = c(50))
+#' df <- pacehrh::SaveSuiteDemographics(results, breaks = c(50))
 #'
 #' df <- df %>%
 #'   dplyr::group_by(Trial, Year, AgeBucket) %>%
@@ -123,21 +123,21 @@ SaveSuiteDemographics <- function(results, filepath = "out.csv", breaks = NULL) 
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
-#' ehep::SaveResults(results, scenario = scenario, trial = 3, run = "RunID")
+#' pacehrh::SaveResults(results, scenario = scenario, trial = 3, run = "RunID")
 #' }
 SaveResults <- function(results, filepath = "out.csv", scenario, trial = NULL, run){
   if (is.null(trial)) {
@@ -231,23 +231,23 @@ SaveResults <- function(results, filepath = "out.csv", scenario, trial = NULL, r
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #'
 #' runId <- 1
 #'
-#' ehep::SaveSuiteResults(results, "results.csv", scenario, runId)
+#' pacehrh::SaveSuiteResults(results, "results.csv", scenario, runId)
 #' }
 SaveSuiteResults <- function(results, filepath, scenario, run){
   trialIds <- names(results)

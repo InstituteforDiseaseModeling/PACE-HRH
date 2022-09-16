@@ -22,18 +22,17 @@ knitr::opts_chunk$set(echo = TRUE)
 The script for a typical run of the PACE-HRH modeling engine looks like this: 
 
 ```{r include=TRUE, eval=FALSE}
-library(ehep)
+library(pacehrh)
 
-ehep::InitializePopulation()
-ehep::InitializeHealthcareTasks()
-ehep::InitializeScenarios()
-ehep::InitializeStochasticParameters()
-ehep::InitializeSeasonality()
+pacehrh::InitializePopulation()
+pacehrh::InitializeScenarios()
+pacehrh::InitializeStochasticParameters()
+pacehrh::InitializeSeasonality()
 
 scenario <- "ScenarioName"
 
 results <-
-  ehep::RunExperiments(scenarioName = scenario,
+  pacehrh::RunExperiments(scenarioName = scenario,
                        trials = 100)
 ```
 

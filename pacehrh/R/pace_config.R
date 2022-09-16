@@ -132,7 +132,7 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/R Model Inputs.xlsx")
 #'
 #' @examples
 #' \dontrun{
-#' ehep::SetGlobalStartEndYears(2020, 2035)
+#' pacehrh::SetGlobalStartEndYears(2020, 2035)
 #' }
 SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
   if (!assertthat::is.number(start)) {

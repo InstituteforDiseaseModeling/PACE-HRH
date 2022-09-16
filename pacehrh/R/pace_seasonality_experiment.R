@@ -1,4 +1,4 @@
-#' Run The Seasonality Component Of An EHEP Modeling Experiment
+#' Run The Seasonality Component Of A PACE-HRH Modeling Experiment
 #'
 #' @param results Results from the annual part of the run
 #' @param debug (default = FALSE)

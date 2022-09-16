@@ -64,18 +64,18 @@ loadScenarios <- function(sheetName = "Scenarios") {
 #'
 #' @examples
 #' \dontrun{
-#' library(ehep)
+#' library(pacehrh)
 #'
-#' ehep::InitializePopulation()
-#' ehep::InitializeHealthcareTasks()
-#' ehep::InitializeScenarios()
-#' ehep::InitializeStochasticParameters()
-#' ehep::InitializeSeasonality()
+#' pacehrh::InitializePopulation()
+#' pacehrh::InitializeHealthcareTasks()
+#' pacehrh::InitializeScenarios()
+#' pacehrh::InitializeStochasticParameters()
+#' pacehrh::InitializeSeasonality()
 #'
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   ehep::RunExperiments(scenarioName = scenario,
+#'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #' }
 InitializeScenarios <- function(loadFromExcel = TRUE, ...){

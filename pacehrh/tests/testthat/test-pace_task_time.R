@@ -1,15 +1,15 @@
-library(ehep)
+library(pacehrh)
 
 withr::local_dir("..")
 
 test_that("Populations: read sub-ranges", {
-  e <- ehep:::GPE
+  e <- pacehrh:::GPE
 
   local_vars("populationLabels", envir = e)
 
-  testPop <- data.frame(Range = ehep:::GPE$ages,
-                        Female = seq(1, length(ehep:::GPE$ages), 1),
-                        Male = seq(1, length(ehep:::GPE$ages), 1) + 100)
+  testPop <- data.frame(Range = pacehrh:::GPE$ages,
+                        Female = seq(1, length(pacehrh:::GPE$ages), 1),
+                        Male = seq(1, length(pacehrh:::GPE$ages), 1) + 100)
 
   # Range = 0,1,2, ... 100
   # Female = 1,2,3, ... 99,100,101
@@ -26,13 +26,13 @@ test_that("Populations: read sub-ranges", {
   e$populationLabels <- dt
 
   testthat::expect_false(is.null(e$populationLabels))
-  testthat::expect_warning(ehep:::.computeApplicablePopulation(testPop, "notalabel"))
-  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "label_1"), sum(1:51) + sum(101:151))
-  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "label_2"), sum(1:101) + sum(101:201))
-  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "label_3"), sum(16:50))
-  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "label_4"), sum(116:150))
-  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "-"), 0)
-  testthat::expect_equal(ehep:::.computeApplicablePopulation(testPop, "all"), sum(1:101) + sum(101:201))
+  testthat::expect_warning(pacehrh:::.computeApplicablePopulation(testPop, "notalabel"))
+  testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "label_1"), sum(1:51) + sum(101:151))
+  testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "label_2"), sum(1:101) + sum(101:201))
+  testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "label_3"), sum(16:50))
+  testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "label_4"), sum(116:150))
+  testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "-"), 0)
+  testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "all"), sum(1:101) + sum(101:201))
 
   dt <- data.table::data.table(
     Labels = c("dup", "dup"),
@@ -43,6 +43,6 @@ test_that("Populations: read sub-ranges", {
   )
 
   e$populationLabels <- dt
-  testthat::expect_warning(n <- ehep:::.computeApplicablePopulation(testPop, "dup"))
+  testthat::expect_warning(n <- pacehrh:::.computeApplicablePopulation(testPop, "dup"))
   testthat::expect_equal(n, sum(1:51) + sum(101:151))
 })
