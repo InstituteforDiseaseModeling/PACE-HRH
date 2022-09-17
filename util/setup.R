@@ -1,4 +1,4 @@
-# Code based on example at https://vbaliga.github.io/verify-that-r-packages-are-installed-and-loaded/
+# Code based on example at https://vbaliga.github.io/posts/2019-04-28-verify-that-r-packages-are-installed-and-loaded/
 
 packages = c(
   "jsonlite",
@@ -14,18 +14,21 @@ packages = c(
   "tibble",
   "testthat",
   "roxytest",
-  #------------
   "readr",
   "tidyr",
-  "installr"
+  "installr",
+  "withr",
+  "testthat",
+  "roxytest",
+  "knitr",
+  "rmarkdown"
   )
 
 package.check <- lapply(
   packages,
   FUN = function(name) {
     if (!require(name, character.only = TRUE)) {
-      install.packages(name, dependencies = TRUE)2
-      
+      install.packages(name, dependencies = TRUE)
       library(name, character.only = TRUE)
     }
   }
