@@ -15,7 +15,7 @@ GPE$globalConfigLoaded <- FALSE
 GPE$globalDebug <- FALSE
 
 GPE$traceState <- FALSE
-GPE$inputExcelFile <- "./config/R Model Inputs.xlsx"
+GPE$inputExcelFile <- "./config/model_inputs.xlsx"
 
 GPE$startYear <- 2020
 GPE$endYear <- 2040

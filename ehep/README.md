@@ -64,7 +64,7 @@ default values.
 ```
 {
   "configDirectoryLocation" : "./config",
-  "inputExcelFile" : "R Model Inputs.xlsx",
+  "inputExcelFile" : "model_inputs.xlsx",
   "suiteRngSeed" : 12345,
   "startYear" : 2020,
   "endYear" : 2040
@@ -79,8 +79,8 @@ we've provided a sample in the _util_ directory of the GitHub repository.
 - _configDirectoryLocation_: The location of the directory where configuration
 data is to be found. The default is a _config_ sub-directory of the working directory.
 - _inputExcelFile_: The name of the input data spreadsheet file. The default value
-is "R Model Inputs.xlsx". The default setup directs the package to look for the
-input data spreadsheet file at "config/R Model Inputs.xlsx".
+is "model_inputs.xlsx". The default setup directs the package to look for the
+input data spreadsheet file at "config/model_inputs.xlsx".
 - _suiteRngSeed_: The PACE-HRH package makes extensive use of random number
 generation. Before each suite of stochastic trials, the system calls the 
 R function `set.seed()` with a random number seed value. The system uses

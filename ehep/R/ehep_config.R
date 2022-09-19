@@ -100,7 +100,7 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 # Note: this function does not check that the file path is valid.
 # This function is intended to support unit tests to force the system to
 # initialize based on a different configuration than is in globalconfig.json.
-setGlobalConfig <- function(inputExcelFilePath = "./config/R Model Inputs.xlsx"){
+setGlobalConfig <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
   if (!is.blank(inputExcelFilePath)){
     GPE$inputExcelFile <- inputExcelFilePath
     GPE$globalConfigLoaded <- TRUE

@@ -5,14 +5,14 @@ library(beepr)
 library(tidyverse)
 
 #############################################################
-#Run the lines below after changing R Model Inputs.xlsx file#
+#Run the lines below after changing model_inputs.xlsx file#
 #############################################################
 rm(list = ls())
 
 rmarkdown::render(input = "validation_report.Rmd", 
                   output_format = "html_document", 
                   output_dir = "log",
-                  params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
+                  params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
 shell.exec(normalizePath("log/validation_report.html"))
 print("Please check validation results in \"log\" folder", quote=FALSE)
 
@@ -23,7 +23,7 @@ ehep::InitializeScenarios()
 ehep::InitializeStochasticParameters()
 ehep::InitializeSeasonality()
 
-scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
+scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
 
 numtrials <- 50
 date <- Sys.Date()

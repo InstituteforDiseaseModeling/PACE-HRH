@@ -4,7 +4,7 @@ withr::local_dir("..")
 
 # This test loads and validates stochasticity parameters
 test_that("Stochasticity configuration: basic population", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -16,5 +16,5 @@ test_that("Stochasticity configuration: basic population", {
 })
 
 test_that("Stochasticity configuration: confirm cleanup 1", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 })

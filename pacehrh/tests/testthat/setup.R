@@ -19,7 +19,7 @@ withr::local_dir("..")
 assertthat::assert_that(file.exists("globalconfig.json"))
 
 assertthat::assert_that(exists("inputExcelFile", where = pacehrh:::GPE))
-assertthat::are_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+assertthat::are_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
 assertthat::assert_that(exists("globalConfigLoaded", where = pacehrh:::GPE))
 assertthat::assert_that(pacehrh:::GPE$globalConfigLoaded == FALSE)

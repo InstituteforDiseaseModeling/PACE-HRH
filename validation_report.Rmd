@@ -7,7 +7,7 @@ output:
   pdf_document: default
   word_document: default
 params:
-  inputFile: config/R Model Inputs.xlsx
+  inputFile: config/model_inputs.xlsx
   outputDir: log
 ---
 

@@ -20,8 +20,8 @@ date <- "SNNPR0628_2022"
 #StableFertility <- "NoFertilityChange_NR" #NoFertilityChange_RuralRatio
 
 
-scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
-params <- read_xlsx("config/R Model Inputs.xlsx",sheet="StochasticParamaters")
+scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
+params <- read_xlsx("config/model_inputs.xlsx",sheet="StochasticParamaters")
 
 GeoSelect <- scenarios$Geography_dontedit[i]
 
@@ -57,7 +57,7 @@ numscen <- nrow(scenarios)
 for(sc in 1:numscen){
   print(paste("Attaching data to scenario",sc))
   scntext <- scenarios$sheet_TaskValues[sc]
-  taskvalues <- read_xlsx("config/R Model Inputs.xlsx",sheet=scntext)
+  taskvalues <- read_xlsx("config/model_inputs.xlsx",sheet=scntext)
   taskvalues <- subset(taskvalues,Geography==GeoSelect)
 
   taskvalues$StartingRateInPop[is.na(taskvalues$StartingRateInPop)] = 0
@@ -107,9 +107,9 @@ DR <- subset(DR,RemoveCol==0)
 
 #Incorporate cadre allocation, by year * model
 
-ComprehensiveCadre <- as.data.frame(read_xlsx("config/R Model Inputs.xlsx",sheet="Cadres_Comprehensive"))
-BasicCadre <- as.data.frame(read_xlsx("config/R Model Inputs.xlsx",sheet="Cadres_Basic"))
-MergedCadre <- as.data.frame(read_xlsx("config/R Model Inputs.xlsx",sheet="Cadres_Merged"))
+ComprehensiveCadre <- as.data.frame(read_xlsx("config/model_inputs.xlsx",sheet="Cadres_Comprehensive"))
+BasicCadre <- as.data.frame(read_xlsx("config/model_inputs.xlsx",sheet="Cadres_Basic"))
+MergedCadre <- as.data.frame(read_xlsx("config/model_inputs.xlsx",sheet="Cadres_Merged"))
 
 #Prep melted format
 ComprehensiveCadre_melt <- melt(ComprehensiveCadre,id.vars=c("Indicator","CommonName"),variable.name="Category",value.name="allocation")
