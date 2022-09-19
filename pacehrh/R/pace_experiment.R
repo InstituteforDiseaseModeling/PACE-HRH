@@ -89,54 +89,12 @@ RunExperiment <- function(debug = FALSE){
 
   aggAnnualAddOnTimesPerHcw <- .computeTotalTimes(nonProductiveTaskTimes)
 
-  # Note that at this point the calculation of add-on time is only
-  # half-complete. Other task calculations return the total amount of time
-  # required to perform a given task, based on the number of people needing the
-  # task and the task duration. Add-on tasks are initially computed as extra
-  # time required per-HCW (health-care worker). This reduces the availability of
-  # the HCWs to do the other tasks. To calculate the actual total amount
-  # of time spent doing add-on tasks, we need to compute the number of HCW's
-  # needed to perform all the other tasks.
-  #
-  # Example: let's say HCW's work a 40 hour week, but spend 10 of those hours
-  # doing add-on tasks. That means it will take 4 HCWs to do 120 hours of
-  # clinical, etc tasks in a week (120/(40 - 10)). Once we know the number of
-  # HCWs, we can finish the job and calculate that they will do 40 hours of
-  # add-on task work.
 
-  # STEP 6 - COMPUTE FTE EQUIVALENTS
+  # TODO: nonProductive times are reported PER-PERSON, which is different
+  # to all the other times. This is going to change as a consequence
+  # of addressing Issue #51.
 
-  # T(c) + T(nc) + N * R(np) = N * R(total)
-  #
-  # where
-  #   T(c) = total time (over whatever period) needed for clinical tasks,
-  #   T(nc) = total time needed for non-clinical tasks,
-  #   R(np) = time PER FTE needed for add-on/non-productive tasks,
-  #   R(total) = available time PER FTE, and
-  #   N = number of FTEs
-  #
-  # Rearranging, N = (T(c) + T(nc) / (R(total) - R(np))
-  # And T(np) = N * R(np)
-
-  # Compute available time per year per FTE (R_total)
-
-  # R_total <- scenario$WeeksPerYr * scenario$HrsPerWeek * 60
-  # assertthat::assert_that(R_total > 0)
-  #
-  # R_np <- aggAnnualAddOnTimesPerHcw
-  #
-  # T_c <- aggAnnualClinicalTaskTimes
-  # T_nc <- aggAnnualNonClinicalTaskTimes + aggAnnualNonClinicalAllocationTimes
-  #
-  # N <- (T_c + T_nc) / (R_total - R_np)
-
-
-
-  # New approach: nonProductive times are reported as per-person.
   N <- 1
-
-
-
 
   if (is.null(nonProductiveTaskTimes)){
     EXP$nonProductiveTimes <- NULL
@@ -145,16 +103,57 @@ RunExperiment <- function(debug = FALSE){
     EXP$nonProductiveTimes <- nonProductiveTaskTimes
   }
 
-  results$Clinical <- EXP$clinicalTaskTimes
-  results$NonClinical <- EXP$nonClinicalTaskTimes
-  results$NonClinicalAllocation <- EXP$nonClinicalAllocationTimes
-  results$NonProductive <- EXP$nonProductiveTimes
-  results$FTEs <- data.frame("Years" = GPE$years, "FTEs" = N)
+
+
+  results$AnnualTimes <-.computeAnnualTimesMatrix()
+  results$AnnualCounts <-.computeAnnualCountsMatrix()
+
+
+
+  # results$Clinical <- EXP$clinicalTaskTimes
+  # results$NonClinical <- EXP$nonClinicalTaskTimes
+  # results$NonClinicalAllocation <- EXP$nonClinicalAllocationTimes
+  # results$NonProductive <- EXP$nonProductiveTimes
+  # results$FTEs <- data.frame("Years" = GPE$years, "FTEs" = N)
 
   seasonalityResults <- runSeasonalityExperiment(results)
   results$SeasonalityResults <- seasonalityResults
 
   return(results)
+}
+
+.taskTypeVarNames <- c(
+  "clinicalTaskTimes",
+  "nonClinicalTaskTimes",
+  "nonClinicalAllocationTimes",
+  "nonProductiveTimes")
+
+.computeAnnualTimesMatrix <- function() {
+  l <-
+    lapply(.taskTypeVarNames, function(type) {
+      data <- get(type, pos = EXP)
+      if (is.null(data)) {
+        return(NULL)
+      } else {
+        return(t(data$Time))
+      }
+    })
+
+  return(do.call(rbind, l))
+}
+
+.computeAnnualCountsMatrix <- function() {
+  l <-
+    lapply(.taskTypeVarNames, function(type) {
+      data <- get(type, pos = EXP)
+      if (is.null(data)) {
+        return(NULL)
+      } else {
+        return(t(data$N))
+      }
+    })
+
+  return(do.call(rbind, l))
 }
 
 .computeTotalTimes <- function(resultsObj){
