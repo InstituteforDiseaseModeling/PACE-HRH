@@ -48,11 +48,11 @@ for (i in 1:nrow(scenarios)){
 }
 
 print("Read and collate results")
-DR_test <- ehep::ReadAndCollateSuiteResults(files = resultsFiles)
+DR_test <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
 print("Compute Cadre allocation")
-CA <- ehep:::ComputeCadreAllocations(DR_test)
+CA <- pacehrh:::ComputeCadreAllocations(DR_test)
 print("Compute summary stats")
-SS <- ehep:::ComputeSummaryStats(DR_test, CA)
+SS <- pacehrh:::ComputeSummaryStats(DR_test, CA)
 print("Attach scenario details")
 Mean_ServiceCat <- SS$Mean_ServiceCat %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")

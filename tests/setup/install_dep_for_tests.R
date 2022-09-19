@@ -35,5 +35,5 @@ getDepPackages = function(descriptionpath, section='Imports:') {
   close(fp)
 }
 
-getDepPackages("../../ehep/DESCRIPTION", section='Imports:')
-getDepPackages("../../ehep/DESCRIPTION", section='Suggests:')
+getDepPackages("../../pacehrh/DESCRIPTION", section='Imports:')
+getDepPackages("../../pacehrh/DESCRIPTION", section='Suggests:')
