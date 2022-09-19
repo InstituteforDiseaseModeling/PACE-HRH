@@ -9,7 +9,8 @@ rules:
   name: InitValue_missing
   label: InitValue_missing
   description: |
-    InitValue must not be missing
+    InitValue should not be empty. If it is, there will not be any fertility or mortality for this age band.
+    If the value is not applicable (e.g. for male fertility) please set the value to zero.
   meta:
     severity: error
 - expr: '!is.na(ChangeRate)'
@@ -26,3 +27,42 @@ rules:
     ChangeRate is typically within 1.0 +/- 2%. Large value compounded over long time horizon produces questionable predictions.
   meta:
     severity: info
+- expr: 'InitValue >= 0'
+  name: InitValue_Negative
+  label: InitValue_Negative
+  description: |
+    InitValue should not be negative because this will create incorrect population demographic dynamics.
+  meta:
+    severity: error
+# TODO: Update Rule when BandStart/BandEnd disallow NAs
+- expr: 'BandEnd >= BandStart'
+  name: Age_Band_Range
+  label: Age_Band_Range
+  description: |
+    The start of the age band must be less than or equal to the end of the age band.
+    Acceptable examples: BandStart = 1 & BandEnd = 5. BandStart = 15 & BandEnd = 15.
+  meta:
+    severity: error
+- expr: 'ChangeRate >= 0'
+  name: ChangeRate_Negative
+  label: ChangeRate_Negative
+  description: |
+    changeRate cannot be negative. If the rate is declining, use a value less than 1.
+    For example, a 2% annual decline would have a change rate of 1 - .02 = .98.
+  meta:
+    severity: error
+- expr: 'Sex %in% c("M", "N")'
+  name: Gender_Value
+  label: Gender_Value
+  description: |
+    The only acceptable inputs for the sex category is M (male) or F (female).
+  meta:
+    severity: error
+- expr: 'if(!is.na(BandStart)) BandStart >= 0 & if(!is.na(BandEnd)) BandEnd >= 0'
+  name: Age_Band_Negative
+  label: Age_Band_Negative
+  description: |
+    Age bands must be greater than or equal to zero.
+  meta:
+    severity: error
+
