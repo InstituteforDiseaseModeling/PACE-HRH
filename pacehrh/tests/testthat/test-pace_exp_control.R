@@ -3,7 +3,7 @@ library(pacehrh)
 withr::local_dir("..")
 
 test_that("Experiment control: bad scenarios", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -29,7 +29,7 @@ test_that("Experiment control: bad scenarios", {
 # scenarios record.
 
 test_that("Experiment control: basic read from Excel", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)

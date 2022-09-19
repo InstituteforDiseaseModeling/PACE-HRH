@@ -4,7 +4,7 @@ withr::local_dir("..")
 
 # This test loads and validates a simplified version of the input population data.
 test_that("Population configuration: basic population", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- ehep:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -18,7 +18,7 @@ test_that("Population configuration: basic population", {
 })
 
 test_that("Population configuration: confirm cleanup 1", {
-  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 })
 
 .validInitPopulation <- function(pop) {
@@ -28,7 +28,7 @@ test_that("Population configuration: confirm cleanup 1", {
 test_that("Population configuration: InitializePopulation()", {
   e <- ehep:::GPE
 
-  testthat::expect_equal(e$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(e$inputExcelFile, "./config/model_inputs.xlsx")
   testthat::expect_true(file.exists("globalconfig.json"))
 
   local_vars("inputExcelFile", envir = e)
@@ -51,7 +51,7 @@ test_that("Population configuration: InitializePopulation()", {
 test_that("Population configuration: check labels", {
   e <- ehep:::GPE
 
-  testthat::expect_equal(e$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(e$inputExcelFile, "./config/model_inputs.xlsx")
   testthat::expect_true(file.exists("globalconfig.json"))
 
   local_vars("inputExcelFile", envir = e)
