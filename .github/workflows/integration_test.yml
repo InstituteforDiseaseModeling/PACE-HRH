@@ -1,4 +1,4 @@
-name: EHEP Integration Tests
+name: PACE-HRH Integration Tests
 # This job is used for all non-unit tests
 on:
   # todo:  we need to decide later if these tests are only run on releases
@@ -32,7 +32,7 @@ jobs:
       # todo: using Readme instruction to install package
         run: |
           Rscript -e "install.packages('httpuv', build = FALSE, type = 'win.binary')"
-          Rscript -e "devtools::install_local('ehep', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
+          Rscript -e "devtools::install_local('pacehrh', force=TRUE, upgrade='always', repos = NULL, build=TRUE, dependencies=TRUE)"
         shell: cmd
       - name: Run Integration tests
         run: |

@@ -70,9 +70,9 @@ SaveBaseSettings <- function(scenarioName = ""){
   taskSheet <- BVE$scenario$sheet_TaskValues
 
   if (!is.blank(taskSheet)){
-    GPE$taskData <- loadTaskParameters(taskSheet)
+    BVE$taskData <- loadTaskParameters(taskSheet)
   } else {
-    GPE$taskData <- loadTaskParameters()
+    BVE$taskData <- loadTaskParameters()
   }
 
   # Check that all the population labels in the tasks list are included in
@@ -82,7 +82,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   # Note that this test will fail if the Lookup table wasn't loaded during
   # initialization.
 
-  s <- setdiff(GPE$taskData$RelevantPop, GPE$populationLabels$Labels)
+  s <- setdiff(BVE$taskData$RelevantPop, GPE$populationLabels$Labels)
   if (!.okLabels(s)){
     warning(paste0("Invalid population labels: ", paste0(s, collapse = ", ")))
     return(NULL)
@@ -90,10 +90,10 @@ SaveBaseSettings <- function(scenarioName = ""){
 
   # Set up baseline task data
 
-  if (!is.null(GPE$taskData)) {
-    GPE$taskDataDims <- dim(GPE$taskData)
-    GPE$stochasticTasks <- which(GPE$taskData$applyStochasticity)
-    m <- .convertTaskDfToMatrix(GPE$taskData)
+  if (!is.null(BVE$taskData)) {
+    BVE$taskDataDims <- dim(BVE$taskData)
+    BVE$stochasticTasks <- which(BVE$taskData$applyStochasticity)
+    m <- .convertTaskDfToMatrix(BVE$taskData)
     BVE$taskParameters <- TaskParameters(values = m)
   }
 
@@ -112,6 +112,9 @@ SaveBaseSettings <- function(scenarioName = ""){
   BVE$scenario <- NULL
   BVE$initialPopulation <- NULL
   BVE$taskParameters <- NULL
+  BVE$taskData <- NULL
+  BVE$taskDataDims <- NULL
+  BVE$stochasticTasks <- NULL
 }
 
 .getScenarioConfig <- function(scenarioName){

@@ -59,7 +59,7 @@ test_that("Experiment control: basic read from Excel", {
 
 #  print("TBD TBD TBD")
 
-  # print(ehep:::GPE$taskData)
+  # print(ehep:::BVE$taskData)
   # print(ehep:::BVE$taskParameters)
   # print(ehep:::GPE$seasonalityCurves)
 })

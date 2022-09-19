@@ -1,0 +1,21 @@
+.taskColumnNames <- c(
+  "Indicator",
+  "CommonName",
+  "ClinicalOrNon",
+  "ClinicalCat",
+  "ServiceCat",
+  "RelevantPop",
+  "Geography",
+  "StartingRateInPop",
+  "RateType",
+  "RateMultiplier",
+  "MultiplierReason",
+  "AnnualDeltaRatio",
+  "NumContactsPerUnit",
+  "NumContactsAnnual",
+  "MinsPerContact",
+  "HoursPerWeek",
+  "FTEratio",
+  "computeMethod",
+  "applyStochasticity"
+)

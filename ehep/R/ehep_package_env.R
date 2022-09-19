@@ -38,7 +38,6 @@ GPE$taskTypes <- c("Clinical",
                    "NonProductive")
 
 GPE$initialPopulation <- NULL
-GPE$taskData <- NULL
 GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
