@@ -63,7 +63,7 @@ The PACE-HRH modeling engine computes the total amount of time required to perfo
 - Step 2: For each combination of healthcare task and year, use information about the task - applicable population group, disease prevalence, time required per task event, number of events, etc - to determine the number of times a task is performed per year ("services"), and the total amount of time required for all services in a given year.
 - Step 3: Apply data about the per-month seasonality of healthcare events to convert the annual data into per-month data. This calculation happens in two phases. In the first phase a seasonality curve is applied to the annual data, distributing the annual value according to the seasonality curve across the twelve months of the year. In the second phase, offset data is used to place events in the actual months they occur. An example of this is ante-natal care: a future birth generates ante-natal care tasks 1, 3, 5, and 7 months __before__ the birth happens.
 
-This is what happens for a single trial. For each trial, the parameters that feed the calculations are varied stochastically to generate confidence interval predictions.
+For each trial in a suite of trials, the parameters that feed the calculations are varied stochastically to generate confidence interval predictions.
 
 ## AnnualTimes
 
@@ -98,7 +98,9 @@ cat("\n")
 print(pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)
 ```
 In this example (ante-natal task FH.MN.ANC.1), there are `r (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` births in 2020 in a total population of 5000, each of which generates `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"]` ante-natal care visits (NumContactsPerUnit), giving 
-`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` total visits. Each visit is `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` minutes long, a value derived from a stochastic variation of the base value of `r pacehrh:::BVE$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]`.
+`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` total visits. Each visit is `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` minutes long, a value derived from a stochastic variation of the base value of `r pacehrh:::BVE$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]`, to give a total time of 
+`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1] * pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` 
+minutes.
 
 ## SeasonalityResults
 
