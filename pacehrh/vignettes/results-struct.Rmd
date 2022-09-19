@@ -9,19 +9,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "../tests")
 ```
-
-
-
-
-# The PACE-HRH model results structure
-
 The script for a typical run of the PACE-HRH modeling engine looks like this: 
 
-```{r include=TRUE, eval=FALSE}
+```{r include=TRUE, eval=TRUE}
 library(pacehrh)
 
 pacehrh::InitializePopulation()
@@ -29,11 +23,11 @@ pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
 
-scenario <- "ScenarioName"
+scenario <- "MergedModel"
 
 results <-
   pacehrh::RunExperiments(scenarioName = scenario,
-                       trials = 100)
+                       trials = 10)
 ```
 
 In this note we describe the contents of the *results* data structure returned by ```RunExperiments()```.
@@ -43,20 +37,182 @@ In this note we describe the contents of the *results* data structure returned b
 The *results* (plural) structure is an R list consisting of multiple *result* (singular)
 structures, one per trial.
 
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+length(results)
+```
+
 Each *result* structure consists of the following parts:
 
-* **Clinical**: <TBD>
-* **NonClinical**: <TBD>
-* **NonClinicalAllocation**: <TBD>
-* **NonProductive**: <TBD>
-* **FTEs**: <TBD>
-* **SeasonalityResults**: <TBD>
-* **Population**: <TBD>
-* **PopulationRates**: <TBD>
+* **AnnualTimes**
+* **AnnualCounts**
+* **SeasonalityResults**
+* **Population**
+* **PopulationRates**
 
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+names(results[[10]])
+```
+## Overview of the calculations
 
+The PACE-HRH modeling engine computes the total amount of time required to perform healthcare tasks, based on population predictions.
 
+- Step 1: Build population predictions for a range of years, based on shifting mortality and fertility rates.
+- Step 2: For each combination of healthcare task and year, use information about the task - applicable population group, disease prevalence, time required per task event, number of events, etc - to determine the number of times a task is performed per year ("services"), and the total amount of time required for all services in a given year.
+- Step 3: Apply data about the per-month seasonality of healthcare events to convert the annual data into per-month data. This calculation happens in two phases. In the first phase a seasonality curve is applied to the annual data, distributing the annual value according to the seasonality curve across the twelve months of the year. In the second phase, offset data is used to place events in the actual months they occur. An example of this is ante-natal care: a future birth generates ante-natal care tasks 1, 3, 5, and 7 months __before__ the birth happens.
 
+For each trial in a suite of trials, the parameters that feed the calculations are varied stochastically to generate confidence interval predictions.
 
+## AnnualTimes
 
+**AnnualTimes** holds the results of the time-per-task-per-year values (in minutes) calculated in Step 2. The results are in the form of a matrix, with tasks along the row dimension and years along the columns.
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+dim(results[[10]]$AnnualTimes)
+```
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+rownames(results[[10]]$AnnualTimes)
+```
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+colnames(results[[10]]$AnnualTimes)
+```
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+results[[10]]$AnnualTimes["FH.MN.ANC.1",]
+```
+
+## AnnualCounts
+
+**AnnualCounts** reports the number of times per year a healthcare task is performed. 
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+results[[10]]$AnnualCounts["FH.MN.ANC.1",]
+```
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+# The pacehrh:::EXP environment holds working variables from the most recent trial.
+# It's accessed here to illustrate how task time calculation are done.
+print(pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1",])
+cat("\n")
+print(pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)
+```
+In this example (ante-natal task FH.MN.ANC.1), there are `r (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` births in 2020 in a total population of 5000, each of which generates `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"]` ante-natal care visits (NumContactsPerUnit), giving 
+`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` total visits. Each visit is `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` minutes long, a value derived from a stochastic variation of the base value of `r pacehrh:::BVE$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]`, to give a total time of 
+`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1] * pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` 
+minutes.
+
+## SeasonalityResults
+
+As described above, the system takes the annual times reported in **AnnualTimes**, applies a seasonality curve to distribute the annual times across the months of the year, then uses seasonality offsets to place the healthcare events in the correct months.
+
+### Sample calculation
+
+The FH.MN.ANC.1 task uses the Births seasonality curve, and has four offsets representing ante-natal care visits 1, 3, 5 and 7 months before a birth.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+pacehrh:::GPE$seasonalityOffsets[pacehrh:::GPE$seasonalityOffsets$Task == "FH.MN.ANC.1",]
+```
+The Births seasonality curve represents a normalized distribution (sum = 1) of the annual task time across the twelve months of the year.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+pacehrh:::GPE$seasonalityCurves$Births
+```
+
+Applying the Births seasonality curve to the annual value computed for 2020 gives the ante-natal visit time generated by births in a given month.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+times2020 <- pacehrh:::GPE$seasonalityCurves$Births * results[[10]]$AnnualTimes["FH.MN.ANC.1","2020"]
+print(times2020)
+```
+However, the ante-natal care doesn't happen in the month of the birth; it's distributed across the months preceding the birth. Ante-natal care visits in January 2020 are generated by births that happen in February, April, June and August.
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+timeJan2020 <- (times2020[2] + times2020[4] + times2020[6] + times2020[8])/4
+print(timeJan2020)
+```
+These times are then reported in **SeasonalityResults**. **SeasonalityResults** is structured as a list, one entry for each healthcare task. Each **SeasonalityResults** list entry is itself two lists, one of task times, and the other of task service counts.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+results[[10]]$SeasonalityResults$FH.MN.ANC.1$Time
+```
+Because the offsets for FH.MN.ANC.1 are negative, the time-series stops being reliable at the far end because the offset monthly values would have to be generated from un-calculated annual values beyond the range of the experiment. (In other words, to compute FH.MN.ANC.1 values for late 2040, the system needs to have calculated an annual value for 2041.)
+
+```{r include=TRUE, eval=TRUE, echo=FALSE, fig.height = 7, fig.width = 7}
+plot(results[[10]]$SeasonalityResults$FH.MN.ANC.1$Time, type = "l", xlab = "Months", ylab = "FH.MN.ANC.1 Task Times / minutes")
+```
+
+## Population
+
+Every PACE-HRH trial is based on population predictions.**Population** stores the population data for the trial as a list with one entry for each year of the time-series.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+names(results[[10]]$Population)
+```
+The entry for each year is a data frame consisting of the number of females and males per age group, and the relevant mortality and fertility rates used to compute the current year's populations based on the previous year's values (except the entry for the initial population, which doesn't have the rates).
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+cat("2020 Population (initial)\n")
+print(head(results[[10]]$Population[["2020"]]))
+cat("\n")
+cat("2021 Population\n")
+print(head(results[[10]]$Population[["2021"]]))
+cat("\n")
+cat("2022 Population\n")
+print(head(results[[10]]$Population[["2022"]]))
+```
+
+### Calculation details
+
+The entry for each year is assumed to be an end-of-year snapshot of the population. To calculate the number of 5-year-olds at the end 2025 the system takes the number of 4-year-olds alive at the end of 2024, then applies the mortality rate for 5-year-olds in 2025 to compute how many lives are lost during the year. The number of new-borns (under 1 year old) at the end of 2025 is computed by applying the appropriate fertility rates to the numbers of women in each 2025 age group as calculated above, then applying the mortality rates for newborns.
+
+## PopulationRates
+
+The **PopulationRates** data structure is quite complex because it reflects PACE-HRH's support for user-defined banded rate structures.
+
+The data structure is a list of four entries, one for each rate type.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+names(results[[10]]$PopulationRates)
+```
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+names(results[[10]]$PopulationRates$femaleFertility)
+```
+
+* **type** : {"Mortality" | "Fertility"}
+* **sex** : {"F" | "M"}
+* **prt** : The Population Rates Table, read from the PACE-HRH input spreadsheet "PopValues" sheet. The PRT defines population bands, and the mortality or fertility rates that apply to those bands (__InitValue__). The PRT also defines a __ChangeRate__ value for each band, which is the amount by which the rate changes each year. A value less than 1 says that the rate is declining from __InitValue__ year over year.
+* **fullRates** : The banded __InitValue__ and __ChangeRate__ vectors expanded to the full age range.
+* **bandedRates$breaks** : The end ages for each rate band except the last one. In other words, the ages after which rates changes from one banded value to another.
+* **bandedRates$expansionMatrix** : A matrix that can be used to convert a vector of rates from the banded format to the expanded format.
+* **bandedRates$initValues** : Initial rate values. The __InitValue__ column from the PRT.
+* **bandedRates$changeRates** : Year-over-year change to rates. The __ChangeRate__ column from the PRT.
+
+```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
+bandedInitValues <- results[[10]]$PopulationRates$femaleFertility$bandedRates$initValues
+print(bandedInitValues)
+cat("\n")
+print(results[[10]]$PopulationRates$femaleFertility$bandedRates$breaks)
+cat("\n")
+m <- results[[10]]$PopulationRates$femaleFertility$bandedRates$expansionMatrix
+print(as.vector(m %*% bandedInitValues))
+```
+
+* **ratesMatrix** : Times-series for banded rates, with stochasticity applied.
+
+```{r include=TRUE, eval=TRUE, echo=TRUE, fig.height = 7, fig.width = 7}
+library(ggplot2)
+library(tidyr)
+
+m <- results[[10]]$PopulationRates$maleMortality$ratesMatrix
+
+df <- data.frame(Year = as.numeric(colnames(m)),
+                 MortalityInfantsM = m["MortalityInfantsM",],
+                 Mortality15_19M = m["Mortality15_19M",],
+                 Mortality35_49M = m["Mortality35_49M",])
+
+dff <- pivot_longer(df, c("MortalityInfantsM", "Mortality15_19M", "Mortality35_49M"),
+                    names_to = "Band",
+                    values_to = "Rate")
+
+g <- ggplot(data = dff)
+g <- g + geom_line(aes(x = Year, y = Rate, group = Band, color = Band))
+g
+```
 
