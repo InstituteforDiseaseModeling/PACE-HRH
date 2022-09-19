@@ -13,10 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "../tests")
 ```
-The PACE-HRH model results structure
-
 The script for a typical run of the PACE-HRH modeling engine looks like this: 
-
 
 ```{r include=TRUE, eval=TRUE}
 library(pacehrh)
