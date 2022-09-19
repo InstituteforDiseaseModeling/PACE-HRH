@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -88,10 +88,10 @@ summarize the output, e.g. with dplyr.</p>
 <span class="r-in"><span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"ScenarioName"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span> <span class="fu">ehep</span><span class="fu">::</span><span class="fu">RunExperiments</span><span class="op">(</span>scenarioName <span class="op">=</span> <span class="va">scenario</span>,</span></span>
+<span class="r-in"><span> <span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="RunExperiments.html">RunExperiments</a></span><span class="op">(</span>scenarioName <span class="op">=</span> <span class="va">scenario</span>,</span></span>
 <span class="r-in"><span>                      trials <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">ehep</span><span class="fu">::</span><span class="fu">SaveSuiteDemographics</span><span class="op">(</span><span class="va">results</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">pacehrh</span><span class="fu">::</span><span class="fu">SaveSuiteDemographics</span><span class="op">(</span><span class="va">results</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op">%&gt;%</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Trial</span>, <span class="va">Year</span>, <span class="va">AgeBucket</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>

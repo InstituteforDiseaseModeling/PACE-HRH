@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -84,9 +84,6 @@ Eliot</h4>
 
     
     
-<div class="section level2">
-<h2 id="the-pace-hrh-model-results-structure">The PACE-HRH model results structure<a class="anchor" aria-label="anchor" href="#the-pace-hrh-model-results-structure"></a>
-</h2>
 <p>The script for a typical run of the PACE-HRH modeling engine looks
 like this:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -97,46 +94,400 @@ like this:</p>
 <span><span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/InitializeStochasticParameters.html">InitializeStochasticParameters</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/InitializeSeasonality.html">InitializeSeasonality</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"ScenarioName"</span></span>
+<span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"MergedModel"</span></span>
 <span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/RunExperiments.html">RunExperiments</a></span><span class="op">(</span>scenarioName <span class="op">=</span> <span class="va">scenario</span>,</span>
-<span>                       trials <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<span>                       trials <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>In this note we describe the contents of the <em>results</em> data
 structure returned by <code><a href="../reference/RunExperiments.html">RunExperiments()</a></code>.</p>
-<div class="section level3">
-<h3 id="structure">Structure<a class="anchor" aria-label="anchor" href="#structure"></a>
-</h3>
+<div class="section level2">
+<h2 id="structure">Structure<a class="anchor" aria-label="anchor" href="#structure"></a>
+</h2>
 <p>The <em>results</em> (plural) structure is an R list consisting of
 multiple <em>result</em> (singular) structures, one per trial.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
+<span><span class="co">## [1] 10</span></span></code></pre></div>
 <p>Each <em>result</em> structure consists of the following parts:</p>
 <ul>
-<li>
-<strong>Clinical</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>NonClinical</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>NonClinicalAllocation</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>NonProductive</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>FTEs</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>SeasonalityResults</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>Population</strong>: <tbd></tbd>
-</li>
-<li>
-<strong>PopulationRates</strong>: <tbd></tbd>
-</li>
+<li><strong>AnnualTimes</strong></li>
+<li><strong>AnnualCounts</strong></li>
+<li><strong>SeasonalityResults</strong></li>
+<li><strong>Population</strong></li>
+<li><strong>PopulationRates</strong></li>
 </ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">## [1] "AnnualTimes"        "AnnualCounts"       "SeasonalityResults"</span></span>
+<span><span class="co">## [4] "Population"         "PopulationRates"</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="overview-of-the-calculations">Overview of the calculations<a class="anchor" aria-label="anchor" href="#overview-of-the-calculations"></a>
+</h2>
+<p>The PACE-HRH modeling engine computes the total amount of time
+required to perform healthcare tasks, based on population
+predictions.</p>
+<ul>
+<li>Step 1: Build population predictions for a range of years, based on
+shifting mortality and fertility rates.</li>
+<li>Step 2: For each combination of healthcare task and year, use
+information about the task - applicable population group, disease
+prevalence, time required per task event, number of events, etc - to
+determine the number of times a task is performed per year (“services”),
+and the total amount of time required for all services in a given
+year.</li>
+<li>Step 3: Apply data about the per-month seasonality of healthcare
+events to convert the annual data into per-month data. This calculation
+happens in two phases. In the first phase a seasonality curve is applied
+to the annual data, distributing the annual value according to the
+seasonality curve across the twelve months of the year. In the second
+phase, offset data is used to place events in the actual months they
+occur. An example of this is ante-natal care: a future birth generates
+ante-natal care tasks 1, 3, 5, and 7 months <strong>before</strong> the
+birth happens.</li>
+</ul>
+<p>For each trial in a suite of trials, the parameters that feed the
+calculations are varied stochastically to generate confidence interval
+predictions.</p>
+</div>
+<div class="section level2">
+<h2 id="annualtimes">AnnualTimes<a class="anchor" aria-label="anchor" href="#annualtimes"></a>
+</h2>
+<p><strong>AnnualTimes</strong> holds the results of the
+time-per-task-per-year values (in minutes) calculated in Step 2. The
+results are in the form of a matrix, with tasks along the row dimension
+and years along the columns.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">)</span></span>
+<span><span class="co">## [1] 135  21</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">)</span></span>
+<span><span class="co">##   [1] "FH.MN.ANC.1"     "FH.MN.PNC.7"     "FH.MN.15"        "FH.MN.17"       </span></span>
+<span><span class="co">##   [5] "FH.MN.18"        "FH.MN.19A"       "FH.MN.19B"       "FH.MN.19C"      </span></span>
+<span><span class="co">##   [9] "FH.MN.19D"       "FH.MN.23"        "FH.MN.24"        "FH.EPI.32A"     </span></span>
+<span><span class="co">##  [13] "FH.EPI.32B"      "FH.EPI.32C"      "FH.EPI.32D"      "FH.EPI.33"      </span></span>
+<span><span class="co">##  [17] "FH.EPI.34"       "FH.FP.38A"       "FH.FP.38B"       "FH.FP.38C"      </span></span>
+<span><span class="co">##  [21] "FH.FP.39"        "FH.FP.42"        "FH.FP.44"        "FH.FP.48"       </span></span>
+<span><span class="co">##  [25] "FH.FP.50"        "FH.FP.51"        "FH.FP.58"        "FH.FP.62"       </span></span>
+<span><span class="co">##  [29] "FH.Ntr.64"       "FH.Ntr.65"       "FH.Ntr.66"       "FH.Ntr.67"      </span></span>
+<span><span class="co">##  [33] "FH.Ntr.77"       "FH.Ntr.79"       "FH.Ntr.80"       "FH.Ntr.81"      </span></span>
+<span><span class="co">##  [37] "FH.Ntr.82"       "FH.Ntr.83"       "FH.Ntr.84"       "DPC.STI.95"     </span></span>
+<span><span class="co">##  [41] "DPC.STI.99"      "DPC.TB.108A"     "DPC.TB.108B"     "DPC.Cncr.117"   </span></span>
+<span><span class="co">##  [45] "DPC.Cncr.119A"   "DPC.Cncr.119B"   "DPC.Cncr.119C"   "DPC.Cncr.119D"  </span></span>
+<span><span class="co">##  [49] "DPC.Cncr.119E"   "DPC.Cncr.119F"   "DPC.Cncr.119G"   "DPC.Cncr.119H"  </span></span>
+<span><span class="co">##  [53] "DPC.Cncr.119I"   "DPC.Cncr.119J"   "DPC.Cncr.119K"   "DPC.Hyp.120"    </span></span>
+<span><span class="co">##  [57] "DPC.Dbt.123"     "DPC.Asth.126"    "DPC.Asth.127"    "DPC.MH.130B"    </span></span>
+<span><span class="co">##  [61] "DPC.MH.133"      "DPC.MH.135"      "DPC.Oph.136"     "DPC.Oph.137"    </span></span>
+<span><span class="co">##  [65] "DPC.Oph.140"     "DPC.NTD.157"     "FH.MN.D.3"       "FH.MN.D.5"      </span></span>
+<span><span class="co">##  [69] "FH.MN.D.4"       "FH.MN.PNC.8"     "FH.MN.ANC.2"     "FH.Ntr.68"      </span></span>
+<span><span class="co">##  [73] "FH.MN.21A"       "FH.MN.21"        "FH.MN.22"        "DPC.Mlr.103A"   </span></span>
+<span><span class="co">##  [77] "DPC.Mlr.103B"    "DPC.Mlr.103C"    "DPC.Mlr.104A"    "DPC.Mlr.104B"   </span></span>
+<span><span class="co">##  [81] "FH.MN.S.12"      "FH.MN.S.13"      "FH.MN.S.14"      "FH.MN.29"       </span></span>
+<span><span class="co">##  [85] "FH.MN.30"        "FH.EPI.31"       "FH.EPI.35"       "FH.EPI.36"      </span></span>
+<span><span class="co">##  [89] "FH.EPI.37"       "FH.FP.45"        "FH.FP.47"        "FH.FP.49"       </span></span>
+<span><span class="co">##  [93] "FH.FP.52"        "FH.FP.53"        "FH.FP.59"        "FH.Ntr.70"      </span></span>
+<span><span class="co">##  [97] "FH.Ntr.71"       "FH.Ntr.74"       "FH.Ntr.75"       "FH.Ntr.76"      </span></span>
+<span><span class="co">## [101] "FH.Ntr.78"       "FH.Ntr.85"       "FH.Ntr.86"       "DPC.Mlr.102"    </span></span>
+<span><span class="co">## [105] "DPC.Mlr.105"     "DPC.Mlr.106"     "DPC.Mlr.107"     "DPC.TB.110"     </span></span>
+<span><span class="co">## [109] "DPC.Drug.112"    "DPC.Drug.113"    "DPC.Drug.114"    "DPC.Cncr.115"   </span></span>
+<span><span class="co">## [113] "DPC.MH.130A"     "DPC.MH.131"      "DPC.MH.132"      "DPC.MH.134"     </span></span>
+<span><span class="co">## [117] "DPC.NTD.156"     "DPC.NTD.159"     "DPC.NTD.160"     "DPC.NTD.162"    </span></span>
+<span><span class="co">## [121] "DPC.NTD.163"     "DPC.NTD.164"     "DPC.NTD.168"     "DPC.NTD.169"    </span></span>
+<span><span class="co">## [125] "DPC.NTD.171"     "DPC.NTD.172"     "DPC.NTD.175"     "Record keeping" </span></span>
+<span><span class="co">## [129] "Travel_HEH"      "Travel_HEP"      "Test additional" "MHH_HEH"        </span></span>
+<span><span class="co">## [133] "MHH_HEP"         "Overhead_staff1" "Overhead_staff2"</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">)</span></span>
+<span><span class="co">##  [1] "2020" "2021" "2022" "2023" "2024" "2025" "2026" "2027" "2028" "2029"</span></span>
+<span><span class="co">## [11] "2030" "2031" "2032" "2033" "2034" "2035" "2036" "2037" "2038" "2039"</span></span>
+<span><span class="co">## [21] "2040"</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">[</span><span class="st">"FH.MN.ANC.1"</span>,<span class="op">]</span></span>
+<span><span class="co">##     2020     2021     2022     2023     2024     2025     2026     2027 </span></span>
+<span><span class="co">## 6956.261 5395.561 5975.249 6153.615 5975.249 6376.572 6242.798 6242.798 </span></span>
+<span><span class="co">##     2028     2029     2030     2031     2032     2033     2034     2035 </span></span>
+<span><span class="co">## 5707.701 6242.798 6554.938 6956.261 7357.583 7402.175 7848.089 7625.132 </span></span>
+<span><span class="co">##     2036     2037     2038     2039     2040 </span></span>
+<span><span class="co">## 7312.992 6867.078 7357.583 7268.400 6822.486</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="annualcounts">AnnualCounts<a class="anchor" aria-label="anchor" href="#annualcounts"></a>
+</h2>
+<p><strong>AnnualCounts</strong> reports the number of times per year a
+healthcare task is performed.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualCounts</span><span class="op">[</span><span class="st">"FH.MN.ANC.1"</span>,<span class="op">]</span></span>
+<span><span class="co">## 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 </span></span>
+<span><span class="co">##  624  484  536  552  536  572  560  560  512  560  588  624  660  664  704  684 </span></span>
+<span><span class="co">## 2036 2037 2038 2039 2040 </span></span>
+<span><span class="co">##  656  616  660  652  612</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The pacehrh:::EXP environment holds working variables from the most recent trial.</span></span>
+<span><span class="co"># It's accessed here to illustrate how task time calculation are done.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">EXP</span><span class="op">$</span><span class="va">taskParameters</span><span class="op">@</span><span class="va">values</span><span class="op">[</span><span class="st">"FH.MN.ANC.1"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">EXP</span><span class="op">$</span><span class="va">demographics</span><span class="op">[[</span><span class="st">"2020"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Female</span> <span class="op">+</span> <span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">EXP</span><span class="op">$</span><span class="va">demographics</span><span class="op">[[</span><span class="st">"2020"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Male</span><span class="op">)</span></span>
+<span><span class="co">##  StartingRateInPop     RateMultiplier   AnnualDeltaRatio NumContactsPerUnit </span></span>
+<span><span class="co">##            1.00000            1.00000            1.00000            4.00000 </span></span>
+<span><span class="co">##  NumContactsAnnual     MinsPerContact       HoursPerWeek           FTEratio </span></span>
+<span><span class="co">##            0.00000           11.14785            0.00000            0.00000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##   [1] 156 149 144 139 136 133 132 131 129 128 127 126 124 123 122 119 117 113</span></span>
+<span><span class="co">##  [19] 109 103  98  92  88  86  84  83  81  79  76  72  67  63  59  57  57  55</span></span>
+<span><span class="co">##  [37]  55  55  53  51  48  45  43  41  41  40  39  38  37  37  35  34  33  32</span></span>
+<span><span class="co">##  [55]  31  31  30  29  28  26  24  23  21  20  19  19  18  17  16  15  14  13</span></span>
+<span><span class="co">##  [73]  12  11  10   9   8   7   7   5   5   3   3   2   2   1   1   1   1   0</span></span>
+<span><span class="co">##  [91]   0   0   0   0   0   0   0   0   0   0   0</span></span></code></pre></div>
+<p>In this example (ante-natal task FH.MN.ANC.1), there are 156 births
+in 2020 in a total population of 5000, each of which generates 4
+ante-natal care visits (NumContactsPerUnit), giving 624 total visits.
+Each visit is 11.1478535 minutes long, a value derived from a stochastic
+variation of the base value of 10, to give a total time of 6956.2605551
+minutes.</p>
+</div>
+<div class="section level2">
+<h2 id="seasonalityresults">SeasonalityResults<a class="anchor" aria-label="anchor" href="#seasonalityresults"></a>
+</h2>
+<p>As described above, the system takes the annual times reported in
+<strong>AnnualTimes</strong>, applies a seasonality curve to distribute
+the annual times across the months of the year, then uses seasonality
+offsets to place the healthcare events in the correct months.</p>
+<div class="section level3">
+<h3 id="sample-calculation">Sample calculation<a class="anchor" aria-label="anchor" href="#sample-calculation"></a>
+</h3>
+<p>The FH.MN.ANC.1 task uses the Births seasonality curve, and has four
+offsets representing ante-natal care visits 1, 3, 5 and 7 months before
+a birth.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">GPE</span><span class="op">$</span><span class="va">seasonalityOffsets</span><span class="op">[</span><span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">GPE</span><span class="op">$</span><span class="va">seasonalityOffsets</span><span class="op">$</span><span class="va">Task</span> <span class="op">==</span> <span class="st">"FH.MN.ANC.1"</span>,<span class="op">]</span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 9</span></span></span>
+<span><span class="co">##   Task        Description Curve  Offset1 Offset2 Offset3 Offset4 Offset5 Offset6</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> FH.MN.ANC.1 ANC visits  Births      -<span style="color: #BB0000;">7</span>      -<span style="color: #BB0000;">5</span>      -<span style="color: #BB0000;">3</span>      -<span style="color: #BB0000;">1</span> <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
+<p>The Births seasonality curve represents a normalized distribution
+(sum = 1) of the annual task time across the twelve months of the
+year.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">GPE</span><span class="op">$</span><span class="va">seasonalityCurves</span><span class="op">$</span><span class="va">Births</span></span>
+<span><span class="co">##  [1] 0.07321502 0.08075936 0.09730372 0.08754257 0.07593332 0.06268636</span></span>
+<span><span class="co">##  [7] 0.08631404 0.10510508 0.10273058 0.07135226 0.08005741 0.07700028</span></span></code></pre></div>
+<p>Applying the Births seasonality curve to the annual value computed
+for 2020 gives the ante-natal visit time generated by births in a given
+month.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">times2020</span> <span class="op">&lt;-</span> <span class="fu">pacehrh</span><span class="fu">:::</span><span class="va">GPE</span><span class="op">$</span><span class="va">seasonalityCurves</span><span class="op">$</span><span class="va">Births</span> <span class="op">*</span> <span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">[</span><span class="st">"FH.MN.ANC.1"</span>,<span class="st">"2020"</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">times2020</span><span class="op">)</span></span>
+<span><span class="co">##  [1] 509.3028 561.7832 676.8701 608.9690 528.2120 436.0626 600.4230 731.1383</span></span>
+<span><span class="co">##  [9] 714.6207 496.3449 556.9002 535.6340</span></span></code></pre></div>
+<p>However, the ante-natal care doesn’t happen in the month of the
+birth; it’s distributed across the months preceding the birth.
+Ante-natal care visits in January 2020 are generated by births that
+happen in February, April, June and August.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">timeJan2020</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">times2020</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">times2020</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span> <span class="op">+</span> <span class="va">times2020</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span> <span class="op">+</span> <span class="va">times2020</span><span class="op">[</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">4</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">timeJan2020</span><span class="op">)</span></span>
+<span><span class="co">## [1] 584.4883</span></span></code></pre></div>
+<p>These times are then reported in <strong>SeasonalityResults</strong>.
+<strong>SeasonalityResults</strong> is structured as a list, one entry
+for each healthcare task. Each <strong>SeasonalityResults</strong> list
+entry is itself two lists, one of task times, and the other of task
+service counts.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">SeasonalityResults</span><span class="op">$</span><span class="va">FH.MN.ANC.1</span><span class="op">$</span><span class="va">Time</span></span>
+<span><span class="co">##   [1] 584 630 568 600 550 567 550 548 485 471 445 448 453 487 440 464 426 471</span></span>
+<span><span class="co">##  [19] 463 500 452 476 450 497 503 542 488 517 472 516 502 537 480 500 470 513</span></span>
+<span><span class="co">##  [37] 517 558 503 531 486 523 511 535 480 491 464 497 503 542 488 517 472 520</span></span>
+<span><span class="co">##  [55] 507 546 490 513 484 531 537 578 522 551 505 544 531 558 500 512 484 519</span></span>
+<span><span class="co">##  [73] 525 565 510 538 493 534 521 551 494 509 481 519 525 565 510 538 493 524</span></span>
+<span><span class="co">##  [91] 510 528 471 476 450 474 480 516 467 491 452 497 488 526 475 498 471 519</span></span>
+<span><span class="co">## [109] 525 565 510 538 493 540 527 565 507 529 499 546 551 594 536 565 518 568</span></span>
+<span><span class="co">## [127] 555 595 535 559 527 578 584 630 568 600 550 603 589 632 567 593 558 613</span></span>
+<span><span class="co">## [145] 617 667 600 635 581 631 616 652 585 603 570 616 622 670 604 638 584 642</span></span>
+<span><span class="co">## [163] 626 673 604 632 595 653 659 711 641 677 620 668 651 685 612 628 592 635</span></span>
+<span><span class="co">## [181] 641 691 623 657 603 646 631 660 591 603 569 609 614 663 596 631 577 618</span></span>
+<span><span class="co">## [199] 602 627 560 569 538 571 577 621 560 592 542 597 582 628 563 592 556 613</span></span>
+<span><span class="co">## [217] 617 667 600 635 581 628 613 646 579 595 562 605 611 659 594 628 575 615</span></span>
+<span><span class="co">## [235] 599 624 557 567 534 568 573 618 557 588 539 458 432 311 253 136 131   0</span></span></code></pre></div>
+<p>Because the offsets for FH.MN.ANC.1 are negative, the time-series
+stops being reliable at the far end because the offset monthly values
+would have to be generated from un-calculated annual values beyond the
+range of the experiment. (In other words, to compute FH.MN.ANC.1 values
+for late 2040, the system needs to have calculated an annual value for
+2041.)</p>
+<p><img src="results-struct_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="population">Population<a class="anchor" aria-label="anchor" href="#population"></a>
+</h2>
+<p>Every PACE-HRH trial is based on population
+predictions.<strong>Population</strong> stores the population data for
+the trial as a list with one entry for each year of the time-series.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Population</span><span class="op">)</span></span>
+<span><span class="co">##  [1] "2020" "2021" "2022" "2023" "2024" "2025" "2026" "2027" "2028" "2029"</span></span>
+<span><span class="co">## [11] "2030" "2031" "2032" "2033" "2034" "2035" "2036" "2037" "2038" "2039"</span></span>
+<span><span class="co">## [21] "2040"</span></span></code></pre></div>
+<p>The entry for each year is a data frame consisting of the number of
+females and males per age group, and the relevant mortality and
+fertility rates used to compute the current year’s populations based on
+the previous year’s values (except the entry for the initial population,
+which doesn’t have the rates).</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"2020 Population (initial)\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Population</span><span class="op">[[</span><span class="st">"2020"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"2021 Population\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Population</span><span class="op">[[</span><span class="st">"2021"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"2022 Population\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Population</span><span class="op">[[</span><span class="st">"2022"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## 2020 Population (initial)</span></span>
+<span><span class="co">##   Range Female Male</span></span>
+<span><span class="co">## 1     0     78   78</span></span>
+<span><span class="co">## 2     1     75   74</span></span>
+<span><span class="co">## 3     2     72   72</span></span>
+<span><span class="co">## 4     3     70   69</span></span>
+<span><span class="co">## 5     4     68   68</span></span>
+<span><span class="co">## 6     5     67   66</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## 2021 Population</span></span>
+<span><span class="co">##   Range Female Male rates.femaleFertility rates.maleFertility</span></span>
+<span><span class="co">## 1     0     61   60                     0                   0</span></span>
+<span><span class="co">## 2     1     78   78                     0                   0</span></span>
+<span><span class="co">## 3     2     75   74                     0                   0</span></span>
+<span><span class="co">## 4     3     72   72                     0                   0</span></span>
+<span><span class="co">## 5     4     70   69                     0                   0</span></span>
+<span><span class="co">## 6     5     68   68                     0                   0</span></span>
+<span><span class="co">##   rates.femaleMortality rates.maleMortality</span></span>
+<span><span class="co">## 1           0.051614657         0.063334582</span></span>
+<span><span class="co">## 2           0.003129665         0.002420569</span></span>
+<span><span class="co">## 3           0.003129665         0.002420569</span></span>
+<span><span class="co">## 4           0.003129665         0.002420569</span></span>
+<span><span class="co">## 5           0.003129665         0.002420569</span></span>
+<span><span class="co">## 6           0.001013153         0.001024763</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## 2022 Population</span></span>
+<span><span class="co">##   Range Female Male rates.femaleFertility rates.maleFertility</span></span>
+<span><span class="co">## 1     0     67   67                     0                   0</span></span>
+<span><span class="co">## 2     1     61   60                     0                   0</span></span>
+<span><span class="co">## 3     2     78   78                     0                   0</span></span>
+<span><span class="co">## 4     3     75   74                     0                   0</span></span>
+<span><span class="co">## 5     4     72   72                     0                   0</span></span>
+<span><span class="co">## 6     5     70   69                     0                   0</span></span>
+<span><span class="co">##   rates.femaleMortality rates.maleMortality</span></span>
+<span><span class="co">## 1          0.0639980437        0.0752089393</span></span>
+<span><span class="co">## 2          0.0032125238        0.0023181397</span></span>
+<span><span class="co">## 3          0.0032125238        0.0023181397</span></span>
+<span><span class="co">## 4          0.0032125238        0.0023181397</span></span>
+<span><span class="co">## 5          0.0032125238        0.0023181397</span></span>
+<span><span class="co">## 6          0.0009714973        0.0008790518</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="calculation-details">Calculation details<a class="anchor" aria-label="anchor" href="#calculation-details"></a>
+</h3>
+<p>The entry for each year is assumed to be an end-of-year snapshot of
+the population. To calculate the number of 5-year-olds at the end 2025
+the system takes the number of 4-year-olds alive at the end of 2024,
+then applies the mortality rate for 5-year-olds in 2025 to compute how
+many lives are lost during the year. The number of new-borns (under 1
+year old) at the end of 2025 is computed by applying the appropriate
+fertility rates to the numbers of women in each 2025 age group as
+calculated above, then applying the mortality rates for newborns.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="populationrates">PopulationRates<a class="anchor" aria-label="anchor" href="#populationrates"></a>
+</h2>
+<p>The <strong>PopulationRates</strong> data structure is quite complex
+because it reflects PACE-HRH’s support for user-defined banded rate
+structures.</p>
+<p>The data structure is a list of four entries, one for each rate
+type.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PopulationRates</span><span class="op">)</span></span>
+<span><span class="co">## [1] "femaleFertility" "maleFertility"   "femaleMortality" "maleMortality"</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PopulationRates</span><span class="op">$</span><span class="va">femaleFertility</span><span class="op">)</span></span>
+<span><span class="co">## [1] "type"        "sex"         "prt"         "fullRates"   "bandedRates"</span></span>
+<span><span class="co">## [6] "ratesMatrix"</span></span></code></pre></div>
+<ul>
+<li>
+<strong>type</strong> : {“Mortality” | “Fertility”}</li>
+<li>
+<strong>sex</strong> : {“F” | “M”}</li>
+<li>
+<strong>prt</strong> : The Population Rates Table, read from the
+PACE-HRH input spreadsheet “PopValues” sheet. The PRT defines population
+bands, and the mortality or fertility rates that apply to those bands
+(<strong>InitValue</strong>). The PRT also defines a
+<strong>ChangeRate</strong> value for each band, which is the amount by
+which the rate changes each year. A value less than 1 says that the rate
+is declining from <strong>InitValue</strong> year over year.</li>
+<li>
+<strong>fullRates</strong> : The banded <strong>InitValue</strong>
+and <strong>ChangeRate</strong> vectors expanded to the full age
+range.</li>
+<li>
+<strong>bandedRates$breaks</strong> : The end ages for each rate
+band except the last one. In other words, the ages after which rates
+changes from one banded value to another.</li>
+<li>
+<strong>bandedRates$expansionMatrix</strong> : A matrix that can be
+used to convert a vector of rates from the banded format to the expanded
+format.</li>
+<li>
+<strong>bandedRates$initValues</strong> : Initial rate values. The
+<strong>InitValue</strong> column from the PRT.</li>
+<li>
+<strong>bandedRates$changeRates</strong> : Year-over-year change to
+rates. The <strong>ChangeRate</strong> column from the PRT.</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bandedInitValues</span> <span class="op">&lt;-</span> <span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PopulationRates</span><span class="op">$</span><span class="va">femaleFertility</span><span class="op">$</span><span class="va">bandedRates</span><span class="op">$</span><span class="va">initValues</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bandedInitValues</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PopulationRates</span><span class="op">$</span><span class="va">femaleFertility</span><span class="op">$</span><span class="va">bandedRates</span><span class="op">$</span><span class="va">breaks</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PopulationRates</span><span class="op">$</span><span class="va">femaleFertility</span><span class="op">$</span><span class="va">bandedRates</span><span class="op">$</span><span class="va">expansionMatrix</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">m</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">bandedInitValues</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.000 0.042 0.157 0.195 0.144 0.118 0.046 0.027 0.000</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [1] 14 19 24 29 34 39 44 49</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##   [1] 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">##  [13] 0.000 0.000 0.000 0.042 0.042 0.042 0.042 0.042 0.157 0.157 0.157 0.157</span></span>
+<span><span class="co">##  [25] 0.157 0.195 0.195 0.195 0.195 0.195 0.144 0.144 0.144 0.144 0.144 0.118</span></span>
+<span><span class="co">##  [37] 0.118 0.118 0.118 0.118 0.046 0.046 0.046 0.046 0.046 0.027 0.027 0.027</span></span>
+<span><span class="co">##  [49] 0.027 0.027 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">##  [61] 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">##  [73] 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">##  [85] 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">##  [97] 0.000 0.000 0.000 0.000 0.000</span></span></code></pre></div>
+<ul>
+<li>
+<strong>ratesMatrix</strong> : Times-series for banded rates, with
+stochasticity applied.</li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">PopulationRates</span><span class="op">$</span><span class="va">maleMortality</span><span class="op">$</span><span class="va">ratesMatrix</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                 MortalityInfantsM <span class="op">=</span> <span class="va">m</span><span class="op">[</span><span class="st">"MortalityInfantsM"</span>,<span class="op">]</span>,</span>
+<span>                 Mortality15_19M <span class="op">=</span> <span class="va">m</span><span class="op">[</span><span class="st">"Mortality15_19M"</span>,<span class="op">]</span>,</span>
+<span>                 Mortality35_49M <span class="op">=</span> <span class="va">m</span><span class="op">[</span><span class="st">"Mortality35_49M"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MortalityInfantsM"</span>, <span class="st">"Mortality15_19M"</span>, <span class="st">"Mortality35_49M"</span><span class="op">)</span>,</span>
+<span>                    names_to <span class="op">=</span> <span class="st">"Band"</span>,</span>
+<span>                    values_to <span class="op">=</span> <span class="st">"Rate"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dff</span><span class="op">)</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="va">g</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Year</span>, y <span class="op">=</span> <span class="va">Rate</span>, group <span class="op">=</span> <span class="va">Band</span>, color <span class="op">=</span> <span class="va">Band</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">g</span></span></code></pre></div>
+<p><img src="results-struct_files/figure-html/unnamed-chunk-21-1.png" width="672"></p>
 </div>
   </div>
 
