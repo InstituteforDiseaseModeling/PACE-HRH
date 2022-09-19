@@ -13,20 +13,21 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
     mutate(
       warning = if_else(severity=="warning", fails, 0L),
       info = if_else(severity=="info", fails, 0L),
-      fails = if_else(severity=="error", fails, 0L)
+      fails = if_else(severity=="error", fails, 0L),
+      na = nNA,
     ) %>%
-    select(c("name","items","passes","warning","info","fails")) %>%
-    pivot_longer(cols=c("passes","warning","info","fails"), names_to="result", values_to="total")
+    select(c("name","items","passes","warning","info","fails", "na")) %>%
+    pivot_longer(cols=c("passes","warning","info","fails", "na"), names_to="result", values_to="total")
   
   ylevel_order <- rev(final_result %>% select(name) %>% unique() %>% arrange(name) %>% .$name)
-  xlevel_order <- c("info", "fails", "warning", "passes")
+  xlevel_order <- c("info", "fails", "warning", "na", "passes")
   
   # a normal plot...
   if (!fancy){
     p <- ggplot(final_result, aes(x=total/items, y=factor(name, level=ylevel_order), fill=factor(result, level=xlevel_order))) +
       geom_bar(stat = "identity") +
       xlab(NULL) + ylab(NULL) +
-      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue")) +
+      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue", na="grey")) +
       scale_x_continuous(labels=scales::percent) +
       scale_y_discrete(position = "right") +
       geom_text(data=subset(final_result,total> 0), aes(label=total, y=name), size=3, position=position_fill(), hjust=1.4, color="white") +
@@ -51,7 +52,7 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
     p <- ggplot(final_result, aes(x=total/items, y=factor(name, level=ylevel_order), fill=factor(result, level=xlevel_order))) +
       geom_bar(stat = "identity") +
       xlab(NULL) + ylab(NULL) +
-      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue")) +
+      scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue", "na"="grey")) +
       scale_x_continuous(labels=scales::percent) +
       scale_y_discrete(position = "right") +
       geom_text(data=subset(final_result,total> 0), aes(label=total, y=name), size=9, position=position_fill(), hjust=1.4, color="white") +
