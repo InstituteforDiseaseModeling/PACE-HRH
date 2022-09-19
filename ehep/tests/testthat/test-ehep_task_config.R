@@ -43,7 +43,7 @@ test_that("Task configuration: confirm cleanup 1", {
 
 
 # test_that("Task configuration: InitializeHealthcareTasks", {
-#   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+#   testthat::expect_equal(ehep:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 #
 #   e <- ehep:::GPE
 #   local_vars("inputExcelFile", envir = e)

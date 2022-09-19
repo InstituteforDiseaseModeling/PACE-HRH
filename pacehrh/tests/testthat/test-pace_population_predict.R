@@ -6,7 +6,7 @@ local_vars("globalDebug", envir = e)
 GPE$globalDebug <- TRUE
 
 test_that("computeBirths: basic", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -27,7 +27,7 @@ test_that("computeBirths: basic", {
 })
 
 test_that("computeDeaths: basic", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
@@ -53,7 +53,7 @@ test_that("computeDeaths: basic", {
 })
 
 # test_that("ComputeDemographicsProjection: simple", {
-#   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+#   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 #
 #   e <- pacehrh:::GPE
 #   local_vars("inputExcelFile", envir = e)

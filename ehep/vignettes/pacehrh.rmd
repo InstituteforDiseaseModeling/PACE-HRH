@@ -21,7 +21,7 @@ The PACE-HRH model simulates healthcare needs in a given population to enable be
 staffing decisions. PACE-HRH is a stochastic, Monte Carlo simulation model, meaning that the population, its healthcare needs, and the time required to meet those are simulated and there is randomness built into the model uncertainty in the population's size, growth, and healthcare needs. 
 To configure the model, you input data in Excel spreadsheets that describe the population's
 demographics, healthcare tasks, and available staff in the geographic region of interest. To begin,
-navigate to the "config" directory and open the Excel workbook "R Model Inputs.xlsx".
+navigate to the "config" directory and open the Excel workbook "model_inputs.xlsx".
 
 <!--- Should we rename the file names to not include spaces? --->
 

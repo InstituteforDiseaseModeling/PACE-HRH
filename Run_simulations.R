@@ -5,7 +5,7 @@ library(beepr)
 library(tidyverse)
 
 #############################################################
-#Run the lines below after changing R Model Inputs.xlsx file#
+#Run the lines below after changing model_inputs.xlsx file#
 #############################################################
 rm(list = ls())
 

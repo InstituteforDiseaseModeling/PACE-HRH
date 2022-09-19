@@ -3,7 +3,7 @@ library(pacehrh)
 withr::local_dir("..")
 
 test_that("Population rates configuration: Load and compute", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/R Model Inputs.xlsx")
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)

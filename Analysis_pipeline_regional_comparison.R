@@ -192,7 +192,7 @@ ServiceCatHrs <- Mean_ServiceCat_Comprehensive %>%
 
 
 
-scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
+scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
 weeksperyear = scenarios$WeeksPerYr[1]
 hoursperweek = scenarios$HrsPerWeek[1]
 
