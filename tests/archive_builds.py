@@ -7,7 +7,7 @@ files = os.listdir("..")
 for f in files:
     if str(f).endswith("zip"):
         fullname= pathlib.Path(f).absolute()
-        version = str(re.search('ehep_(.+).zip', f).groups(1)[0])
+        version = str(re.search('pacehrh_(.+).zip', f).groups(1)[0])
         # construct gh command
         print("------------------")
         cmd = f'gh release create {version} {f} --generate-notes'
@@ -25,6 +25,6 @@ for f in files:
         print(git_tag_push_cmd)
         print(git_tag_fetch_cmd)
         print(cmd)
-        if os.path.exists(f'ehep_{version}.tar.gz'):
-            upload_cmd = f'gh release upload {version} ehep_{version}.tar.gz'
+        if os.path.exists(f'pacehrh_{version}.tar.gz'):
+            upload_cmd = f'gh release upload {version} pacehrh_{version}.tar.gz'
             print(upload_cmd)
