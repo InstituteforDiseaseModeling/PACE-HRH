@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -123,7 +123,7 @@
 <p>If the package can’t find a <em>globalconfig.json</em> it will use the following default values.</p>
 <pre><code>{
   "configDirectoryLocation" : "./config",
-  "inputExcelFile" : "R Model Inputs.xlsx",
+  "inputExcelFile" : "model_inputs.xlsx",
   "suiteRngSeed" : 12345,
   "startYear" : 2020,
   "endYear" : 2040
@@ -137,7 +137,7 @@
 <li>
 <em>configDirectoryLocation</em>: The location of the directory where configuration data is to be found. The default is a <em>config</em> sub-directory of the working directory.</li>
 <li>
-<em>inputExcelFile</em>: The name of the input data spreadsheet file. The default value is “R Model Inputs.xlsx”. The default setup directs the package to look for the input data spreadsheet file at “config/R Model Inputs.xlsx”.</li>
+<em>inputExcelFile</em>: The name of the input data spreadsheet file. The default value is “model_inputs.xlsx”. The default setup directs the package to look for the input data spreadsheet file at “config/model_inputs.xlsx”.</li>
 <li>
 <em>suiteRngSeed</em>: The PACE-HRH package makes extensive use of random number generation. Before each suite of stochastic trials, the system calls the R function <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> with a random number seed value. The system uses a seed value provided by the user in the <code>seed =</code> parameter of the <code><a href="reference/RunExperiments.html">RunExperiments()</a></code> function, or this global configuration value.</li>
 <li>
