@@ -1,4 +1,4 @@
-library(ehep)
+library(pacehrh)
 library(readxl)
 library(devtools)
 library(beepr)
@@ -9,19 +9,19 @@ library(tidyverse)
 #############################################################
 rm(list = ls())
 
-rmarkdown::render(input = "validation_report.Rmd", 
-                  output_format = "html_document", 
+rmarkdown::render(input = "validation_report.Rmd",
+                  output_format = "html_document",
                   output_dir = "log",
                   params=list(inputFile="config/R Model Inputs.xlsx", outputDir="log"))
 shell.exec(normalizePath("log/validation_report.html"))
 print("Please check validation results in \"log\" folder", quote=FALSE)
 
-ehep::Trace(TRUE)
-ehep::InitializePopulation()
-ehep::InitializeHealthcareTasks()
-ehep::InitializeScenarios()
-ehep::InitializeStochasticParameters()
-ehep::InitializeSeasonality()
+pacehrh::Trace(TRUE)
+pacehrh::InitializePopulation()
+pacehrh::InitializeHealthcareTasks()
+pacehrh::InitializeScenarios()
+pacehrh::InitializeStochasticParameters()
+pacehrh::InitializeSeasonality()
 
 scenarios <- read_xlsx("config/R Model Inputs.xlsx",sheet="Scenarios")
 
@@ -34,8 +34,8 @@ for (i in 1:nrow(scenarios)){
   print(paste("Starting scenario",i))
   scenario <- scenarios$UniqueID[i]
   geoname <- scenarios$Geography_dontedit[i]
-  results <-   ehep::RunExperiments(scenarioName = scenario, trials = numtrials, debug = FALSE)
-  ehep::SaveSuiteResults(results, paste("results/results_",usefuldescription,"_",scenario,"_",date,".csv",sep=""), scenario, 1)
+  results <-   pacehrh::RunExperiments(scenarioName = scenario, trials = numtrials, debug = FALSE)
+  pacehrh::SaveSuiteResults(results, paste("results/results_",usefuldescription,"_",scenario,"_",date,".csv",sep=""), scenario, 1)
 }
 
 beep()
@@ -54,17 +54,17 @@ CA <- ehep:::ComputeCadreAllocations(DR_test)
 print("Compute summary stats")
 SS <- ehep:::ComputeSummaryStats(DR_test, CA)
 print("Attach scenario details")
-Mean_ServiceCat <- SS$Mean_ServiceCat %>% 
+Mean_ServiceCat <- SS$Mean_ServiceCat %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")
-Stats_TotClin <- SS$Stats_TotClin %>% 
+Stats_TotClin <- SS$Stats_TotClin %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")
-Mean_ClinCat <- SS$Mean_ClinCat %>% 
+Mean_ClinCat <- SS$Mean_ClinCat %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")
-Mean_Total <- SS$Mean_Total %>% 
+Mean_Total <- SS$Mean_Total %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")
-Stats_ClinMonth <- SS$Stats_ClinMonth %>% 
+Stats_ClinMonth <- SS$Stats_ClinMonth %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")
-Mean_Alloc <- SS$Mean_Alloc %>% 
+Mean_Alloc <- SS$Mean_Alloc %>%
   merge(scenarios, by.x = "Scenario_ID", by.y = "UniqueID")
 
 write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat_",usefuldescription,"_",date,".csv",sep=""))
