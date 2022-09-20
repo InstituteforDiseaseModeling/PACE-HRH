@@ -1,5 +1,7 @@
 {
   "configDirectoryLocation" : "./config",
-  "inputExcelFile" : "model_inputs.xlsx"
-  "suiteRngSeed" : 12345
+  "inputExcelFile" : "model_inputs.xlsx",
+  "suiteRngSeed" : 12345,
+  "startYear" : 2020,
+  "endYear" : 2040
 }
