@@ -21,7 +21,10 @@ packages = c(
   "testthat",
   "roxytest",
   "knitr",
-  "rmarkdown"
+  "rmarkdown",
+  "validate",
+  "kableExtra",
+  "stringr"
   )
 
 package.check <- lapply(
