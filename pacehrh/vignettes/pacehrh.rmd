@@ -1,10 +1,10 @@
 ---
-title: "Configure the model"
+title: "Get started"
 author: "Jen Schripsema"
-date: '2022-07-27'
+date: '`r Sys.Date()`'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Configure the model}
+  %\VignetteIndexEntry{Get started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Getting started with the PACE-HRH model 
+# Get started with the PACE-HRH model 
 
 ## Configure the model
 
@@ -22,8 +22,6 @@ staffing decisions. PACE-HRH is a stochastic, Monte Carlo simulation model, mean
 To configure the model, you input data in Excel spreadsheets that describe the population's
 demographics, healthcare tasks, and available staff in the geographic region of interest. To begin,
 navigate to the "config" directory and open the Excel workbook "model_inputs.xlsx".
-
-<!--- Should we rename the file names to not include spaces? --->
 
 The workbook is initially configured to model a simple set of tasks and contains example values. You should edit the workbook parameters for the particular context you are working in. 
 
@@ -100,8 +98,6 @@ population. Fertility rates are specified as births per woman per year and will 
 simulated population. Mortality rates are specified per individual per year and will remove people.
 All rates (and rates of change) in the model are stochastic; the value you specify is the mean in a distribution and the variance is determined by the 'p' and 'q' parameters set on the **StochasticParameters** tab.  The first row, "Annual birth rate male," is the fertility rate applied to males (so it should always be set to zero); this is necessary for running the model. Blank values are treated as zeroes. 
 
-<!--- Charles: What happens if someone doesn't input a row that covers the pop all the way to 100? E.g. if someone didn't put in fertility for women over 50, does that throw an error, or default to 0, or...? --->
-
 Columns A through F define standard categories and shouldn't need to be modified unless you plan to
 add functionality to the model itself. Default values are sourced from Ethiopian DHS data but
 should be changed for your context. If you look at the equation in each cell, you can see that the
@@ -122,8 +118,6 @@ one used as an input to the model, so values can be changed directly here if you
   below 1 indicates the rate is decreasing. For example, the age 15-19 initial fertility rate of 0.072 will be 0.0712 (0.72 * 0.988469278) after one year.
 * **ValueCode**: The unique string identifying the category. These are useful when analyzing model 
   outputs. 
-
-<!--- Charles: Why are there blank values in the template? Can we fill in the labels and columns E/F or does that mess something up? --->
 
 ### TaskValues
 
@@ -178,15 +172,18 @@ to the model. Columns G through I do not affect the running of the model, but ar
 The **SeasonlityCurves** sheet describes birth seasonality and the seasonality of conditions like
 malnutrition, TB, malaria, and diarrhea. Each month of the year is listed in a row and each cell in
 a given column represents the proportion of those births or conditions that occur in a given month.
-For example, in the demonstration curves, you can see that malnutrition is highest between September and January and lower the rest of the year.
+For example, in the demonstration curves, you can see that malnutrition is highest between September 
+and January and lower the rest of the year.
 
 The values in each column should sum to 1. If they don't sum to 1, the model will normalize the
 values; however, this may be a source of unexpected behavior. If you see strange seasonal patterns,
 we recommend verifying the sum of these values. 
 
-You can add seasonality curves for additional conditions if desired by adding additional named columns. If you do so, you can then reference them on the **SeasonalityOffsets** tab. 
+You can add seasonality curves for additional conditions if desired by adding additional named columns. 
+If you do so, you can then reference them on the **SeasonalityOffsets** tab. 
 
-The **SeasonalityCurves** tab is referenced in the **Scenarios** manager. If you want to run scenarios with different seasonality curves, you can duplicate the **SeasonalityCurves** tab, modify it, and reference the different tabs in the **Scenarios** column M.
+The **SeasonalityCurves** tab is referenced in the **Scenarios** manager. If you want to run scenarios with 
+different seasonality curves, you can duplicate the **SeasonalityCurves** tab, modify it, and reference the different tabs in the **Scenarios** column M.
 
 
 ### SeasonalityOffsets
@@ -238,19 +235,15 @@ multi-geography structure currently used in the model, we recommend changing the
 However, the model pulls from the sheets listed above, so you can also change the values directly
 in those sheets.
 
-## Run the model
+## Install and run the model
 
 The PACE-HRH model simulates healthcare needs in a given population to enable
 better health system staffing decisions. The model is configured via Excel
 sheets and run via an R script. 
 
-<!--- Rui: Can you update this based on the new process, given Charles' new functions and our incorporation of the geography name in the file output names? --->
-
-Open the run simulations.R script
-
 1.  Close "R Model Inputs.xslx" in Excel. RStudio will be unable to load the input values
     if the file is open. 
-2.  Open the "Run simulations.R" script in RStudio. 
+2.  In RStudio, open the "Run simulations.R" script. 
 3.  From the **Tools** menu, select **Install Packages ...**.
 4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file.
 5.  Select the installation location and then click **Install**. 
@@ -258,10 +251,7 @@ Open the run simulations.R script
     required. Select **Yes**. to enable installation.
 7.  In the R code, set *numtrials* to the number of simulations you want to run. 100 tends to be good; 
     higher values can take longer because of the stochasticity in the model.
-8.  Set the *date*. This can be in any format; follow a version control naming convention that makes 
-    sense to you.
-9.  Run the script. 
+8.  Run the script. 
 
-    The scenarios are loaded in line 16 and line 18 onward runs the model for each
-    scenario. The results are saved out to a CSV file. The console will beep at you when the model
-    has finished running. 
+    The results are saved out to a CSV file with the date and name of the geography as specified
+    in Excel in the filename. The console will beep at you when the model has finished running. 
