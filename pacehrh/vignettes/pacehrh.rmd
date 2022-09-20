@@ -98,8 +98,6 @@ population. Fertility rates are specified as births per woman per year and will 
 simulated population. Mortality rates are specified per individual per year and will remove people.
 All rates (and rates of change) in the model are stochastic; the value you specify is the mean in a distribution and the variance is determined by the 'p' and 'q' parameters set on the **StochasticParameters** tab.  The first row, "Annual birth rate male," is the fertility rate applied to males (so it should always be set to zero); this is necessary for running the model. Blank values are treated as zeroes. 
 
-<!--- Charles: What happens if someone doesn't input a row that covers the pop all the way to 100? E.g. if someone didn't put in fertility for women over 50, does that throw an error, or default to 0, or...? --->
-
 Columns A through F define standard categories and shouldn't need to be modified unless you plan to
 add functionality to the model itself. Default values are sourced from Ethiopian DHS data but
 should be changed for your context. If you look at the equation in each cell, you can see that the
@@ -120,8 +118,6 @@ one used as an input to the model, so values can be changed directly here if you
   below 1 indicates the rate is decreasing. For example, the age 15-19 initial fertility rate of 0.072 will be 0.0712 (0.72 * 0.988469278) after one year.
 * **ValueCode**: The unique string identifying the category. These are useful when analyzing model 
   outputs. 
-
-<!--- Charles: Why are there blank values in the template? Can we fill in the labels and columns E/F or does that mess something up? --->
 
 ### TaskValues
 
