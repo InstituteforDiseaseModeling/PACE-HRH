@@ -4,7 +4,7 @@ author: "Rui Han"
 date: '`r Sys.Date()`'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Configure the model}
+  %\VignetteIndexEntry{Input validation rules}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
