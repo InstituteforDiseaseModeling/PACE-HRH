@@ -10,7 +10,7 @@ for(i in packages){
 
 library(pacehrh)
 setwd("../..")
-minimum_input_file <- "pacehrh/inst/extdata/R Model Inputs_template_lean.xlsx"
+minimum_input_file <- "pacehrh/inst/extdata/model_inputs_template_lean.xlsx"
 
 # Set up necessary steps for default minumum template
 test_template <- function(){
