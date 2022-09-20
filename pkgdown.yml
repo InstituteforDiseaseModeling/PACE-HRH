@@ -2,7 +2,9 @@ pandoc: 2.19.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
+  input-validation: input-validation.html
   pacehrh: pacehrh.html
   results-struct: results-struct.html
-last_built: 2022-09-19T20:59Z
+  technical-notes: technical-notes.html
+last_built: 2022-09-20T17:07Z
 

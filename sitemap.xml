@@ -7,10 +7,16 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
+    <loc>/articles/input-validation.html</loc>
+  </url>
+  <url>
     <loc>/articles/pacehrh.html</loc>
   </url>
   <url>
     <loc>/articles/results-struct.html</loc>
+  </url>
+  <url>
+    <loc>/articles/technical-notes.html</loc>
   </url>
   <url>
     <loc>/authors.html</loc>
