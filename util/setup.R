@@ -1,4 +1,8 @@
-# Code based on example at https://vbaliga.github.io/posts/2019-04-28-verify-that-r-packages-are-installed-and-loaded/
+# Based on a code sample at
+# https://vbaliga.github.io/posts/2019-04-28-verify-that-r-packages-are-installed-and-loaded/,
+# copyright Vikram B. Baliga (vbaliga@zoology.ubc.ca), and provided under the
+# Creative Commons CC BY-NC 4.0 license
+# (https://creativecommons.org/licenses/by-nc/4.0/).
 
 packages = c(
   "jsonlite",
