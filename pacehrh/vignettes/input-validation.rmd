@@ -1,0 +1,152 @@
+---
+title: "Input validation rules"
+author: "Rui Han"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Configure the model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Input file validation rules
+
+This information is included for reference, but is not something most users will need to consult. If
+data that cannot be validated is entered into the input spreadsheet, you will receive an error message
+that describes how to resolve the issue when you attempt to run the model. 
+
+## Sheet – PopValues
+### Column G: InitValue
+
+#### Expected behaviors
+Should not be empty.
+
+#### Report
+Error (red) 
+
+### Column H: ChangeRate
+#### Expected behavior 1
+Should not be empty.
+
+#### Report
+Error (red)
+
+#### Expected behavior 2
+Typically within 1.0 +/- 2%. Large value compounded over long time horizon produces questionable predictions.
+
+#### Report
+Info (blue); print out all rows with **ChangeRate** > 1.02 or **ChangeRate** <0.98 for the user to review and confirm.
+
+## Sheet – SeasonalityCurves
+### Column B: Malnutrition
+#### Expected behaviors 
+Column sums to 1.
+
+#### Report
+Error (red)
+
+### Column C: TB
+#### Expected behaviors
+Column sums to 1.
+
+#### Report
+Error (red)
+
+### Column D: Births
+#### Expected behaviors
+Column sums to 1.
+
+#### Report
+Error (red)
+
+### Column E: Malaria
+#### Expected behaviors
+Column sums to 1.
+
+#### Report
+Error (red)
+
+### Column F: Diarrhea
+#### Expected behaviors
+Column sums to 1.
+
+#### Report
+Error (red)
+
+## Sheet – StochasticParameters
+### Column B: p
+#### Expected behaviors
+Typically less than 0.25, value too large may introduce excessive randomness to the parameters.
+
+#### Report
+Info (blue); print out all rows with p>=0.25 for the user to review and confirm.
+
+## Sheet – TaskValues_ref
+### Column E: Indicator
+#### Expected behavior
+Should not be empty if **StartingRateInPop** (Column O) contains a value.
+
+#### Report
+Error (red)
+
+### Column J: RelevantPop
+#### Expected behavior 1
+Should not be empty.
+
+#### Report
+Error (red)
+
+#### Expected behavior 2
+Should not be ‘–’ if **StartingRateInPop** (Column O) contains a value.
+
+#### Report
+Error (red)
+
+### Column S: AnnualDeltaRatio
+#### Expected behavior 1
+Should not be empty if **StartingRateInPop** (Column O) contains a value.
+
+#### Report
+Error (red)
+
+#### Expected behavior 2
+Typically within 1.0 +/- 2%. Large value compounded over long time horizon produces questionable predictions.
+
+#### Report
+Info (blue); print out all rows with **AnnualDeltaRatio** > 1.02 or **AnnualDeltaRatio** <0.98 for the user to review and confirm.
+
+### Column V: MinsPerContact
+#### Expected behavior
+Should not be empty if StartingRateInPop (Column O) contains value.
+
+#### Report
+Error (red)
+
+### Column T & U: NumContactsPerUnit & NumContactsAnnual
+#### Expected behavior 1
+**NumContactsPerUnit** and **NumContactsAnnual** should not both contain values.
+
+#### Report
+Warning (yellow)
+
+#### Expected behavior 2
+If **StartingRateInPop** (Column O) contains value, **NumContactsPerUnit** and **NumContactsAnnual** should not both be empty.
+
+#### Report
+Error (red)
+
+### Column Z:  References/Notes
+#### Expected behavior
+Should not be empty, if **StartingRateInPop** (Column O) is empty.
+
+#### Report
+Warning (yellow)
+
+### Column Q: RateMultiplier
+#### Report
+Info (blue); print out all rows with values in **RateMultiplier** for the user to review and confirm.
+
