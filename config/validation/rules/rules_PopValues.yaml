@@ -51,7 +51,7 @@ rules:
     For example, a 2% annual decline would have a change rate of 1 - .02 = .98.
   meta:
     severity: error
-- expr: 'Sex %in% c("M", "N")'
+- expr: 'Sex %in% c("M", "F")'
   name: Gender_Value
   label: Gender_Value
   description: |
