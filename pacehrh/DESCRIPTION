@@ -4,9 +4,9 @@ Title: Population-Aware Capacity Estimator for Human Resources for Health
 Version: 0.5.2
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
-Description: This work allows modeling of the burdens placed on healthcare
-    workers by the addition of new services to an existing healthcare
-    system.
+Description: This package models the healthcare needs of a given population so you
+    can more effectively plan what healthcare worker resources will be necessary
+    to provide a wide range of healthcare services. 
 License: MIT + file LICENSE
 Imports:
     assertthat,
