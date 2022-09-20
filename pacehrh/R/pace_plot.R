@@ -25,7 +25,6 @@
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
@@ -414,7 +413,6 @@ PlotPyramids <- function(df) {
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
@@ -458,7 +456,6 @@ PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()

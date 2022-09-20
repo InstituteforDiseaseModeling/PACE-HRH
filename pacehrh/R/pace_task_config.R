@@ -105,7 +105,6 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()

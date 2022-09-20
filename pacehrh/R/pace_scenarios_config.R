@@ -67,7 +67,6 @@ loadScenarios <- function(sheetName = "Scenarios") {
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()

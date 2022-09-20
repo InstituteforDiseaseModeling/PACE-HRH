@@ -18,7 +18,6 @@ print("Please check validation results in \"log\" folder", quote=FALSE)
 
 pacehrh::Trace(TRUE)
 pacehrh::InitializePopulation()
-pacehrh::InitializeHealthcareTasks()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
