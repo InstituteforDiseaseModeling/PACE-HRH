@@ -203,7 +203,12 @@ contacts listed in the **TaskValue** sheets for that particular task. In other w
 antenatal care visits are recommended, four offsets should be listed in this sheet.
 
 Up to six offset contacts can be specified in the model; additional contacts would require updates
-to the model code.
+to the model code. Note that the first year of a simulation may show unreliable results due to positive
+seasonality offsets not being carried forward from the prior, unsimulated, year. For example, if you 
+are simulating years 2030 through 2040, follow-up healthcare visits that take place in 2030 for 
+malnutrition diagnosed in 2029 will not be included. We recommend ignoring the first simulated year
+if you expect this will be a major concern. This edge effect is handled on the final year of the 
+simulation by running the model forward an additional year and adjusting for negative offset tasks. 
 
 ### Cadres
 
