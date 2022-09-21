@@ -17,7 +17,6 @@
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
@@ -168,7 +167,6 @@ SaveBaseSettings <- function(scenarioName = ""){
 #' pacehrh::Trace(TRUE)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
