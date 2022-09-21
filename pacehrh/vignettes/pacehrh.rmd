@@ -96,7 +96,7 @@ evidence that a Weibull distribution is also a good option.
 The **PopValues** sheet contains fertility and mortality rates for different groups in the
 population. Fertility rates are specified as births per woman per year and will add people to the
 simulated population. Mortality rates are specified per individual per year and will remove people.
-All rates (and rates of change) in the model are stochastic; the value you specify is the mean in a distribution and the variance is determined by the 'p' and 'q' parameters set on the **StochasticParameters** tab.  The first row, "Annual birth rate male," is the fertility rate applied to males (so it should always be set to zero); this is necessary for running the model. Blank values are treated as zeroes. 
+All rates (and rates of change) in the model are stochastic; the value you specify is the mean in a distribution and the variance is determined by the 'p' and 'q' parameters set on the **StochasticParameters** tab.  The first row, "Annual birth rate male," is the fertility rate applied to males (so it should always be set to zero); this is necessary for running the model.
 
 Columns A through F define standard categories and shouldn't need to be modified unless you plan to
 add functionality to the model itself. Default values are sourced from Ethiopian DHS data but
