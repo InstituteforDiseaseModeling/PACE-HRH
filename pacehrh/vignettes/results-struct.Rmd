@@ -25,6 +25,8 @@ pacehrh::InitializeSeasonality()
 
 scenario <- "MergedModel"
 
+pacehrh::SetGlobalStartEndYears(2020, 2040)
+
 results <-
   pacehrh::RunExperiments(scenarioName = scenario,
                        trials = 10)
