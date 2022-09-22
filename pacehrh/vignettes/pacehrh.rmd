@@ -82,7 +82,7 @@ stochastic distributions around various parameter values. See the table below fo
 | Annual delta mortality rates                                  | Truncated normal*        | delta, p, q      |  mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q | 
 | Annual delta incidence rates <br />(**TaskValues** column L)  | Truncated normal*        | delta, p, q      |  mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q |
 | Seasonality ratio to mean                                     | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
-| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | s = mean\*p <br /> meanlog = log(m)-12log[(s/m)2+1] <br /> sdlog = sqrt(log(s/m)^2 + 1 |
+| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | logsd = sqrt(log((1 + p^2))) <br /> logm = (log(1 + p^2))/2 |
 | Hours per week <br />(optional; **TaskValues** column P)      | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |     
 
 \* Truncated normal can be done in R using the truncnorm package.  
