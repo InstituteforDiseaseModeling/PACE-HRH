@@ -24,7 +24,6 @@ Plot A Single Pair of Mortality Rates Curves From A Results List
 library(pacehrh)
 
 pacehrh::InitializePopulation()
-pacehrh::InitializeHealthcareTasks()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()

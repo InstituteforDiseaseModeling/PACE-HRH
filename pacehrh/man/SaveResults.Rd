@@ -28,7 +28,6 @@ Save Individual Experiment Results From A Suite As CSV File
 library(pacehrh)
 
 pacehrh::InitializePopulation()
-pacehrh::InitializeHealthcareTasks()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()

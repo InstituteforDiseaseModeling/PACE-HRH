@@ -26,7 +26,6 @@ Plot A Single Population Curve
 library(pacehrh)
 
 pacehrh::InitializePopulation()
-pacehrh::InitializeHealthcareTasks()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
