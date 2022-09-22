@@ -39,7 +39,6 @@ library(pacehrh)
 pacehrh::Trace(TRUE)
 
 pacehrh::InitializePopulation()
-pacehrh::InitializeHealthcareTasks()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
