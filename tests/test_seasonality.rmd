@@ -3,9 +3,9 @@ title: "Test Seasonality"
 author: "Meikang Wu"
 date: "9/12/2022"
 output:
-  word_document: default
   html_document:
     df_print: kable
+  word_document: default
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -13,6 +13,7 @@ if(!require("DescTools", character.only = T)){
     install.packages("DescTools")}
 library(pacehrh)
 knitr::opts_knit$set(root.dir = "..")
+knitr::opts_chunk$set(comment = NA)
 ```
 
 ## Run and Load Results
@@ -41,21 +42,39 @@ DR_test <- DR_test %>%
 
 ```{r calculate_mean_service_time, Warning=FALSE, message=FALSE}
 options(dplyr.summarise.inform = FALSE)
-avg_service <- as.data.frame(DR_test) %>% 
+avg_service <-DR_test %>% 
   group_by(Task_ID, Scenario_ID, Year, Month) %>%
   summarize(mean_total_service = mean(Service_time)) %>%
   ungroup()
 ```
-
+## Define Plot function
+```{r plot, warning=FALSE, results='hide', message=FALSE}
+compare_plot <- function(expected_seasonal, decomposed_seasonal, scenario, task, type, use_offset){
+  par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
+  plot(x = seq_along(1:length(expected_seasonal)),
+       y=scale(expected_seasonal),
+       type = "b", col='red',
+       xlab = "Month",
+       ylab = "Scaled Weight %")
+  lines(x = seq_along(1:length(expected_seasonal))
+        , y=scale(decomposed_seasonal),
+        type = 'b', col='blue',  lty = 2)
+  legend("top",
+         inset = c(-0.4,0),
+         legend = c("expected", "actual"),
+         lty = 1,
+         col = c("red","blue"))
+  title(main = glue::glue("{scenario}_{task}_{type}_{use_offset}"))
+}
+```
 
 ## Loop over tasks
-```{r calculate_seasonality, Warning=FALSE, message=TRUE}
+```{r calculate_seasonality, Warning=FALSE, message=TRUE, results='hide'}
 # Uncomplicated malaria in adults
 scenarios <- c("BasicModel", "ComprehensiveModel", "MergedModel")
 # scenario <- "BasicModel"
-# task <- "DPC.Mlr.103A"
-# type <- "Malaria"
-# i <- 15
+# task <- "DPC.TB.108B"
+# type <- "TB"
 simple_so <- pacehrh:::loadSeasonalityOffsets() # %>% filter(Offset1 ==0) %>% filter(if_all(-c(Task, Description, Curve, Offset1 ), ~ is.na(.)))
 for (scenario in scenarios){
   for(i in 1:nrow(simple_so)) {       # for-loop over rows
@@ -69,7 +88,6 @@ for (scenario in scenarios){
     select(mean_total_service) %>%
     .$mean_total_service
   
-    message(glue::glue("Check: {scenario}_{task}_{type}"))  
     if (length(target_service) >0){
       # Create time series
       service_timeseries <- ts(target_service, frequency=12, start=c(min(DR_test$Year),1))
@@ -86,16 +104,12 @@ for (scenario in scenarios){
       components <- decompose(service_timeseries, type='additive')
       decomposed_seasonal <- colMeans(matrix(components$seasonal, ncol = 12, byrow = TRUE))
       # plot(components)
-      plot(cbind(observed = components$x, 
+      print(plot(cbind(observed = components$x, 
                  trend = components$trend, 
                  seasonal = components$seasonal, 
                  random = components$random), 
-           main=glue::glue("{scenario}_{task}_{type}"))
-      
-      
-      # TODO: Calculate expected seasonality with offset  
-      # expected_seasonal <- as.vector(pacehrh:::loadSeasonalityCurves()[type])
-      
+                 main=glue::glue("{scenario}_{task}_{type}")))
+
       base_expected_seasonal <- as.vector(pacehrh:::loadSeasonalityCurves()[type][[1]])
       lags <- vector()
       total <- 0
@@ -137,28 +151,11 @@ for (scenario in scenarios){
       # labs(x = "Month", y="Scaled Weight")
       # print(g)
 
-      par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
-      plot(x = seq_along(1:length(expected_seasonal)),
-           y=scale(expected_seasonal),
-           #ylim = c(0, 20),
-           type = "b", col='red',
-           xlab = "Month",
-           ylab = "Scaled Weight %")
-      lines(x = seq_along(1:length(expected_seasonal))
-            , y=scale(decomposed_seasonal),
-             type = 'b', col='blue',  lty = 2)
-      legend("top",
-             inset = c(-0.4,0),
-             legend = c("expected", "actual"),
-             lty = 1,
-             col = c("red","blue"))
-      title(main = glue::glue("{scenario}_{task}_{type}_{use_offset}"))
+      print(compare_plot(expected_seasonal, decomposed_seasonal, scenario, task, type, use_offset))
     }
     else{
-      message(glue::glue("no data for: {scenario}_{task}_{type}"))
+      message(glue::glue("no data for: {scenario}_{task}_{type}\n"))
     }
   }
 }
-
-
 ```
