@@ -61,9 +61,27 @@ for (f in files){
         %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
 }
 ```
-
 ## Model Requirement Check:
 
 ```{r echo=FALSE, comment=''}
 cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep = '\n')
+```
+## Custom Data Check:
+<br><br>
+```{r echo=FALSE, comment='', results = 'asis', warning=FALSE}
+  for (f in sort(list.files(file.path(params$outputDir, "custom"), "*.png"))){
+    filename <- normalizePath(file.path(params$outputDir, "custom", f))
+    cat("\n\n\n")
+    cat("![](",filename,")")
+    cat("\n\n\n")
+  }
+  custom_metadata <- read.csv(normalizePath(file.path(params$outputDir, "custom", "custom_validation_results.csv")))
+  for (i in 1:nrow(custom_metadata)){
+    f <- as.character(custom_metadata[i, "name"])
+    baddata <- read.csv(normalizePath(f))
+    tbl_description <- paste(as.character(custom_metadata[i, "severity"]), ":", as.character(custom_metadata[i, "description"]))
+    print(kableExtra::kbl(baddata, caption=tbl_description, format='pipe', align = "l")
+        %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
+  }
+  
 ```

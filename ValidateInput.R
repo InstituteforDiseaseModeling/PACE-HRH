@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "plyr", "reshape2", "scales")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -48,6 +48,7 @@ Validate <- function(inputFile, outputDir = "log"){
   sink(file = paste(outputDir, "model_input_check.log", sep = "/"))
   result_m <- pacehrh::CheckInputExcelFileFormat(inputFile = inputFile)
   sink()
+  .custom_check(inputFile = inputFile, outputDir = outputDir)
   return (if (result_d==.Success & result_m==pacehrh:::.Success) .Success else (.errValidationRuleFailed))
 }
 
@@ -103,7 +104,7 @@ ValidateInputExcelFileContent <- function(inputFile,
     }
   }
   result_file <- file.path(outputDir, "input_validation_results.csv")
-  result_details <- result %>% 
+  result_details <- result %>%
     inner_join(rules_combined, by = c("name")) %>%
     select(-c("language","created"))
   write.csv(result_details, result_file)
@@ -126,17 +127,18 @@ ValidateInputExcelFileContent <- function(inputFile,
         },
         error=function(e){
           message(paste("Rule failed but No record-wise info: ", e))
-          df_violations <- NULL
+          df_violations <- NA
           return (df_violations)
         }
       )
-      if (!is.null(df_violations) & nrow(df_violations) > 0){
+      if (!is.null(df_violations)){
         # only fail the validation for critical rules
-       
-        if (severity == "error"){
-          errcode <- .errValidationRuleFailed
+        if(nrow(df_violations) > 0){
+          if (severity == "error"){
+            errcode <- .errValidationRuleFailed
+          }
+          write.csv(df_violations, file.path(outputDir, paste(sheetName, "_", severity, "_violation_", i, ".csv", sep="")))
         }
-        write.csv(df_violations, file.path(outputDir, paste(sheetName, "_", severity, "_violation_", i, ".csv", sep="")))
       }
     }
   }
@@ -159,5 +161,113 @@ ValidateInputExcelFileContent <- function(inputFile,
     geom_text(data=subset(final_result,total> 0), aes(label=total, y =name), size=1.5, position=position_fill()) +
     ggtitle("Input Spreadsheet Validation Results")
   ggsave(outfile, p, width = 160, height = 100, units="mm")
-  
+
+}
+
+.custom_check <- function(inputFile, outputDir = "log"){
+  # define custom rules, for each rules, we choose to produce a graph (with custom_ prefix)
+  # or a csv with name, description, severity written to "custom_validation_results.csv"
+  custom_dir <- file.path(outputDir, "custom")
+  df_reason <- data.frame(matrix(ncol = 3, nrow = 0))
+  colnames(df_reason) <- c("name", "description", "severity")
+
+  ##### Check if the seasonality curve setting is valid #####
+  ##### (Code provided by Brittany Hagedorn)                  #####
+
+  DS <- read_xlsx(inputFile ,sheet="SeasonalityCurves")
+
+  #reshape into long format
+  DSmelt <- melt(DS,id.vars = c("Month"),variable.name = "CurveName",value.name="RatioValue")
+
+  #set color scheme limits
+  YellowMax <- 1/12 * 1.5
+  YellowMin <- 1/12 * 0.5
+  RedMax <- .25
+
+  #set color categories for monthly values
+  DSmelt$colorcode <- "Okay"
+  DSmelt$colorcode[DSmelt$RatioValue>YellowMax | DSmelt$RatioValue<YellowMin] = "Possible error"
+  DSmelt$colorcode[DSmelt$RatioValue>RedMax] = "Validation needed"
+
+  #Organize months
+  monthslist <- c("Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec")
+  DSmelt$Month <- factor(DSmelt$Month,ordered=TRUE,levels=monthslist)
+
+  g_monthly <- ggplot(DSmelt,aes(x=Month,y=RatioValue,fill=as.factor(colorcode)))+
+    geom_bar(stat="identity")+facet_wrap(~CurveName)+
+    scale_fill_manual(values=c("grey","goldenrod1","darkred"))+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    theme(legend.title = element_blank())+
+    xlab("Month")+ylab("Monthly proportion")+
+    labs(title="Validation: Monthtly variation in seasonality values")
+  ggsave(file.path(custom_dir, "custom_seasonality.png"), g_monthly, width = 160, height = 80, units="mm")
+
+  AnnualTotals <- ddply(DSmelt, .(CurveName), summarize, AnnualTotal=sum(RatioValue))
+
+  #Set color code categories for annual totals
+  AnnualTotals$colorcode <- "Okay"
+  AnnualTotals$colorcode[abs(AnnualTotals$AnnualTotal -1.0) > 1e-2] = "Error"
+
+  g_total <- ggplot(AnnualTotals,aes(x=CurveName,y=AnnualTotal,fill=colorcode))+
+    geom_bar(stat="identity")+
+    scale_fill_manual(values=c("Error"="darkred","Okay"="darkgreen"))+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    theme(legend.title = element_blank())+
+    xlab("Seasonality Curve")+ylab("Annual Total")+
+    labs(title="Validation: Seasonality curves should sum to 1.0")
+  ggsave(file.path(custom_dir, "custom_seasonality_total.png"), g_total, width = 120, height = 80, units="mm")
+
+  ##### Check seasonality offset validity #####
+  filename <- file.path(custom_dir, "violation_offsets_exceed_range.csv")
+  description <- "Seasonality offsets should represent an adjustment period within 1 year (12 months) of the originating event,
+  so values less than -11 or greater than 11 are not accepted."
+  severity <- "error"
+  SO <- read_xlsx(inputFile ,sheet="SeasonalityOffsets")
+  violation <- SO %>% filter_at(vars(starts_with('Offset')), any_vars(.< -11 | .>11))
+  write.csv(violation, filename)
+  df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
+
+  ##### Check seasonality offset is integer #####
+  filename <- file.path(custom_dir, "violation_offsets_not_integer.csv")
+  description <- "The simulation operates on a monthly basis, so all offsets must be integers."
+  severity <- "error"
+  violation <- SO %>% filter_at(vars(starts_with('Offset')), any_vars(!round(.)==.))
+  write.csv(violation, filename)
+  df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
+
+  ##### Check seasonality offset is in taskValue sheet" #####
+  filename <- file.path(custom_dir, "violation_offsets_not_in_task.csv")
+  description <- "Task has a seasonality offset, but it is not listed in the Task Values sheet.
+  Thus, this task will not have time allocated and thus the seasonality offset will not have any impact
+  on the model’s results. Please verify that this is expected behavior."
+  severity <- "warning"
+  TV <- read_xlsx(inputFile ,sheet="TaskValues_ref")
+  violation <- SO %>%
+    filter(!(Task %in%  unique(TV$Indicator))) %>%
+    select(Task, Description, Curve)
+  if(nrow(violation) > 0){
+    write.csv(violation, filename)
+    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
+  }
+
+  ##### Check seasonality offset is in seasonalityCurve" #####
+  filename <- file.path(custom_dir, "violation_offsets_not_in_curve.csv")
+  description <- "Seasonality offsets link to the Seasonality curves sheet columns.
+  This offset does not match any seasonality curve, and thus will not be used
+  or impact the model’s results. Please verify that this is expected behavior."
+  severity <- "warning"
+  SC <- read_xlsx(inputFile ,sheet="SeasonalityCurves")
+  violation <- SO %>%
+    filter(!(Curve %in% colnames(SC))) %>%
+    select(Task, Description, Curve)
+  if(nrow(violation) > 0){
+    write.csv(violation, filename)
+    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
+    }
+
+  # writing metadata for custom check
+  write.csv(df_reason, file.path(custom_dir, "custom_validation_results.csv"))
+
 }
