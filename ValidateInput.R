@@ -235,9 +235,10 @@ ValidateInputExcelFileContent <- function(inputFile,
   description <- "The simulation operates on a monthly basis, so all offsets must be integers."
   severity <- "error"
   violation <- SO %>% filter_at(vars(starts_with('Offset')), any_vars(!round(.)==.))
-  write.csv(violation, filename)
-  df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
-
+  if(nrow(violation) > 0){
+    write.csv(violation, filename)
+    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
+   }
   ##### Check seasonality offset is in taskValue sheet" #####
   filename <- file.path(custom_dir, "violation_offsets_not_in_task.csv")
   description <- "Task has a seasonality offset, but it is not listed in the Task Values sheet.
