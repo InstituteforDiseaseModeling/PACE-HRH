@@ -168,6 +168,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   # define custom rules, for each rules, we choose to produce a graph (with custom_ prefix)
   # or a csv with name, description, severity written to "custom_validation_results.csv"
   custom_dir <- file.path(outputDir, "custom")
+  dir.create(custom_dir, showWarnings = F)
   df_reason <- data.frame(matrix(ncol = 3, nrow = 0))
   colnames(df_reason) <- c("name", "description", "severity")
 
