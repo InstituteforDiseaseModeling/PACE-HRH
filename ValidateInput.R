@@ -226,9 +226,10 @@ ValidateInputExcelFileContent <- function(inputFile,
   severity <- "error"
   SO <- read_xlsx(inputFile ,sheet="SeasonalityOffsets")
   violation <- SO %>% filter_at(vars(starts_with('Offset')), any_vars(.< -11 | .>11))
-  write.csv(violation, filename)
-  df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
-
+  if(nrow(violation) > 0){
+    write.csv(violation, filename)
+    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
+  }
   ##### Check seasonality offset is integer #####
   filename <- file.path(custom_dir, "violation_offsets_not_integer.csv")
   description <- "The simulation operates on a monthly basis, so all offsets must be integers."
