@@ -72,14 +72,14 @@ compare_plot <- function(expected_seasonal, decomposed_seasonal, scenario, task,
 
 ## Loop over tasks
 ```{r calculate_seasonality, Warning=FALSE, message=TRUE, results='hide'}
-# Uncomplicated malaria in adults
+
 scenarios <- c("BasicModel", "ComprehensiveModel", "MergedModel")
 # scenario <- "BasicModel"
 # task <- "DPC.TB.108B"
 # type <- "TB"
 simple_so <- pacehrh:::loadSeasonalityOffsets() # %>% filter(Offset1 ==0) %>% filter(if_all(-c(Task, Description, Curve, Offset1 ), ~ is.na(.)))
 for (scenario in scenarios){
-  for(i in 1:nrow(simple_so)) {       # for-loop over rows
+  for(i in 1:nrow(simple_so)) {
     task <- as.character(simple_so[i, "Task"])
     type <- as.character(simple_so[i, "Curve"])
     # filter to the target task
@@ -98,8 +98,8 @@ for (scenario in scenarios){
       # plot.ts(service_timeseries)
       
       # plot log time series
-      #logservice_timeseries  <- log(service_timeseries)
-      #plot.ts(logservice_timeseries)
+      # logservice_timeseries  <- log(service_timeseries)
+      # plot.ts(logservice_timeseries)
       
       # decompose 
       components <- decompose(service_timeseries, type='additive')
@@ -139,18 +139,6 @@ for (scenario in scenarios){
       decomposed_seasonal <- decomposed_seasonal - min(decomposed_seasonal)
       decomposed_seasonal <- decomposed_seasonal*(max(expected_seasonal)-min(expected_seasonal))/max((decomposed_seasonal)-min(decomposed_seasonal))
       decomposed_seasonal <-  decomposed_seasonal + min(expected_seasonal)
-     
-      # month <- seq_along(1:length(expected_seasonal))
-      # expected_data <- scale(expected_seasonal)
-      # actual_data <- scale(decomposed_seasonal)
-      # month <- seq_along(1:length(expected_seasonal))
-      # seasonal_result <- data.frame(month, expected_data, actual_data)
-      # g <- ggplot2::ggplot() +
-      # geom_line(data = seasonal_result, aes(x = month, y = actual_data), color = "blue") +
-      # geom_line(data = seasonal_result, aes(x = month, y = expected_data), color = "red") +
-      # ggtitle(glue::glue("{scenario}_{task}_{type}_{use_offset}")) +
-      # labs(x = "Month", y="Scaled Weight")
-      # print(g)
 
       print(compare_plot(expected_seasonal, decomposed_seasonal, scenario, task, type, use_offset))
     }
