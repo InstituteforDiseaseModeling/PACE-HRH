@@ -9,14 +9,18 @@ rules:
   name: Missing_AnnualDeltaRatio_value
   label: Missing_AnnualDeltaRatio_value
   description: |
-    AnnualDeltaRatio Should not be empty if StartingRateInPop contains value.
+    AnnualDeltaRatio cannot be empty if the starting rate in pop contains a value.
+    If the starting rate does not change, then the delta ratio should be 1.0.
+    For example, all children should be vaccinated, so the starting rate and delta ratio should both be set to 1.0,
+    indicating that 100% of eligible children should continue to be vaccinated every year.
   meta:
     severity: error
 - expr: 'if(!is.na(StartingRateInPop)) !is.na(Indicator)'
   name: Indicator
   label: Indicator
   description: |
-    Indicator should not be empty if StartingRateInPop contains value.
+    The indicator name should not be empty if there is an initial rate.
+    The lack of an indicator name will result in this row being ignored in the model and thus not included in the results.
   meta:
     severity: error
 - expr: 'is.na(RateMultiplier)'
@@ -53,12 +57,13 @@ rules:
   description: |
     References/Notes should not be empty, if StartingRateInPop is empty.
   meta:
-    severity: warning  
+    severity: warning
 - expr: '!is.na(RelevantPop)'
   name: RelevantPop_missing
   label: RelevantPop_missing
   description: |
-    RelevantPop cannot be empty
+    ReleventPop should not be empty. If it does not apply to a specific population (for example if it is an overhead task with fixed weekly hours),
+    then select the "-" from the dropdown to indicate that the population selection is not applicable.
   meta:
     severity: error
 - expr: 'if(!is.na(StartingRateInPop)) RelevantPop!="-"'
@@ -75,3 +80,11 @@ rules:
     AnnualDeltaRatio typically within 1.0 +/- 2%. Large value compounded over long time horizon produces questionable predictions.
   meta:
     severity: info
+- expr: 'if(!is.na(StartingRateInPop)) StartingRateInPop >= 0 & if(!is.na(RateMultiplier)) RateMultiplier >= 0 & if(!is.na(AnnualDeltaRatio)) AnnualDeltaRatio >= 0 & if(!is.na(NumContactsPerUnit)) NumContactsPerUnit >= 0  & if(!is.na(NumContactsAnnual)) NumContactsAnnual >= 0 & if(!is.na(MinsPerContact)) MinsPerContact >= 0 & if(!is.na(HoursPerWeek)) HoursPerWeek >= 0'
+  name: Nagative_TaskColumns
+  label: Nagative_TaskColumns
+  description: |
+    These values in TaskValue_ref sheet cannot be negative.
+  meta:
+  severity: error
+

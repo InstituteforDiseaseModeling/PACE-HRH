@@ -10,14 +10,18 @@ for(i in packages){
 plot_result <- function(result_file, outfile, fancy = TRUE){
   
   final_result <- result_file %>%
-    mutate(
+    dplyr::mutate(
       warning = if_else(severity=="warning", fails, 0L),
       info = if_else(severity=="info", fails, 0L),
       fails = if_else(severity=="error", fails, 0L)
     ) %>%
     select(c("name","items","passes","warning","info","fails")) %>%
+    rowwise() %>%
+    dplyr::mutate(
+      items = sum(passes, warning, info, fails)
+    ) %>%
     pivot_longer(cols=c("passes","warning","info","fails"), names_to="result", values_to="total")
-  
+
   ylevel_order <- rev(final_result %>% select(name) %>% unique() %>% arrange(name) %>% .$name)
   xlevel_order <- c("info", "fails", "warning", "passes")
   
