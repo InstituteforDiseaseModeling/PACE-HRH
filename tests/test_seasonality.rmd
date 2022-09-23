@@ -51,13 +51,15 @@ avg_service <-DR_test %>%
 ```{r plot, warning=FALSE, results='hide', message=FALSE}
 compare_plot <- function(expected_seasonal, decomposed_seasonal, scenario, task, type, use_offset){
   par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
+  ymax <- max(max(decomposed_seasonal), max(expected_seasonal))
+  ymin <- min(min(decomposed_seasonal), min(expected_seasonal))
   plot(x = seq_along(1:length(expected_seasonal)),
-       y=scale(expected_seasonal),
+       y=expected_seasonal,
        type = "b", col='red',
        xlab = "Month",
-       ylab = "Scaled Weight %")
+       ylab = "Weight %", ylim =c(ymin,ymax))
   lines(x = seq_along(1:length(expected_seasonal))
-        , y=scale(decomposed_seasonal),
+        , y=decomposed_seasonal,
         type = 'b', col='blue',  lty = 2)
   legend("top",
          inset = c(-0.4,0),
@@ -100,7 +102,6 @@ for (scenario in scenarios){
       #plot.ts(logservice_timeseries)
       
       # decompose 
-      # components <- decompose(service_timeseries, type='multiplicative')
       components <- decompose(service_timeseries, type='additive')
       decomposed_seasonal <- colMeans(matrix(components$seasonal, ncol = 12, byrow = TRUE))
       # plot(components)
@@ -134,11 +135,11 @@ for (scenario in scenarios){
         use_offset <- "offeset"
       }
       
-       #normalizing decompose data betwen 0 to 1
-      # decomposed_seasonal <- as.vector(scale(decomposed_seasonal))
-      # decomposed_seasonal <- decomposed_seasonal - min(decomposed_seasonal)
-      # decomposed_seasonal <- decomposed_seasonal/sum(decomposed_seasonal)
-      
+       #normalizing decompose data to align with expected
+      decomposed_seasonal <- decomposed_seasonal - min(decomposed_seasonal)
+      decomposed_seasonal <- decomposed_seasonal*(max(expected_seasonal)-min(expected_seasonal))/max((decomposed_seasonal)-min(decomposed_seasonal))
+      decomposed_seasonal <-  decomposed_seasonal + min(expected_seasonal)
+     
       # month <- seq_along(1:length(expected_seasonal))
       # expected_data <- scale(expected_seasonal)
       # actual_data <- scale(decomposed_seasonal)
