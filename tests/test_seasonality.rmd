@@ -9,16 +9,44 @@ output:
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
-if(!require("DescTools", character.only = T)){
-    install.packages("DescTools")}
+options(install.packages.check.source = "no")
+packages = c("DescTools","readxl", "dplyr","ggplot2")
+for(i in packages){
+  if(!require(i, character.only = T)){
+    install.packages(i)
+    library(i, character.only = T)
+  }
+}
 library(pacehrh)
-knitr::opts_knit$set(root.dir = "..")
+# knitr::opts_knit$set(root.dir = "..")
 knitr::opts_chunk$set(comment = NA)
+rm(list = ls())
+pacehrh::Trace(TRUE)
+pacehrh::InitializePopulation()
+pacehrh::InitializeScenarios()
+pacehrh::InitializeStochasticParameters()
+pacehrh::InitializeSeasonality()
+scenarios <- read_xlsx("../config/model_inputs.xlsx",sheet="Scenarios")
+numtrials <- 2
+geoname <- scenarios$Geography_dontedit[1]
 ```
 
 ## Run and Load Results
 ```{r warning=FALSE, message=FALSE}
-source("Run_simulations.R")
+# Run through the full scenario list.
+for (i in 1:nrow(scenarios)){
+  scenario <- scenarios$UniqueID[i]
+  geoname <- scenarios$Geography_dontedit[i]
+  results <-   pacehrh::RunExperiments(scenarioName = scenario, trials = numtrials, debug = FALSE)
+  pacehrh::SaveSuiteResults(results, paste("../results/test_seasonality_",geoname, "_", scenario,".csv",sep=""), scenario, 1)
+}
+pattern = glue::glue("test_seasonality_{geoname}.*.csv")
+DR_test <- do.call(rbind,
+                   lapply(paste("../results", list.files(path = "../results", pattern = pattern), sep="/"), read.csv))
+
+# Change unit to hours
+# DR_test <- DR_test %>%
+#   mutate(Service_time = round(Service_time / 60))
 
 simple_seasonal_tasks <- pacehrh:::loadSeasonalityOffsets() %>%  
   # filter(Offset1 ==0) %>% 
@@ -57,7 +85,8 @@ compare_plot <- function(expected_seasonal, decomposed_seasonal, scenario, task,
        y=expected_seasonal,
        type = "b", col='red',
        xlab = "Month",
-       ylab = "Weight %", ylim =c(ymin,ymax))
+       ylab = "Weight %", ylim =c(ymin,ymax),
+       yaxt = "n")
   lines(x = seq_along(1:length(expected_seasonal))
         , y=decomposed_seasonal,
         type = 'b', col='blue',  lty = 2)
@@ -66,6 +95,11 @@ compare_plot <- function(expected_seasonal, decomposed_seasonal, scenario, task,
          legend = c("expected", "actual"),
          lty = 1,
          col = c("red","blue"))
+  axis(side = 2,
+     ## Rotate the labels.
+     las = 2,
+     ## Adjust the label position.
+     mgp = c(3.5, 1, 0))
   title(main = glue::glue("{scenario}_{task}_{type}_{use_offset}"))
 }
 ```
