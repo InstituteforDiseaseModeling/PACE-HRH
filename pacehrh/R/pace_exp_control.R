@@ -96,7 +96,17 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskParameters <- TaskParameters(values = m)
   }
 
+  # Set the year range for trials, which is just the specified year range
+  # extended by a year to correct for seasonality edge effects.
+  .setTrialYears()
+
   return(BVE$scenario)
+}
+
+.setTrialYears <- function(){
+  BVE$startYear <- GPE$startYear
+  BVE$endYear <- GPE$endYear + GPE$shoulderYears
+  BVE$years <- seq(BVE$startYear, BVE$endYear, 1)
 }
 
 .okLabels <- function(diffOutput){

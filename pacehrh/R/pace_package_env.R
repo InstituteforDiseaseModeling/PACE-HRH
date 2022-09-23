@@ -22,6 +22,7 @@ GPE$endYear <- 2040
 GPE$years <- seq(from = GPE$startYear,
                  to = GPE$endYear,
                  by = 1)
+GPE$shoulderYears <- 1
 
 GPE$ageMin <- 0
 GPE$ageMax <- 100

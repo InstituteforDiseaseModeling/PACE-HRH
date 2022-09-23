@@ -5,7 +5,8 @@
 #' @return Rates matrix
 generateRatesMatrix <- function(label = NULL){
   pars <- GPE$stochasticParams
-  years <- GPE$years
+#  years <- GPE$years
+  years <- BVE$years
 
   if (is.null(label)){
     return(NULL)

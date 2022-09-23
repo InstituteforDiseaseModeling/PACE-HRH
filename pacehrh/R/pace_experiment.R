@@ -1,7 +1,7 @@
 #' Run A PACE-HRH Modeling Experiment
 #'
-#' Combine the parameter values in the Base and Epsilon environments, save the
-#' new parameter values to \code{experimentValuesEnvironment}, then run a full
+#' Apply stochasticity to the values in the BVE (\code{baseValuesEnvironment}), save the
+#' new parameter values to the EXP \code{experimentValuesEnvironment}, then run a full
 #' set of calculations.
 #'
 #' Results are written back into \code{experimentValuesEnvironment} and as
@@ -103,18 +103,8 @@ RunExperiment <- function(debug = FALSE){
     EXP$nonProductiveTimes <- nonProductiveTaskTimes
   }
 
-
-
   results$AnnualTimes <-.computeAnnualTimesMatrix()
   results$AnnualCounts <-.computeAnnualCountsMatrix()
-
-
-
-  # results$Clinical <- EXP$clinicalTaskTimes
-  # results$NonClinical <- EXP$nonClinicalTaskTimes
-  # results$NonClinicalAllocation <- EXP$nonClinicalAllocationTimes
-  # results$NonProductive <- EXP$nonProductiveTimes
-  # results$FTEs <- data.frame("Years" = GPE$years, "FTEs" = N)
 
   seasonalityResults <- runSeasonalityExperiment(results)
   results$SeasonalityResults <- seasonalityResults
