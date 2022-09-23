@@ -15,6 +15,8 @@ test_that("Full suite: basic", {
   endYear <- 2050
   nMonths <- 12 * length(startYear:endYear)
 
+  shoulderYears <- pacehrh:::GPE$shoulderYears
+
   pacehrh::SetGlobalStartEndYears(startYear, endYear)
 
   results <-
@@ -25,7 +27,7 @@ test_that("Full suite: basic", {
   testthat::expect_true(!is.null(results))
   testthat::expect_true("SeasonalityResults" %in% names(results[[1]]))
   testthat::expect_equal(length(results), nTrials)
-  testthat::expect_true(setequal(names(results[[1]]$Population),as.character(startYear:endYear)))
+  testthat::expect_true(setequal(names(results[[1]]$Population),as.character(startYear:(endYear+shoulderYears))))
   testthat::expect_equal(length(results[[1]]$SeasonalityResults[[1]]$Time), nMonths)
 
   # ---------------------------------
