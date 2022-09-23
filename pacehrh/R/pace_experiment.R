@@ -32,7 +32,7 @@ RunExperiment <- function(debug = FALSE){
   EXP$demographics <- ComputePopulationProjection(
     EXP$initialPopulation,
     EXP$populationChangeRates,
-    GPE$years,
+    BVE$years,
     normalize = scenario$BaselinePop,
     growthFlag = scenario$o_PopGrowth
   )
@@ -44,7 +44,7 @@ RunExperiment <- function(debug = FALSE){
   )
 
   if (length(taskIds) > 0){
-    EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+    EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, BVE$years)
   } else {
     EXP$clinicalTaskTimes <- NULL
   }
@@ -58,7 +58,7 @@ RunExperiment <- function(debug = FALSE){
   )
 
   if (length(taskIds) > 0){
-    EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, GPE$years)
+    EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, BVE$years)
   } else {
     EXP$nonClinicalTaskTimes <- NULL
   }
@@ -70,7 +70,7 @@ RunExperiment <- function(debug = FALSE){
 
   if (length(taskIds) > 0){
     EXP$nonClinicalAllocationTimes <-
-      AllocationTaskTimesGroup(taskIds, GPE$years, aggAnnualClinicalTaskTimes)
+      AllocationTaskTimesGroup(taskIds, BVE$years, aggAnnualClinicalTaskTimes)
   } else {
     EXP$nonClinicalAllocationTimes <- NULL
   }
@@ -82,7 +82,7 @@ RunExperiment <- function(debug = FALSE){
 
   if (length(taskIds) > 0){
     nonProductiveTaskTimes <-
-      TaskTimesGroup(taskIds, GPE$years, weeksPerYear = scenario$WeeksPerYr)
+      TaskTimesGroup(taskIds, BVE$years, weeksPerYear = scenario$WeeksPerYr)
   } else {
     nonProductiveTaskTimes <- NULL
   }

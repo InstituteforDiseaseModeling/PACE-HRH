@@ -4,7 +4,6 @@
 generatePrevalenceRatesMatrix <- function(){
   # Gather stuff we're going to need
   pars <- GPE$stochasticParams
-#  years <- GPE$years
   years <- BVE$years
 
   indexes <- which(BVE$taskData$applyStochasticity)

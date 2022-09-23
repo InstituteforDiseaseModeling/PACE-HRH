@@ -1,6 +1,6 @@
 .explodeRates <- function(rates, year){
   assertthat::assert_that(is.numeric(year))
-  assertthat::assert_that(year >= GPE$startYear & year <= GPE$endYear)
+  assertthat::assert_that(year >= BVE$startYear & year <= BVE$endYear)
 
   l <- lapply(rates, function(r){
     if (!is.null(r$bandedRates)){
