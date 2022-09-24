@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -53,6 +53,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/graphics.html">Built-in graphics</a>
+    </li>
+    <li>
       <a href="../articles/input-validation.html">Input validation rules</a>
     </li>
     <li>
@@ -81,7 +84,7 @@
                         <h4 data-toc-skip class="author">Jen
 Schripsema</h4>
             
-            <h4 data-toc-skip class="date">2022-09-21</h4>
+            <h4 data-toc-skip class="date">2022-09-24</h4>
       
       
       <div class="hidden name"><code>pacehrh.rmd</code></div>
@@ -312,8 +315,8 @@ column H)</td>
 <strong>TaskValues</strong> column O)</td>
 <td align="left">Lognormal</td>
 <td align="left">mean, p</td>
-<td align="left">s = mean*p <br> meanlog = log(m)-12log[(s/m)2+1]
-<br> sdlog = sqrt(log(s/m)^2 + 1</td>
+<td align="left">logsd = sqrt(log((1 + p^2))) <br> logm = (log(1 +
+p^2))/2</td>
 </tr>
 <tr class="odd">
 <td align="left">Hours per week <br>(optional;
@@ -343,7 +346,7 @@ distribution and the variance is determined by the ‘p’ and ‘q’
 parameters set on the <strong>StochasticParameters</strong> tab. The
 first row, “Annual birth rate male,” is the fertility rate applied to
 males (so it should always be set to zero); this is necessary for
-running the model. Blank values are treated as zeroes.</p>
+running the model.</p>
 <p>Columns A through F define standard categories and shouldn’t need to
 be modified unless you plan to add functionality to the model itself.
 Default values are sourced from Ethiopian DHS data but should be changed
@@ -544,7 +547,16 @@ offset table should match the number of contacts listed in the
 words, if four antenatal care visits are recommended, four offsets
 should be listed in this sheet.</p>
 <p>Up to six offset contacts can be specified in the model; additional
-contacts would require updates to the model code.</p>
+contacts would require updates to the model code. Note that the first
+year of a simulation may show unreliable results due to positive
+seasonality offsets not being carried forward from the prior,
+unsimulated, year. For example, if you are simulating years 2030 through
+2040, follow-up healthcare visits that take place in 2030 for
+malnutrition diagnosed in 2029 will not be included. We recommend
+ignoring the first simulated year if you expect this will be a major
+concern. This edge effect is handled on the final year of the simulation
+by running the model forward an additional year and adjusting for
+negative offset tasks.</p>
 </div>
 <div class="section level4">
 <h4 id="cadres">Cadres<a class="anchor" aria-label="anchor" href="#cadres"></a>
