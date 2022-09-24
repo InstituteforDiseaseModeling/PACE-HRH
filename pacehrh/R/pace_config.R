@@ -125,6 +125,8 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
 #'
 #' @param start Starting year
 #' @param end Ending year (must be greater than \code{start})
+#' @param shoulderYears Number of years to add to the end of a simulation time-series
+#' to accomodate negative delivery offsets (default = 1)
 #'
 #' @return NULL (invisible)
 #'
@@ -134,7 +136,7 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
 #' \dontrun{
 #' pacehrh::SetGlobalStartEndYears(2020, 2035)
 #' }
-SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
+SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) {
   if (!assertthat::is.number(start)) {
     return(invisible(NULL))
   }
@@ -143,7 +145,15 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
     return(invisible(NULL))
   }
 
+  if (!assertthat::is.number(shoulderYears)) {
+    return(invisible(NULL))
+  }
+
   if (end <= start) {
+    return(invisible(NULL))
+  }
+
+  if (shoulderYears < 0) {
     return(invisible(NULL))
   }
 
@@ -153,6 +163,7 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040) {
     seq(from = GPE$startYear,
         to = GPE$endYear,
         by = 1)
+  GPE$shoulderYears <- shoulderYears
 
   return(invisible(NULL))
 }
