@@ -22,6 +22,12 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   seasonalityTaskNames <- GPE$seasonalityOffsets$Task
   seasonalityTaskCurves <- GPE$seasonalityOffsets$Curve
 
+  # We compute extra "shoulder" years to handle inaccuracies at the far end of
+  # the seasonality time service resulting from negative seasonality offsets. We
+  # truncate off the extra years when we're done.
+  computedMonthCount <- 12 * length(BVE$years)
+  returnedMonthCount <- 12 * length(GPE$years)
+
   l <- lapply(taskNames, function(taskName){
     if (length(seasonalityTaskIndex <- which(seasonalityTaskNames == taskName)) == 1){
       # Grab already computed annual data for this task
@@ -44,7 +50,6 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 
       # Build a scatter matrix
       nRows <- nCols <- length(monthlyServices)
-#      assertthat::are_equal(nRows, 12 * length(GPE$years))
 
       A <- matrix(0, nrow = nRows, ncol = nCols)
 
@@ -67,6 +72,10 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
       monthlyTimes <- as.vector(A %*% round((monthlyTimes / nOffsets), 0))
       monthlyServices <- as.vector(A %*% round((monthlyServices / nOffsets), 0))
 
+      # Truncate to desired output length
+      monthlyTimes <- monthlyTimes[1:returnedMonthCount]
+      monthlyServices <- monthlyServices[1:returnedMonthCount]
+
       return(list(Time = monthlyTimes, N = monthlyServices))
     } else {
       annualTimes <- results$AnnualTimes[taskName,]
@@ -82,6 +91,10 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
         monthlyServices <- .convertAnnualToMonthly(annualServices, dummyCurve)
       }
       names(monthlyServices) <- NULL
+
+      # Truncate to desired output length
+      monthlyTimes <- monthlyTimes[1:returnedMonthCount]
+      monthlyServices <- monthlyServices[1:returnedMonthCount]
 
       return(list(Time = monthlyTimes, N = monthlyServices))
     }

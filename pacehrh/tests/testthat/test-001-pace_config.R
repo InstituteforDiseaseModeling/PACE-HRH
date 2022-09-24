@@ -205,6 +205,8 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   originalEndYear <- e$endYear
   withr::defer(e$years <- originalYears)
   originalYears <- e$years
+  withr::defer(e$shoulderYears <- originalshoulderYears)
+  originalshoulderYears <- e$shoulderYears
 
   testthat::expect_invisible(pacehrh::SetGlobalStartEndYears("a", 1))
   testthat::expect_equal(e$startYear, originalStartYear)
@@ -221,18 +223,36 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
-  start = 100
-  end = 120
-  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start, end))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(100, 120, -1))
+  testthat::expect_equal(e$startYear, originalStartYear)
+  testthat::expect_equal(e$endYear, originalEndYear)
+  testthat::expect_equal(e$years, originalYears)
+
+  start <- 100
+  end <- 120
+  shoulderYears <- 0
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start, end, shoulderYears))
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
+  testthat::expect_equal(e$shoulderYears, shoulderYears)
+
+  start <- 100
+  end <- 120
+  shoulderYears <- 3
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start, end, shoulderYears))
+  testthat::expect_equal(e$startYear, start)
+  testthat::expect_equal(e$endYear, end)
+  testthat::expect_equal(e$years, start:end)
+  testthat::expect_equal(e$shoulderYears, shoulderYears)
 
   # Defaults
   start = 2020
   end = 2040
+  shoulderYears = 1
   testthat::expect_invisible(pacehrh::SetGlobalStartEndYears())
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
+  testthat::expect_equal(e$shoulderYears, shoulderYears)
 })

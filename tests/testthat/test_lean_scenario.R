@@ -10,15 +10,14 @@ for(i in packages){
 
 library(pacehrh)
 setwd("../..")
-minimum_input_file <- "pacehrh/inst/extdata/R Model Inputs_template_lean.xlsx"
+minimum_input_file <- "pacehrh/inst/extdata/model_inputs_template_lean.xlsx"
 
-# Set up necessary steps for default minumum template
+# Set up necessary steps for default minimum template
 test_template <- function(){
     dir.create("tests/results", showWarnings = FALSE)
     pacehrh:::setGlobalConfig(inputExcelFilePath = minimum_input_file)
     Trace(TRUE)
     InitializePopulation()
-    InitializeHealthcareTasks()
     InitializeScenarios()
     InitializeStochasticParameters()
     InitializeSeasonality()
@@ -28,11 +27,11 @@ test_template <- function(){
 
 test_that("check_template", {
   # TODO:
-  # There is currently warning about 
+  # There is currently warning about
   # tasks in the scenario offsets table are not used in task values sheets
   # We need to define the validate behavior in lint
   expect_true(pacehrh::CheckInputExcelFileFormat(minimum_input_file) %in% c(pacehrh:::.Success, pacehrh:::.warnProblemsFound))
-  
+
 })
 
 test_that("simple regression", {
@@ -55,9 +54,9 @@ test_that("simple regression", {
       result <- result %>% arrange("Task_ID", "Scenario_ID", "Trial_num", "Run_num", "Year", "Month")
       sorted_filename <- gsub("results_", "results_sorted_", filename)
       write.csv(result, sorted_filename)
-      # assuming no data change the stochastic randomness, result should be the same using the default seed 
+      # assuming no data change the stochastic randomness, result should be the same using the default seed
       expect_snapshot_file(sorted_filename)
     }
   })
-  
+
 })

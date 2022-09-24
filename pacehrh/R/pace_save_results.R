@@ -126,7 +126,6 @@ SaveSuiteDemographics <- function(results, filepath = "out.csv", breaks = NULL) 
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
@@ -234,7 +233,6 @@ SaveResults <- function(results, filepath = "out.csv", scenario, trial = NULL, r
 #' library(pacehrh)
 #'
 #' pacehrh::InitializePopulation()
-#' pacehrh::InitializeHealthcareTasks()
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()

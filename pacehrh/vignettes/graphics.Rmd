@@ -1,0 +1,68 @@
+---
+title: "Built-in graphics"
+author: "Charles Eliot"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Built-in graphics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "../tests")
+```
+In this note we describe the graphing functions built into the **pacehrh** package.
+
+## First things first ...
+
+... creating some data.
+
+```{r include=TRUE, eval=TRUE}
+library(pacehrh)
+
+pacehrh::InitializePopulation()
+pacehrh::InitializeScenarios()
+pacehrh::InitializeStochasticParameters()
+pacehrh::InitializeSeasonality()
+
+scenario <- "MergedModel"
+
+pacehrh::SetGlobalStartEndYears(2025, 2050)
+
+results <-
+  pacehrh::RunExperiments(scenarioName = scenario,
+                       trials = 25)
+```
+## Fertility and mortality rates
+
+The function `PlotFertilityRatesStats()` creates graphs of the fertility and mortality rates used to generate population predictions.
+
+* **type** : {"ribbon" | "lines" | "boxplot"}
+* **se** : {TRUE | FALSE} - doesn't apply to `type = "boxplot"`
+   + FALSE : confidence interval display based on standard deviation
+   + TRUE : confidence interval display based on standard error
+* **log** : {TRUE | FALSE}
+   + FALSE : linear y-axis
+   + TRUE : logarithmic (log10) y-axis
+
+```{r include=TRUE, eval=TRUE, echo=TRUE, fig.height = 4, fig.width = 9}
+g <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
+print(g)
+
+g <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = TRUE)
+print(g)
+
+g <- pacehrh::PlotFertilityRatesStats(results, se = FALSE, type = "lines")
+print(g)
+
+g <- pacehrh::PlotFertilityRatesStats(results, se = TRUE, type = "lines")
+print(g)
+
+g <- pacehrh::PlotFertilityRatesStats(results, se = FALSE, type = "ribbon")
+print(g)
+
+g <- pacehrh::PlotFertilityRatesStats(results, se = TRUE, type = "ribbon")
+print(g)
+```

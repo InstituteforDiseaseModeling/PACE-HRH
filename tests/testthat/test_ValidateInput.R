@@ -17,7 +17,7 @@ test_that("Validation capture", {
   
   logdir <- tempdir()
   # skip_if(.Platform$OS.type != "windows")
-  testthat::expect_snapshot(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
+  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                 outputDir = logdir,
                                                                 sheetNames = c("SeasonalityCurves")), error=TRUE)
   

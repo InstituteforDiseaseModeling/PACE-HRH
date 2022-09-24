@@ -10,12 +10,17 @@ params:
   inputFile: config/model_inputs.xlsx
   outputDir: log
 ---
-
+```{css, echo=FALSE}
+div.error { background-color: IndianRed; }
+div.warning { background-color: lightyellow; }
+div.info { background-color: lightblue; }
+.table caption { font-weight:bold; color:black; }
+```
 # Validation Results
-
+<br><br>
 
 ## Input Data Check:
-
+<br><br>
 ```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE}
 source("ValidateInput.R")
 source("ValidateInput_plot.R")
@@ -28,6 +33,21 @@ outfile <- paste(params$outputDir, "input_validation_results.png", sep="/")
 plot_result(result, outfile)
 knitr::include_graphics(normalizePath(outfile))
 
+# set caption color
+set_caption_color <- function(state){
+    if (state == "error") {
+      cat('<div class="error">')
+    }
+    else if (state == "warning") {
+      cat('<div class="warning">')
+    }
+    else if (state == "info"){
+     cat('<div class="info">')
+    }
+    else{
+      cat("</div>")
+    }
+  }
 ```
 
 -   Please check below csv files in `r params$outputDir` folder for any row based validation issue:
@@ -45,9 +65,10 @@ for (f in files){
   info <- metadata %>%
     filter(name == rule_name)
   tbl_description <- info %>%
-    select(description) %>%
+    mutate(text_value=paste0(severity, ": ", description)) %>%
+    select(text_value) %>%
     unique() %>% 
-   .$description
+   .$text_value
   vars <- all.vars(as.formula(
     info %>% 
     mutate(expression = paste("~ ", expression, sep="")) %>%
@@ -57,13 +78,35 @@ for (f in files){
   extra_cols <- rule_cols[rule_name][[1]]
   data <- read.csv(paste(params$outputDir, f, sep="/"))
   data <- data %>% select(unique(c(all_of(key), all_of(extra_cols), all_of(vars))))
+  set_caption_color(str_split(tbl_description, ":", simplify = TRUE)[1])
   print(kableExtra::kbl(data, caption=tbl_description, format='pipe', align = "l") 
         %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
+  set_caption_color("none")
 }
 ```
-
 ## Model Requirement Check:
-
+<br><br>
 ```{r echo=FALSE, comment=''}
 cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep = '\n')
+```
+## Custom Data Check:
+<br><br>
+```{r echo=FALSE, comment='', results = 'asis', warning=FALSE}
+  for (f in sort(list.files(file.path(params$outputDir, "custom"), "*.png"))){
+    filename <- normalizePath(file.path(params$outputDir, "custom", f))
+    cat("\n\n\n")
+    cat("![](",filename,")")
+    cat("\n\n\n")
+  }
+  custom_metadata <- read.csv(normalizePath(file.path(params$outputDir, "custom", "custom_validation_results.csv")))
+  for (i in 1:nrow(custom_metadata)){
+    f <- as.character(custom_metadata[i, "name"])
+    baddata <- read.csv(normalizePath(f))
+    tbl_description <- paste(as.character(custom_metadata[i, "severity"]), ": ", as.character(custom_metadata[i, "description"]))
+    set_caption_color(custom_metadata[i, "severity"])
+    print(kableExtra::kbl(baddata, caption=tbl_description, format='pipe', align = "l")
+        %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover")))
+    set_caption_color("none")
+  }
+  
 ```
