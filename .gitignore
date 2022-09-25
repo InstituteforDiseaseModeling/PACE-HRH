@@ -9,4 +9,5 @@
 .csv
 .pdf
 lint*.txt
-.png
+pacehrh/tests/*.png
+pacehrh/tests/*.csv
