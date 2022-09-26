@@ -107,7 +107,7 @@ compare_plot <- function(expected_seasonal, decomposed_seasonal, scenario, task,
 ## Loop over tasks
 ```{r calculate_seasonality, Warning=FALSE, message=TRUE, results='hide'}
 
-scenarios <- c("BasicModel", "ComprehensiveModel", "MergedModel")
+scenarios <- unique(pacehrh:::loadScenarios()$UniqueID)
 # scenario <- "BasicModel"
 # task <- "DPC.TB.108B"
 # type <- "TB"
