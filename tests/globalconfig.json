@@ -1,0 +1,5 @@
+{
+  "configDirectoryLocation" : "../config",
+  "inputExcelFile" : "model_inputs.xlsx",
+  "suiteRngSeed" : 12345
+}
