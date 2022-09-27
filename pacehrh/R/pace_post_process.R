@@ -573,6 +573,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
     "Stats_ClinMonth" = Stats_ClinMonth,
     "ByRun_ServiceCat" = ByRun_ServiceCat,
     "Mean_ServiceCat" = Mean_ServiceCat,
+    "Mean_AnnualTask" = Mean_AnnualTask,
     "ByRun_Total" = ByRun_Total,
     "Mean_Total" = Mean_Total,
     "ByRun_TotClin" = ByRun_TotClin,
