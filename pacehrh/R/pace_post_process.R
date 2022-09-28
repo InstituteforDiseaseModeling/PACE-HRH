@@ -482,6 +482,19 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
                       ),
                      keyby = .(Scenario_ID, Year, ServiceCat, ClinicalOrNon)]
 
+  traceMessage("Making AnnualTask tables")
+
+  Mean_AnnualTask <-
+    DR2[,
+                     .(
+                       CI05 = quantile(Service_time, probs = c(.05)),
+                       CI25 = quantile(Service_time, probs = c(.25)),
+                       MeanHrs = mean(Service_time),
+                       CI75 = quantile(Service_time, probs = c(.75)),
+                       CI95 = quantile(Service_time, probs = c(.95))
+                     ),
+                     keyby = .(Scenario_ID, Year, Task_ID, ServiceCat, ClinicalOrNon)]
+  
   traceMessage("Making Total tables")
   ByRun_Total <-
     DR2[,
@@ -560,6 +573,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
     "Stats_ClinMonth" = Stats_ClinMonth,
     "ByRun_ServiceCat" = ByRun_ServiceCat,
     "Mean_ServiceCat" = Mean_ServiceCat,
+    "Mean_AnnualTask" = Mean_AnnualTask,
     "ByRun_Total" = ByRun_Total,
     "Mean_Total" = Mean_Total,
     "ByRun_TotClin" = ByRun_TotClin,
