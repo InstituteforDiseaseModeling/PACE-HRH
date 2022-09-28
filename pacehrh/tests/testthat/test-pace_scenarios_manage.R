@@ -2,12 +2,6 @@ library(pacehrh)
 
 withr::local_dir("..")
 
-test_that("Scenario management: startup default", {
-  e <- pacehrh:::GPE
-  local_vars("scenarios", envir = e)
-  testthat::expect_null(e$scenarios)
-})
-
 test_that("Scenario management: create empty scenarios table", {
   tbl <- pacehrh::CreateScenariosTable()
 

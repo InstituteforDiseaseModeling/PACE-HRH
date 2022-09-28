@@ -63,6 +63,7 @@ Collate:
     'pace_population_config.R'
     'pace_expansion_matrix.R'
     'pace_population_predict.R'
+    'pace_population_utils.R'
     'pace_seasonality_config.R'
     'pace_seasonality_experiment.R'
     'pace_task_config.R'

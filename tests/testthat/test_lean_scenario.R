@@ -60,3 +60,27 @@ test_that("simple regression", {
   })
 
 })
+
+test_that("pop matrix number match", {
+  local(
+    {
+    results <- RunExperiments(scenarioName = "BasicModel", trials = 2, debug = TRUE)
+    computed_m <- pacehrh::ComputeApplicablePopulationMatrices(results)
+    for (y in as.character(seq(2020, 2040))){
+      for (trial in seq(1,2)){
+        # Check Female only
+        expect_equal(computed_m[[trial]]["women 30-39",y],
+                     sum(results[[trial]][["Population"]][[y]]$Female[31:40]))
+        # Check Male Only
+        l <- length(results[[trial]][["Population"]][[y]]$Male)
+        expect_equal(computed_m[[trial]]["men 18+",y],
+                     sum(results[[trial]][["Population"]][[y]]$Male[19:l]))
+        #Check Both
+        expect_equal(computed_m[[trial]][["1-18",y]],
+                     sum(results[[trial]][["Population"]][[y]]$Male[2:19] + results[[trial]][["Population"]][[y]]$Female[2:19]))
+
+      }
+    }
+  }
+  )
+})

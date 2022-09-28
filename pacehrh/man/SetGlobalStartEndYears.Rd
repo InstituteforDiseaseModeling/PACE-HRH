@@ -4,12 +4,15 @@
 \alias{SetGlobalStartEndYears}
 \title{Set Global Start And End Year Parameters}
 \usage{
-SetGlobalStartEndYears(start = 2020, end = 2040)
+SetGlobalStartEndYears(start = 2020, end = 2040, shoulderYears = 1)
 }
 \arguments{
 \item{start}{Starting year}
 
 \item{end}{Ending year (must be greater than \code{start})}
+
+\item{shoulderYears}{Number of years to add to the end of a simulation time-series
+to accomodate negative delivery offsets (default = 1)}
 }
 \value{
 NULL (invisible)
