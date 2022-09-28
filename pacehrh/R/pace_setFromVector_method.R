@@ -8,29 +8,6 @@ methods::setGeneric(
   }
 )
 
-#' Set Population Change Parameters
-#'
-#' @param object PopulationChangeParameters object
-#' @param values Vector of values to copy into PopulationChangeParameters object
-#'
-#' @return Updated \code{PopulationChangeParameters} object
-#'
-methods::setMethod(
-  f = "setFromVector",
-  signature = c("PopulationChangeParameters", "numeric"),
-  definition = function(object, values)
-  {
-    assertthat::assert_that(length(values) == 29)
-    assertthat::assert_that(is.numeric(values) == TRUE)
-
-    # Clear any names on the vector
-    names(values) <- NULL
-
-    object@values = values
-    return(object)
-  }
-)
-
 #' Set Pyramid Age Values
 #'
 #' @param object PopulationPyramid object
