@@ -2,6 +2,8 @@
 
 export(AddScenario)
 export(CheckInputExcelFileFormat)
+export(ComputeApplicablePopulationMatrices)
+export(ComputeApplicablePopulationMatrix)
 export(ComputeCadreAllocations)
 export(ComputePopulationProjection)
 export(ComputeSummaryStats)

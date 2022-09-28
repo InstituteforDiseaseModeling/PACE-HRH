@@ -13,8 +13,8 @@ RunExperiment(debug = FALSE)
 List of dataframes of per-task times, or NULL
 }
 \description{
-Combine the parameter values in the Base and Epsilon environments, save the
-new parameter values to \code{experimentValuesEnvironment}, then run a full
+Apply stochasticity to the values in the BVE (\code{baseValuesEnvironment}), save the
+new parameter values to the EXP \code{experimentValuesEnvironment}, then run a full
 set of calculations.
 }
 \details{
