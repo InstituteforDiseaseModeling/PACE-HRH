@@ -8,23 +8,6 @@ methods::setGeneric(
   }
 )
 
-#' Add Two PopulationChangeParameters Objects Together
-#'
-#' @param obj1 \code{PopulationChangeParameters} object
-#' @param obj2 \code{PopulationChangeParameters} object
-#'
-#' @return Updated \code{PopulationChangeParameters} object
-#'
-methods::setMethod(
-  f = "add",
-  signature = c("PopulationChangeParameters", "PopulationChangeParameters"),
-  definition = function(obj1, obj2)
-  {
-    obj1@values <- obj1@values + obj2@values
-    return(obj1)
-  }
-)
-
 #' Add Two PopulationPyramid Objects Together
 #'
 #' @param obj1 \code{PopulationPyramid} object

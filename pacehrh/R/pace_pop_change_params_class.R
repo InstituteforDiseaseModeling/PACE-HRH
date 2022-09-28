@@ -33,24 +33,3 @@
 names(.PcpVarLookup) <- .PcpVarNames
 
 .PcpDefaultValues <- replicate(length(.PcpVarNames), 0.0)
-
-#' Population Change Parameters Class
-#'
-#' @slot values numeric
-#'
-#' @return Class of type \code{PopulationChangeParameters}
-#'
-#' @export PopulationChangeParameters
-#' @exportClass PopulationChangeParameters
-#'
-PopulationChangeParameters <- setClass(
-  # Set the name for the class
-  "PopulationChangeParameters",
-
-  # Define the variables
-  slots = c(
-    values = "numeric"
-  ),
-
-  prototype = list(values = .PcpDefaultValues)
-)
