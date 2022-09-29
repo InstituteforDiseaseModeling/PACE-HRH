@@ -20,6 +20,7 @@ ComputeApplicablePopulationMatrices <- function(results, labels = GPE$population
 
   if (is.null(labels)){
     traceMessage("No population labels")
+    return(NULL)
   }
 
   ll <- lapply(results, function(r){
@@ -51,6 +52,7 @@ ComputeApplicablePopulationMatrix <- function(result, labels = GPE$populationLab
 
   if (is.null(labels)){
     traceMessage("No population labels")
+    return(NULL)
   }
 
   return(.computeApplicablePopulationMatrix(result, labels))

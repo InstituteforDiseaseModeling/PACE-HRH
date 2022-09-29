@@ -7,16 +7,15 @@
 ComputeApplicablePopulationMatrix(result, labels = GPE$populationLabels$Labels)
 }
 \arguments{
-\item{result}{Single result structure as returned by \code{RunExperiments()}}
+\item{result}{One entry from the results structure as returned by \code{RunExperiments()}}
 }
 \value{
-matrix
+An applicable population matrix (labels x years)
 }
 \description{
 Generate Matrix of Applicable Populations
 }
 \examples{
 \dontrun{
-# This code won't be run
 }
 }
