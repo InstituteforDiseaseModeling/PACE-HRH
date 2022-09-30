@@ -19,6 +19,10 @@ rule_cols <- list(AnnualDeltaRatio_value_Range = c("StartingRateInPop"),
                   RateMultiplier = c("StartingRateInPop", "MultiplierReason")
                   )
 
+# store metadata for custom check
+custom_test <- new.env()
+custom_test$df_reason <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(custom_test$df_reason) <- c("name", "description", "severity")
 
 #' Perform Validation on Input Excel File
 #'
@@ -164,13 +168,18 @@ ValidateInputExcelFileContent <- function(inputFile,
 
 }
 
+.custom_check_write_result <- function(description, filename, severity, violation){
+  if(nrow(violation) > 0){
+    write.csv(violation, filename)
+    custom_test$df_reason[nrow(custom_test$df_reason) + 1,] <- c(filename, description, severity)
+  }
+}
+
 .custom_check <- function(inputFile, outputDir = "log"){
   # define custom rules, for each rules, we choose to produce a graph (with custom_ prefix)
   # or a csv with name, description, severity written to "custom_validation_results.csv"
   custom_dir <- file.path(outputDir, "custom")
   dir.create(custom_dir, showWarnings = F)
-  df_reason <- data.frame(matrix(ncol = 3, nrow = 0))
-  colnames(df_reason) <- c("name", "description", "severity")
 
   ##### Check if the seasonality curve setting is valid #####
   ##### (Code provided by Brittany Hagedorn)                  #####
@@ -227,19 +236,15 @@ ValidateInputExcelFileContent <- function(inputFile,
   severity <- "error"
   SO <- read_xlsx(inputFile ,sheet="SeasonalityOffsets")
   violation <- SO %>% filter_at(vars(starts_with('Offset')), any_vars(.< -11 | .>11))
-  if(nrow(violation) > 0){
-    write.csv(violation, filename)
-    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
-  }
+  .custom_check_write_result(description, filename, severity, violation)
+
   ##### Check seasonality offset is integer #####
   filename <- file.path(custom_dir, "violation_offsets_not_integer.csv")
   description <- "The simulation operates on a monthly basis, so all offsets must be integers."
   severity <- "error"
   violation <- SO %>% filter_at(vars(starts_with('Offset')), any_vars(!round(.)==.))
-  if(nrow(violation) > 0){
-    write.csv(violation, filename)
-    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
-   }
+  .custom_check_write_result(description, filename, severity, violation)
+
   ##### Check seasonality offset is in taskValue sheet" #####
   filename <- file.path(custom_dir, "violation_offsets_not_in_task.csv")
   description <- "Task has a seasonality offset, but it is not listed in the Task Values sheet.
@@ -250,10 +255,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   violation <- SO %>%
     filter(!(Task %in%  unique(TV$Indicator))) %>%
     select(Task, Description, Curve)
-  if(nrow(violation) > 0){
-    write.csv(violation, filename)
-    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
-  }
+  .custom_check_write_result(description, filename, severity, violation)
 
   ##### Check seasonality offset is in seasonalityCurve" #####
   filename <- file.path(custom_dir, "violation_offsets_not_in_curve.csv")
@@ -265,12 +267,9 @@ ValidateInputExcelFileContent <- function(inputFile,
   violation <- SO %>%
     filter(!(Curve %in% colnames(SC))) %>%
     select(Task, Description, Curve)
-  if(nrow(violation) > 0){
-    write.csv(violation, filename)
-    df_reason[nrow(df_reason) + 1,] = c(filename, description, severity)
-    }
+  .custom_check_write_result(description, filename, severity, violation)
 
   # writing metadata for custom check
-  write.csv(df_reason, file.path(custom_dir, "custom_validation_results.csv"))
+  write.csv(custom_test$df_reason, file.path(custom_dir, "custom_validation_results.csv"))
 
 }
