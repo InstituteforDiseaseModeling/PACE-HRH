@@ -167,3 +167,38 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) 
 
   return(invisible(NULL))
 }
+
+#' Set Rounding Law
+#'
+#' The rounding law determines how the system handles rounding for
+#' processes that in nature would always return integer counts, such as
+#' births.
+#'
+#' For example: Take 35 age groups, each containing 100 fertile women, and
+#' each with a fertility rate of 0.0564 births/woman/year. Say we want to
+#' calculate the total number of births for a year.
+#'
+#' "early" law: N = round(100 * 0.0564) * 35 = 210
+#' "late" law: N = round(100 * 0.0564 * 35) = 197
+#' "none" law: N = 100 * 0.0564 * 35 = 197.4
+#'
+#' @param value Rounding law. Allowed values are "early", "late", "none" and NULL
+#'
+#' @return Previous rounding law value
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' pacehrh::SetRoundingLaw("none")
+#' }
+SetRoundingLaw <- function(value = NULL){
+  prevValue <- GPE$roundingLaw
+
+  if (!is.null(value)){
+    if (tolower(value) %in% .roundingLaws){
+      GPE$roundingLaw <- value
+    }
+  }
+
+  return(prevValue)
+}

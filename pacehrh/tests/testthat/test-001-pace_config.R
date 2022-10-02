@@ -199,13 +199,16 @@ test_that("Global configuration: check-and-load", {
 test_that("Global configuration: SetGlobalStartEndYears", {
   e <- pacehrh:::GPE
 
-  withr::defer(e$startYear <- originalStartYear)
+  local_vars("startYear", envir = e)
+  local_vars("endYear", envir = e)
+  local_vars("endYear", envir = e)
+  local_vars("shoulderYears", envir = e)
+
+  # Test that bad calls don't mess with anything
+
   originalStartYear <- e$startYear
-  withr::defer(e$endYear <- originalEndYear)
   originalEndYear <- e$endYear
-  withr::defer(e$years <- originalYears)
   originalYears <- e$years
-  withr::defer(e$shoulderYears <- originalshoulderYears)
   originalshoulderYears <- e$shoulderYears
 
   testthat::expect_invisible(pacehrh::SetGlobalStartEndYears("a", 1))
@@ -255,4 +258,23 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
   testthat::expect_equal(e$shoulderYears, shoulderYears)
+})
+
+test_that("Global configuration: SetRoundingLaw", {
+  e <- pacehrh:::GPE
+
+  local_vars("roundingLaw", envir = e)
+  originalRoundingLaw <- e$roundingLaw
+
+  # Test that bad calls don't mess with anything
+  testthat::expect_equal(pacehrh:::SetRoundingLaw(), originalRoundingLaw)
+  testthat::expect_equal(pacehrh:::SetRoundingLaw(NULL), originalRoundingLaw)
+  testthat::expect_equal(pacehrh:::SetRoundingLaw("notaroundinglaw"), originalRoundingLaw)
+
+  # Test that good calls always return the previously set value
+  previousLaw <- originalRoundingLaw
+  for (law in pacehrh:::.roundingLaws){
+    testthat::expect_equal(pacehrh:::SetRoundingLaw(law), previousLaw)
+    previousLaw <- law
+  }
 })

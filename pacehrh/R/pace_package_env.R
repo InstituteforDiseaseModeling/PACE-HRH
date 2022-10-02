@@ -11,6 +11,18 @@ GPE <- globalPackageEnvironment
 BVE <- baseValuesEnvironment
 EXP <- experimentValuesEnvironment
 
+# Internal constants
+
+.roundingLaws <- c(
+  "early",
+  "late",
+  "none"
+)
+
+.defaultRoundingLaw <- .roundingLaws[1] # "early"
+
+# Global variables
+
 GPE$globalConfigLoaded <- FALSE
 GPE$globalDebug <- FALSE
 
@@ -37,6 +49,7 @@ GPE$initialPopulation <- NULL
 GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
+GPE$roundingLaw <- .defaultRoundingLaw
 
 GPE$seasonalityCurves <- NULL
 GPE$seasonalityOffsets <- NULL
