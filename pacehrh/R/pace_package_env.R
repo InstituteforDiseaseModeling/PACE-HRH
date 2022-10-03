@@ -11,7 +11,7 @@ GPE <- globalPackageEnvironment
 BVE <- baseValuesEnvironment
 EXP <- experimentValuesEnvironment
 
-# Internal constants
+# INTERNAL CONSTANTS
 
 .roundingLaws <- c(
   "early",
@@ -21,7 +21,10 @@ EXP <- experimentValuesEnvironment
 
 .defaultRoundingLaw <- .roundingLaws[1] # "early"
 
-# Global variables
+.colorM = rgb(96,131,180, maxColorValue = 255)
+.colorF = rgb(210,120,135, maxColorValue = 255)
+
+# GLOBAL VARIABLES
 
 GPE$globalConfigLoaded <- FALSE
 GPE$globalDebug <- FALSE

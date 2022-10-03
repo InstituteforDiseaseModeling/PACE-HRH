@@ -1,6 +1,3 @@
-.colorM = rgb(96,131,180, maxColorValue = 255)
-.colorF = rgb(210,120,135, maxColorValue = 255)
-
 #' Plot A Single Population Curve
 #'
 #' @param pop Population values as a numeric vector
@@ -221,8 +218,10 @@ gatherPopulation <- function(pops){
   yearVector <- vector(mode = "numeric", length = rangeSize)
   genderVectorMale <- vector(mode = "character", length = rangeSize)
   genderVectorFemale <- vector(mode = "character", length = rangeSize)
+  genderVectorTotal <- vector(mode = "character", length = rangeSize)
   genderVectorMale <- "M"
   genderVectorFemale <- "F"
+  genderVectorTotal <- "FM"
 
   x <- lapply(years, FUN = function(year){
     pop <- pops[[year]]
@@ -242,7 +241,12 @@ gatherPopulation <- function(pops){
                        Age = rangeVector,
                        Population = pop$Male)
 
-    return(data.table::rbindlist(list(df.f, df.m)))
+    df.fm <- data.frame(Year = yearVector,
+                       Gender = genderVectorTotal,
+                       Age = rangeVector,
+                       Population = pop$Female + pop$Male)
+
+    return(data.table::rbindlist(list(df.f, df.m, df.fm)))
   })
 
   return(data.table::rbindlist(x))

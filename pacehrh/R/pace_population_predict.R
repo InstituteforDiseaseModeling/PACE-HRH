@@ -1,9 +1,10 @@
 .explodeRates <- function(rates, year){
   assertthat::assert_that(is.numeric(year))
-  assertthat::assert_that(year >= BVE$startYear & year <= BVE$endYear)
 
   l <- lapply(rates, function(r){
     if (!is.null(r$bandedRates)){
+      # TODO: This will crash if the year value passed to .explodeRates isn't in the
+      # range of years used to create the rates matrix. Add try-catch trap.
       return(as.vector(r$bandedRates$expansionMatrix %*% r$ratesMatrix[, as.character(year)]))
     } else {
       return(vector(mode = "double", length = length(GPE$ages)))
@@ -15,12 +16,26 @@
 }
 
 .computeBirths <- function(femalePopulation, rates){
-  return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+  if (GPE$roundingLaw == "none"){
+    return(sum(femalePopulation * rates[["femaleFertility"]]))
+  } else if (GPE$roundingLaw == "late") {
+    return(round(sum(femalePopulation * rates[["femaleFertility"]]), 0))
+  } else if (GPE$roundingLaw == "early") {
+    return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+  } else {
+    return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+  }
 }
 
 .computeDeaths <- function(population, rates){
-  outf <- round(population$Female * rates[["femaleMortality"]], 0)
-  outm <- round(population$Male * rates[["maleMortality"]], 0)
+  if (GPE$roundingLaw == "none"){
+    outf <- population$Female * rates[["femaleMortality"]]
+    outm <- population$Male * rates[["maleMortality"]]
+  } else {
+    outf <- round(population$Female * rates[["femaleMortality"]], 0)
+    outm <- round(population$Male * rates[["maleMortality"]], 0)
+  }
+
   return(list(Female = outf, Male = outm))
 }
 

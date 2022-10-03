@@ -206,3 +206,40 @@ ConfigureExperimentValues <- function(){
 
   return(invisible(NULL))
 }
+
+#' Compute Time-Series of Population Rate Parameters
+#'
+#' @param pcr Population Change Rates structure
+#' @param years Range of years to compute
+#' @param stochasticParms Parameters controlling stochastic variation of generated rates
+#'
+#' @return Populate Change Rates structure with predicted rates matrices added
+#'
+#' @examples
+#' \dontrun{
+#' initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
+#' pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Flat_Rates")
+#' pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
+#' # Turn off stochasticity and generate several years of rates
+#' years <- 2020:2040
+#' pcr <- pacehrh:::addRatesMatricesToPopulationChangeRates(pcr, years, NULL)
+#' }
+addRatesMatricesToPopulationChangeRates <-
+  function(pcr, years, stochasticParms = NULL) {
+    if (is.null(stochasticParms)) {
+      stochasticityFlag <- FALSE
+    } else {
+      stochasticityFlag <- TRUE
+    }
+
+    for (label in names(pcr)) {
+      m <-
+        .generateRatesMatrix(stochasticParms,
+                             years,
+                             pcr[[label]],
+                             stochasticity = stochasticityFlag)
+      pcr[[label]]$ratesMatrix <- m
+    }
+
+    return(pcr)
+  }

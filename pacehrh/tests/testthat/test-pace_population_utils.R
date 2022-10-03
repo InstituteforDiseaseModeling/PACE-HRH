@@ -2,25 +2,6 @@ library(pacehrh)
 
 withr::local_dir("..")
 
-
-
-test_that("Applicable population matrices: stuff", {
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
-
-  e <- pacehrh:::GPE
-  local_vars("inputExcelFile", envir = e)
-  local_vars("globalConfigLoaded", envir = e)
-
-  inputFile <- "./simple_config/super_simple_inputs.xlsx"
-  pacehrh:::setGlobalConfig(inputExcelFilePath = inputFile)
-
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
-})
-
-
-
-
-
 test_that("Applicable population matrices: basic", {
   pacehrh::InitializePopulation()
   pacehrh::InitializeScenarios()
