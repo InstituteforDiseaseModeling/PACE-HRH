@@ -66,14 +66,14 @@ test_that("Population predictions: flat", {
 
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
 
-  # The "Flat_" configuration is set up so
+  # This configuration is set up so
   # (1) Every year bucket has the same population;
   # (2) Everybody lives to 100, then dies; and
   # (3) the birth rate exactly replenishes the population.
 
   initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
   pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Flat_Rates")
-  pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
+#  pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
 
   # Turn off stochasticity and generate several years of rates
 
@@ -84,7 +84,7 @@ test_that("Population predictions: flat", {
 
   pacehrh::SetRoundingLaw("none")
 
-  population <- ComputePopulationProjection(
+  population <- pacehrh::ComputePopulationProjection(
     initPop,
     pcr,
     years)
@@ -114,7 +114,7 @@ test_that("Population predictions: rising", {
 
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
 
-  # The "Flat_" configuration is set up so
+  # This configuration is set up so
   # (1) Every year bucket has the same population;
   # (2) Everybody lives to 100, then dies; and
   # (3) The birth rate more than replenishes the population.
@@ -131,7 +131,7 @@ test_that("Population predictions: rising", {
 
   pacehrh::SetRoundingLaw("none")
 
-  population <- ComputePopulationProjection(
+  population <- pacehrh::ComputePopulationProjection(
     initPop,
     pcr,
     years)
