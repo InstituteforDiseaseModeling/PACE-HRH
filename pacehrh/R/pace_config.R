@@ -182,6 +182,11 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) 
 #' "late" law: N = round(100 * 0.0564 * 35) = 197
 #' "none" law: N = 100 * 0.0564 * 35 = 197.4
 #'
+#' Rounding laws apply to several PACE-HRH calculations (e.g. population predictions).
+#' In many cases there is no difference between "early" and "late" laws.
+#'
+#' By default the system is set up with the "early" rounding law.
+#'
 #' @param value Rounding law. Allowed values are "early", "late", "none" and NULL
 #'
 #' @return Previous rounding law value

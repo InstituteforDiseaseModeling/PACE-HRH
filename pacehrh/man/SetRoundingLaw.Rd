@@ -25,6 +25,11 @@ calculate the total number of births for a year.
 "early" law: N = round(100 * 0.0564) * 35 = 210
 "late" law: N = round(100 * 0.0564 * 35) = 197
 "none" law: N = 100 * 0.0564 * 35 = 197.4
+
+Rounding laws apply to several PACE-HRH calculations (e.g. population predictions).
+In many cases there is no difference between "early" and "late" laws.
+
+By default the system is set up with the "early" rounding law.
 }
 \examples{
 \dontrun{

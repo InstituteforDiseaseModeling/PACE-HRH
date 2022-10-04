@@ -201,7 +201,7 @@ test_that("Global configuration: SetGlobalStartEndYears", {
 
   local_vars("startYear", envir = e)
   local_vars("endYear", envir = e)
-  local_vars("endYear", envir = e)
+  local_vars("years", envir = e)
   local_vars("shoulderYears", envir = e)
 
   # Test that bad calls don't mess with anything
