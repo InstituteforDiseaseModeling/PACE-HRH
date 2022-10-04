@@ -1,4 +1,5 @@
 library(pacehrh)
+library(ggplot2)
 
 withr::local_dir("..")
 e <- pacehrh:::GPE
@@ -52,67 +53,97 @@ test_that("computeDeaths: basic", {
   testthat::expect_equal(sum(results$Male), compSum/2)
 })
 
-# test_that("ComputeDemographicsProjection: simple", {
-#   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
-#
-#   e <- pacehrh:::GPE
-#   local_vars("inputExcelFile", envir = e)
-#
-#   e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
-#
-#   pop <- pacehrh:::loadInitialPopulation(sheetName = "TEST_TotalPop")
-#   pars <- pacehrh:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
-#   pcp <- pacehrh:::loadPopulationChangeParameters(sheetName = "TEST_PopValues")
-# #  pcp <- pacehrh:::loadPopulationChangeParameters(sheetName = "TEST_PopValues_Const")
-#   ages <- pacehrh:::GPE$ages
-#   years <- pacehrh:::GPE$years
-#
-#   # This conversion needs to go away. History: ComputeDemographicsProjection()
-#   # was one of the first functions written for pacehrh, before we started to carry
-#   # PopulationPyramid objects around. It was initially easier to just convert
-#   # between formats when ComputeDemographicsProjection() is called rather than
-#   # risk breaking ComputeDemographicsProjection() itself.
-#   initialPopulationDf <- data.frame(
-#     Age = pop$age,
-#     Female = pop$female@values,
-#     Male = pop$male@values,
-#     Total = pop$total@values
-#   )
-#
-#   mf <- .generateFertilityRatesMatrix(pars, years, pcp, stochasticity = FALSE)
-#   mm <- .generateMortalityRatesMatrix(pars, years, pcp, stochasticity = FALSE)
-#
-#   demographics <- ComputeDemographicsProjection(
-#     initialPopulationDf,
-#     mf,
-#     mm,
-#     years,
-#     normalize = NULL,
-#     growthFlag = TRUE,
-#     debug = TRUE
-#   )
-#
-#   testthat::expect_true(!is.null(demographics))
-#
-#   # Save a graph to eyeball for general shape, etc
-#   png("graph_003.png", width = 800, height = 800)
-#   g <- pacehrh::PlotPopulationCurve(demographics[[1]]$Female, xaxis = ages)
-#   print(g)
-#   dev.off()
-#
-#   png("graph_004.png", width = 800, height = 800)
-#   g <- pacehrh::PlotPopulationCurves(
-#     demographics[[1]]$Female,
-#     demographics[[2]]$Female,
-#     demographics[[3]]$Female,
-#     demographics[[4]]$Female,
-#     demographics[[5]]$Female,
-#     demographics[[6]]$Female,
-#     xaxis = ages,
-#     colors = c("royalblue4", "royalblue3", "royalblue2", "royalblue1"),
-#     shapes = c(0, 1, 2, 5)
-#   )
-#   print(g)
-#   dev.off()
-#
-# })
+test_that("Population predictions: flat", {
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+
+  e <- pacehrh:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("roundingLaw", envir = e)
+
+  inputFile <- "./simple_config/super_simple_inputs.xlsx"
+  pacehrh:::setGlobalConfig(inputExcelFilePath = inputFile)
+
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
+
+  # This configuration is set up so
+  # (1) Every year bucket has the same population;
+  # (2) Everybody lives to 100, then dies; and
+  # (3) the birth rate exactly replenishes the population.
+
+  initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
+  pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Flat_Rates")
+#  pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
+
+  # Turn off stochasticity and generate several years of rates
+
+  years <- 2020:2040
+  pcr <- pacehrh:::addRatesMatricesToPopulationChangeRates(pcr, years, NULL)
+
+  # Turn off rounding
+
+  pacehrh::SetRoundingLaw("none")
+
+  population <- pacehrh::ComputePopulationProjection(
+    initPop,
+    pcr,
+    years)
+
+  df <- pacehrh:::gatherPopulation(population)
+  dff <- df[df$Gender == "FM",]
+
+  png("graph_004.png", width = 1000, height = 800)
+  g <- ggplot(data = dff, aes(x = Age, y = Population, group = Year, color = as.character(Year)))
+  g <- g + geom_line()
+  g <- g + facet_wrap(vars(Year))
+  g <- g + theme(legend.position = "none")
+  print(g)
+  dev.off()
+})
+
+test_that("Population predictions: rising", {
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+
+  e <- pacehrh:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("roundingLaw", envir = e)
+
+  inputFile <- "./simple_config/super_simple_inputs.xlsx"
+  pacehrh:::setGlobalConfig(inputExcelFilePath = inputFile)
+
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
+
+  # This configuration is set up so
+  # (1) Every year bucket has the same population;
+  # (2) Everybody lives to 100, then dies; and
+  # (3) The birth rate more than replenishes the population.
+
+  initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
+  pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Rise_Rates")
+
+  # Turn off stochasticity and generate several years of rates
+
+  years <- 2020:2050
+  pcr <- pacehrh:::addRatesMatricesToPopulationChangeRates(pcr, years, NULL)
+
+  # Turn off rounding
+
+  pacehrh::SetRoundingLaw("none")
+
+  population <- pacehrh::ComputePopulationProjection(
+    initPop,
+    pcr,
+    years)
+
+  df <- pacehrh:::gatherPopulation(population)
+  dff <- df[df$Gender == "FM",]
+
+  png("graph_005.png", width = 1600, height = 1000)
+  g <- ggplot(data = dff, aes(x = Age, y = Population, group = Year, color = as.character(Year)))
+  g <- g + geom_line()
+  g <- g + facet_wrap(vars(Year))
+  g <- g + theme(legend.position = "none")
+  print(g)
+  dev.off()
+})

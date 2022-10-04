@@ -11,6 +11,21 @@ GPE <- globalPackageEnvironment
 BVE <- baseValuesEnvironment
 EXP <- experimentValuesEnvironment
 
+# INTERNAL CONSTANTS
+
+.roundingLaws <- c(
+  "early",
+  "late",
+  "none"
+)
+
+.defaultRoundingLaw <- .roundingLaws[1] # "early"
+
+.colorM = rgb(96,131,180, maxColorValue = 255)
+.colorF = rgb(210,120,135, maxColorValue = 255)
+
+# GLOBAL VARIABLES
+
 GPE$globalConfigLoaded <- FALSE
 GPE$globalDebug <- FALSE
 
@@ -37,6 +52,7 @@ GPE$initialPopulation <- NULL
 GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
+GPE$roundingLaw <- .defaultRoundingLaw
 
 GPE$seasonalityCurves <- NULL
 GPE$seasonalityOffsets <- NULL

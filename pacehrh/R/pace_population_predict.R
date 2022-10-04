@@ -1,9 +1,10 @@
 .explodeRates <- function(rates, year){
   assertthat::assert_that(is.numeric(year))
-  assertthat::assert_that(year >= BVE$startYear & year <= BVE$endYear)
 
   l <- lapply(rates, function(r){
     if (!is.null(r$bandedRates)){
+      # TODO: This will crash if the year value passed to .explodeRates isn't in the
+      # range of years used to create the rates matrix. Add try-catch trap.
       return(as.vector(r$bandedRates$expansionMatrix %*% r$ratesMatrix[, as.character(year)]))
     } else {
       return(vector(mode = "double", length = length(GPE$ages)))
@@ -15,12 +16,26 @@
 }
 
 .computeBirths <- function(femalePopulation, rates){
-  return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+  if (GPE$roundingLaw == "none"){
+    return(sum(femalePopulation * rates[["femaleFertility"]]))
+  } else if (GPE$roundingLaw == "late") {
+    return(round(sum(femalePopulation * rates[["femaleFertility"]]), 0))
+  } else if (GPE$roundingLaw == "early") {
+    return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+  } else {
+    return(sum(round(femalePopulation * rates[["femaleFertility"]], 0)))
+  }
 }
 
 .computeDeaths <- function(population, rates){
-  outf <- round(population$Female * rates[["femaleMortality"]], 0)
-  outm <- round(population$Male * rates[["maleMortality"]], 0)
+  if (GPE$roundingLaw == "none"){
+    outf <- population$Female * rates[["femaleMortality"]]
+    outm <- population$Male * rates[["maleMortality"]]
+  } else {
+    outf <- round(population$Female * rates[["femaleMortality"]], 0)
+    outm <- round(population$Male * rates[["maleMortality"]], 0)
+  }
+
   return(list(Female = outf, Male = outm))
 }
 
@@ -41,8 +56,14 @@
   total <- sum(pop$female@values) + sum(pop$male@values)
   normFactor <- normalizedTotal / total
 
-  pop$male@values <- round(pop$male@values * normFactor, 0)
-  pop$female@values <- round(pop$female@values * normFactor, 0)
+  if (GPE$roundingLaw == "none"){
+    pop$male@values <- pop$male@values * normFactor
+    pop$female@values <- pop$female@values * normFactor
+  } else {
+    pop$male@values <- round(pop$male@values * normFactor, 0)
+    pop$female@values <- round(pop$female@values * normFactor, 0)
+  }
+
   pop$total@values <- pop$male@values + pop$female@values
 
   return(pop)
@@ -152,8 +173,13 @@ ComputePopulationProjection <- function(initialPopulation,
       infantDeaths.m <- births.m * (rates[["maleMortality"]][1])
       infantDeaths.f <- births.f * (rates[["femaleMortality"]][1])
 
-      f[1] <- round(births.f - infantDeaths.f, 0)
-      m[1] <- round(births.m - infantDeaths.m, 0)
+      if (GPE$roundingLaw == "none"){
+        f[1] <- births.f - infantDeaths.f
+        m[1] <- births.m - infantDeaths.m
+      } else {
+        f[1] <- round(births.f - infantDeaths.f, 0)
+        m[1] <- round(births.m - infantDeaths.m, 0)
+      }
 
       out <- data.frame(Range = range, Female = f, Male = m, rates = rates)
     }
@@ -170,8 +196,13 @@ ComputePopulationProjection <- function(initialPopulation,
       ptotal <- sum(pdata$Male) + sum(pdata$Female)
       normfactor <- initialPopulationTotal / ptotal
 
-      projection[[i]]$Female <- round(projection[[i]]$Female * normfactor, 0)
-      projection[[i]]$Male <- round(projection[[i]]$Male * normfactor, 0)
+      if (GPE$roundingLaw == "none"){
+        projection[[i]]$Female <- projection[[i]]$Female * normfactor
+        projection[[i]]$Male <- projection[[i]]$Male * normfactor
+      } else {
+        projection[[i]]$Female <- round(projection[[i]]$Female * normfactor, 0)
+        projection[[i]]$Male <- round(projection[[i]]$Male * normfactor, 0)
+      }
     }
   }
 

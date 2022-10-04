@@ -23,6 +23,12 @@ test_that("Applicable population matrices: basic", {
 
   testthat::expect_true(!is.null(results))
 
+  testthat::expect_null(pacehrh::ComputeApplicablePopulationMatrices(results, NULL))
+  testthat::expect_null(pacehrh::ComputeApplicablePopulationMatrix(results[[1]], NULL))
+
+  p <- pacehrh::ComputeApplicablePopulationMatrix(results[[1]])
+  testthat::expect_equal(class(p), c("matrix", "array"))
+  testthat::expect_type(p, "double")
 
   pm <- pacehrh::ComputeApplicablePopulationMatrices(results)
   testthat::expect_true(!is.null(pm))
@@ -31,4 +37,9 @@ test_that("Applicable population matrices: basic", {
   p <- pm[[1]]
   testthat::expect_equal(class(p), c("matrix", "array"))
   testthat::expect_type(p, "double")
+})
+
+test_that("Applicable population matrices: bad calls", {
+  testthat::expect_null(pacehrh::ComputeApplicablePopulationMatrices(NULL))
+  testthat::expect_null(pacehrh::ComputeApplicablePopulationMatrix(NULL))
 })

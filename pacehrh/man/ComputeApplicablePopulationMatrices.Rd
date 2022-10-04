@@ -13,13 +13,12 @@ ComputeApplicablePopulationMatrices(
 \item{results}{Results structure as returned by \code{RunExperiments()}}
 }
 \value{
-matrix
+List of applicable population matrices (labels x years)
 }
 \description{
 Generate Matrices of Applicable Populations
 }
 \examples{
 \dontrun{
-# This code won't be run
 }
 }
