@@ -202,8 +202,10 @@ SetRoundingLaw <- function(value = NULL){
   if (!is.null(value)){
     if (tolower(value) %in% .roundingLaws){
       GPE$roundingLaw <- value
+    } else {
+      traceMessage(paste0(value, " is not an allowed rounding law value"))
     }
   }
 
-  return(prevValue)
+  return(invisible(prevValue))
 }
