@@ -60,7 +60,7 @@ generatePrevalenceRatesMatrix <- function(){
   }
 
   for (j in 2:nCols){
-    e <- deltaRatios * truncnorm::rtruncnorm(
+    e <- truncnorm::rtruncnorm(
       nRows,
       mean = 0,
       sd = p,
