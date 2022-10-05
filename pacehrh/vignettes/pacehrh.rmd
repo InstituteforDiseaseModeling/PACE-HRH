@@ -251,7 +251,7 @@ sheets and run via an R script.
     if the file is open. 
 2.  In RStudio, open the "Run simulations.R" script. 
 3.  From the **Tools** menu, select **Install Packages ...**.
-4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file.
+4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file. You can find them in https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases
 5.  Select the installation location and then click **Install**. 
 6.  You may see a banner at the top of the screen that indicates some dependent packages that are 
     required. Select **Yes**. to enable installation.
