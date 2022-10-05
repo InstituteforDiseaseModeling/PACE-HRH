@@ -47,6 +47,7 @@ test_that("simple regression", {
       results <- RunExperiments(scenarioName = scenario, trials = numtrials, debug = TRUE)
       expect_true(all(!is.na(results)))
       filename <- paste("tests/results/regression/results_", geoname, scenario,".csv",sep="")
+      filename_d <- paste("tests/results/regression/demog_", geoname, scenario,".csv",sep="")
       cat(paste("output file should be created as:", filename, sep=""))
       SaveSuiteResults(results, filename, scenario, 1)
       expect_true(file.exists(filename))
@@ -56,6 +57,14 @@ test_that("simple regression", {
       write.csv(result, sorted_filename)
       # assuming no data change the stochastic randomness, result should be the same using the default seed
       expect_snapshot_file(sorted_filename)
+      # Check population 
+      df <- SaveSuiteDemographics(results)
+      df <- df %>%
+        dplyr::group_by(Trial, Year, Age) %>%
+        dplyr::summarize(Female = sum(Female), Male = sum(Male)) %>%
+        dplyr::arrange(Trial, Year, Age)
+      write.csv(df, filename_d, row.names = FALSE)
+      expect_snapshot_file(filename_d)
     }
   })
 

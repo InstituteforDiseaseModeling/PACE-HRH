@@ -43,7 +43,7 @@ SaveSuiteDemographics <- function(results, filepath = "out.csv", breaks = NULL) 
   names(outdf) <- colNames
 
   # Write to target file and return
-  data.table::fwrite(outdf, file = filename, row.names = FALSE, na = "NA")
+  data.table::fwrite(outdf, file = filepath, row.names = FALSE, na = "NA")
   return(outdf)
 }
 
