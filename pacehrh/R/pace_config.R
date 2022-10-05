@@ -207,5 +207,5 @@ SetRoundingLaw <- function(value = NULL){
     }
   }
 
-  return(prevValue)
+  return(invisible(prevValue))
 }
