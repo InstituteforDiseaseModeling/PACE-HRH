@@ -247,17 +247,18 @@ better health system staffing decisions. The model is configured via Excel
 sheets and run via an R script. 
 
 ### Install using the current released version binaries (Windows) 
-1.  Close "config/model_inputs.xlsx" in Excel. RStudio will be unable to load the input values
+1.  Download the latest binary zip file from https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases.
+2.  Close "config/model_inputs.xlsx" in Excel. RStudio will be unable to load the input values
     if the file is open. 
-2.  In RStudio, open the "Run simulations.R" script. 
-3.  From the **Tools** menu, select **Install Packages ...**.
-4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file. You can download them in https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases
-5.  Select the installation location and then click **Install**. 
-6.  You may see a banner at the top of the screen that indicates some dependent packages that are 
+3.  In RStudio, open the "Run simulations.R" script. 
+4.  From the **Tools** menu, select **Install Packages ...**.
+5.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file that you downloaded. 
+6.  Select the installation location and then click **Install**. 
+7.  You may see a banner at the top of the screen that indicates some dependent packages that are 
     required. Select **Yes**. to enable installation.
-7.  In the R code, set *numtrials* to the number of simulations you want to run. 100 tends to be good; 
+8.  In the R code, set *numtrials* to the number of simulations you want to run. 100 tends to be good; 
     higher values can take longer because of the stochasticity in the model.
-8.  Run the script. 
+9.  Run the script. 
 
     The results are saved out to a CSV file with the date and name of the geography as specified
     in Excel in the filename. The console will beep at you when the model has finished running. 
