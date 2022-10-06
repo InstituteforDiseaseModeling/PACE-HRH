@@ -105,7 +105,7 @@ generateRatesMatrix <- function(label = NULL){
 
     # Apply stochastic tweaks to every year of the time series
     for (j in 2:nCols) {
-      e <- deltaRatios * truncnorm::rtruncnorm(
+      e <- truncnorm::rtruncnorm(
         length(deltaRatios),
         mean = 0,
         sd = p,
