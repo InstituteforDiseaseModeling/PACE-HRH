@@ -106,7 +106,7 @@ one used as an input to the model, so values can be changed directly here if you
 
 #### Parameters
 
-* **Description**: The human-readable demographics category. This does not affect the model's functionality and is for readibility only.
+* **Description**: The human-readable demographics category. This does not affect the model's functionality and is for readability only.
 * **Label**: The unique string that defines that category.
 * **Type**: The type of rate describes, mortality or fertility.
 * **Sex**: The sex to which the rate applies.
@@ -246,12 +246,12 @@ The PACE-HRH model simulates healthcare needs in a given population to enable
 better health system staffing decisions. The model is configured via Excel
 sheets and run via an R script. 
 
-### Install using stable version binaries (windows) 
-1.  Close "R Model Inputs.xslx" in Excel. RStudio will be unable to load the input values
+### Install using the current released version binaries (Windows) 
+1.  Close "config/model_inputs.xlsx" in Excel. RStudio will be unable to load the input values
     if the file is open. 
 2.  In RStudio, open the "Run simulations.R" script. 
 3.  From the **Tools** menu, select **Install Packages ...**.
-4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file. You can find them in https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases
+4.  Under **Install from:**, select the most recent version of the PACE-HRH package binary zip file. You can download them in https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases
 5.  Select the installation location and then click **Install**. 
 6.  You may see a banner at the top of the screen that indicates some dependent packages that are 
     required. Select **Yes**. to enable installation.
@@ -262,9 +262,17 @@ sheets and run via an R script.
     The results are saved out to a CSV file with the date and name of the geography as specified
     in Excel in the filename. The console will beep at you when the model has finished running. 
     
-### Install latest version via Github
+### Install development version or custom version via GitHub
 
-Alternatively, one can install from repository source code with desired git reference which could be a commit, tag, or branch name
+Alternatively, one can install from repository source code with desired git reference which, could be a commit, tag, or branch name.
+By default, main branch has the most up-to-date code. If you need to get the latest fixes which have not yet been released officially, you can run this:
 ```{r, eval=FALSE, echo=TRUE}
-devtools::install_github("InstituteforDiseaseModeling/PACE-HRH", subdir="pacehrh", ref="main")
+devtools::install_github("InstituteforDiseaseModeling/PACE-HRH", subdir="pacehrh")
+```    
+If your analysis is based on an older version or a custom branch, you can run this:
+```{r, eval=FALSE, echo=TRUE}
+# Use commit hash
+devtools::install_github("InstituteforDiseaseModeling/PACE-HRH", subdir="pacehrh", ref="d2ccdd2")
+# Use custom branch
+devtools::install_github("InstituteforDiseaseModeling/PACE-HRH", subdir="pacehrh", ref="my_branch")
 ```    
