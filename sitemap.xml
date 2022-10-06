@@ -31,19 +31,25 @@
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/reference/add-PopulationChangeParameters-PopulationChangeParameters-method.html</loc>
-  </url>
-  <url>
     <loc>/reference/add-PopulationPyramid-PopulationPyramid-method.html</loc>
   </url>
   <url>
     <loc>/reference/add-TaskParameters-TaskParameters-method.html</loc>
   </url>
   <url>
+    <loc>/reference/addRatesMatricesToPopulationChangeRates.html</loc>
+  </url>
+  <url>
     <loc>/reference/AddScenario.html</loc>
   </url>
   <url>
     <loc>/reference/CheckInputExcelFileFormat.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ComputeApplicablePopulationMatrices.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ComputeApplicablePopulationMatrix.html</loc>
   </url>
   <url>
     <loc>/reference/ComputeCadreAllocations.html</loc>
@@ -74,9 +80,6 @@
   </url>
   <url>
     <loc>/reference/generateRatesMatrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getValue-PopulationChangeParameters-character-method.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -142,9 +145,6 @@
     <loc>/reference/PlotResultsPopulationCurve.html</loc>
   </url>
   <url>
-    <loc>/reference/PopulationChangeParameters-class.html</loc>
-  </url>
-  <url>
     <loc>/reference/PopulationPyramid-class.html</loc>
   </url>
   <url>
@@ -175,16 +175,13 @@
     <loc>/reference/SaveSuiteResults.html</loc>
   </url>
   <url>
-    <loc>/reference/setFromVector-PopulationChangeParameters-numeric-method.html</loc>
-  </url>
-  <url>
     <loc>/reference/setFromVector-PopulationPyramid-numeric-method.html</loc>
   </url>
   <url>
     <loc>/reference/SetGlobalStartEndYears.html</loc>
   </url>
   <url>
-    <loc>/reference/setValue-PopulationChangeParameters-character-numeric-method.html</loc>
+    <loc>/reference/SetRoundingLaw.html</loc>
   </url>
   <url>
     <loc>/reference/TaskParameters-class.html</loc>
@@ -206,8 +203,5 @@
   </url>
   <url>
     <loc>/reference/varyTaskValues.html</loc>
-  </url>
-  <url>
-    <loc>/reference/zero-PopulationChangeParameters-method.html</loc>
   </url>
 </urlset>

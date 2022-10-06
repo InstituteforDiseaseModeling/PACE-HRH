@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
                         <h4 data-toc-skip class="author">Charles
 Eliot</h4>
             
-            <h4 data-toc-skip class="date">2022-09-24</h4>
+            <h4 data-toc-skip class="date">2022-10-06</h4>
       
       
       <div class="hidden name"><code>results-struct.Rmd</code></div>
@@ -218,9 +218,9 @@ and years along the columns.</p>
 <span><span class="co">##     2020     2021     2022     2023     2024     2025     2026     2027 </span></span>
 <span><span class="co">## 6155.230 4853.162 5010.989 5168.815 5168.815 5129.359 5010.989 5405.555 </span></span>
 <span><span class="co">##     2028     2029     2030     2031     2032     2033     2034     2035 </span></span>
-<span><span class="co">## 5602.838 6155.230 6628.710 6194.687 6825.993 6628.710 7023.276 6983.819 </span></span>
+<span><span class="co">## 5602.838 6115.774 6628.710 6234.143 6865.449 6628.710 7023.276 7023.276 </span></span>
 <span><span class="co">##     2036     2037     2038     2039     2040     2041 </span></span>
-<span><span class="co">## 6983.819 7260.015 7615.125 7733.494 7417.842 7575.668</span></span></code></pre></div>
+<span><span class="co">## 7023.276 7260.015 7615.125 7733.494 7338.928 7575.668</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="annualcounts">AnnualCounts<a class="anchor" aria-label="anchor" href="#annualcounts"></a>
@@ -230,9 +230,9 @@ healthcare task is performed.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualCounts</span><span class="op">[</span><span class="st">"FH.MN.ANC.1"</span>,<span class="op">]</span></span>
 <span><span class="co">## 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 </span></span>
-<span><span class="co">##  624  492  508  524  524  520  508  548  568  624  672  628  692  672  712  708 </span></span>
+<span><span class="co">##  624  492  508  524  524  520  508  548  568  620  672  632  696  672  712  712 </span></span>
 <span><span class="co">## 2036 2037 2038 2039 2040 2041 </span></span>
-<span><span class="co">##  708  736  772  784  752  768</span></span></code></pre></div>
+<span><span class="co">##  712  736  772  784  744  768</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The pacehrh:::EXP environment holds working variables from the most recent trial.</span></span>
 <span><span class="co"># It's accessed here to illustrate how task time calculation are done.</span></span>
@@ -311,15 +311,15 @@ service counts.</p>
 <span><span class="co">##  [37] 434 469 422 447 409 443 432 457 409 422 398 430 434 469 422 447 409 443</span></span>
 <span><span class="co">##  [55] 432 456 408 420 396 427 431 465 419 443 406 438 427 449 402 412 388 417</span></span>
 <span><span class="co">##  [73] 421 454 410 432 396 436 427 460 413 433 408 450 454 490 441 466 427 466</span></span>
-<span><span class="co">##  [91] 455 485 435 452 427 465 470 507 457 483 443 490 479 519 467 492 463 513</span></span>
-<span><span class="co">## [109] 517 558 503 531 486 535 524 563 507 531 501 551 557 600 541 572 524 560</span></span>
-<span><span class="co">## [127] 545 568 507 516 486 517 521 562 506 535 489 542 530 574 517 545 514 568</span></span>
-<span><span class="co">## [145] 574 618 558 588 540 579 567 593 533 544 515 551 557 600 541 572 524 574</span></span>
-<span><span class="co">## [163] 562 602 542 565 534 584 590 636 573 605 554 600 585 618 554 570 539 581</span></span>
-<span><span class="co">## [181] 588 632 571 602 552 598 583 617 552 570 538 581 588 632 571 602 552 603</span></span>
-<span><span class="co">## [199] 588 628 563 587 553 604 610 657 594 626 575 628 615 656 591 614 580 633</span></span>
-<span><span class="co">## [217] 640 689 622 656 601 654 638 678 607 629 592 644 649 700 631 667 611 656</span></span>
-<span><span class="co">## [235] 640 669 599 612 577 617 623 671 605 639 586 637 623 661 594 615 581 631</span></span></code></pre></div>
+<span><span class="co">##  [91] 455 485 435 452 427 465 470 507 457 483 443 489 479 517 466 489 462 509</span></span>
+<span><span class="co">## [109] 515 554 500 527 484 532 522 561 506 530 501 551 557 600 541 572 524 560</span></span>
+<span><span class="co">## [127] 546 569 508 517 488 518 524 564 509 537 493 545 533 578 519 548 516 571</span></span>
+<span><span class="co">## [145] 576 621 560 592 542 583 568 596 533 546 515 551 557 600 541 572 524 574</span></span>
+<span><span class="co">## [163] 562 602 542 565 534 584 590 636 573 605 554 600 586 619 556 572 541 584</span></span>
+<span><span class="co">## [181] 590 636 573 605 554 600 586 619 556 572 541 584 590 636 573 605 554 605</span></span>
+<span><span class="co">## [199] 590 629 565 587 554 604 610 657 594 626 575 628 615 656 591 614 580 633</span></span>
+<span><span class="co">## [217] 640 689 622 656 601 654 638 678 607 629 592 644 649 700 631 667 611 654</span></span>
+<span><span class="co">## [235] 638 665 595 606 572 609 616 663 599 632 580 632 618 658 591 614 579 631</span></span></code></pre></div>
 <p>Because the offsets for FH.MN.ANC.1 are negative, the time-series
 stops being reliable at the far end because the offset monthly values
 would have to be generated from un-calculated annual values beyond the
@@ -372,12 +372,12 @@ which doesn’t have the rates).</p>
 <span><span class="co">## 5     4     70   69                     0                   0</span></span>
 <span><span class="co">## 6     5     68   68                     0                   0</span></span>
 <span><span class="co">##   rates.femaleMortality rates.maleMortality</span></span>
-<span><span class="co">## 1           0.072996072        0.0639267893</span></span>
-<span><span class="co">## 2           0.002464057        0.0024071642</span></span>
-<span><span class="co">## 3           0.002464057        0.0024071642</span></span>
-<span><span class="co">## 4           0.002464057        0.0024071642</span></span>
-<span><span class="co">## 5           0.002464057        0.0024071642</span></span>
-<span><span class="co">## 6           0.001117554        0.0009908003</span></span>
+<span><span class="co">## 1           0.073283329         0.063786618</span></span>
+<span><span class="co">## 2           0.002465835         0.002476079</span></span>
+<span><span class="co">## 3           0.002465835         0.002476079</span></span>
+<span><span class="co">## 4           0.002465835         0.002476079</span></span>
+<span><span class="co">## 5           0.002465835         0.002476079</span></span>
+<span><span class="co">## 6           0.001123580         0.000990440</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## 2022 Population</span></span>
 <span><span class="co">##   Range Female Male rates.femaleFertility rates.maleFertility</span></span>
@@ -388,12 +388,12 @@ which doesn’t have the rates).</p>
 <span><span class="co">## 5     4     72   72                     0                   0</span></span>
 <span><span class="co">## 6     5     70   69                     0                   0</span></span>
 <span><span class="co">##   rates.femaleMortality rates.maleMortality</span></span>
-<span><span class="co">## 1          0.0696007714         0.080173280</span></span>
-<span><span class="co">## 2          0.0016948551         0.002212490</span></span>
-<span><span class="co">## 3          0.0016948551         0.002212490</span></span>
-<span><span class="co">## 4          0.0016948551         0.002212490</span></span>
-<span><span class="co">## 5          0.0016948551         0.002212490</span></span>
-<span><span class="co">## 6          0.0007096845         0.001138521</span></span></code></pre></div>
+<span><span class="co">## 1          0.0698762268         0.080943502</span></span>
+<span><span class="co">## 2          0.0016243238         0.002318225</span></span>
+<span><span class="co">## 3          0.0016243238         0.002318225</span></span>
+<span><span class="co">## 4          0.0016243238         0.002318225</span></span>
+<span><span class="co">## 5          0.0016243238         0.002318225</span></span>
+<span><span class="co">## 6          0.0006954249         0.001148053</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="calculation-details">Calculation details<a class="anchor" aria-label="anchor" href="#calculation-details"></a>
 </h3>
