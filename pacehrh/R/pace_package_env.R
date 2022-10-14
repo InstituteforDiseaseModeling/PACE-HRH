@@ -55,6 +55,6 @@ GPE$roundingLaw <- .defaultRoundingLaw
 
 GPE$seasonalityCurves <- NULL
 GPE$seasonalityOffsets <- NULL
-GPE$populationLabels <- NULL
+BVE$populationLabels <- NULL
 BVE$initialPopulation <- NULL
 

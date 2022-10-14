@@ -1,6 +1,7 @@
 #' Generate Matrices of Applicable Populations
 #'
 #' @param results Results structure as returned by \code{RunExperiments()}
+#' @param labels Population labels structure
 #'
 #' @return List of applicable population matrices (labels x years)
 #' @export
@@ -13,7 +14,7 @@
 #`
 #`  pm <- pacehrh::ComputeApplicablePopulationMatrices(results)
 #' }
-ComputeApplicablePopulationMatrices <- function(results, labels = GPE$populationLabels$Labels){
+ComputeApplicablePopulationMatrices <- function(results, labels = BVE$populationLabels$Labels){
   if (is.null(results)){
     return(NULL)
   }
@@ -33,6 +34,7 @@ ComputeApplicablePopulationMatrices <- function(results, labels = GPE$population
 #' Generate Matrix of Applicable Populations
 #'
 #' @param result One entry from the results structure as returned by \code{RunExperiments()}
+#' @param labels Population labels structure
 #'
 #' @return An applicable population matrix (labels x years)
 #' @export
@@ -45,7 +47,7 @@ ComputeApplicablePopulationMatrices <- function(results, labels = GPE$population
 #`
 #`  m <- pacehrh::ComputeApplicablePopulationMatriX(results)
 #' }
-ComputeApplicablePopulationMatrix <- function(result, labels = GPE$populationLabels$Labels){
+ComputeApplicablePopulationMatrix <- function(result, labels = BVE$populationLabels$Labels){
   if (is.null(result)){
     return(NULL)
   }

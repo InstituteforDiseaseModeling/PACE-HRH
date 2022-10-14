@@ -132,12 +132,12 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
 
 .computeApplicablePopulation <- function(pop, label) {
   # Fail in a big mess if the population labels lookup hasn't been loaded.
-  if (is.null(GPE$populationLabels)){
+  if (is.null(BVE$populationLabels)){
     warning(paste0("Population labels not loaded! Returning 0 for applicable population."))
     return(0)
   }
 
-  l <- GPE$populationLabels
+  l <- BVE$populationLabels
   i <- which(l$Labels == label)
 
   if (length(i) == 0){

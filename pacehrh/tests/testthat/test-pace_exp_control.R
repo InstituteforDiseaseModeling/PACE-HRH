@@ -37,7 +37,7 @@ test_that("Experiment control: basic read from Excel", {
   local_vars("globalConfigLoaded", envir = e)
 
   local_vars("initialPopulation", envir = bve)
-  local_vars("populationLabels", envir = e)
+  local_vars("populationLabels", envir = bve)
   local_vars("scenarios", envir = e)
   local_vars("seasonalityCurves", envir = e)
   local_vars("seasonalityOffsets", envir = e)

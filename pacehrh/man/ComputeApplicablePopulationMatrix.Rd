@@ -4,10 +4,12 @@
 \alias{ComputeApplicablePopulationMatrix}
 \title{Generate Matrix of Applicable Populations}
 \usage{
-ComputeApplicablePopulationMatrix(result, labels = GPE$populationLabels$Labels)
+ComputeApplicablePopulationMatrix(result, labels = BVE$populationLabels$Labels)
 }
 \arguments{
 \item{result}{One entry from the results structure as returned by \code{RunExperiments()}}
+
+\item{labels}{Population labels structure}
 }
 \value{
 An applicable population matrix (labels x years)

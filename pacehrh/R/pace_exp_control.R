@@ -77,7 +77,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   # Note that this test will fail if the Lookup table wasn't loaded during
   # initialization.
 
-  s <- setdiff(BVE$taskData$RelevantPop, GPE$populationLabels$Labels)
+  s <- setdiff(BVE$taskData$RelevantPop, BVE$populationLabels$Labels)
   if (!.okLabels(s)){
     warning(paste0("Invalid population labels: ", paste0(s, collapse = ", ")))
     return(NULL)

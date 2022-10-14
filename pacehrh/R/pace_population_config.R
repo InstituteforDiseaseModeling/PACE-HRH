@@ -54,7 +54,7 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
   }
 
   # TODO: include more explicit try-catch error handling. As is, when the read
-  # fails, GPE$populationLabels stays NULL, which eventually triggers a fatal
+  # fails, BVE$populationLabels stays NULL, which eventually triggers a fatal
   # error when RunExperiments() is called.
 
   # Remove blank columns
@@ -89,10 +89,10 @@ InitializePopulation <- function(){
   .checkAndLoadGlobalConfig()
 
   BVE$initialPopulation <- NULL
-  GPE$populationLabels <- NULL
+  BVE$populationLabels <- NULL
 
   BVE$initialPopulation <- loadInitialPopulation()
-  GPE$populationLabels <- loadPopulationLabels()
+  BVE$populationLabels <- loadPopulationLabels()
 
   return(invisible(NULL))
 }

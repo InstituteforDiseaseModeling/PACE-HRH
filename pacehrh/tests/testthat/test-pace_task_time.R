@@ -4,8 +4,9 @@ withr::local_dir("..")
 
 test_that("Populations: read sub-ranges", {
   e <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
 
-  local_vars("populationLabels", envir = e)
+  local_vars("populationLabels", envir = bve)
 
   testPop <- data.frame(Range = pacehrh:::GPE$ages,
                         Female = seq(1, length(pacehrh:::GPE$ages), 1),
@@ -23,9 +24,9 @@ test_that("Populations: read sub-ranges", {
     End = c(50, 100, 49, 49, 0, NA)
   )
 
-  e$populationLabels <- dt
+  bve$populationLabels <- dt
 
-  testthat::expect_false(is.null(e$populationLabels))
+  testthat::expect_false(is.null(bve$populationLabels))
   testthat::expect_warning(pacehrh:::.computeApplicablePopulation(testPop, "notalabel"))
   testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "label_1"), sum(1:51) + sum(101:151))
   testthat::expect_equal(pacehrh:::.computeApplicablePopulation(testPop, "label_2"), sum(1:101) + sum(101:201))
@@ -42,7 +43,7 @@ test_that("Populations: read sub-ranges", {
     End = c(50, 100)
   )
 
-  e$populationLabels <- dt
+  bve$populationLabels <- dt
   testthat::expect_warning(n <- pacehrh:::.computeApplicablePopulation(testPop, "dup"))
   testthat::expect_equal(n, sum(1:51) + sum(101:151))
 })
