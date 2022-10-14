@@ -48,7 +48,6 @@ GPE$ages <- seq(from = GPE$ageMin,
 GPE$ratioFemalesAtBirth <- 0.5
 GPE$ratioMalesAtBirth <- 1.0 - GPE$ratioFemalesAtBirth
 
-GPE$initialPopulation <- NULL
 GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
@@ -57,4 +56,5 @@ GPE$roundingLaw <- .defaultRoundingLaw
 GPE$seasonalityCurves <- NULL
 GPE$seasonalityOffsets <- NULL
 GPE$populationLabels <- NULL
+BVE$initialPopulation <- NULL
 

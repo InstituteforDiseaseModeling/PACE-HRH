@@ -59,10 +59,6 @@ SaveBaseSettings <- function(scenarioName = ""){
     GPE$seasonalityCurves <- loadSeasonalityCurves()
   }
 
-  if (exists("initialPopulation", where = GPE)){
-    BVE$initialPopulation <- GPE$initialPopulation
-  }
-
   # Load Task parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
@@ -119,7 +115,6 @@ SaveBaseSettings <- function(scenarioName = ""){
 
 .zeroExpBaseVariables <- function(){
   BVE$scenario <- NULL
-  BVE$initialPopulation <- NULL
   BVE$taskParameters <- NULL
   BVE$taskData <- NULL
   BVE$taskDataDims <- NULL

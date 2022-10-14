@@ -88,10 +88,10 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
 InitializePopulation <- function(){
   .checkAndLoadGlobalConfig()
 
-  GPE$initialPopulation <- NULL
+  BVE$initialPopulation <- NULL
   GPE$populationLabels <- NULL
 
-  GPE$initialPopulation <- loadInitialPopulation()
+  BVE$initialPopulation <- loadInitialPopulation()
   GPE$populationLabels <- loadPopulationLabels()
 
   return(invisible(NULL))
