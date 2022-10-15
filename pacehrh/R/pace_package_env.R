@@ -54,7 +54,8 @@ GPE$rngSeed <- 12345
 GPE$roundingLaw <- .defaultRoundingLaw
 
 BVE$seasonalityCurves <- NULL
-GPE$seasonalityOffsets <- NULL
+BVE$seasonalityOffsets <- NULL
 BVE$populationLabels <- NULL
 BVE$initialPopulation <- NULL
+BVE$stochasticParams <- NULL
 

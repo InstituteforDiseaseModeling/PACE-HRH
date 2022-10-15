@@ -40,7 +40,7 @@ test_that("Experiment control: basic read from Excel", {
   local_vars("populationLabels", envir = bve)
   local_vars("scenarios", envir = e)
   local_vars("seasonalityCurves", envir = bve)
-  local_vars("seasonalityOffsets", envir = e)
+  local_vars("seasonalityOffsets", envir = bve)
 
   pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
