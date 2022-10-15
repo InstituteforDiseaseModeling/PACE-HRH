@@ -115,7 +115,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 .getSeasonalityCurve <- function(curveType) {
   curve = NULL
 
-  curve <- GPE$seasonalityCurves[[curveType]]
+  curve <- BVE$seasonalityCurves[[curveType]]
 
   if (is.null(curve)) {
     traceMessage(paste0("Unknown seasonality curve: ", curveType))

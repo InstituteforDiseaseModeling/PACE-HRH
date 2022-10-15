@@ -54,9 +54,9 @@ SaveBaseSettings <- function(scenarioName = ""){
   seasonalitySheet <- BVE$scenario$sheet_SeasonalityCurves
 
   if (!is.blank(seasonalitySheet)){
-    GPE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
+    BVE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
   } else {
-    GPE$seasonalityCurves <- loadSeasonalityCurves()
+    BVE$seasonalityCurves <- loadSeasonalityCurves()
   }
 
   # Load Task parameter data from the appropriate Excel sheet, as specified
