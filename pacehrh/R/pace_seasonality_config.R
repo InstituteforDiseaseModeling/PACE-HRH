@@ -116,7 +116,7 @@ InitializeSeasonality <- function(...){
 
   # TODO: Insert error handling
 
-  GPE$seasonalityCurves <- seasonalityCurvesData
-  GPE$seasonalityOffsets <- seasonalityOffsetsData
-  invisible(NULL)
+  BVE$seasonalityCurves <- seasonalityCurvesData
+  BVE$seasonalityOffsets <- seasonalityOffsetsData
+  return(invisible(NULL))
 }

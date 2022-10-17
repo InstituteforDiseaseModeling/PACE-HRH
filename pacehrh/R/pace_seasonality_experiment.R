@@ -19,8 +19,8 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   # Look for seasonality-affected tasks in the task list for this scenario
 
   taskNames <- BVE$taskData$Indicator
-  seasonalityTaskNames <- GPE$seasonalityOffsets$Task
-  seasonalityTaskCurves <- GPE$seasonalityOffsets$Curve
+  seasonalityTaskNames <- BVE$seasonalityOffsets$Task
+  seasonalityTaskCurves <- BVE$seasonalityOffsets$Curve
 
   # We compute extra "shoulder" years to handle inaccuracies at the far end of
   # the seasonality time service resulting from negative seasonality offsets. We
@@ -54,7 +54,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
       A <- matrix(0, nrow = nRows, ncol = nCols)
 
       offsets <-
-        GPE$seasonalityOffsets[seasonalityTaskIndex,
+        BVE$seasonalityOffsets[seasonalityTaskIndex,
                                c("Offset1", "Offset2", "Offset3",
                                  "Offset4", "Offset5", "Offset6")]
       offsets <- offsets[!is.na(offsets)]
@@ -115,7 +115,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 .getSeasonalityCurve <- function(curveType) {
   curve = NULL
 
-  curve <- GPE$seasonalityCurves[[curveType]]
+  curve <- BVE$seasonalityCurves[[curveType]]
 
   if (is.null(curve)) {
     traceMessage(paste0("Unknown seasonality curve: ", curveType))

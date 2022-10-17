@@ -46,6 +46,6 @@ InitializeStochasticParameters <- function(...){
 
   # TODO: Insert error handling
 
-  GPE$stochasticParams <- stochData
-  invisible(NULL)
+  BVE$stochasticParams <- stochData
+  return(invisible(NULL))
 }

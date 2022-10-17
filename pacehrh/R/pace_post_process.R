@@ -41,7 +41,7 @@
 
   # Create stochastic hours per week value. Should only be used for small population estimates.
 
-  sdvalue <- GPE$stochasticParams$p[GPE$stochasticParams$Value == "Hours per week"]
+  sdvalue <- BVE$stochasticParams$p[BVE$stochasticParams$Value == "Hours per week"]
 
   StochasticHrs <-
     dt[, .(HrsPerWeek = mean(HrsPerWeek)), by = .(Scenario_ID, Trial_num, Year)]
@@ -218,11 +218,11 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 
   # Get stochastic parameters. If none has already been loaded, call the
   # appropriate initialization function.
-  if (is.null(GPE$stochasticParams)){
+  if (is.null(BVE$stochasticParams)){
     InitializeStochasticParameters()
   }
 
-  if (is.null(GPE$stochasticParams)){
+  if (is.null(BVE$stochasticParams)){
     traceMessage(paste0("Failed to load stochastic parameters from ", GPE$inputExcelFile))
     return(FALSE)
   }
@@ -494,7 +494,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
                        CI95 = quantile(Service_time, probs = c(.95))
                      ),
                      keyby = .(Scenario_ID, Year, Task_ID, ServiceCat, ClinicalOrNon)]
-  
+
   traceMessage("Making Total tables")
   ByRun_Total <-
     DR2[,

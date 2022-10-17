@@ -4,7 +4,7 @@
 #'
 #' @return Adjusted task parameters matrix
 varyTaskValues <- function(tasks){
-  pars <- GPE$stochasticParams
+  pars <- BVE$stochasticParams
 
   # Tweak MinsPerContact value
   m <- tasks@values[,"MinsPerContact"]

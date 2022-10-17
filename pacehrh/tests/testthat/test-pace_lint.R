@@ -6,7 +6,7 @@ withr::local_dir("..")
 test_that("Lint: basic", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./config/model_inputs.xlsx"
 
   outFile = "lintout_01_clean.txt"
   errCode <- pacehrh::CheckInputExcelFileFormat(outputFile = outFile)
