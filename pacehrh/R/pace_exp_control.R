@@ -54,13 +54,9 @@ SaveBaseSettings <- function(scenarioName = ""){
   seasonalitySheet <- BVE$scenario$sheet_SeasonalityCurves
 
   if (!is.blank(seasonalitySheet)){
-    GPE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
+    BVE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
   } else {
-    GPE$seasonalityCurves <- loadSeasonalityCurves()
-  }
-
-  if (exists("initialPopulation", where = GPE)){
-    BVE$initialPopulation <- GPE$initialPopulation
+    BVE$seasonalityCurves <- loadSeasonalityCurves()
   }
 
   # Load Task parameter data from the appropriate Excel sheet, as specified
@@ -81,7 +77,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   # Note that this test will fail if the Lookup table wasn't loaded during
   # initialization.
 
-  s <- setdiff(BVE$taskData$RelevantPop, GPE$populationLabels$Labels)
+  s <- setdiff(BVE$taskData$RelevantPop, BVE$populationLabels$Labels)
   if (!.okLabels(s)){
     warning(paste0("Invalid population labels: ", paste0(s, collapse = ", ")))
     return(NULL)
@@ -119,7 +115,6 @@ SaveBaseSettings <- function(scenarioName = ""){
 
 .zeroExpBaseVariables <- function(){
   BVE$scenario <- NULL
-  BVE$initialPopulation <- NULL
   BVE$taskParameters <- NULL
   BVE$taskData <- NULL
   BVE$taskDataDims <- NULL

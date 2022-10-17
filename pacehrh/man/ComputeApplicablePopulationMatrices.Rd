@@ -6,11 +6,13 @@
 \usage{
 ComputeApplicablePopulationMatrices(
   results,
-  labels = GPE$populationLabels$Labels
+  labels = BVE$populationLabels$Labels
 )
 }
 \arguments{
 \item{results}{Results structure as returned by \code{RunExperiments()}}
+
+\item{labels}{Population labels structure}
 }
 \value{
 List of applicable population matrices (labels x years)

@@ -27,14 +27,15 @@ test_that("Population configuration: confirm cleanup 1", {
 
 test_that("Population configuration: InitializePopulation()", {
   e <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
 
   testthat::expect_equal(e$inputExcelFile, "./config/model_inputs.xlsx")
   testthat::expect_true(file.exists("globalconfig.json"))
 
   local_vars("inputExcelFile", envir = e)
-  local_vars("initialPopulation", envir = e)
+  local_vars("initialPopulation", envir = bve)
   local_vars("globalConfigLoaded", envir = e)
-  local_vars("populationLabels", envir = e)
+  local_vars("populationLabels", envir = bve)
 
   testthat::expect_false(e$globalConfigLoaded)
   testthat::expect_null(e$initialPopulation)
@@ -42,22 +43,23 @@ test_that("Population configuration: InitializePopulation()", {
   testthat::expect_invisible(pacehrh::InitializePopulation())
 
   testthat::expect_true(e$globalConfigLoaded)
-  testthat::expect_true(!is.null(e$initialPopulation))
-  testthat::expect_true(!is.null(e$populationLabels))
+  testthat::expect_true(!is.null(bve$initialPopulation))
+  testthat::expect_true(!is.null(bve$populationLabels))
 
   testthat::expect_true(.validInitPopulation(e$initialPopulation))
 })
 
 test_that("Population configuration: check labels", {
   e <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
 
   testthat::expect_equal(e$inputExcelFile, "./config/model_inputs.xlsx")
   testthat::expect_true(file.exists("globalconfig.json"))
 
   local_vars("inputExcelFile", envir = e)
-  local_vars("initialPopulation", envir = e)
+  local_vars("initialPopulation", envir = bve)
   local_vars("globalConfigLoaded", envir = e)
-  local_vars("populationLabels", envir = e)
+  local_vars("populationLabels", envir = bve)
 
   testthat::expect_false(e$globalConfigLoaded)
   testthat::expect_null(e$initialPopulation)
@@ -65,11 +67,11 @@ test_that("Population configuration: check labels", {
   testthat::expect_invisible(pacehrh::InitializePopulation())
 
   testthat::expect_true(e$globalConfigLoaded)
-  testthat::expect_true(!is.null(e$initialPopulation))
-  testthat::expect_true(!is.null(e$populationLabels))
+  testthat::expect_true(!is.null(bve$initialPopulation))
+  testthat::expect_true(!is.null(bve$populationLabels))
 
-  if (!is.null(e$populationLabels)){
-    df <- e$populationLabels
+  if (!is.null(bve$populationLabels)){
+    df <- bve$populationLabels
     cols <- names(df)
 
     testthat::expect_equal(length(cols), 5)

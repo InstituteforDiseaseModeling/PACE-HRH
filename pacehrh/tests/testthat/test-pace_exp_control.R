@@ -32,14 +32,15 @@ test_that("Experiment control: basic read from Excel", {
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
   e <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
 
-  local_vars("initialPopulation", envir = e)
-  local_vars("populationLabels", envir = e)
+  local_vars("initialPopulation", envir = bve)
+  local_vars("populationLabels", envir = bve)
   local_vars("scenarios", envir = e)
-  local_vars("seasonalityCurves", envir = e)
-  local_vars("seasonalityOffsets", envir = e)
+  local_vars("seasonalityCurves", envir = bve)
+  local_vars("seasonalityOffsets", envir = bve)
 
   pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
   e$scenarios <- NULL
@@ -56,10 +57,4 @@ test_that("Experiment control: basic read from Excel", {
 
   testthat::expect_true(!is.null(result))
   testthat::expect_true(result$UniqueID == scenarioName)
-
-#  print("TBD TBD TBD")
-
-  # print(pacehrh:::BVE$taskData)
-  # print(pacehrh:::BVE$taskParameters)
-  # print(pacehrh:::GPE$seasonalityCurves)
 })
