@@ -11,6 +11,38 @@ library(tidyverse)
 #############################################################
 rm(list = ls())
 
+get_mortality <- function(results, categoryName, agebands){
+  # Get mortality matrix to data frame
+  # categoryName can be maleMortality, femaleMortality etc
+  # ageband is a dataframe with Label column that matched results' mortality labels and AgeBand column that is custom defined
+  
+  # Access the rateMatrix
+  all_trials_matrix <- 
+    lapply(
+      lapply(
+        lapply(
+          lapply(results, "[[", "PopulationRates"),
+          "[[", categoryName),
+        "[[", "ratesMatrix"),
+      data.frame)
+  
+  # Pivot the rateMatrix year columns to a single column named "Year"
+  all_trials_matrix <- lapply(all_trials_matrix, rownames_to_column, "Label")
+  all_trials_matrix <- lapply(all_trials_matrix, 
+                              function(x){
+                                pivot_longer(x, colnames(x)[grepl("X", colnames(x))], 
+                                             names_prefix = "X", 
+                                             names_to = "Year", 
+                                             values_to = "MortalityRate")
+                              }
+  )
+  # Combine all trials and join to the custom AgeBand
+  all_trials_matrix <- do.call(data.table::rbindlist, list(all_trials_matrix, idcol="Trial"))
+  mortalityrates <- all_trials_matrix %>% 
+    inner_join(agebands)
+  return(mortalityrates)
+}
+
 rmarkdown::render(input = "validation_report.Rmd",
                   output_format = "html_document",
                   output_dir = "log",
@@ -39,19 +71,18 @@ for (i in 1:nrow(scenarios)){
   results <-   pacehrh::RunExperiments(scenarioName = scenario, trials = numtrials, debug = FALSE)
   destination = paste("results/mortality",scenario,date,".pdf",sep="")
   pdf(file=destination)
-  remove(resultspop)
-  for (i in 1:numtrials) {
-    temp <- pacehrh:::gatherPopulation(results[[i]]$Population) %>%
-      mutate(Run=i)
-    if (!exists('resultspop')) {
-      resultspop <- temp
-    } else{
-      resultspop <- rbind(resultspop, temp)
-    }
-  }
+  # remove(resultspop)
+  
+  df1 <- SaveSuiteDemographics(results)
+  resultspop <- pivot_longer(df1, c("Female", "Male"), names_to ="Gender", values_to = "Population")
+  resultspop %>% 
+    dplyr::rename("Run" ="Trial") %>%
+    dplyr::select(-AgeBucket)
+  resultspop$Gender <- substr(resultspop$Gender,1,1)
+ 
   popsummary <- resultspop %>%
-    group_by(Year, Gender, Age) %>%
-    summarize(Population=mean(Population))
+    dplyr::group_by(Year, Gender, Age) %>%
+    dplyr::summarize(Population=mean(Population))
   pop2020 <- popsummary %>%
     subset(Year==2020)
   pop2020M <- sum(pop2020$Population[pop2020$Gender=="M"])
@@ -70,22 +101,11 @@ for (i in 1:nrow(scenarios)){
   g1 <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
   print(g1)
   
-  years <- data.frame(Year=seq(2020, 2041, 1))
-  agebands <- data.frame(AgeBand=c("Infants", "Y1_4", "Y5_9", "Y10_14", "Y15_19", "Y20-34", "Y35-49", "Y50-59", "Y60_74", "Y75+"))
-  mortalityratesDF <- full_join(years, agebands, by=character())
+  agebands <- data.frame(Label=results[[1]]$PopulationRates$maleMortality$bandedRates$labels, 
+                         AgeBand=c("Infants", "Y1_4", "Y5_9", "Y10_14", "Y15_19", "Y20-34", "Y35-49", "Y50-59", "Y60_74", "Y75+"))
+  # remove(mortalityrates)
   
-  remove(mortalityrates)
-  for (i in 1:numtrials) {
-    temp <- ldply(results[[i]]$PopulationRates$maleMortality$ratesMatrix, data.frame) %>%
-      rename(MortalityRate=X..i..)%>%
-      mutate(Trial=i) %>%
-      cbind(mortalityratesDF)
-    if (!exists('mortalityrates')) {
-      mortalityrates <- temp
-    } else{
-      mortalityrates <- rbind(mortalityrates, temp)
-    }
-  }
+  mortalityrates <- get_mortality(results, "maleMortality", agebands)
   
   g2 <- ggplot(mortalityrates, aes(x = Year, y = MortalityRate, color = AgeBand, group = Year)) +
     geom_boxplot() +
@@ -95,18 +115,10 @@ for (i in 1:nrow(scenarios)){
   print(g2)
   
   remove(mortalityrates)
-  for (i in 1:numtrials) {
-    temp <- ldply(results[[i]]$PopulationRates$femaleMortality$ratesMatrix, data.frame) %>%
-      rename(MortalityRate=X..i..)%>%
-      mutate(Trial=i) %>%
-      cbind(mortalityratesDF)
-    if (!exists('mortalityrates')) {
-      mortalityrates <- temp
-    } else{
-      mortalityrates <- rbind(mortalityrates, temp)
-    }
-  }
-  
+  agebands <- data.frame(Label=results[[1]]$PopulationRates$femaleMortality$bandedRates$labels, 
+                         AgeBand=c("Infants", "Y1_4", "Y5_9", "Y10_14", "Y15_19", "Y20-34", "Y35-49", "Y50-59", "Y60_74", "Y75+"))
+  mortalityrates <- get_mortality(results, "femaleMortality", agebands)
+ 
   g3 <- ggplot(mortalityrates, aes(x = Year, y = MortalityRate, color = AgeBand, group = Year)) +
     geom_boxplot() +
     theme(legend.position = "none") +
