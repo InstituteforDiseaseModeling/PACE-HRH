@@ -355,6 +355,32 @@ PlotPyramid <- function(df, year){
   return(g)
 }
 
+#' Plot A Family Of Population Pyramids
+#'
+#' @param df Long, skinny dataframe of population data
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 coord_flip
+#' @importFrom ggplot2 annotation_custom
+#' @importFrom scales label_comma
+#' @importFrom grid grobTree
+#' @importFrom grid textGrob
+#' @importFrom grid gpar
+#'
+#' @return Graphics grob
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df <- pacehrh:::gatherPopulation(results[[1]]$Population)
+#' g <- pacehrh::PlotPyramids(df)
+#' print(g)
+#' }
 PlotPyramids <- function(df) {
   dff <-
     df %>% group_by(Year, Gender) %>% summarize(Total = sum(Population))
@@ -382,7 +408,7 @@ PlotPyramids <- function(df) {
         xend = Age,
         yend = Percent
       ),
-      color = color_female,
+      color = .colorF,
       size = 1
     )
   g <-
@@ -394,11 +420,11 @@ PlotPyramids <- function(df) {
         xend = Age,
         yend = (-1 * Percent)
       ),
-      color = color_male,
+      color = .colorM,
       size = 1
     )
   g <- g + scale_y_continuous(limits = limits, breaks = breaks, labels = labels)
-  g <- g + xlab("Age") + ylab("Population")
+  g <- g + xlab("Age") + ylab("Percent of Population")
   g <- g + coord_flip()
   print(g)
 }
