@@ -43,9 +43,16 @@ loadInitialPopulation <- function(sheetName = "TotalPop"){
   c("Labels", "Male", "Female", "Start", "End")
 
 loadPopulationLabels <- function(sheetName = "Lookup"){
-  suppressMessages(
-    df <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-  )
+  df <- tryCatch({
+      readxl::read_xlsx(GPE$inputExcelFile,
+                        sheet = sheetName,
+                        .name_repair = "minimal")
+  },
+  error = function(e){
+    return(NULL)
+  },
+  finally = {
+  })
 
   if (is.null(df)){
     warning("Could not read population labels lookup sheet")
@@ -53,23 +60,23 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
   }
 
   if (!all(.popLabelRawColumns %in% colnames(df))){
-    warning(paste0("Invalid columns in population labels lookup sheet"))
-    warning(paste0("Expected: ", paste0(.popLabelRawColumns, collapse = ", ")))
+    str <- paste0("Invalid columns in population labels lookup sheet\n",
+                  "Expected: ", paste0(.popLabelRawColumns, collapse = ", "))
+    warning(str)
     return(NULL)
   }
 
-  # When the read
-  # fails, BVE$populationLabels stays NULL, which eventually triggers a fatal
-  # error when RunExperiments() is called.
+  # When the read fails, BVE$populationLabels stays NULL, which eventually
+  # triggers a fatal error when RunExperiments() is called.
+
+  # Filter the columns, and rename
+  df <- df[,.popLabelRawColumns]
+  names(df) <- .popLabelColumns
 
   # Remove blank columns
   df <- df[,apply(df,2,function(x){any(!is.na(x))})]
   # Remove blank rows
   df <- df[apply(df,1,function(x){any(!is.na(x))}),]
-
-  # Filter the columns, and rename
-  df <- df[,.popLabelRawColumns]
-  names(df) <- .popLabelColumns
 
   dt <- data.table::setDT(df)
   data.table::setkey(dt, Labels)
@@ -98,7 +105,42 @@ InitializePopulation <- function(){
 
   BVE$initialPopulation <- loadInitialPopulation()
   BVE$populationLabels <- loadPopulationLabels()
+  BVE$populationRangesTable <- .computePopulationRanges(BVE$populationLabels)
 
   return(invisible(NULL))
 }
 
+.computePopulationRanges <- function(lt){
+  if (is.null(lt)){
+    return(NULL)
+  }
+
+  l <- lapply(1:NROW(lt), function(i){
+    v <- numeric(length(GPE$ages))
+
+    if ((lt$Male[i] == FALSE) && (lt$Female[i] == FALSE)){
+      return(v)
+    }
+
+    start <- lt$Start[i]
+    if (is.na(start)){
+      start <- GPE$ageMin
+    }
+
+    end <- lt$End[i]
+    if (is.na(end)){
+      end <- GPE$ageMax
+    }
+
+    v[(start+1):(end+1)] <- 1
+
+    return(v)
+  })
+
+  m <- do.call(rbind, l)
+
+  rownames(m) <- lt[,Labels]
+  colnames(m) <- GPE$ages
+
+  return(m)
+}
