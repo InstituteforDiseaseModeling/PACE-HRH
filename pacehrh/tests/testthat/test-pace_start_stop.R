@@ -49,5 +49,45 @@ test_that("Full suite: basic", {
                "Health_benefit")
 
   testthat::expect_true(setequal(names(csvResults), csvCols))
+
+  # ---------------------------------
+  # Strip "SeasonalityResults" from the results structure to provoke short
+  # format report
+
+  results2 <- lapply(results, function(r){
+    r$SeasonalityResults <- NULL
+    return(r)
+  })
+
+  pacehrh::SaveSuiteResults(results2, "results2.csv", scenario, "Run-1")
+  csvResults <- data.table::fread(file = "results2.csv")
+
+  # Test that the saved CSV has the correct number of rows and columns
+  nTasks <- NROW(results[[1]]$AnnualTimes)
+  testthat::expect_equal(nrow(csvResults), (nTasks * (length(startYear:endYear) + shoulderYears) * nTrials))
+  testthat::expect_true(setequal(names(csvResults), csvCols))
+
+  # ---------------------------------
+  # Save single result
+
+  outdf <- pacehrh::SaveResults(results, "one_result.csv", scenario, trial = 2, "Run-1")
+
+  testthat::expect_equal(nrow(outdf), (nTasks * (length(startYear:endYear) + shoulderYears)))
+  testthat::expect_true(setequal(names(outdf), csvCols))
+
+  # ---------------------------------
+  # Test population info
+
+  outdf <- pacehrh::SaveSuiteDemographics(results)
+
+  csvCols <- c("Trial",
+               "Year",
+               "AgeBucket",
+               "Age",
+               "Female",
+               "Male")
+
+  testthat::expect_equal(nrow(outdf), (length(pacehrh:::GPE$ages) * (length(startYear:endYear) + shoulderYears) * nTrials))
+  testthat::expect_true(setequal(names(outdf), csvCols))
 })
 
