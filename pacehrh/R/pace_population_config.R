@@ -102,6 +102,7 @@ InitializePopulation <- function(){
 
   BVE$initialPopulation <- NULL
   BVE$populationLabels <- NULL
+  BVE$populationRangesTable <- NULL
 
   BVE$initialPopulation <- loadInitialPopulation()
   BVE$populationLabels <- loadPopulationLabels()
@@ -111,14 +112,27 @@ InitializePopulation <- function(){
 }
 
 .computePopulationRanges <- function(lt){
+  return(list(Female = .computePopulationRangesBySex(lt, "f"),
+              Male = .computePopulationRangesBySex(lt, "m")))
+}
+
+.computePopulationRangesBySex <- function(lt, sex = "m"){
   if (is.null(lt)){
     return(NULL)
+  }
+
+  if (!(tolower(sex) %in% c("m", "f"))){
+    sex <- "m"
   }
 
   l <- lapply(1:NROW(lt), function(i){
     v <- numeric(length(GPE$ages))
 
-    if ((lt$Male[i] == FALSE) && (lt$Female[i] == FALSE)){
+    if (sex == "m" && (lt$Male[i] == FALSE)){
+      return(v)
+    }
+
+    if (sex == "f" && (lt$Female[i] == FALSE)){
       return(v)
     }
 

@@ -23,7 +23,7 @@ RunExperiment <- function(debug = FALSE){
   }
 
   # TODO: more extensive sanity checking that the Base Environment has been set
-  # up SaveBaseSettings().
+  # up correctly by SaveBaseSettings().
 
   # Create a results list
   results <- list()
@@ -36,6 +36,10 @@ RunExperiment <- function(debug = FALSE){
     normalize = scenario$BaselinePop,
     growthFlag = scenario$o_PopGrowth
   )
+
+  # BUILD MATRICES OF LABELLED POPULATION RANGES
+  EXP$populationRangeMatrices <-
+    .computePopulationRangeMatrices(EXP$demographics, BVE$populationRangesTable)
 
   # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
   taskIds <- which(
@@ -159,4 +163,36 @@ RunExperiment <- function(debug = FALSE){
   })
 
   return(retVal)
+}
+
+#' Compute Population Range Sizes Based On Population Predictions
+#'
+#' @param populations Population predictions as returned by [ComputePopulationProjection()]
+#' @param popRanges Population range definitions as configured by [InitializePopulation()]
+#'
+#' @return List of population range sizes
+#'
+#' @examples
+#' \dontrun{
+#' EXP$populationRangeMatrices <-
+#'   .computePopulationRangeMatrices(EXP$demographics, BVE$populationRangesTable)
+#' }
+.computePopulationRangeMatrices <- function(populations, popRanges){
+  l <- lapply(populations, function(pop){pop$Female})
+  popMatrix <- do.call(cbind, l)
+  rangeMatrix <- popRanges$Female
+
+  mf <- rangeMatrix %*% popMatrix
+
+  l <- lapply(populations, function(pop){pop$Male})
+  popMatrix <- do.call(cbind, l)
+  rangeMatrix <- popRanges$Male
+
+  mm <- rangeMatrix %*% popMatrix
+
+  return(list(
+    Female = mf,
+    Male = mm,
+    Total = mf + mm
+  ))
 }

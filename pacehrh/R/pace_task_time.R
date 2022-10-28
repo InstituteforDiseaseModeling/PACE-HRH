@@ -33,9 +33,14 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
 
   # Look up the population pyramid for this year
-  population <- EXP$demographics[[as.character(year)]]
+  # population <- EXP$demographics[[as.character(year)]]
+  #
+  # if (is.null(population)){
+  #   traceMessage(paste("No demographic info for year ", year, sep = ""))
+  #   return(list(N = 0, Time = 0))
+  # }
 
-  if (is.null(population)){
+  if (!(as.character(year) %in% names(EXP$demographics))){
     traceMessage(paste("No demographic info for year ", year, sep = ""))
     return(list(N = 0, Time = 0))
   }
@@ -43,7 +48,7 @@ TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
   n = 0L
 
   # Applicable population
-  n <- .computeApplicablePopulation(population, BVE$taskData$RelevantPop[taskID])
+  n <- .getApplicablePopulation(year, BVE$taskData$RelevantPop[taskID])
 
   if (debug){
     cat(paste("Applicable pop = ", n, "\n", sep = ""))
@@ -129,6 +134,18 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   df <- eval(parse(text = paste(varName, "$`", as.character(year), "`", sep = "")))
   return(df)
 }
+
+.computeApplicablePopulationVector <- function(pop, label){
+
+  return(42)
+}
+
+
+.getApplicablePopulation <- function(year, label){
+  return(EXP$populationRangeMatrices$Total[label, as.character(year)])
+}
+
+
 
 .computeApplicablePopulation <- function(pop, label) {
   # Fail in a big mess if the population labels lookup hasn't been loaded.
