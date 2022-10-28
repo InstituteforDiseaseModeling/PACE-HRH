@@ -15,6 +15,11 @@
 #' \dontrun{
 #' }
 GetSuiteRates <- function(results, rateCategory = .populationRateCategories[1]) {
+  if (is.null(results)){
+    warning(paste0("Null results parameter. Returning NULL."))
+    return(NULL)
+  }
+
   if (!(rateCategory %in% .populationRateCategories)){
     warning(paste0("Invalid population rate category (", rateCategory, ")"))
     return(NULL)

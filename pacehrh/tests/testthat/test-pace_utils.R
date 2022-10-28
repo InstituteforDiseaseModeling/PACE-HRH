@@ -31,8 +31,8 @@ test_that("Utilities: GetSuiteRates", {
     pacehrh::RunExperiments(scenarioName = scenario,
                             trials = nTrials)
 
-
   testthat::expect_warning(pacehrh::GetSuiteRates(results, rateCategory = "notacategory"))
+  testthat::expect_warning(pacehrh::GetSuiteRates(results = NULL))
 
   df <- pacehrh::GetSuiteRates(results, rateCategory = "femaleFertility")
   testthat::expect_true(!is.null(df))
