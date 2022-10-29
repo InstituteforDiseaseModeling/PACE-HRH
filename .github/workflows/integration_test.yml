@@ -19,7 +19,7 @@ jobs:
           r-version: ${{ matrix.R }}
       - name: Install devtools
         run: |
-          Rscript -e "install.packages('devtools')"
+          Rscript -e "options(install.packages.compile.from.source = "never"); install.packages('devtools')"
       - name: Install pandoc
         uses: crazy-max/ghaction-chocolatey@v2
         with:
