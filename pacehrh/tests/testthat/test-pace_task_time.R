@@ -82,15 +82,32 @@ test_that("Populations: read full ranges", {
                          length(pacehrh:::GPE$ages))
 
 
+  # Generate fake population projection matrices
+
+  e <- 0.1
+  popInit <- 100
+  l <- lapply(seq_along(gpe$years), function(i){
+    return(rep(round(popInit * ((1 + e) ^ (i - 1)), 0), length(gpe$ages)))
+  })
+
+  mf <- do.call(cbind, l)
+  rownames(mf) <- gpe$ages
+  colnames(mf) <- gpe$years
+
+  mm <- do.call(cbind, l)
+  rownames(mf) <- gpe$ages
+  colnames(mf) <- gpe$years
 
 
 
-  # m <- pacehrh:::BVE$populationRangesTable
-  # v <- pacehrh:::BVE$initialPopulation$male@values
-  # print(m %*% v)
 
 
-
+  m <- bve$populationRangesTable$Female
+  v <- bve$initialPopulation$female@values
+  print(m)
+  print(v)
+  print(m %*% v)
+  print(t(t(m) * v))
 
 
   p <- pacehrh:::.computeApplicablePopulationVector()
