@@ -162,59 +162,9 @@ SaveResults <- function(results, filepath = "out.csv", scenario, trial = NULL, r
     return(NULL)
   }
 
-  r <- results[[trial]]
-  r <- r[1:4]
-
-  # Transpose the task times matrices from (years x tasks) to (tasks x rows),
-  # then stitch into a long concatenated version.
-  l <- lapply(r, function(taskType){
-    m <- t(taskType$Time)
-  })
-
-  mt <- do.call(rbind, l)
-
-  # Do the same thing for the task resource counts (no longer necessary, but
-  # still computed.)
-  l <- lapply(r, function(taskType){
-    m <- t(taskType$N)
-  })
-
-  mn <- do.call(rbind, l)
-
-  # Convert the task times matrix to a data table, then melt the table so
-  # each row is a {year, taskID, service_time} tuple. Then do the same
-  # for the task resource counts. (Note: keep.rownames preserves the matrix
-  # row names in a column called "rn")
-  DTt <- data.table::as.data.table(mt, keep.rownames = TRUE)
-  DT <- data.table::melt(DTt, c("rn"))
-  names(DT) <- c("Task_ID", "Year", "Service_time")
-  DTn <- as.data.table(mn, keep.rownames = TRUE)
-  DTn <- data.table::melt(DTn, c("rn"))
-
-  assertthat::are_equal(nrow(DT), length(DTn$value))
-
-  # Add the column of service resource counts column to the output data
-  # table (DT). Then add a bunch of fixed value columns.
-  DT[, ':=' (Num_services = DTn$value)]
-  DT[, ':=' (Scenario_ID = scenario)]
-  DT[, ':=' (Trial_num = trial)]
-  DT[, ':=' (Run_num = run)]
-  DT[, ':=' (Month = NA_integer_)]
-  DT[, ':=' (Health_benefit = NA)]
-
-  data.table::setcolorder(DT, c("Task_ID",
-                                "Scenario_ID",
-                                "Trial_num",
-                                "Run_num",
-                                "Year",
-                                "Month",
-                                "Num_services",
-                                "Service_time",
-                                "Health_benefit"))
-
-  data.table::fwrite(DT, file = filepath, row.names = FALSE, na = "NA")
-
-  return(DT)
+  outdf <- .saveSuiteResults1(results[[trial]], scenario, trial, run)
+  data.table::fwrite(outdf, file = filepath, row.names = FALSE, na = "NA")
+  return(outdf)
 }
 
 #' Save Experiment Suite Results As CSV File
@@ -334,47 +284,8 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
 }
 
 .saveSuiteResults1 <- function(results, scenario, trial, run){
-  if (is.null(trial)) {
-    traceMessage(paste0("SaveResults() requires a trial= parameter value"))
-    return(NULL)
-  }
-
-  if (!assertthat::is.count(trial)) {
-    traceMessage(paste0("SaveResults() trial parameter must be a positive integer"))
-    return(NULL)
-  }
-
-  if (trial < 1 | trial > length(results)) {
-    traceMessage(
-      paste0(
-        "SaveResults() trial parameter out of range. Must be between ",
-        1,
-        " and ",
-        length(results),
-        "."
-      )
-    )
-    return(NULL)
-  }
-
-  r <- results[[trial]]
-  r <- r[1:4]
-
-  # Transpose the task times matrices from (years x tasks) to (tasks x rows),
-  # then stitch into a long concatenated version.
-  l <- lapply(r, function(taskType){
-    m <- t(taskType$Time)
-  })
-
-  mt <- do.call(rbind, l)
-
-  # Do the same thing for the task resource counts (no longer necessary, but
-  # still computed.)
-  l <- lapply(r, function(taskType){
-    m <- t(taskType$N)
-  })
-
-  mn <- do.call(rbind, l)
+  mt <- t(results$AnnualTimes)
+  mn <- t(results$AnnualCounts)
 
   # Convert the task times matrix to a data table, then melt the table so
   # each row is a {year, taskID, service_time} tuple. Then do the same
