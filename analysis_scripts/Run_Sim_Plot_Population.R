@@ -40,15 +40,14 @@ for (i in 1:nrow(scenarios)){
   destination = paste("results/mortality",scenario,date,".pdf",sep="")
   pdf(file=destination)
   remove(resultspop)
-  for (i in 1:numtrials) {
-    temp <- pacehrh:::gatherPopulation(results[[i]]$Population) %>%
-      mutate(Run=i)
-    if (!exists('resultspop')) {
-      resultspop <- temp
-    } else{
-      resultspop <- rbind(resultspop, temp)
-    }
-  }
+  
+  df1 <- SaveSuiteDemographics(results)
+  resultspop <- pivot_longer(df1, c("Female", "Male"), names_to ="Gender", values_to = "Population")
+  resultspop %>% 
+    dplyr::rename("Run" ="Trial") %>%
+    dplyr::select(-AgeBucket)
+  resultspop$Gender <- substr(resultspop$Gender,1,1)
+  
   popsummary <- resultspop %>%
     group_by(Year, Gender, Age) %>%
     summarize(Population=mean(Population))
@@ -70,47 +69,22 @@ for (i in 1:nrow(scenarios)){
   g1 <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
   print(g1)
   
-  years <- data.frame(Year=seq(2020, 2041, 1))
-  agebands <- data.frame(AgeBand=c("Infants", "Y1_4", "Y5_9", "Y10_14", "Y15_19", "Y20-34", "Y35-49", "Y50-59", "Y60_74", "Y75+"))
-  mortalityratesDF <- full_join(years, agebands, by=character())
+  mortalityrates <- GetSuiteRates(results, "maleMortality")
   
-  remove(mortalityrates)
-  for (i in 1:numtrials) {
-    temp <- ldply(results[[i]]$PopulationRates$maleMortality$ratesMatrix, data.frame) %>%
-      rename(MortalityRate=X..i..)%>%
-      mutate(Trial=i) %>%
-      cbind(mortalityratesDF)
-    if (!exists('mortalityrates')) {
-      mortalityrates <- temp
-    } else{
-      mortalityrates <- rbind(mortalityrates, temp)
-    }
-  }
-  
-  g2 <- ggplot(mortalityrates, aes(x = Year, y = MortalityRate, color = AgeBand, group = Year)) +
+  g2 <- ggplot(mortalityrates, aes(x = Year, y = Rate, color = Label, group = Year)) +
     geom_boxplot() +
     theme(legend.position = "none") +
-    facet_wrap(vars(AgeBand), scales = "free_y", ncol=2)+
+    facet_wrap(vars(Label), scales = "free_y", ncol=2)+
     labs(title="Male mortality rates predictions")
   print(g2)
   
   remove(mortalityrates)
-  for (i in 1:numtrials) {
-    temp <- ldply(results[[i]]$PopulationRates$femaleMortality$ratesMatrix, data.frame) %>%
-      rename(MortalityRate=X..i..)%>%
-      mutate(Trial=i) %>%
-      cbind(mortalityratesDF)
-    if (!exists('mortalityrates')) {
-      mortalityrates <- temp
-    } else{
-      mortalityrates <- rbind(mortalityrates, temp)
-    }
-  }
+  mortalityrates <- GetSuiteRates(results, "femaleMortality")
   
-  g3 <- ggplot(mortalityrates, aes(x = Year, y = MortalityRate, color = AgeBand, group = Year)) +
+  g3 <- ggplot(mortalityrates, aes(x = Year, y = Rate, color = Label, group = Year)) +
     geom_boxplot() +
     theme(legend.position = "none") +
-    facet_wrap(vars(AgeBand), scales = "free_y", ncol=2)+
+    facet_wrap(vars(Label), scales = "free_y", ncol=2)+
     labs(title="Female mortality rates predictions")
   print(g3)
   
