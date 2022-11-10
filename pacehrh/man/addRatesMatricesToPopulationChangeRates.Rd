@@ -14,7 +14,7 @@ addRatesMatricesToPopulationChangeRates(pcr, years, stochasticParms = NULL)
 \item{stochasticParms}{Parameters controlling stochastic variation of generated rates}
 }
 \value{
-Populate Change Rates structure with predicted rates matrices added
+Population Change Rates structure with predicted rates matrices added
 }
 \description{
 Compute Time-Series of Population Rate Parameters

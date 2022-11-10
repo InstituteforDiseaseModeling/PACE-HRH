@@ -1,133 +1,67 @@
-#' Calculate Annual Time For A Task
+#' Calculate Task Times Based On BVE and EXP Values
 #'
-#' @param taskID Index of row in task tables
-#' @param year Year (index into \code{demographics} list)
-#' @param debug Emit debugging information (default = FALSE)
-#' @param weeksPerYear Number of weeks per year (default = 48). This value is
-#' used to gross up TimeAddedOn tasks from weekly to annual.
-#'
-#' @return List of two vectors:
+#' @return List of two matrices:
 #' Time - annual task times in minutes
 #' N - number of times task was performed
 #'
-TaskTime <- function(taskID, year, debug = FALSE, weeksPerYear = 48){
-  tp <- EXP$taskParameters
+TaskTimes <- function(){
+  # Grab some values to reduce the flurry of $ signs
+  weeksPerYear <- BVE$scenario$WeeksPerYr
+  tasks <- BVE$taskData
+  taskvals <- EXP$taskParameters@values
+  prm <- EXP$populationRangeMatrices
+  pm <- EXP$prevalenceRatesMatrix
 
-  # TODO: Insert check on length of task table
+  # Blank minutes-per-contact values should be zero
+  mpc <- taskvals[,"MinsPerContact"]
+  mpc[is.na(mpc)] <- 0
 
-  taskVals <- tp@values[taskID,]
+  l <- lapply(BVE$years, function(year){
+    year <- as.character(year)
 
-  # TimeAddedOn tasks are simpler than other tasks; they aren't associated with
-  # a population segment, and they aren't dependent on prevalence. But time is
-  # returned in a different way: instead of total time required per year to do
-  # the tasks, for TimeAddedOn tasks TaskTime returns time per year (in minutes)
-  # for the person doing the task.
+    # n = applicable population
+    # p = prevalence rate
+    n <- as.vector(prm$Total[, year][tasks$popRangeMaskPtr])
+    p <- as.vector(pm[, year])
 
-  if (BVE$taskData$computeMethod[taskID] == "TimeAddedOn"){
-    t = taskVals["HoursPerWeek"] * 60 * weeksPerYear
-    return(list(N = 1, Time = t))
-  }
+    # Compute the number of executed tasks ("service count")
+    tasksN <- n * p * taskvals[,"RateMultiplier"] * (taskvals[,"NumContactsPerUnit"] + taskvals[,"NumContactsAnnual"])
 
-  # Determine whether this task is covered in the prevalence rates table
-  prevalenceRatesTableRow <- which(BVE$stochasticTasks == taskID)
-  prevalenceFlag <- (length(prevalenceRatesTableRow) == 1)
-
-  # Look up the population pyramid for this year
-  # population <- EXP$demographics[[as.character(year)]]
-  #
-  # if (is.null(population)){
-  #   traceMessage(paste("No demographic info for year ", year, sep = ""))
-  #   return(list(N = 0, Time = 0))
-  # }
-
-  if (!(as.character(year) %in% names(EXP$demographics))){
-    traceMessage(paste("No demographic info for year ", year, sep = ""))
-    return(list(N = 0, Time = 0))
-  }
-
-  n = 0L
-
-  # Applicable population
-  n <- .getApplicablePopulation(year, BVE$taskData$RelevantPop[taskID])
-
-  if (debug){
-    cat(paste("Applicable pop = ", n, "\n", sep = ""))
-  }
-
-  # Correct for prevalence, frequency, test positivity, etc
-  m <- EXP$prevalenceRatesMatrix
-  prevalenceMultiplier <-
-    ifelse(prevalenceFlag, m[prevalenceRatesTableRow, as.character(year)], 1)
-
-  n <- n * prevalenceMultiplier * taskVals["RateMultiplier"]
-
-  if (debug){
-    cat(paste("Adj for prevalence -> ", n, "\n", sep = ""))
-  }
-
-  # Multiply by number of contacts and time per contact
-  n <- n *
-    (taskVals["NumContactsPerUnit"] + taskVals["NumContactsAnnual"])
-
-  # Set aside the number of times the service was provided
-  numServices <- round(n, 0)
-  names(numServices) <- NULL
-
-  if (is.na(taskVals["MinsPerContact"])){
-    t = 0
-  } else {
-    t <- numServices * taskVals["MinsPerContact"]
-#    t <- n * taskVals["MinsPerContact"]
-  }
-
-  if (debug){
-    cat(paste("Multiply by contact number and duration -> ", t, "\n", sep = ""))
-  }
-
-  names(t) <- NULL
-
-  return(list(N = numServices, Time = t))
-}
-
-#' Calculate Task Times For A Group Of Tasks
-#'
-#' Calculate clinical task times for a group of tasks over a spread of years
-#'
-#' @param taskIDs Vector of task indices into \code{globalPackageEnvironment$taskData}
-#' @param years Vector of years (usually \code{globalPackageEnvironment$years})
-#' @param weeksPerYear Number of weeks per year (default = 48)
-#'
-#' @return List with two matrices:
-#' Time - annual task times in minutes
-#' N - number of times task was performed
-#' NULL if the list of task indices is blank
-#'
-TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
-  if (length(taskIDs) == 0){
-    return(NULL)
-  }
-
-  m <- length(years)
-  n <- length(taskIDs)
-
-  mt <-
-    matrix(
-      nrow = m,
-      ncol = n,
-      dimnames = list(years, BVE$taskData$Indicator[taskIDs])
-    )
-
-  mn <- mt
-
-  for (i in seq_along(years)) {
-    for (j in seq_along(taskIDs)) {
-      l <- TaskTime(taskIDs[j], years[i], weeksPerYear = weeksPerYear)
-      mt[i, j] <- l$Time
-      mn[i, j] <- l$N
+    # Round to an integer, unless rounding is turned off
+    if (GPE$roundingLaw != "none"){
+      tasksN <- round(tasksN, 0)
     }
-  }
 
-  return(list(Time = mt, N = mn))
+    # Compute the total time spent executing tasks
+    tasksT <- tasksN * mpc
+
+    # Perform a separate calculation for TimeAddedOn tasks
+    taoMask <- (tasks$computeMethod == "TimeAddedOn")
+    if (sum(taoMask) > 0){
+      tao <- taskvals[,"HoursPerWeek"] * 60 * weeksPerYear
+      tasksT[taoMask] <- tao[taoMask]
+      tasksN[taoMask] <- 1
+    }
+
+    # Perform a separate calculation for TimeRatio tasks
+    tRatioMask <- (tasks$computeMethod == "TimeRatio")
+    if (sum(tRatioMask) > 0){
+      baseTime <- sum(tasksT[tasks$ClinicalOrNon == "Clinical"])
+
+      fteRatio <- taskvals[,"FTEratio"]
+      tr <- baseTime * (fteRatio / (1 - fteRatio))
+      tasksT[tRatioMask] <- tr[tRatioMask]
+      tasksN[tRatioMask] <- 1
+    }
+
+    return(list(N = tasksN, Time = tasksT))
+  })
+
+  t <- do.call(cbind, lapply(l, function(ll){ll$Time}))
+  colnames(t) <- BVE$years
+  n <- do.call(cbind, lapply(l, function(ll){ll$N}))
+  colnames(n) <- BVE$years
+  return(list(N = n, Time = t))
 }
 
 .extractPyramid <- function(varName, year){
@@ -136,16 +70,12 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
 }
 
 .computeApplicablePopulationVector <- function(pop, label){
-
   return(42)
 }
-
 
 .getApplicablePopulation <- function(year, label){
   return(EXP$populationRangeMatrices$Total[label, as.character(year)])
 }
-
-
 
 .computeApplicablePopulation <- function(pop, label) {
   # Fail in a big mess if the population labels lookup hasn't been loaded.
@@ -188,40 +118,4 @@ TaskTimesGroup <- function(taskIDs, years, weeksPerYear = 48){
   }
 
   return(total)
-}
-
-AllocationTaskTime <- function(taskID, year, baseTime, debug = FALSE){
-  tp <- EXP$taskParameters
-  taskVals <- tp@values[taskID, ]
-
-  fteRatio <- taskVals["FTEratio"]
-  assertthat::assert_that(fteRatio < 1)
-  return(baseTime * (fteRatio / (1 - fteRatio)))
-}
-
-AllocationTaskTimesGroup <- function(taskIDs, years, baseTimes){
-  if (length(taskIDs) == 0){
-    return(NULL)
-  }
-
-  m <- length(years)
-  n <- length(taskIDs)
-
-  mt <-
-    matrix(
-      nrow = m,
-      ncol = n,
-      dimnames = list(years, BVE$taskData$Indicator[taskIDs])
-    )
-
-  mn <- mt
-
-  for (i in seq_along(years)) {
-    for (j in seq_along(taskIDs)) {
-      mt[i, j] <- AllocationTaskTime(taskIDs[j], years[i], baseTimes[i])
-      mn[i, j] <- 1
-    }
-  }
-
-  return(list(Time = mt, N = mn))
 }

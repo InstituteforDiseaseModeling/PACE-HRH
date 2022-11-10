@@ -90,6 +90,14 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$stochasticTasks <- which(BVE$taskData$applyStochasticity)
     m <- .convertTaskDfToMatrix(BVE$taskData)
     BVE$taskParameters <- TaskParameters(values = m)
+
+    # Add a task data column pointing into the population range mask tables
+    # associated with each RelevantPop range
+    index <- sapply(BVE$taskData$RelevantPop, function(label){
+      which(rownames(BVE$populationRangesTable$Female) == label)
+    })
+
+    BVE$taskData$popRangeMaskPtr <- as.vector(index)
   }
 
   # Set the year range for trials, which is just the specified year range
@@ -208,7 +216,7 @@ ConfigureExperimentValues <- function(){
 #' @param years Range of years to compute
 #' @param stochasticParms Parameters controlling stochastic variation of generated rates
 #'
-#' @return Populate Change Rates structure with predicted rates matrices added
+#' @return Population Change Rates structure with predicted rates matrices added
 #'
 #' @examples
 #' \dontrun{

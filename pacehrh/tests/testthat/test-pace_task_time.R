@@ -104,10 +104,10 @@ test_that("Populations: read full ranges", {
 
   m <- bve$populationRangesTable$Female
   v <- bve$initialPopulation$female@values
-  print(m)
-  print(v)
-  print(m %*% v)
-  print(t(t(m) * v))
+  # print(m)
+  # print(v)
+  # print(m %*% v)
+  # print(t(t(m) * v))
 
 
   p <- pacehrh:::.computeApplicablePopulationVector()
