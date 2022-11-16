@@ -12,9 +12,7 @@
 #' @return List of dataframes of per-task times, or NULL
 #'
 RunExperiment <- function(debug = FALSE){
-  # STEP 0 - INITIALIZE
-
-  # Load scenario details
+  # INITIALIZE
   scenario <- BVE$scenario
 
   if (is.null(scenario)){
@@ -23,12 +21,11 @@ RunExperiment <- function(debug = FALSE){
   }
 
   # TODO: more extensive sanity checking that the Base Environment has been set
-  # up SaveBaseSettings().
+  # up correctly by SaveBaseSettings().
 
-  # Create a results list
   results <- list()
 
-  # STEP 1 - BUILD POPULATION DEMOGRAPHICS
+  # BUILD POPULATION PREDICTIONS
   EXP$demographics <- ComputePopulationProjection(
     EXP$initialPopulation,
     EXP$populationChangeRates,
@@ -37,113 +34,21 @@ RunExperiment <- function(debug = FALSE){
     growthFlag = scenario$o_PopGrowth
   )
 
-  # STEP 2 - COMPUTE TIMES FOR NORMAL TASKS (CLINICAL)
-  taskIds <- which(
-    BVE$taskData$computeMethod == "TimePerTask" &
-      BVE$taskData$ClinicalOrNon == "Clinical"
-  )
+  # BUILD MATRICES OF LABELLED POPULATION RANGES
+  EXP$populationRangeMatrices <-
+    .computePopulationRangeMatrices(EXP$demographics, BVE$populationRangesTable)
 
-  if (length(taskIds) > 0){
-    EXP$clinicalTaskTimes <- TaskTimesGroup(taskIds, BVE$years)
-  } else {
-    EXP$clinicalTaskTimes <- NULL
-  }
+  # COMPUTE ANNUAL TIMES FOR TASKS
+  t <- TaskTimes()
 
-  aggAnnualClinicalTaskTimes <- .computeTotalTimes(EXP$clinicalTaskTimes)
+  results$AnnualTimes <- t$Time
+  results$AnnualCounts <- t$N
 
-  # STEP 3 - COMPUTE TIMES FOR NORMAL TASKS (NON-CLINICAL)
-  taskIds <- which(
-    BVE$taskData$computeMethod == "TimePerTask" &
-      BVE$taskData$ClinicalOrNon != "Clinical"
-  )
-
-  if (length(taskIds) > 0){
-    EXP$nonClinicalTaskTimes <- TaskTimesGroup(taskIds, BVE$years)
-  } else {
-    EXP$nonClinicalTaskTimes <- NULL
-  }
-
-  aggAnnualNonClinicalTaskTimes <- .computeTotalTimes(EXP$nonClinicalTaskTimes)
-
-  # STEP 4 - COMPUTE TIMES FOR RATIO-BASED ALLOCATION TASKS
-  taskIds <- which(BVE$taskData$computeMethod == "TimeRatio")
-
-  if (length(taskIds) > 0){
-    EXP$nonClinicalAllocationTimes <-
-      AllocationTaskTimesGroup(taskIds, BVE$years, aggAnnualClinicalTaskTimes)
-  } else {
-    EXP$nonClinicalAllocationTimes <- NULL
-  }
-
-  aggAnnualNonClinicalAllocationTimes <- .computeTotalTimes(EXP$nonClinicalAllocationTimes)
-
-  # STEP 5 - COMPUTE ADD-ON TIME (TRAVEL, ETC)
-  taskIds <- which(BVE$taskData$computeMethod == "TimeAddedOn")
-
-  if (length(taskIds) > 0){
-    nonProductiveTaskTimes <-
-      TaskTimesGroup(taskIds, BVE$years, weeksPerYear = scenario$WeeksPerYr)
-  } else {
-    nonProductiveTaskTimes <- NULL
-  }
-
-  aggAnnualAddOnTimesPerHcw <- .computeTotalTimes(nonProductiveTaskTimes)
-
-
-  # TODO: nonProductive times are reported PER-PERSON, which is different
-  # to all the other times. This is going to change as a consequence
-  # of addressing Issue #51.
-
-  N <- 1
-
-  if (is.null(nonProductiveTaskTimes)){
-    EXP$nonProductiveTimes <- NULL
-  } else {
-    nonProductiveTaskTimes$Time <- nonProductiveTaskTimes$Time * N
-    EXP$nonProductiveTimes <- nonProductiveTaskTimes
-  }
-
-  results$AnnualTimes <-.computeAnnualTimesMatrix()
-  results$AnnualCounts <-.computeAnnualCountsMatrix()
-
+  # USE ANNUAL TIMES TO COMPUTE SEASONALLY ADJUSTED MONTHLY TIMES
   seasonalityResults <- runSeasonalityExperiment(results)
   results$SeasonalityResults <- seasonalityResults
 
   return(results)
-}
-
-.taskTypeVarNames <- c(
-  "clinicalTaskTimes",
-  "nonClinicalTaskTimes",
-  "nonClinicalAllocationTimes",
-  "nonProductiveTimes")
-
-.computeAnnualTimesMatrix <- function() {
-  l <-
-    lapply(.taskTypeVarNames, function(type) {
-      data <- get(type, pos = EXP)
-      if (is.null(data)) {
-        return(NULL)
-      } else {
-        return(t(data$Time))
-      }
-    })
-
-  return(do.call(rbind, l))
-}
-
-.computeAnnualCountsMatrix <- function() {
-  l <-
-    lapply(.taskTypeVarNames, function(type) {
-      data <- get(type, pos = EXP)
-      if (is.null(data)) {
-        return(NULL)
-      } else {
-        return(t(data$N))
-      }
-    })
-
-  return(do.call(rbind, l))
 }
 
 .computeTotalTimes <- function(resultsObj){
@@ -159,4 +64,54 @@ RunExperiment <- function(debug = FALSE){
   })
 
   return(retVal)
+}
+
+
+# ---------------------------------------
+#
+# TODO: Remove this testing-only function
+#
+# ---------------------------------------
+
+
+#' Compute Population Range Sizes Based On Population Predictions
+#'
+#' @param populations Population predictions as returned by [ComputePopulationProjection()]
+#' @param popRanges Population range definitions as configured by [InitializePopulation()]
+#'
+#' @return List of population range sizes
+#'
+#' @examples
+#' \dontrun{
+#' EXP$populationRangeMatrices <-
+#'   .computePopulationRangeMatrices(EXP$demographics, BVE$populationRangesTable)
+#' }
+.computePopulationRangeMatrices <- function(populations, popRanges){
+  l <- lapply(populations, function(pop){pop$Female})
+  popMatrix <- do.call(cbind, l)
+  rangeMatrix <- popRanges$Female
+
+  mf <- rangeMatrix %*% popMatrix
+
+  l <- lapply(populations, function(pop){pop$Male})
+  popMatrix <- do.call(cbind, l)
+  rangeMatrix <- popRanges$Male
+
+  mm <- rangeMatrix %*% popMatrix
+
+  rf <- lapply(populations, function(pop){
+    t(t(popRanges$Female) * pop$Female)
+  })
+
+  rm <- lapply(populations, function(pop){
+    t(t(popRanges$Female) * pop$Female)
+  })
+
+  return(list(
+    Female = mf,
+    Male = mm,
+    Total = mf + mm,
+    FemaleRanges = rf,
+    MaleRanges = rm
+  ))
 }

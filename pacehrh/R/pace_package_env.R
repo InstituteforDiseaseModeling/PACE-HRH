@@ -58,4 +58,4 @@ BVE$seasonalityOffsets <- NULL
 BVE$populationLabels <- NULL
 BVE$initialPopulation <- NULL
 BVE$stochasticParams <- NULL
-
+BVE$populationRangesTable <- NULL

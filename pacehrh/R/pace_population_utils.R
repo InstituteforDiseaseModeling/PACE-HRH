@@ -45,7 +45,7 @@ ComputeApplicablePopulationMatrices <- function(results, labels = BVE$population
 #`   pacehrh::RunExperiments(scenarioName = scenario,
 #`                           trials = nTrials)
 #`
-#`  m <- pacehrh::ComputeApplicablePopulationMatriX(results)
+#`  m <- pacehrh::ComputeApplicablePopulationMatrix(results)
 #' }
 ComputeApplicablePopulationMatrix <- function(result, labels = BVE$populationLabels$Labels){
   if (is.null(result)){

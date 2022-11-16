@@ -1,3 +1,8 @@
+.varyInitialIncidenceRates <- function(rates, p){
+  p <- p * c(-1, 1)
+  return(rates * (1 + runif(length(rates), p[1], p[2])))
+}
+
 #' Generate A Matrix Of Stochastically Varied Prevalence/Incidence Rates
 #'
 #' @return Rates matrix
@@ -6,17 +11,21 @@ generatePrevalenceRatesMatrix <- function(){
   pars <- BVE$stochasticParams
   years <- BVE$years
 
-  indexes <- which(BVE$taskData$applyStochasticity)
-
   tasks <-
-    BVE$taskData[indexes, c("Indicator",
-                          "StartingRateInPop",
-                          "AnnualDeltaRatio",
-                          "ServiceCat",
-                          "RelevantPop")]
+    BVE$taskData[, c(
+      "Indicator",
+      "StartingRateInPop",
+      "AnnualDeltaRatio",
+      "ServiceCat",
+      "RelevantPop",
+      "applyStochasticity"
+    )]
 
   nRows = NROW(tasks)
   nCols = length(years)
+
+  # Mask for tasks affected by prevalence stochasticity
+  sMask <- tasks$applyStochasticity
 
   # Determine which rows refer to Malaria/HIV/TB
   mhivtbMask <-
@@ -30,15 +39,19 @@ generatePrevalenceRatesMatrix <- function(){
 
   # Grab the initial prevalence/incidence values, and apply a stochastic tweak
   p = pars[pars$Value == "Incidence rates", ]$p
-  initRates <-
-    .adjustInitialIncidenceRates(tasks$StartingRateInPop, nRows, p)
+
+  initRates <- rep(1.0, nRows)
+
+  initRates[sMask] <-
+    .varyInitialIncidenceRates(tasks[sMask,]$StartingRateInPop, p)
 
   # Initialize a rates matrix
   m <-
     matrix(
+      data = 1.0,
       nrow = nRows,
       ncol = nCols,
-      dimnames = list(as.character(indexes), as.character(years))
+      dimnames = list(tasks$Indicator, as.character(years))
     )
   m[, 1] <- initRates
 
@@ -61,20 +74,15 @@ generatePrevalenceRatesMatrix <- function(){
 
   for (j in 2:nCols){
     e <- truncnorm::rtruncnorm(
-      nRows,
+      sum(sMask),
       mean = 0,
       sd = p,
       a = lims[1],
       b = lims[2]
     )
-    deltas <- deltaRatios * (1 + e)
-    m[ ,j] <- m[ ,j-1] * deltas
+    deltas <- deltaRatios[sMask] * (1 + e)
+    m[sMask, j] <- m[sMask, j-1] * deltas
   }
 
   return(m)
-}
-
-.adjustInitialIncidenceRates <- function(rates, n, p){
-  p <- p * c(-1, 1)
-  return(rates * (1 + runif(length(rates), p[1], p[2])))
 }
