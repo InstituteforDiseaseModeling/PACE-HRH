@@ -122,6 +122,7 @@ InitializePopulation <- function(){
   }
 
   if (!(tolower(sex) %in% c("m", "f"))){
+    traceMessage(paste0("Invalid sex (", sex, ") provided to .computePopulationRangesBySex()"))
     sex <- "m"
   }
 
