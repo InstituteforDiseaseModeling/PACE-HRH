@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.2</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
                         <h4 data-toc-skip class="author">Jen
 Schripsema</h4>
             
-            <h4 data-toc-skip class="date">2022-10-06</h4>
+            <h4 data-toc-skip class="date">2022-11-28</h4>
       
       
       <div class="hidden name"><code>pacehrh.rmd</code></div>
@@ -96,22 +96,89 @@ Schripsema</h4>
 <div class="section level2">
 <h2 id="get-started-with-the-pace-hrh-model">Get started with the PACE-HRH model<a class="anchor" aria-label="anchor" href="#get-started-with-the-pace-hrh-model"></a>
 </h2>
-<div class="section level3">
-<h3 id="configure-the-model">Configure the model<a class="anchor" aria-label="anchor" href="#configure-the-model"></a>
-</h3>
 <p>The PACE-HRH model simulates healthcare needs in a given population
 to enable better health system staffing decisions. PACE-HRH is a
 stochastic, Monte Carlo simulation model, meaning that the population,
 its healthcare needs, and the time required to meet those are simulated
 and there is randomness built into the model uncertainty in the
-population’s size, growth, and healthcare needs. To configure the model,
-you input data in Excel spreadsheets that describe the population’s
-demographics, healthcare tasks, and available staff in the geographic
-region of interest. To begin, navigate to the “config” directory and
-open the Excel workbook “model_inputs.xlsx”.</p>
+population’s size, growth, and healthcare needs. The model is configured
+via Excel sheets and run via an R script.</p>
+<div class="section level3">
+<h3 id="install-the-model">Install the model<a class="anchor" aria-label="anchor" href="#install-the-model"></a>
+</h3>
+<p>Generally, we recommend installing the current released version of
+the Windows binary, which has been tested and documented. You can also
+install directly from unreleased source code in GitHub, which may be
+useful if you are modifying the model code or need the latest fixes that
+have not been released officially.</p>
+<!--- Can this only be run on Windows? Do we have alternate directions for Mac or Linux OS?--->
+<div class="section level4">
+<h4 id="install-using-the-current-released-version-windows-binaries">Install using the current released version Windows binaries<a class="anchor" aria-label="anchor" href="#install-using-the-current-released-version-windows-binaries"></a>
+</h4>
+<p>Follow the instructions below to install a tested, released version
+of the model.</p>
+<ol style="list-style-type: decimal">
+<li>Download the latest binary zip file from <a href="https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases" class="external-link uri">https://github.com/InstituteforDiseaseModeling/PACE-HRH/releases</a>.
+This will be the first file listed under <strong>Assets</strong>. <img src="images/pacehrh-release.png" alt="Binary zip file under GitHub release assets.">
+</li>
+<li>Open RStudio and, from the <strong>Tools</strong> menu, select
+<strong>Install Packages …</strong>.</li>
+<li>Under <strong>Install from:</strong>, select the most recent version
+of the PACE-HRH package binary zip file that you downloaded.</li>
+<li>Select the installation location and then click
+<strong>Install</strong>.</li>
+<li>You may see a banner at the top of the screen that indicates some
+dependent packages that are required. Select <strong>Yes</strong>. to
+enable installation.</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="install-development-version-or-custom-version-via-github">Install development version or custom version via GitHub<a class="anchor" aria-label="anchor" href="#install-development-version-or-custom-version-via-github"></a>
+</h4>
+<p>Alternatively, you can install from repository source code with the
+desired git reference, which could be a commit, tag, or branch name. By
+default, the main branch has the most up-to-date code.</p>
+<p>If you need to get the latest fixes from main which have not yet been
+released officially, you can run the following code in RStudio:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"InstituteforDiseaseModeling/PACE-HRH"</span>, subdir<span class="op">=</span><span class="st">"pacehrh"</span><span class="op">)</span></span></code></pre></div>
+<p>If your analysis is based on an older version or a custom branch, you
+can run the following:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use commit hash</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"InstituteforDiseaseModeling/PACE-HRH"</span>, subdir<span class="op">=</span><span class="st">"pacehrh"</span>, ref<span class="op">=</span><span class="st">"d2ccdd2"</span><span class="op">)</span></span>
+<span><span class="co"># Use custom branch</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"InstituteforDiseaseModeling/PACE-HRH"</span>, subdir<span class="op">=</span><span class="st">"pacehrh"</span>, ref<span class="op">=</span><span class="st">"my_branch"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="run-model-simulations">Run model simulations<a class="anchor" aria-label="anchor" href="#run-model-simulations"></a>
+</h3>
+<p>By default, the model is configured with values from Ethiopian data.
+To run simulations using the default data, follow the instructions
+below. To run simulations using your own data for a different context,
+first edit the config/model_inputs.xlsx file as described in the
+“Configure the model” section below.</p>
+<ol style="list-style-type: decimal">
+<li>In RStudio, open the “Run simulations.R” script.</li>
+<li>In the R code, set <em>numtrials</em> to the number of simulations
+you want to run. 100 tends to be good; higher values can take longer
+because of the stochasticity in the model.</li>
+<li>Run the script. The results are saved out to a CSV file with the
+date and name of the geography as specified in Excel in the filename.
+The console will beep at you when the model has finished running.</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="configure-the-model">Configure the model<a class="anchor" aria-label="anchor" href="#configure-the-model"></a>
+</h3>
+<p>To configure the model, you input data in Excel spreadsheets that
+describe the population’s demographics, healthcare tasks, and available
+staff in the geographic region of interest. To begin, navigate to the
+“config” directory and open the Excel workbook “model_inputs.xlsx”.</p>
 <p>The workbook is initially configured to model a simple set of tasks
-and contains example values. You should edit the workbook parameters for
-the particular context you are working in.</p>
+and contains example values from Ethiopia. You should edit the workbook
+parameters for the particular context you are working in.</p>
 <p>The sections below describe each of the spreadsheets that are used as
 model inputs. You will see each of these sheets in tabs across the
 bottom of the Excel workbook.</p>
@@ -362,7 +429,7 @@ prefer.</p>
 <li>
 <strong>Description</strong>: The human-readable demographics
 category. This does not affect the model’s functionality and is for
-readibility only.</li>
+readability only.</li>
 <li>
 <strong>Label</strong>: The unique string that defines that
 category.</li>
@@ -606,36 +673,6 @@ currently used in the model, we recommend changing the values here.
 However, the model pulls from the sheets listed above, so you can also
 change the values directly in those sheets.</p>
 </div>
-</div>
-<div class="section level3">
-<h3 id="install-and-run-the-model">Install and run the model<a class="anchor" aria-label="anchor" href="#install-and-run-the-model"></a>
-</h3>
-<p>The PACE-HRH model simulates healthcare needs in a given population
-to enable better health system staffing decisions. The model is
-configured via Excel sheets and run via an R script.</p>
-<ol style="list-style-type: decimal">
-<li><p>Close “R Model Inputs.xslx” in Excel. RStudio will be unable to
-load the input values if the file is open.</p></li>
-<li><p>In RStudio, open the “Run simulations.R” script.</p></li>
-<li><p>From the <strong>Tools</strong> menu, select <strong>Install
-Packages …</strong>.</p></li>
-<li><p>Under <strong>Install from:</strong>, select the most recent
-version of the PACE-HRH package binary zip file.</p></li>
-<li><p>Select the installation location and then click
-<strong>Install</strong>.</p></li>
-<li><p>You may see a banner at the top of the screen that indicates some
-dependent packages that are required. Select <strong>Yes</strong>. to
-enable installation.</p></li>
-<li><p>In the R code, set <em>numtrials</em> to the number of
-simulations you want to run. 100 tends to be good; higher values can
-take longer because of the stochasticity in the model.</p></li>
-<li>
-<p>Run the script.</p>
-<p>The results are saved out to a CSV file with the date and name of the
-geography as specified in Excel in the filename. The console will beep
-at you when the model has finished running.</p>
-</li>
-</ol>
 </div>
 </div>
   </div>

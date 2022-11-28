@@ -73,6 +73,9 @@
     <loc>/reference/dispEnvs.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-computePopulationRangeMatrices.html</loc>
+  </url>
+  <url>
     <loc>/reference/gatherPopulation.html</loc>
   </url>
   <url>
@@ -80,6 +83,9 @@
   </url>
   <url>
     <loc>/reference/generateRatesMatrix.html</loc>
+  </url>
+  <url>
+    <loc>/reference/GetSuiteRates.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -136,6 +142,9 @@
     <loc>/reference/PlotPyramid.html</loc>
   </url>
   <url>
+    <loc>/reference/PlotPyramids.html</loc>
+  </url>
+  <url>
     <loc>/reference/PlotResultsFertilityRates.html</loc>
   </url>
   <url>
@@ -187,10 +196,7 @@
     <loc>/reference/TaskParameters-class.html</loc>
   </url>
   <url>
-    <loc>/reference/TaskTime.html</loc>
-  </url>
-  <url>
-    <loc>/reference/TaskTimesGroup.html</loc>
+    <loc>/reference/TaskTimes.html</loc>
   </url>
   <url>
     <loc>/reference/Trace.html</loc>
