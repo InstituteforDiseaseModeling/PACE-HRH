@@ -104,7 +104,7 @@ RunExperiment <- function(debug = FALSE){
   })
 
   rm <- lapply(populations, function(pop){
-    t(t(popRanges$Female) * pop$Female)
+    t(t(popRanges$Male) * pop$Male)
   })
 
   return(list(
