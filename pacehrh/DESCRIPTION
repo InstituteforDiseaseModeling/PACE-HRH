@@ -17,6 +17,7 @@ Imports:
     magrittr,
     methods,
     readxl,
+    rlang,
     scales,
     tibble,
     tidyr,
