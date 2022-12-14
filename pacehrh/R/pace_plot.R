@@ -333,7 +333,7 @@ PlotPyramid <- function(df, year){
         yend = Percent
       ),
       color = .colorF,
-      size = 1.5
+      linewidth = 1.5
     )
   g <-
     g + geom_segment(
@@ -345,7 +345,7 @@ PlotPyramid <- function(df, year){
         yend = (-1 * Percent)
       ),
       color = .colorM,
-      size = 1.5
+      linewidth = 1.5
     )
   g <- g + scale_y_continuous(limits = limits, breaks = breaks, labels = labels)
   g <- g + xlab("Age") + ylab("Percent of Population")
@@ -409,7 +409,7 @@ PlotPyramids <- function(df) {
         yend = Percent
       ),
       color = .colorF,
-      size = 1
+      linewidth = 1
     )
   g <-
     g + geom_segment(
@@ -421,7 +421,7 @@ PlotPyramids <- function(df) {
         yend = (-1 * Percent)
       ),
       color = .colorM,
-      size = 1
+      linewidth = 1
     )
   g <- g + scale_y_continuous(limits = limits, breaks = breaks, labels = labels)
   g <- g + xlab("Age") + ylab("Percent of Population")
