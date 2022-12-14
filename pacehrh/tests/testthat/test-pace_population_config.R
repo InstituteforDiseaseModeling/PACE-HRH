@@ -13,8 +13,8 @@ test_that("Population configuration: basic population", {
   pop <- pacehrh:::loadInitialPopulation(sheetName = "TEST_TotalPop")
 
   pseq <- seq(10000, 0, -100)
-  testthat::expect_equal(pop$female@values, pseq)
-  testthat::expect_equal(pop$male@values, pseq)
+  testthat::expect_equal(pop$Female, pseq)
+  testthat::expect_equal(pop$Male, pseq)
 })
 
 test_that("Population configuration: confirm cleanup 1", {
@@ -22,6 +22,15 @@ test_that("Population configuration: confirm cleanup 1", {
 })
 
 .validInitPopulation <- function(pop) {
+  expectedColNames <- c("Age", "Female", "Male", "Total")
+
+  testthat::expect_true(!is.null(pop))
+  testthat::expect_true(tibble::is_tibble(pop))
+  testthat::expect_true(setequal(names(pop), expectedColNames))
+
+  refColLength <- length(pop$Age)
+  testthat::expect_true(all(sapply(pop, length) == refColLength))
+
   return(TRUE)
 }
 
@@ -46,7 +55,7 @@ test_that("Population configuration: InitializePopulation()", {
   testthat::expect_true(!is.null(bve$initialPopulation))
   testthat::expect_true(!is.null(bve$populationLabels))
 
-  testthat::expect_true(.validInitPopulation(e$initialPopulation))
+  testthat::expect_true(.validInitPopulation(bve$initialPopulation))
 })
 
 test_that("Population configuration: check labels", {
@@ -199,3 +208,4 @@ test_that("Population label matrices: sanity check m/f", {
 
   testthat::expect_identical(lm2, lm1)
 })
+

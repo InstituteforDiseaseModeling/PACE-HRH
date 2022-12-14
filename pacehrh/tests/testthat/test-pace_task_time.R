@@ -103,16 +103,13 @@ test_that("Populations: read full ranges", {
 
 
   m <- bve$populationRangesTable$Female
-  v <- bve$initialPopulation$female@values
+  v <- bve$initialPopulation$Female
   # print(m)
   # print(v)
   # print(m %*% v)
   # print(t(t(m) * v))
 
 
-  p <- pacehrh:::.computeApplicablePopulationVector()
-
-  testthat::expect_equal(p, 42)
 
 })
 

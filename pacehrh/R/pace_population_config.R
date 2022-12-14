@@ -12,28 +12,58 @@
 loadInitialPopulation <- function(sheetName = "TotalPop"){
   popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
-  assertthat::has_name(popData, "Age")
-  assertthat::has_name(popData, "Male")
-  assertthat::has_name(popData, "Female")
+  namesFound <- names(popData)
+  namesExpected <- c("Age", "Male", "Female")
 
-  # For consistency we use the integer range 0:100 to label age buckets.
-  assertthat::assert_that(length(popData$Male) == length(popData$Female))
-  assertthat::assert_that(length(popData$Male) == length(popData$Age))
-  assertthat::assert_that(length(popData$Age) == length(GPE$ages))
+  if (length(setdiff(namesExpected, namesFound)) != 0){
+    warning(paste0("Incorrect columns in ", sheetName, ". Could not load initial population."))
+    return(NULL)
+  }
 
-  male <- PopulationPyramid()
-  female <- PopulationPyramid()
-  total <- PopulationPyramid()
+  return(.createPopulationTreeDf(GPE$ages, popData$Female, popData$Male))
+}
 
-  male <- setFromVector(male, round(popData$Male, 0))
-  female <- setFromVector(female, round(popData$Female, 0))
-  total <- setFromVector(total,
-                         round(popData$Male, 0) + round(popData$Female, 0))
+.createPopulationTreeDf <- function(ages = 0:100L,
+                                    femalePop = rep_len(0.0, length(ages)),
+                                    malePop = rep_len(0.0, length(ages))) {
+  if (!.validPopTreeParams(ages, femalePop, malePop)) {
+    warning("Invalid parameters passed to .createPopulationTreeDf")
+    return(NULL)
+  }
 
-  return(list(age = GPE$ages,
-              female = female,
-              male = male,
-              total = total))
+  if (GPE$roundingLaw != "none"){
+    femalePop <- round(femalePop, 0)
+    malePop <- round(malePop, 0)
+  }
+
+  return(
+    tibble::tibble(
+      Age = ages,
+      Female = femalePop,
+      Male = malePop,
+      Total = femalePop + malePop
+    )
+  )
+}
+
+.validPopTreeParams <- function(...) {
+  params <- rlang::dots_list(..., .named = TRUE)
+
+  if (any(sapply(params, is.null))) {
+    return(FALSE)
+  }
+
+  if (any(sapply(params, length) == 0)) {
+    return(FALSE)
+  }
+
+  reflen <- length(params$ages)
+
+  if (any(sapply(params, length) != reflen)) {
+    return(FALSE)
+  }
+
+  return(TRUE)
 }
 
 .popLabelRawColumns <-

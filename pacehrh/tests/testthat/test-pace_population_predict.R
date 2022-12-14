@@ -19,12 +19,12 @@ test_that("computeBirths: basic", {
 
   rates[] <- 1
   r <- list(femaleFertility = rates)
-  testthat::expect_equal(pacehrh:::.computeBirths(pop$female@values, r),
-                         sum(pop$female@values))
+  testthat::expect_equal(pacehrh:::.computeBirths(pop$Female, r),
+                         sum(pop$Female))
 
   rates[] <- 0
   r <- list(femaleFertility = rates)
-  testthat::expect_equal(pacehrh:::.computeBirths(pop$female@values, r), 0)
+  testthat::expect_equal(pacehrh:::.computeBirths(pop$Female, r), 0)
 })
 
 test_that("computeDeaths: basic", {
@@ -44,8 +44,8 @@ test_that("computeDeaths: basic", {
   r <- list(femaleMortality = rates, maleMortality = rates/2)
 
   results <- pacehrh:::.computeDeaths(data.frame(
-    Female = pop$female@values,
-    Male = pop$male@values
+    Female = pop$Female,
+    Male = pop$Male
   ), r)
 
   compSum = sum(seq(10000,0,-100))

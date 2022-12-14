@@ -53,18 +53,18 @@
 }
 
 .normalizePopulationEx <- function(pop, normalizedTotal){
-  total <- sum(pop$female@values) + sum(pop$male@values)
+  total <- sum(pop$Female) + sum(pop$Male)
   normFactor <- normalizedTotal / total
 
   if (GPE$roundingLaw == "none"){
-    pop$male@values <- pop$male@values * normFactor
-    pop$female@values <- pop$female@values * normFactor
+    pop$Male <- pop$Male * normFactor
+    pop$Female <- pop$Female * normFactor
   } else {
-    pop$male@values <- round(pop$male@values * normFactor, 0)
-    pop$female@values <- round(pop$female@values * normFactor, 0)
+    pop$Male <- round(pop$Male * normFactor, 0)
+    pop$Female <- round(pop$Female * normFactor, 0)
   }
 
-  pop$total@values <- pop$male@values + pop$female@values
+  pop$Total <- pop$Male + pop$Female
 
   return(pop)
 }
@@ -127,26 +127,22 @@ ComputePopulationProjection <- function(initialPopulation,
   }
 
   initialPopulationTotal <-
-    sum(initialPopulation$female@values) + sum(initialPopulation$male@values)
+    sum(initialPopulation$Female) + sum(initialPopulation$Male)
 
   previousPyramid <- NULL
 
-  assertthat::has_name(initialPopulation, "age")
-  range <- initialPopulation$age
+  range <- initialPopulation$Age
 
   projection <- lapply(years, function(currentYear){
     # Special case: the first element of the projection is just the population
     # pyramid for the starting year.
 
     if (is.null(previousPyramid)){
-      out <- data.frame(Range = range, Female = initialPopulation$female@values, Male = initialPopulation$male@values)
+      out <- data.frame(Range = range, Female = initialPopulation$Female, Male = initialPopulation$Male)
     } else {
       previousYear <- currentYear - 1
 
       rates <- .explodeRates(populationChangeRates, currentYear)
-
-      # currentYearFertilityRates <- explodeFertilityRates(fertilityRates[, as.character(currentYear)])
-      # currentYearMortalityRates <- explodeMortalityRates(mortalityRates[, as.character(currentYear)])
 
       # Shuffle the end-of-year snapshots from the previous year to the next
       # population bucket
