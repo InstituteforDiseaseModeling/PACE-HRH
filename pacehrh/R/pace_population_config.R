@@ -6,8 +6,8 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @return List with three \code{PopulationPyramid} objects:
-#' \code{female}, \code{male} and \code{total}
+#' @return Tibble with three population pyramid fields:
+#' \code{Female}, \code{Male} and \code{Total}
 #'
 loadInitialPopulation <- function(sheetName = "TotalPop"){
   popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
