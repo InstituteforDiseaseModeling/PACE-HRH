@@ -8,7 +8,7 @@ TaskTimes <- function(){
   # Grab some values to reduce the flurry of $ signs
   weeksPerYear <- BVE$scenario$WeeksPerYr
   tasks <- BVE$taskData
-  taskvals <- EXP$taskParameters@values
+  taskvals <- EXP$taskParameters
   prm <- EXP$populationRangeMatrices
   pm <- EXP$prevalenceRatesMatrix
 

@@ -89,7 +89,7 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskDataDims <- dim(BVE$taskData)
     BVE$stochasticTasks <- which(BVE$taskData$applyStochasticity)
     m <- .convertTaskDfToMatrix(BVE$taskData)
-    BVE$taskParameters <- TaskParameters(values = m)
+    BVE$taskParameters <- m
 
     # Add a task data column pointing into the population range mask tables
     # associated with each RelevantPop range
