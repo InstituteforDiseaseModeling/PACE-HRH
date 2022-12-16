@@ -41,6 +41,12 @@ RunExperiment <- function(debug = FALSE){
   # COMPUTE ANNUAL TIMES FOR TASKS
   t <- TaskTimes()
 
+
+
+  TaskTimesEx()
+
+
+
   results$AnnualTimes <- t$Time
   results$AnnualCounts <- t$N
 
@@ -65,14 +71,6 @@ RunExperiment <- function(debug = FALSE){
 
   return(retVal)
 }
-
-
-# ---------------------------------------
-#
-# TODO: Remove this testing-only function
-#
-# ---------------------------------------
-
 
 #' Compute Population Range Sizes Based On Population Predictions
 #'

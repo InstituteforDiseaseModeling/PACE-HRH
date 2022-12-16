@@ -114,3 +114,42 @@ test_that("Populations: read full ranges", {
 })
 
 
+test_that("title: chapter", {
+  gpe <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
+
+  local_vars("inputExcelFile", envir = gpe)
+  local_vars("globalConfigLoaded", envir = gpe)
+  local_vars("initialPopulation", envir = bve)
+  local_vars("populationLabels", envir = bve)
+  local_vars("populationRangesTable", envir = bve)
+
+  gpe$inputExcelFile <- "./simple_config/super_simple_inputs.xlsx"
+  gpe$globalConfigLoaded <- TRUE
+
+  pacehrh::InitializePopulation(popSheet = "Flat_Population")
+  pacehrh::InitializeScenarios()
+  pacehrh::InitializeStochasticParameters()
+  pacehrh::InitializeSeasonality()
+
+  scenario <- "TEST_Simple_1"
+  nTrials <- 5
+  startYear <- 2025
+  endYear <- 2050
+  nMonths <- 12 * length(startYear:endYear)
+
+  shoulderYears <- pacehrh:::GPE$shoulderYears
+  pacehrh::SetRoundingLaw("none")
+
+  pacehrh::SetGlobalStartEndYears(startYear, endYear)
+
+  testthat::expect_true(TRUE)
+
+  results <-
+    pacehrh::RunExperiments(scenarioName = scenario,
+                            trials = nTrials)
+
+  print(lapply(results[[1]]$Population, function(x){x$Female}))
+
+
+})
