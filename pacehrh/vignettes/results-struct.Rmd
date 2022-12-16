@@ -92,13 +92,13 @@ results[[10]]$AnnualCounts["FH.MN.ANC.1",]
 ```{r include=TRUE, results="hold", collapse=TRUE, eval=TRUE}
 # The pacehrh:::EXP environment holds working variables from the most recent trial.
 # It's accessed here to illustrate how task time calculation are done.
-print(pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1",])
+print(pacehrh:::EXP$taskParameters["FH.MN.ANC.1",])
 cat("\n")
 print(pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)
 ```
-In this example (ante-natal task FH.MN.ANC.1), there are `r (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` births in 2020 in a total population of 5000, each of which generates `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"]` ante-natal care visits (NumContactsPerUnit), giving 
-`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` total visits. Each visit is `r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` minutes long, a value derived from a stochastic variation of the base value of `r pacehrh:::BVE$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]`, to give a total time of 
-`r pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1] * pacehrh:::EXP$taskParameters@values["FH.MN.ANC.1","MinsPerContact"]` 
+In this example (ante-natal task FH.MN.ANC.1), there are `r (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` births in 2020 in a total population of 5000, each of which generates `r pacehrh:::EXP$taskParameters["FH.MN.ANC.1","NumContactsPerUnit"]` ante-natal care visits (NumContactsPerUnit), giving 
+`r pacehrh:::EXP$taskParameters["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1]` total visits. Each visit is `r pacehrh:::EXP$taskParameters["FH.MN.ANC.1","MinsPerContact"]` minutes long, a value derived from a stochastic variation of the base value of `r pacehrh:::BVE$taskParameters["FH.MN.ANC.1","MinsPerContact"]`, to give a total time of 
+`r pacehrh:::EXP$taskParameters["FH.MN.ANC.1","NumContactsPerUnit"] * (pacehrh:::EXP$demographics[["2020"]]$Female + pacehrh:::EXP$demographics[["2020"]]$Male)[1] * pacehrh:::EXP$taskParameters["FH.MN.ANC.1","MinsPerContact"]` 
 minutes.
 
 ## SeasonalityResults

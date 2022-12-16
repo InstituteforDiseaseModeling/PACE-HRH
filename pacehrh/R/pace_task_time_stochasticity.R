@@ -7,7 +7,7 @@ varyTaskValues <- function(tasks){
   pars <- BVE$stochasticParams
 
   # Tweak MinsPerContact value
-  m <- tasks@values[,"MinsPerContact"]
+  m <- tasks[,"MinsPerContact"]
   nonZeroMask <- ((!is.na(m)) & (m > 0))
 
   p = pars[pars$Value == "Minutes per contact",]$p
@@ -20,7 +20,7 @@ varyTaskValues <- function(tasks){
   # Use log-normal distribution to tweak MinsPerContact values
   m[nonZeroMask] <- samples * m[nonZeroMask]
 
-  tasks@values[, "MinsPerContact"] <- m
+  tasks[, "MinsPerContact"] <- m
 
   return(tasks)
 }

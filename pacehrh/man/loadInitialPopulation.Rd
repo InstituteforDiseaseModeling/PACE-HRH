@@ -10,8 +10,8 @@ loadInitialPopulation(sheetName = "TotalPop")
 \item{sheetName}{Sheet name from the model input Excel file}
 }
 \value{
-List with three \code{PopulationPyramid} objects:
-\code{female}, \code{male} and \code{total}
+Tibble with three population pyramid fields:
+\code{Female}, \code{Male} and \code{Total}
 }
 \description{
 Read the initial population pyramid from the model inputs Excel file. The
