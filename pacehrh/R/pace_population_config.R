@@ -9,7 +9,7 @@
 #' @return Tibble with three population pyramid fields:
 #' \code{Female}, \code{Male} and \code{Total}
 #'
-loadInitialPopulation <- function(sheetName = "TotalPop"){
+loadInitialPopulation <- function(sheetName = .defaultPopSheet){
   popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   namesFound <- names(popData)
@@ -119,6 +119,8 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
 #' Load basic population information into the global package environment,
 #' from which it can be used for later processing.
 #'
+#' @param popSheet Sheet name from the model input Excel file
+#'
 #' @return NULL (invisible)
 #'
 #' @export
@@ -127,14 +129,14 @@ loadPopulationLabels <- function(sheetName = "Lookup"){
 #' \dontrun{
 #' pacehrh::InitializePopulation()
 #' }
-InitializePopulation <- function(){
+InitializePopulation <- function(popSheet = .defaultPopSheet){
   .checkAndLoadGlobalConfig()
 
   BVE$initialPopulation <- NULL
   BVE$populationLabels <- NULL
   BVE$populationRangesTable <- NULL
 
-  BVE$initialPopulation <- loadInitialPopulation()
+  BVE$initialPopulation <- loadInitialPopulation(sheet = popSheet)
   BVE$populationLabels <- loadPopulationLabels()
   BVE$populationRangesTable <- .computePopulationRanges(BVE$populationLabels)
 

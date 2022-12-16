@@ -4,7 +4,7 @@
 \alias{loadInitialPopulation}
 \title{Load Initial Population}
 \usage{
-loadInitialPopulation(sheetName = "TotalPop")
+loadInitialPopulation(sheetName = .defaultPopSheet)
 }
 \arguments{
 \item{sheetName}{Sheet name from the model input Excel file}

@@ -21,8 +21,10 @@ EXP <- experimentValuesEnvironment
 
 .defaultRoundingLaw <- .roundingLaws[1] # "early"
 
-.colorM = rgb(96,131,180, maxColorValue = 255)
-.colorF = rgb(210,120,135, maxColorValue = 255)
+.colorM <- rgb(96,131,180, maxColorValue = 255)
+.colorF <- rgb(210,120,135, maxColorValue = 255)
+
+.defaultPopSheet <- "TotalPop"
 
 # GLOBAL VARIABLES
 
