@@ -26,7 +26,7 @@ generateRatesMatrix <- function(label = NULL){
     pars,
     years,
     rates,
-    stochasticity = TRUE,
+    stochasticity = GPE$stochasticity,
     seed = NULL,
     optConstantFertility = ifelse(BVE$scenario$o_Fertility_decr == TRUE, FALSE, TRUE)
   )

@@ -4,6 +4,11 @@
 #'
 #' @return Adjusted task parameters matrix
 varyTaskValues <- function(tasks){
+  # Do nothing if stochasticity is turned off
+  if (!GPE$stochasticity){
+    return(tasks)
+  }
+
   pars <- BVE$stochasticParams
 
   # Tweak MinsPerContact value
