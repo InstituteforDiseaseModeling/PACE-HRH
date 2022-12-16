@@ -41,6 +41,8 @@ GPE$years <- seq(from = GPE$startYear,
                  by = 1)
 GPE$shoulderYears <- 1
 
+GPE$stochasticity <- TRUE
+
 GPE$ageMin <- 0
 GPE$ageMax <- 100
 GPE$ages <- seq(from = GPE$ageMin,

@@ -189,7 +189,7 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) 
 #'
 #' @param value Rounding law. Allowed values are "early", "late", "none" and NULL
 #'
-#' @return Previous rounding law value
+#' @return Previous rounding law value (invisible)
 #' @export
 #'
 #' @examples
@@ -204,6 +204,39 @@ SetRoundingLaw <- function(value = NULL){
       GPE$roundingLaw <- tolower(value)
     } else {
       traceMessage(paste0(value, " is not an allowed rounding law value"))
+    }
+  }
+
+  return(invisible(prevValue))
+}
+
+#' Turn Stochasticity On/Off
+#'
+#' Debugging function to turn off all Monte Carlo variation. With stochasticity
+#' off, every experiment based on the same configuration produces the
+#' same output.
+
+#' By default the system is set up with stochasticity on.
+#'
+#' @param value Desired stochasticity. (Calling \code{SetStochasiticity()} with
+#' no parameters or value = NULL returns the current state.)
+#'
+#' @return Previous stochasticity flag value (invisible)
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' pacehrh::SetStochasticity(FALSE) # Turn off stochasticity
+#' pacehrh::SetStochasticity(() # Return current stochasticity state
+#' }
+SetStochasticity <- function(value = NULL){
+  prevValue <- GPE$stochasticity
+
+  if (!is.null(value)){
+    if (rlang::is_logical(value)){
+      GPE$stochasticity <- value
+    } else {
+      traceMessage(paste0(value, " is not an allowed stochasticity flag value"))
     }
   }
 

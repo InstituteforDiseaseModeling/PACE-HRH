@@ -10,7 +10,7 @@ SetRoundingLaw(value = NULL)
 \item{value}{Rounding law. Allowed values are "early", "late", "none" and NULL}
 }
 \value{
-Previous rounding law value
+Previous rounding law value (invisible)
 }
 \description{
 The rounding law determines how the system handles rounding for
