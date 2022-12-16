@@ -31,12 +31,6 @@
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/reference/add-PopulationPyramid-PopulationPyramid-method.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add-TaskParameters-TaskParameters-method.html</loc>
-  </url>
-  <url>
     <loc>/reference/addRatesMatricesToPopulationChangeRates.html</loc>
   </url>
   <url>
@@ -154,9 +148,6 @@
     <loc>/reference/PlotResultsPopulationCurve.html</loc>
   </url>
   <url>
-    <loc>/reference/PopulationPyramid-class.html</loc>
-  </url>
-  <url>
     <loc>/reference/ReadAndCollateSuiteResults.html</loc>
   </url>
   <url>
@@ -184,16 +175,10 @@
     <loc>/reference/SaveSuiteResults.html</loc>
   </url>
   <url>
-    <loc>/reference/setFromVector-PopulationPyramid-numeric-method.html</loc>
-  </url>
-  <url>
     <loc>/reference/SetGlobalStartEndYears.html</loc>
   </url>
   <url>
     <loc>/reference/SetRoundingLaw.html</loc>
-  </url>
-  <url>
-    <loc>/reference/TaskParameters-class.html</loc>
   </url>
   <url>
     <loc>/reference/TaskTimes.html</loc>
