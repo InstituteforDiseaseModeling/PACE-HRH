@@ -11,6 +11,7 @@ TaskTimes <- function(){
   taskvals <- EXP$taskParameters
   prm <- EXP$populationRangeMatrices
   pm <- EXP$prevalenceRatesMatrix
+  taskIds <- tasks$Indicator
 
   # Blank minutes-per-contact values should be zero
   mpc <- taskvals[,"MinsPerContact"]
@@ -54,6 +55,9 @@ TaskTimes <- function(){
       tasksN[tRatioMask] <- 1
     }
 
+    names(tasksN) <- taskIds
+    names(tasksT) <- taskIds
+
     return(list(N = tasksN, Time = tasksT))
   })
 
@@ -64,13 +68,54 @@ TaskTimes <- function(){
   return(list(N = n, Time = t))
 }
 
+
+
+
+
+TaskTimesEx <- function()
+{
+  tasks <- BVE$taskData
+  taskvals <- EXP$taskParameters
+  prm <- EXP$populationRangeMatrices
+  pm <- EXP$prevalenceRatesMatrix
+
+  # Blank minutes-per-contact values should be zero
+  mpc <- taskvals[,"MinsPerContact"]
+  mpc[is.na(mpc)] <- 0
+
+  l <- lapply(BVE$years, function(year){
+    year <- as.character(year)
+    fm <- prm$FemaleRanges[[year]][tasks$popRangeMaskPtr,]
+    mm <- prm$MaleRanges[[year]][tasks$popRangeMaskPtr,]
+
+    p <- as.vector(pm[, year])
+
+    mul <- p *
+      taskvals[,"RateMultiplier"] *
+      (taskvals[,"NumContactsPerUnit"] + taskvals[,"NumContactsAnnual"])
+
+    fN <- fm * mul
+    mN <- mm * mul
+
+    if (GPE$roundingLaw != "none"){
+      fN <- round(fN, 0)
+      mN <- round(mN, 0)
+    }
+
+    # Compute the total time spent executing tasks
+    fT <- fN * mpc
+    mT <- mN * mpc
+
+    return(list(FN = fN, MN = mN, FT = fT, MT = mT))
+  })
+}
+
+
+
+
 .extractPyramid <- function(varName, year){
   df <- eval(parse(text = paste(varName, "$`", as.character(year), "`", sep = "")))
   return(df)
-}
-
-.computeApplicablePopulationVector <- function(pop, label){
-  return(42)
 }
 
 .getApplicablePopulation <- function(year, label){
