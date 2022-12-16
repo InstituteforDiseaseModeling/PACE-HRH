@@ -24,7 +24,6 @@ Compute Time-Series of Population Rate Parameters
 initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
 pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Flat_Rates")
 pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
-# Turn off stochasticity and generate several years of rates
 years <- 2020:2040
 pcr <- pacehrh:::addRatesMatricesToPopulationChangeRates(pcr, years, NULL)
 }
