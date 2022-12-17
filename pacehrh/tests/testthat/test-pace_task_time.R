@@ -2,6 +2,9 @@ library(pacehrh)
 
 withr::local_dir("..")
 
+gpe <- pacehrh:::GPE
+bve <- pacehrh:::BVE
+
 test_that("Populations: read sub-ranges", {
   e <- pacehrh:::GPE
   bve <- pacehrh:::BVE
@@ -48,7 +51,6 @@ test_that("Populations: read sub-ranges", {
   testthat::expect_equal(n, sum(1:51) + sum(101:151))
 })
 
-
 test_that("Populations: read full ranges", {
   gpe <- pacehrh:::GPE
   bve <- pacehrh:::BVE
@@ -80,46 +82,13 @@ test_that("Populations: read full ranges", {
 
   testthat::expect_equal(dim(pacehrh:::BVE$populationRangesTable$Female)[2],
                          length(pacehrh:::GPE$ages))
-
-
-  # Generate fake population projection matrices
-
-  e <- 0.1
-  popInit <- 100
-  l <- lapply(seq_along(gpe$years), function(i){
-    return(rep(round(popInit * ((1 + e) ^ (i - 1)), 0), length(gpe$ages)))
-  })
-
-  mf <- do.call(cbind, l)
-  rownames(mf) <- gpe$ages
-  colnames(mf) <- gpe$years
-
-  mm <- do.call(cbind, l)
-  rownames(mf) <- gpe$ages
-  colnames(mf) <- gpe$years
-
-
-
-
-
-  m <- bve$populationRangesTable$Female
-  v <- bve$initialPopulation$Female
-  # print(m)
-  # print(v)
-  # print(m %*% v)
-  # print(t(t(m) * v))
-
-
-
 })
 
-
-test_that("title: chapter", {
-  gpe <- pacehrh:::GPE
-  bve <- pacehrh:::BVE
-
+test_that("Task time computations: simple", {
   local_vars("inputExcelFile", envir = gpe)
   local_vars("globalConfigLoaded", envir = gpe)
+  local_vars("roundingLaw", envir = gpe)
+  local_vars("stochasticity", envir = gpe)
   local_vars("initialPopulation", envir = bve)
   local_vars("populationLabels", envir = bve)
   local_vars("populationRangesTable", envir = bve)
@@ -132,14 +101,16 @@ test_that("title: chapter", {
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
 
-  scenario <- "TEST_Simple_1"
+  scenario <- "TEST_Simple_2"
   nTrials <- 5
   startYear <- 2025
   endYear <- 2050
   nMonths <- 12 * length(startYear:endYear)
 
   shoulderYears <- pacehrh:::GPE$shoulderYears
+
   pacehrh::SetRoundingLaw("none")
+  pacehrh::SetStochasticity(FALSE)
 
   pacehrh::SetGlobalStartEndYears(startYear, endYear)
 
@@ -149,7 +120,38 @@ test_that("title: chapter", {
     pacehrh::RunExperiments(scenarioName = scenario,
                             trials = nTrials)
 
-  print(lapply(results[[1]]$Population, function(x){x$Female}))
+  # The TEST_Simple_2 scenario combined with stochasticity == FALSE and
+  # roundingLaw == "none" produces a flat population (N = 100 for every
+  # age/gender group, giving a total population of 20200), that doesn't change
+  # from year to year (the reproductive rate in Flat_Rates is set up so the
+  # population is exactly replenished) or from trial to trial.
 
+  # Scan over all trials, all population years, and all population buckets.
 
+  l <- lapply(results, function(r){ # Trials ... r = trial
+    s1 <- sapply(r$Population, function(p){ # Population years ... p = pop tree
+      all(p$Female == 100) # All population buckets in a population tree
+    })
+
+    s2 <- sapply(r$Population, function(p){
+      all(p$Male == 100)
+    })
+
+    return(list(S1 = s1, S2 = s2))
+  })
+
+  # Every bucket should equal 100
+
+  testthat::expect_true(all(unlist(l)))
+
+  ref <- results[[1]]$AnnualCounts
+  testthat::expect_true(all(sapply(results, function(r){r$AnnualCounts == ref})))
+
+  ref <- results[[1]]$AnnualTimes
+  testthat::expect_true(all(sapply(results, function(r){r$AnnualTimes == ref})))
+
+  # print(results[[1]]$AnnualCounts)
+  # print(results[[1]]$AnnualTimes)
+
+#  print(pacehrh:::EXP$prevalenceRatesMatrix)
 })
