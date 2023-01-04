@@ -79,12 +79,15 @@ TaskTimesEx <- function()
   prm <- EXP$populationRangeMatrices
   pm <- EXP$prevalenceRatesMatrix
 
+  taskIds <- tasks$Indicator
+
   # Blank minutes-per-contact values should be zero
   mpc <- taskvals[,"MinsPerContact"]
   mpc[is.na(mpc)] <- 0
 
-  l <- lapply(BVE$years, function(year){
-    year <- as.character(year)
+  years <- as.character(BVE$years)
+
+  l <- lapply(years, function(year){
     fm <- prm$FemaleRanges[[year]][tasks$popRangeMaskPtr,]
     mm <- prm$MaleRanges[[year]][tasks$popRangeMaskPtr,]
 
@@ -94,6 +97,9 @@ TaskTimesEx <- function()
       taskvals[,"RateMultiplier"] *
       (taskvals[,"NumContactsPerUnit"] + taskvals[,"NumContactsAnnual"])
 
+    # Note: this code takes advantage of vector recycling! mul is the length
+    # of a column of fm or mm, so fm * mul has the effect of multiplying each
+    # column of the matrix by mul.
     fN <- fm * mul
     mN <- mm * mul
 
@@ -106,8 +112,17 @@ TaskTimesEx <- function()
     fT <- fN * mpc
     mT <- mN * mpc
 
-    return(list(FN = fN, MN = mN, FT = fT, MT = mT))
+    rownames(fN) <- taskIds
+    rownames(mN) <- taskIds
+    rownames(fT) <- taskIds
+    rownames(mT) <- taskIds
+
+    return(list(Times = list(Female = fT, Male = mT),
+                Counts = list(Female = fN, Male = mN)))
   })
+
+  names(l) <- years
+  return(l)
 }
 
 

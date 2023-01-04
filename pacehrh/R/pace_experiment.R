@@ -43,12 +43,15 @@ RunExperiment <- function(debug = FALSE){
 
 
 
-  TaskTimesEx()
 
 
 
   results$AnnualTimes <- t$Time
   results$AnnualCounts <- t$N
+
+  results$AnnualPerAge <- TaskTimesEx()
+
+
 
   # USE ANNUAL TIMES TO COMPUTE SEASONALLY ADJUSTED MONTHLY TIMES
   seasonalityResults <- runSeasonalityExperiment(results)
