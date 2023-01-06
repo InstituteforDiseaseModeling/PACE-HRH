@@ -40,16 +40,19 @@ RunExperiment <- function(debug = FALSE){
 
   # COMPUTE ANNUAL TIMES FOR TASKS
   t <- TaskTimes()
-
-
-
-
-
-
   results$AnnualTimes <- t$Time
   results$AnnualCounts <- t$N
 
+
+  # COMPUTE PER-AGE ANNUAL TIMES FOR TASKS
   results$AnnualPerAge <- TaskTimesEx()
+
+
+
+
+  .correctForOffsets(results$AnnualPerAge)
+
+
 
 
 
@@ -115,4 +118,12 @@ RunExperiment <- function(debug = FALSE){
     FemaleRanges = rf,
     MaleRanges = rm
   ))
+}
+
+
+
+
+.correctForOffsets <- function(l){
+  # print(BVE$seasonalTasks)
+  # print(which(BVE$taskData$Indicator %in% BVE$seasonalTasks))
 }

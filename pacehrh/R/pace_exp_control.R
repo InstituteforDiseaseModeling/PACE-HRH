@@ -98,11 +98,19 @@ SaveBaseSettings <- function(scenarioName = ""){
     })
 
     BVE$taskData$popRangeMaskPtr <- as.vector(index)
+
+    # Generate a list of tasks affected by seasonality
+    tpIds <- dimnames(BVE$taskParameters)[[1]]
+    soIds <- BVE$seasonalityOffsets$Task
+    BVE$seasonalTasks <- intersect(soIds, tpIds)
   }
 
   # Set the year range for trials, which is just the specified year range
-  # extended by a year to correct for seasonality edge effects.
+  # extended by a GPE$shoulderYears years to correct for seasonality edge effects.
   .setTrialYears()
+
+
+
 
   return(BVE$scenario)
 }

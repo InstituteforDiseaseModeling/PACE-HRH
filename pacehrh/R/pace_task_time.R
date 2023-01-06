@@ -68,10 +68,6 @@ TaskTimes <- function(){
   return(list(N = n, Time = t))
 }
 
-
-
-
-
 TaskTimesEx <- function()
 {
   tasks <- BVE$taskData
@@ -85,21 +81,36 @@ TaskTimesEx <- function()
   mpc <- taskvals[,"MinsPerContact"]
   mpc[is.na(mpc)] <- 0
 
+  # Initialize a 3-D matrix (Tasks, Ages, Years) to hold the results
+  nYears <- length(BVE$years)
+  nTasks <- nrow(BVE$taskData)
+  nAges <- length(GPE$ages)
+
+  mfT <- array(dim = c(nTasks, nAges, nYears)) # Matrix of female task times
+  mmT <- array(dim = c(nTasks, nAges, nYears)) # Matrix of male task times
+
   years <- as.character(BVE$years)
 
-  l <- lapply(years, function(year){
+  for (i in seq_along(years)){
+    year <- years[i]
+
+    # Extract matrices (Tasks x Ages) giving the applicable population for each
+    # task broken out by ages.
     fm <- prm$FemaleRanges[[year]][tasks$popRangeMaskPtr,]
     mm <- prm$MaleRanges[[year]][tasks$popRangeMaskPtr,]
 
+    # Get the vector of prevalence rates to apply to each task for this year.
     p <- as.vector(pm[, year])
 
+    # Compute the multiplier factors that will convert applicable population
+    # counts to numbers of clinical events.
     mul <- p *
       taskvals[,"RateMultiplier"] *
       (taskvals[,"NumContactsPerUnit"] + taskvals[,"NumContactsAnnual"])
 
-    # Note: this code takes advantage of vector recycling! mul is the length
-    # of a column of fm or mm, so fm * mul has the effect of multiplying each
-    # column of the matrix by mul.
+    # Note: this code takes advantage of vector recycling! The mul vector is the
+    # same length as a column of fm or mm, so fm * mul has the effect of
+    # multiplying each column of the fm matrix by mul.
     fN <- fm * mul
     mN <- mm * mul
 
@@ -112,21 +123,15 @@ TaskTimesEx <- function()
     fT <- fN * mpc
     mT <- mN * mpc
 
-    rownames(fN) <- taskIds
-    rownames(mN) <- taskIds
-    rownames(fT) <- taskIds
-    rownames(mT) <- taskIds
+    mfT[,,i] <- fT
+    mmT[,,i] <- mT
+  }
 
-    return(list(Times = list(Female = fT, Male = mT),
-                Counts = list(Female = fN, Male = mN)))
-  })
+  dimnames(mfT) <- list(Tasks = BVE$taskData$Indicator, Ages = GPE$ages, Years = BVE$years)
+  dimnames(mmT) <- list(Tasks = BVE$taskData$Indicator, Ages = GPE$ages, Years = BVE$years)
 
-  names(l) <- years
-  return(l)
+  return(list(Female = mfT, Male = mmT))
 }
-
-
-
 
 .extractPyramid <- function(varName, year){
   df <- eval(parse(text = paste(varName, "$`", as.character(year), "`", sep = "")))
