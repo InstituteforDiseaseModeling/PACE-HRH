@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "plyr", "reshape2", "scales")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "plyr", "reshape2", "scales", "glue")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -62,19 +62,50 @@ ValidateInputExcelFileContent <- function(inputFile,
                                           sheetNames = NULL){
   errcode <- .Success
   
+  checklist <- data.frame(
+    sheet = character(),
+    rule = character(),
+    stringsAsFactors = FALSE)
+  
+  all_sheetNames <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", list.files("config/validation/rules"))
+  
   # check all available rules
   if (is.null(sheetNames)){
-    sheetNames <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", list.files("config/validation/rules"))
+    
+    # Identify rules to apply from scenario tab
+    scenarios <- read_xlsx(inputFile, "Scenarios")
+    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
+    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
+    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
+    
+    for (f in list.files("config/validation/rules")){
+      if (!f %in% checklist$rule){
+        checklist[nrow(checklist) + 1,] <- list(sheet=gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f), rule=f)
+      }
+    }
+    
+  }else{
+    # sheetNames must match the rule name if provided
+    for (s in sheetNames){
+      if (s %in% all_sheetNames){
+        checklist[nrow(checklist) + 1,] <- list(s, glue("rules_{s}.yaml"))
+      }
+      else{
+        print(glue("Unable to check sheet: {s}."))
+      }
+    }
   }
+  
  
   # loop over each sheet and apply corresponding rules
   result <- data.frame()
   rules_combined <- data.frame()
   plots <- vector()
-  for (i in sheetNames){
-    f = file.path("config/validation/rules", paste("rules_", i, ".yaml", sep=""))
+  for (i in nrow(checklist)){
+    f = file.path("config/validation/rules", checklist[[i, "rule"]])
+    sheet <- checklist[[i, "sheet"]]
     if (!file.exists(f)){
-      stop(paste("rule not found for:", i))
+      stop(paste("rule not found for:", sheet))
     }
     else{
       rules <- validator(.file=f)
@@ -85,16 +116,16 @@ ValidateInputExcelFileContent <- function(inputFile,
         rules_combined <- rbind(rules_combined, validate::as.data.frame(rules))
       }
       
-      data <- read_xlsx(inputFile, sheet = i)
+      data <- read_xlsx(inputFile, sheet =sheet)
       data_target <- data.frame(data)
       
       # Confront the rules and check if any error occurs
       out <- confront(data_target, rules,  lin.ineq.eps=0, lin.eq.eps=1e-08)
       if(TRUE %in% validate::summary(out)$error){
-        stop(paste("Some error occurred evaluating rules:", i))
+        stop(paste("Some error occurred evaluating rules:", sheet))
       }
       # Apply rules and save the violation results
-      check <- .get_violation_rows(out, data_target, rules, outputDir, i)
+      check <- .get_violation_rows(out, data_target, rules, outputDir, sheet)
       errcode = min(errcode, check)
       
       # combine results in the loop
@@ -246,29 +277,37 @@ ValidateInputExcelFileContent <- function(inputFile,
   .custom_check_write_result(description, filename, severity, violation)
 
   ##### Check seasonality offset is in taskValue sheet" #####
-  filename <- file.path(custom_dir, "violation_offsets_not_in_task.csv")
-  description <- "Task has a seasonality offset, but it is not listed in the Task Values sheet.
-  Thus, this task will not have time allocated and thus the seasonality offset will not have any impact
-  on the model’s results. Please verify that this is expected behavior."
-  severity <- "warning"
-  TV <- read_xlsx(inputFile ,sheet="TaskValues_ref")
-  violation <- SO %>%
-    filter(!(Task %in%  unique(TV$Indicator))) %>%
-    select(Task, Description, Curve)
-  .custom_check_write_result(description, filename, severity, violation)
-
+  scenarios <- read_xlsx(inputFile, sheet="Scenarios")
+  taskvalue_sheets <- unique(scenarios$sheet_TaskValues)
+  for (taskvalue_sheet in taskvalue_sheets){
+    filename <- file.path(custom_dir, glue("violation_offsets_not_in_{taskvalue_sheet}.csv"))
+    description <- glue("Task has a seasonality offset, but it is not listed in the {taskvalue_sheet} sheet. 
+    Thus, this task will not have time allocated and thus the seasonality offset will not have any impact
+    on the model’s results. Please verify that this is expected behavior.")
+    severity <- "warning"
+    TV <- read_xlsx(inputFile ,sheet=taskvalue_sheet)
+    violation <- SO %>%
+      filter(!(Task %in%  unique(TV$Indicator))) %>%
+      select(Task, Description, Curve)
+    .custom_check_write_result(description, filename, severity, violation)
+  }
+  
   ##### Check seasonality offset is in seasonalityCurve" #####
-  filename <- file.path(custom_dir, "violation_offsets_not_in_curve.csv")
-  description <- "Seasonality offsets link to the Seasonality curves sheet columns.
-  This offset does not match any seasonality curve, and thus will not be used
-  or impact the model’s results. Please verify that this is expected behavior."
-  severity <- "warning"
-  SC <- read_xlsx(inputFile ,sheet="SeasonalityCurves")
-  violation <- SO %>%
-    filter(!(Curve %in% colnames(SC))) %>%
-    select(Task, Description, Curve)
-  .custom_check_write_result(description, filename, severity, violation)
-
+  seasonality_sheets <- unique(scenarios$sheet_SeasonalityCurves)
+  for (seasonality_sheet in seasonality_sheets){
+    filename <- file.path(custom_dir, glue("violation_offsets_not_in_{seasonality_sheet}.csv"))
+    description <- glue("Seasonality offsets link to the {seasonality_sheet} sheet columns.
+    This offset does not match any seasonality curve, and thus will not be used
+    or impact the model’s results. Please verify that this is expected behavior.")
+    severity <- "warning"
+    SC <- read_xlsx(inputFile ,sheet=seasonality_sheet)
+    violation <- SO %>%
+      filter(!(Curve %in% colnames(SC))) %>%
+      select(Task, Description, Curve)
+    .custom_check_write_result(description, filename, severity, violation)
+  }
+  
+ 
   # writing metadata for custom check
   write.csv(custom_test$df_reason, file.path(custom_dir, "custom_validation_results.csv"))
 
