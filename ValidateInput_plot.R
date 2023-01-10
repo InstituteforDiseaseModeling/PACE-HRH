@@ -11,6 +11,7 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
   
   final_result <- result_file %>%
     dplyr::mutate(
+      name = paste(sheet_name, name, sep = " : "),
       warning = if_else(severity=="warning", fails, 0L),
       info = if_else(severity=="info", fails, 0L),
       fails = if_else(severity=="error", fails, 0L)

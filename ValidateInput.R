@@ -74,9 +74,9 @@ ValidateInputExcelFileContent <- function(inputFile,
     
     # Identify rules to apply from scenario tab
     scenarios <- read_xlsx(inputFile, "Scenarios")
-    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
-    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
     checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
+    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
+    checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
     
     for (f in list.files("config/validation/rules")){
       if (!f %in% checklist$rule){
@@ -84,7 +84,7 @@ ValidateInputExcelFileContent <- function(inputFile,
       }
     }
     
-  }else{
+  } else {
     # sheetNames must match the rule name if provided
     for (s in sheetNames){
       if (s %in% all_sheetNames){
@@ -101,7 +101,8 @@ ValidateInputExcelFileContent <- function(inputFile,
   result <- data.frame()
   rules_combined <- data.frame()
   plots <- vector()
-  for (i in nrow(checklist)){
+  for (i in seq(1, nrow(checklist))){
+      
     f = file.path("config/validation/rules", checklist[[i, "rule"]])
     sheet <- checklist[[i, "sheet"]]
     if (!file.exists(f)){
@@ -122,6 +123,8 @@ ValidateInputExcelFileContent <- function(inputFile,
       # Confront the rules and check if any error occurs
       out <- confront(data_target, rules,  lin.ineq.eps=0, lin.eq.eps=1e-08)
       if(TRUE %in% validate::summary(out)$error){
+        print(glue("some rules cannot be applied to sheet: {sheet} \nMaybe columns in expression is missing?"))
+        print(validate::summary(out) %>% filter (error == 1) %>% select (expression) %>% unique())
         stop(paste("Some error occurred evaluating rules:", sheet))
       }
       # Apply rules and save the violation results
@@ -131,11 +134,14 @@ ValidateInputExcelFileContent <- function(inputFile,
       # combine results in the loop
       if (length(result)==0){
         result <- validate::as.data.frame(validate::summary(out))
+        result <- result %>% mutate (sheet_name = sheet)
       }
       else {
-        result <- rbind(result,  validate::as.data.frame(validate::summary(out)))
+        new_result <- validate::as.data.frame(validate::summary(out))
+        new_result <- new_result %>% mutate (sheet_name = sheet)
+        result <- rbind(result,  new_result, make.row.names=TRUE, stringsAsFactors = FALSE)
       }
-      
+
     }
   }
   result_file <- file.path(outputDir, "input_validation_results.csv")
