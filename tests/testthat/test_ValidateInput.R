@@ -58,3 +58,21 @@ test_that("Validation Scenarios custom name", {
                                                                 outputDir = logdir))
 })
 
+# test validation missing columns specified in the rule (sheet:SeasonalityCurves)
+test_that("Validation Scenarios custom name missing col", {
+ 
+  logdir <- tempdir()
+  testthat::expect_output(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation_custom_missing_col.xlsx",
+                                                                outputDir = logdir), regexp = "some rules cannot be applied to sheet: SeasonalityCurves")
+  
+})
+
+# test validation missing sheet specified in scenarios
+test_that("Validation Scenarios custom name missing col", {
+  
+  logdir <- tempdir()
+  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation_custom_missing_sheet.xlsx",
+                                                        outputDir = logdir), regexp = 'sheet: "Task2" does not exist')
+  
+})
+

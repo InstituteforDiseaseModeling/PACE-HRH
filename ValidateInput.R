@@ -160,9 +160,13 @@ ValidateInputExcelFileContent <- function(inputFile,
     }
   }
   result_file <- file.path(outputDir, "input_validation_results.csv")
+  rules_combined <- rules_combined %>%
+    select(-c("language","created")) %>%
+    unique()
+  
   result_details <- result %>%
-    inner_join(rules_combined, by = c("name")) %>%
-    select(-c("language","created"))
+    inner_join(rules_combined, by = c("name"))
+  
   write.csv(result_details, result_file)
   return (errcode)
 }
