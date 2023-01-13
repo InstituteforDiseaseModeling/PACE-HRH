@@ -10,6 +10,7 @@ for(i in packages){
 plot_result <- function(result_file, outfile, fancy = TRUE){
   
   final_result <- result_file %>%
+    filter (error == 0) %>% 
     dplyr::mutate(
       name = paste(sheet_name, name, sep = " : "),
       warning = if_else(severity=="warning", fails, 0L),

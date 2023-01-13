@@ -6,7 +6,7 @@ source("ValidateInput.R")
 # test validate no rules
 test_that("Validation no rules", {
   # test should fail if no rule is defined for the sheet
-  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx", sheetNames = c("Total_Pop2")), "rule not found")
+  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx", sheetNames = c("Total_Pop2")), "Unable to check sheet")
   
 })
 # test validation capture
@@ -49,3 +49,12 @@ test_that("Validation capture Success", {
     dplyr::filter(Value == "Seasonality ratio to mean")
   testthat::expect_equal(nrow(violating_row ), 1)
 })
+
+# test validation success
+test_that("Validation Scenarios custom name", {
+  errCode <- .Success
+  logdir <- tempdir()
+  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation_custom.xlsx",
+                                                                outputDir = logdir))
+})
+

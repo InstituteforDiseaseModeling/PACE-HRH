@@ -16,7 +16,7 @@ key_cols <- list (PopValues = c("Description", "Sex", "InitValue", "ChangeRate")
                   TaskValues_ref = c("Indicator", "CommonName"))
 # define rule-specific extra columns (use for reporting)
 rule_cols <- list(AnnualDeltaRatio_value_Range = c("StartingRateInPop"),
-                  RateMultiplier = c("StartingRateInPop", "MultiplierReason")
+                  RateMultiplier = c("StartingRateInPop")
                   )
 
 # store metadata for custom check
@@ -79,11 +79,21 @@ ValidateInputExcelFileContent <- function(inputFile,
     checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
     
     for (f in list.files("config/validation/rules")){
+      default_rulename <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f)
       if (!f %in% checklist$rule){
-        checklist[nrow(checklist) + 1,] <- list(sheet=gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f), rule=f)
+        checklist[nrow(checklist) + 1,] <- list(sheet=default_rulename, rule=f)
+      }
+      else{
+        # add key column to the sheets specified in the Scenarios
+        new_keys <- as.list(checklist %>% filter (rule ==f) %>% select (sheet))
+        if (default_rulename %in% names(key_cols)){
+          for (k in new_keys){
+            key_cols[k] <- list(key_cols[[default_rulename]])
+          }
+        }
       }
     }
-    
+    key_cols <<- key_cols
   } else {
     # sheetNames must match the rule name if provided
     for (s in sheetNames){
@@ -91,7 +101,7 @@ ValidateInputExcelFileContent <- function(inputFile,
         checklist[nrow(checklist) + 1,] <- list(s, glue("rules_{s}.yaml"))
       }
       else{
-        print(glue("Unable to check sheet: {s}."))
+        stop(glue("Unable to check sheet: {s}."))
       }
     }
   }
@@ -102,7 +112,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   rules_combined <- data.frame()
   plots <- vector()
   for (i in seq(1, nrow(checklist))){
-      
+  
     f = file.path("config/validation/rules", checklist[[i, "rule"]])
     sheet <- checklist[[i, "sheet"]]
     if (!file.exists(f)){
@@ -117,6 +127,11 @@ ValidateInputExcelFileContent <- function(inputFile,
         rules_combined <- rbind(rules_combined, validate::as.data.frame(rules))
       }
       
+      # Fail if sheet exist
+      if (!sheet %in% readxl::excel_sheets(inputFile)){
+        stop(glue('sheet: "{sheet}" does not exist in {inputFile}'))  
+      }
+      
       data <- read_xlsx(inputFile, sheet =sheet)
       data_target <- data.frame(data)
       
@@ -125,7 +140,7 @@ ValidateInputExcelFileContent <- function(inputFile,
       if(TRUE %in% validate::summary(out)$error){
         print(glue("some rules cannot be applied to sheet: {sheet} \nMaybe columns in expression is missing?"))
         print(validate::summary(out) %>% filter (error == 1) %>% select (expression) %>% unique())
-        stop(paste("Some error occurred evaluating rules:", sheet))
+        print(glue("Some error occurred evaluating {sheet}: {validate::errors(out)}"))
       }
       # Apply rules and save the violation results
       check <- .get_violation_rows(out, data_target, rules, outputDir, sheet)
@@ -158,7 +173,10 @@ ValidateInputExcelFileContent <- function(inputFile,
   for (i in names(out)){
     severity <- meta(rules[i])$severity
     df_violations <- NULL
-    if (nrow(validate::values(out[i])) > 1 | validate::values(out[i])[[1]] == FALSE){
+    if (length(validate::errors(out[i])) > 0){
+      next # ignore rules which encounter errors
+    }
+    if (nrow(validate::values(out[i])) > 0 & any(validate::values(out[i]) == FALSE)){
       if (severity == "error"){
         errcode <- .errValidationRuleFailed
       }
