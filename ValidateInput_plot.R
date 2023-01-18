@@ -10,7 +10,9 @@ for(i in packages){
 plot_result <- function(result_file, outfile, fancy = TRUE){
   
   final_result <- result_file %>%
+    filter (error == 0) %>% 
     dplyr::mutate(
+      name = paste(sheet_name, name, sep = " : "),
       warning = if_else(severity=="warning", fails, 0L),
       info = if_else(severity=="info", fails, 0L),
       fails = if_else(severity=="error", fails, 0L)
@@ -53,7 +55,7 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
     showtext_auto()
     
     p <- ggplot(final_result, aes(x=total/items, y=factor(name, level=ylevel_order), fill=factor(result, level=xlevel_order))) +
-      geom_bar(stat = "identity") +
+      geom_bar(stat = "identity", width=0.95) +
       xlab(NULL) + ylab(NULL) +
       scale_fill_manual(values = c("passes"="limegreen", "fails"="orangered", "warning"="darkgoldenrod1", "info"="dodgerblue")) +
       scale_x_continuous(labels=scales::percent) +
@@ -64,12 +66,12 @@ plot_result <- function(result_file, outfile, fancy = TRUE){
       theme(
         axis.ticks = element_blank(),
         plot.title = element_text(hjust = 0.5),
-        plot.margin=margin(3,1,3,3,"lines"),
+        plot.margin=margin(1,1,3,3,"lines"),
         legend.direction ="horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
         panel.background=element_rect(fill = "white"), 
-        text=element_text(size=40, family="barlow-cond"))
+        text=element_text(size=30, family="barlow-cond"))
     
     ggsave(outfile, p, width = 160, height = 160, units="mm")
     showtext_auto(FALSE)
