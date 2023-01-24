@@ -178,11 +178,11 @@ ValidateInputExcelFileContent <- function(inputFile,
       return (errcode)
     },
     error = function(e){
-      print(writeLines(readLines(lf)))
+      if (log_status() == 'open') print(writeLines(readLines(lf)))
       stop(e)
     },
     finally = {
-      log_close()
+      if (log_status() != 'closed') log_close()
     }
   )
 }
