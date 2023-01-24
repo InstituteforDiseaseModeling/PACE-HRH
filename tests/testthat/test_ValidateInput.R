@@ -6,7 +6,10 @@ source("ValidateInput.R")
 # test validate no rules
 test_that("Validation no rules", {
   # test should fail if no rule is defined for the sheet
-  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx", sheetNames = c("Total_Pop2")), "Unable to check sheet")
+  logdir <- tempdir()
+  testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
+                                                       outputDir = logdir,
+                                                       sheetNames = c("Total_Pop2")), "Unable to check sheet")
   
 })
 # test validation capture
