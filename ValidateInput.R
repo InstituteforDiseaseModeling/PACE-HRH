@@ -63,7 +63,7 @@ ValidateInputExcelFileContent <- function(inputFile,
                                           sheetNames = NULL){
   
   logfile <- file.path(outputDir, .errorLogfile)
-  lf <- log_open(file_name = logfile)
+  lf <- log_open(file_name = logfile, show_notes = FALSE)
   
   tryCatch(
     {
