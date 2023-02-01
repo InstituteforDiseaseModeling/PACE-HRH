@@ -32,7 +32,6 @@ Mean_Alloc <- read.csv(paste("results/Mean_Alloc_",GeoSelect,"_",date,".csv",sep
 #bars are the simulated expected value for time required, best case with perfect scheduling
 
 maxyval <- max(Mean_Total$CI95/Mean_Total$WeeksPerYr)*1.05
-i=1
 
 for(sc in unique(scenarios$UniqueID)){
 
@@ -47,7 +46,8 @@ for(sc in unique(scenarios$UniqueID)){
   temp$Alpha[temp$ClinicalOrNon!="Clinical"] = .3
   temp <- subset(temp,Year<2036)
 
-  plottitle <- scenarios$UniqueID[i]
+  catchment <- scenarios$BaselinePop[scenarios$UniqueID==sc]
+  ylabel <- paste("Hours per Week per",format(catchment, big.mark = ","),"Pop", sep=" ")
 
   plot1 <- ggplot()+
     geom_bar(data=temp,aes(x=Year,y=MeanHrs/WeeksPerYr,fill=Category),stat="identity",alpha=.9)+
@@ -59,15 +59,13 @@ for(sc in unique(scenarios$UniqueID)){
     scale_x_continuous(breaks = seq(2021,2035))+
     theme(legend.title=element_blank(),axis.text.x = element_text(angle=-90, vjust = .5, hjust=1))+
     scale_fill_viridis_d()+
-    ylab("Hours per Week per 2,500 Pop") + xlab("") + labs(title = plottitle)
+    ylab(ylabel) + xlab("") + labs(title = paste("Time Allocation by Clinical Category",sc))
 
   print(plot1)
 
   jpeg(paste("results/Weekly workload by Type","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
   print(plot1)
   dev.off()
-
-  i=i+1
 
 }
 
@@ -79,21 +77,24 @@ renamelist <- c("Midwife","Health Off.","Nurse","Env. Health","Fam. Health","HEW
 
 for(sc in unique(scenarios$UniqueID)){
 
-  temp <- subset(Mean_Alloc,Scenario_ID==sc)
+  temp <- subset(Mean_Alloc,Scenario_ID==sc & Cadre!="UN_hrs")
   weeksperyear = mean(temp$WeeksPerYr[temp$Scenario_ID==sc])
   hoursperweek = mean(temp$HrsPerWeek[temp$Scenario_ID==sc])
   temp$colorselect <- colorlist[match(temp$Cadre,namelist)]
   temp$rename <- renamelist[match(temp$Cadre,namelist)]
   
+  catchment <- scenarios$BaselinePop[scenarios$UniqueID==sc]
+  ylabel <- paste("Hours per Week per",format(catchment, big.mark = ","),"Pop", sep=" ")
+  
   plot8 <- ggplot()+
-    geom_bar(data=temp,aes(x=Year,y=CI50/WeeksPerYr,group=Cadre),fill=temp$colorselect,color="darkgrey",stat="identity",alpha=.9)+
+    geom_bar(data=temp,aes(x=Year,y=CI50/WeeksPerYr,group=Cadre, fill=colorselect),color="darkgrey",stat="identity",alpha=.9)+
     geom_line(data=subset(Mean_Total,Scenario_ID==sc),aes(x=Year,y=MeanHrs/WeeksPerYr),linewidth=1.2)+
     theme_bw()+
     scale_x_continuous(breaks = seq(2021,max(temp$Year)))+
     theme(legend.title=element_blank(),axis.text.x = element_text(angle=-90, vjust = .5, hjust=1))+
-    ylab("Hours per Week per 2,500 Pop") + xlab("") + labs(title = paste("Time Allocation by Cadre",sc)) +
-    scale_fill_discrete(labels=renamelist)
-
+    scale_fill_discrete(labels=renamelist)+
+    ylab(ylabel) + xlab("") + labs(title = paste("Time Allocation by Cadre",sc))
+    
   print(plot8)
 
   jpeg(paste("results/Weekly workload by Cadre","_",GeoSelect,"_",date,"_",sc,".jpeg",sep=""), width = 6, height = 4, units = 'in', res = 700)
