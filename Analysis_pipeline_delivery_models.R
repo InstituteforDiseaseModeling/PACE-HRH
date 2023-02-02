@@ -181,7 +181,7 @@ for(sc in unique(scenarios$UniqueID)){
     geom_hline(yintercept = 1,color="black",linetype="dashed")+
     theme_bw()+xlab("")+ylab("Ratio to Baseline Year")+theme(legend.position="none",axis.text.x = element_text(angle=-90, vjust = .5, hjust=1))+
     scale_color_discrete()+
-    geom_text(aes(x=max(Year)+.2,y=RatioLastYr,label=Label),color="darkgrey",size=2.8,hjust=0)+
+    geom_text_repel(aes(x=max(Year)+.2,y=RatioLastYr,label=Label),color="darkgrey", max.overlaps =200, size=2.8,hjust=0)+
     scale_x_continuous(breaks = seq(2021,2035),limits=c(2021,max(temp$Year)+6)) +
     scale_y_continuous(limits = c(yplotmin,yplotmax))+labs(title = paste(sc))
 
