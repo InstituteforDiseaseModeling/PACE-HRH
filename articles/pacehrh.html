@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
                         <h4 data-toc-skip class="author">Jen
 Schripsema</h4>
             
-            <h4 data-toc-skip class="date">2022-12-16</h4>
+            <h4 data-toc-skip class="date">2023-02-03</h4>
       
       
       <div class="hidden name"><code>pacehrh.rmd</code></div>
@@ -237,25 +237,33 @@ analysis.</li>
 <li>
 <strong>o_Fertility_decr</strong> Typically this should be set to
 TRUE. Optionally, this true/false binary value turns on or off the
-decline in the fertility rate. If set to TRUE, fertility rates will
-decline over time (set elsewhere). If set to FALSE, fertility will
+annual change in the fertility rate. If set to TRUE, fertility rates
+will decline over time (set elsewhere). If set to FALSE, fertility will
 remain stable at the level set for the first year of the simulation.
 This is to be used for debugging and sensitivity analysis.</li>
 <li>
 <strong>o_MHIVTB_decr</strong> Typically this should be set to TRUE.
-Optionally, this true/false binary value turns on or off the decline in
-the incidence rates for malaria, HIV, and TB. If set to TRUE, incidence
-rates will decline over time (set elsewhere). If set to FALSE, these
-rates will remain stable at the level set for the first year of the
-simulation. This is to be used for debugging and sensitivity
+Optionally, this true/false binary value turns on or off the annual
+change (as specified by the delta) in the incidence rates for malaria,
+HIV, and TB. If set to TRUE, incidence rates will decline over time (set
+elsewhere). If set to FALSE, these rates will remain stable at the level
+set for the first year of the simulation. For a task that has a
+<strong>AnnualDeltaRatio</strong> of exactly 1.0, this option will not
+have any effect. This is to be used for debugging and sensitivity
 analysis.</li>
 <li>
 <strong>o_ChildDis_decr</strong> Typically this should be set to
 TRUE. Optionally, this true/false binary value turns on or off the
-decline in the incidence rates for childhood diseases. If set to TRUE,
-incidence rates will decline over time (set elsewhere). If set to FALSE,
-these rates will remain stable at the level set for the first year of
-the simulation. This is to be used for debugging and sensitivity
+annual change (as specified by the delta) in the incidence rates for
+childhood disease tasks. These are defined within the model as any tasks
+that are applied to the age 1-4 population, as specified in the
+population column on the <strong>Task Values</strong> sheet. It does not
+include those that are specific to a subset (e.g., 1 yo). If set to
+TRUE, incidence rates will decline over time (set elsewhere). If set to
+FALSE, these rates will remain stable at the level set for the first
+year of the simulation. For a task that has a
+<strong>AnnualDeltaRatio</strong> of exactly 1.0, this option will not
+have any effect. This is to be used for debugging and sensitivity
 analysis.</li>
 <li>
 <strong>sheet_</strong> columns K through N: The name of the sheets
@@ -334,63 +342,92 @@ See the table below for more detail.</p>
 <td align="left">Fertility rates</td>
 <td align="left">Uniform</td>
 <td align="left">mean, p</td>
-<td align="left">min = mean - mean*p <br> max = mean + mean*p</td>
+<td align="left">
+<span class="math display">\[min = mean -
+mean*p\]</span> <span class="math display">\[max = mean +
+mean*p\]</span>
+</td>
 </tr>
 <tr class="even">
 <td align="left">Mortality rates</td>
 <td align="left">Uniform</td>
 <td align="left">mean, p</td>
-<td align="left">min = mean - mean*p <br> max = mean + mean*p</td>
+<td align="left">
+<span class="math display">\[min = mean -
+mean*p\]</span> <span class="math display">\[max = mean +
+mean*p\]</span>
+</td>
 </tr>
 <tr class="odd">
 <td align="left">Incidence rates <br>(<strong>TaskValues</strong>
 column H)</td>
 <td align="left">Uniform</td>
 <td align="left">mean, p</td>
-<td align="left">min = mean - mean*p <br> max = mean + mean*p</td>
+<td align="left">
+<span class="math display">\[min = mean -
+mean*p\]</span> <span class="math display">\[max = mean +
+mean*p\]</span>
+</td>
 </tr>
 <tr class="even">
 <td align="left">Annual delta fertility rates</td>
 <td align="left">Truncated normal*</td>
 <td align="left">delta, p, q</td>
-<td align="left">mean = delta <br> std dev = p <br> a = mean - p*q
-<br> b = mean + p*q</td>
+<td align="left">
+<span class="math display">\[mean = delta\]</span>
+<span class="math display">\[std.dev. = p\]</span> <span class="math display">\[a = mean - p*q\]</span> <span class="math display">\[b = mean + p*q\]</span>
+</td>
 </tr>
 <tr class="odd">
 <td align="left">Annual delta mortality rates</td>
 <td align="left">Truncated normal*</td>
 <td align="left">delta, p, q</td>
-<td align="left">mean = delta <br> std dev = p <br> a = mean - p*q
-<br> b = mean + p*q</td>
+<td align="left">
+<span class="math display">\[mean = delta\]</span>
+<span class="math display">\[std.dev. = p\]</span> <span class="math display">\[a = mean - p*q\]</span> <span class="math display">\[b = mean + p*q\]</span>
+</td>
 </tr>
 <tr class="even">
 <td align="left">Annual delta incidence rates
 <br>(<strong>TaskValues</strong> column L)</td>
 <td align="left">Truncated normal*</td>
 <td align="left">delta, p, q</td>
-<td align="left">mean = delta <br> std dev = p <br> a = mean - p*q
-<br> b = mean + p*q</td>
+<td align="left">
+<span class="math display">\[mean = delta\]</span>
+<span class="math display">\[std.dev. = p\]</span> <span class="math display">\[a = mean - p*q\]</span> <span class="math display">\[b = mean + p*q\]</span>
+</td>
 </tr>
 <tr class="odd">
 <td align="left">Seasonality ratio to mean</td>
 <td align="left">Uniform</td>
 <td align="left">mean, p</td>
-<td align="left">min = mean - mean*p <br> max = mean + mean*p</td>
+<td align="left">
+<span class="math display">\[min = mean -
+mean*p\]</span> <span class="math display">\[max = mean +
+mean*p\]</span>
+</td>
 </tr>
 <tr class="even">
 <td align="left">Minutes per contact <br>(optional;
 <strong>TaskValues</strong> column O)</td>
 <td align="left">Lognormal</td>
 <td align="left">mean, p</td>
-<td align="left">logsd = sqrt(log((1 + p^2))) <br> logm = (log(1 +
-p^2))/2</td>
+<td align="left">
+<span class="math display">\[sdlog = \sqrt{log(1 +
+(\frac{p}{mean})^2)}\]</span> <span class="math display">\[meanlog =
+log(mean)-\frac{log(1 + (\frac{p}{mean})^2))}{2}\]</span>
+</td>
 </tr>
 <tr class="odd">
 <td align="left">Hours per week <br>(optional;
 <strong>TaskValues</strong> column P)</td>
 <td align="left">Uniform</td>
 <td align="left">mean, p</td>
-<td align="left">min = mean - mean*p <br> max = mean + mean*p</td>
+<td align="left">
+<span class="math display">\[min = mean -
+mean*p\]</span> <span class="math display">\[max = mean +
+mean*p\]</span>
+</td>
 </tr>
 </tbody>
 </table>
@@ -529,7 +566,10 @@ column manually.</li>
 <strong>StartingRateInPop</strong>: The proportion of the relevant
 population that receives this care. For example, the value for antenatal
 care visits is 1 because every new birth requires that care. This value
-should not exceed 1.0.</li>
+should never exceed 1.0. If a task occurs multiple times for a single
+individual, that should be incorporated in either the
+<strong>NumContactsPerUnit</strong> or in the
+<strong>RateMultiplier</strong> as appropriate.</li>
 <li>
 <strong>RateMultiplier</strong>: A multiplier to account for tasks
 that happen in excess of the number of people in the eligible
@@ -544,7 +584,10 @@ equal to the number of people who receive testing.</li>
 proportion of the relevant population who receives care. For diseases
 declining in prevalence, this should be below less than 1.0
 (e.g. childhood parasites). For diseases increasing in prevalence, this
-should typically be greater than 1.0.</li>
+should be greater than 1.0. A value of exactly 1.0 tells the model that
+the incidence rate is fixed and the model uses the
+<strong>StartingRateInPop</strong> perpetually every year, without
+applying a stochastic annual change to the rate.</li>
 <li>
 <strong>NumContactsPerUnit</strong>: The number of contacts with the
 healthcare system per person who is eligible to receive this task. In
