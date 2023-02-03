@@ -108,9 +108,9 @@ The **Scenarios** sheet is the primary sheet that controls inputs to the model. 
   primary healthcare facility is expected to serve. Value typically range from 5,000 to 20,000.
 * **o_PopGrowth** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the growth of the population. If set to TRUE, the population size will grow at a rate dependent on the fertility and mortality (set elsewhere). If set to FALSE, the population pyramid will evolve per the fertility and mortality, but the total population will be normalized to the **BaselinePop** value every year, stabilizing population size. This is to be used for debugging and sensitivity analysis.
 * **o_Seasonality** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the seasonality. If set to TRUE, seasonality curves will be applied to the relevant tasks (set elsewhere). If set to FALSE, seasonality will be turned off. This is to be used for debugging and sensitivity analysis.
-* **o_Fertility_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the decline in the fertility rate. If set to TRUE, fertility rates will decline over time (set elsewhere). If set to FALSE, fertility will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
-* **o_MHIVTB_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the decline in the incidence rates for malaria, HIV, and TB. If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
-* **o_ChildDis_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the decline in the incidence rates for childhood diseases. If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
+* **o_Fertility_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the annual change in the fertility rate. If set to TRUE, fertility rates will decline over time (set elsewhere). If set to FALSE, fertility will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
+* **o_MHIVTB_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the annual change (as specified by the delta) in the incidence rates for malaria, HIV, and TB. If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. For a task that has a **AnnualDeltaRatio** of exactly 1.0, this option will not have any effect. This is to be used for debugging and sensitivity analysis.
+* **o_ChildDis_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the annual change (as specified by the delta) in the incidence rates for childhood disease tasks. These are defined within the model as any tasks that are applied to the age 1-4 population, as specified in the population column on the **Task Values** sheet. It does not include those that are specific to a subset (e.g., 1 yo). If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. For a task that has a **AnnualDeltaRatio** of exactly 1.0, this option will not have any effect. This is to be used for debugging and sensitivity analysis.
 * **sheet_** columns K through N: The name of the sheets to use as inputs for **TaskValues**, 
   **PopValues**, **SeasonalityCurves**, and **Cadres** in the model. The function and format of each of those sheets is described in more detail below.
 * **DeliveryModel**: A text description for the healthcare delivery model scenario. This is for user reference only and does not change how the model functions.
@@ -141,15 +141,15 @@ stochastic distributions around various parameter values. See the table below fo
 
 | Value                                              | Distribution             | Value inputs     | Parameters                                       |
 |:-------------------------------------------------- |:-------------------------|:-----------------|:-------------------------------------------------|
-| Fertility rates                                               | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
-| Mortality rates                                               | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
-| Incidence rates <br />(**TaskValues** column H)               | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
-| Annual delta fertility rates                                  | Truncated normal*        | delta, p, q      | mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q  |
-| Annual delta mortality rates                                  | Truncated normal*        | delta, p, q      |  mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q | 
-| Annual delta incidence rates <br />(**TaskValues** column L)  | Truncated normal*        | delta, p, q      |  mean = delta <br /> std dev = p <br /> a = mean - p\*q <br /> b = mean + p\*q |
-| Seasonality ratio to mean                                     | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |
-| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | logsd = sqrt(log((1 + p^2))) <br /> logm = (log(1 + p^2))/2 |
-| Hours per week <br />(optional; **TaskValues** column P)      | Uniform                  | mean, p          | min = mean - mean\*p <br /> max = mean + mean\*p |     
+| Fertility rates                                               | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |
+| Mortality rates                                               | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |
+| Incidence rates <br />(**TaskValues** column H)               | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |
+| Annual delta fertility rates                                  | Truncated normal*        | delta, p, q      | $$mean = delta$$ $$std.dev. = p$$ $$a = mean - p*q$$ $$b = mean + p*q$$  |
+| Annual delta mortality rates                                  | Truncated normal*        | delta, p, q      | $$mean = delta$$ $$std.dev. = p$$ $$a = mean - p*q$$ $$b = mean + p*q$$ | 
+| Annual delta incidence rates <br />(**TaskValues** column L)  | Truncated normal*        | delta, p, q      | $$mean = delta$$ $$std.dev. = p$$ $$a = mean - p*q$$ $$b = mean + p*q$$ |
+| Seasonality ratio to mean                                     | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |
+| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | $$sdlog = \sqrt{log(1 + (\frac{p}{mean})^2)}$$ $$meanlog = log(mean)-\frac{log(1 + (\frac{p}{mean})^2))}{2}$$ |
+| Hours per week <br />(optional; **TaskValues** column P)      | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |     
 
 \* Truncated normal can be done in R using the truncnorm package.  
 
@@ -215,14 +215,14 @@ to the model. Columns G through I do not affect the running of the model, but ar
   menu. For example, antenatal care is proportional to the number of births. Cervical cancer care is proportional to the population of women of child-bearing age. This value changes which population the task is applied to in the model. Additional populations cannot be specified via the **R Model Inputs** file.
 * **Geography**: Automatically filled based on the region specified in the **RegionSelect** sheet. Do not change this column manually.
 * **StartingRateInPop**: The proportion of the relevant population that receives this care. For
-  example, the value for antenatal care visits is 1 because every new birth requires that care. This value should not exceed 1.0.
+  example, the value for antenatal care visits is 1 because every new birth requires that care. This value should never exceed 1.0. If a task occurs multiple times for a single individual, that should be incorporated in either the **NumContactsPerUnit** or in the **RateMultiplier** as appropriate.
 * **RateMultiplier**: A multiplier to account for tasks that happen in excess of the number of 
   people in the eligible population. For example, you would use HIV incidence rate as the 
   **StartingRateInPop** for HIV testing, but some proportion of the people that receive tests do 
   not have HIV. The proportion of true negatives will be the **RateMultiplier** such that the 
   **StartingRateInPop** * **RateMultiplier** is equal to the number of people who receive testing.
 * **AnnualDeltaRatio**: The annual change in the proportion of the relevant population who receives
-  care. For diseases declining in prevalence, this should be below less than 1.0 (e.g. childhood parasites). For diseases increasing in prevalence, this should typically be greater than 1.0.
+  care. For diseases declining in prevalence, this should be below less than 1.0 (e.g. childhood parasites). For diseases increasing in prevalence, this should be greater than 1.0. A value of exactly 1.0 tells the model that the incidence rate is fixed and the model uses the **StartingRateInPop** perpetually every year, without applying a stochastic annual change to the rate.
 * **NumContactsPerUnit**: The number of contacts with the healthcare system per person who is 
   eligible to receive this task. In the default example, four antenatal care visits per birth are
   recommended.
