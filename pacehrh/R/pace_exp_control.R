@@ -26,9 +26,6 @@
 #' result <- pacehrh::SaveBaseSettings(scenario)
 #' }
 SaveBaseSettings <- function(scenarioName = ""){
-  # GPE = globalPackageEnvironment = source environment
-  # BVE = baseValuesEnvironment = destination environment
-
   .zeroExpBaseVariables()
 
   BVE$scenario <- .getScenarioConfig(scenarioName)
@@ -109,10 +106,27 @@ SaveBaseSettings <- function(scenarioName = ""){
   # extended by a GPE$shoulderYears years to correct for seasonality edge effects.
   .setTrialYears()
 
-
-
+  # Merge seasonality curves into the seasonality offsets table
+  .mergeSeasonalityCurves()
 
   return(BVE$scenario)
+}
+
+# Extend the SeasonalityOffsets table with the seasonality curve values from the
+# SeasonalityCurves table. This facilitates easier lookups later on.
+.mergeSeasonalityCurves <- function(){
+  seasonalityCurvesTable <- BVE$seasonalityCurves
+  curveCols <- 2:length(seasonalityCurvesTable)
+  monthNames <- seasonalityCurvesTable$Month
+  curveNames <- names(seasonalityCurvesTable)[curveCols]
+
+  # Convert [months x curves] table to [curves x months] table
+  tsc <- t(seasonalityCurvesTable[curveCols])
+  colnames(tsc) <- monthNames
+  tsc <- tibble::as_tibble(tsc)
+  tsc$Type <- curveNames
+
+  BVE$seasonalityOffsetsEx <- merge(BVE$seasonalityOffsets, tsc, by.x = "Curve", by.y = "Type")
 }
 
 .setTrialYears <- function(){
