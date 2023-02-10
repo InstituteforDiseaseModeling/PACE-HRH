@@ -63,6 +63,7 @@ Collate:
     'pace_task_manage.R'
     'pace_task_time.R'
     'pace_task_time_stochasticity.R'
+    'pace_per_age_compute.R'
     'pace_experiment.R'
     'pace_experiments.R'
     'pace_scenarios_config.R'

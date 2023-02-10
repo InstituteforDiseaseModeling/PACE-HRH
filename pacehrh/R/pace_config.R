@@ -5,9 +5,6 @@
 # that defines experiment scenarios, baseline population data, task
 # descriptions, etc.
 #
-# Global configuration can be set programmatically with the setGlobalConfig()
-# function.
-#
 # The usual mechanism, however, is for the global configuration to be declared
 # by the user in a file called globalconfig.json in the working directory. This
 # file is read and the global configuration set with the function
@@ -36,17 +33,21 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
       {
         configInfo <- jsonlite::read_json(path)
 
-        if (!is.null(configInfo$configDirectoryLocation)){
-          configDirPath <- configInfo$configDirectoryLocation
-        } else {
-          configDirPath <- "."
-        }
+        # Check whether to use the Excel file name from the global config file
+        if (!GPE$ignoreGlobalConfigExcelFileSetting){
 
-        if (!is.null(configInfo$inputExcelFile)){
-          GPE$inputExcelFile <-
-            paste(configDirPath,
-                  configInfo$inputExcelFile,
-                  sep = "/")
+          if (!is.null(configInfo$configDirectoryLocation)){
+            configDirPath <- configInfo$configDirectoryLocation
+          } else {
+            configDirPath <- "."
+          }
+
+          if (!is.null(configInfo$inputExcelFile)){
+            GPE$inputExcelFile <-
+              paste(configDirPath,
+                    configInfo$inputExcelFile,
+                    sep = "/")
+          }
         }
 
         if (!is.null(configInfo$suiteRngSeed)){
@@ -97,16 +98,6 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
   invisible(NULL)
 }
 
-# Note: this function does not check that the file path is valid.
-# This function is intended to support unit tests to force the system to
-# initialize based on a different configuration than is in globalconfig.json.
-setGlobalConfig <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
-  if (!is.blank(inputExcelFilePath)){
-    GPE$inputExcelFile <- inputExcelFilePath
-    GPE$globalConfigLoaded <- TRUE
-  }
-}
-
 # Internal function used by the various InitializeXXXXX() functions to auto-
 # magically load the global configuration.
 
@@ -118,7 +109,51 @@ setGlobalConfig <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
     loadGlobalConfig()
     GPE$globalConfigLoaded <- TRUE
   }
-  invisible(NULL)
+  return(invisible(NULL))
+}
+
+.validInputFile <- function(filepath){
+  if (is.null(filepath)){
+    return(FALSE)
+  }
+
+  if (is.blank(filepath)){
+    return(FALSE)
+  }
+
+  if (!file.exists(filepath)){
+    return(FALSE)
+  }
+
+  return(TRUE)
+}
+
+#' Set Input Excel File
+#'
+#' Declare the Excel file to be used for reading configuration information. The
+#' function over-writes whatever is supplied in the globalconfig.json file. The
+#' function returns a warning if the user supplies a bad file path.
+#'
+#' @param inputExcelFilePath Path to Excel file (default =
+#'   "./config/model_inputs.xlsx")
+#'
+#' @return NULL (invisible)
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' pacehrh::SetInputExcelFile(inputExcelFilePath = "config_file.xlsx")
+#' }
+SetInputExcelFile <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
+  if (!.validInputFile(inputExcelFilePath)){
+    warning(paste0("Input file <", inputExcelFilePath, "> not found."))
+  } else {
+    GPE$inputExcelFile <- inputExcelFilePath
+    GPE$ignoreGlobalConfigExcelFileSetting <- TRUE
+  }
+
+  return(invisible(NULL))
 }
 
 #' Set Global Start And End Year Parameters
@@ -237,6 +272,33 @@ SetStochasticity <- function(value = NULL){
       GPE$stochasticity <- value
     } else {
       traceMessage(paste0(value, " is not an allowed stochasticity flag value"))
+    }
+  }
+
+  return(invisible(prevValue))
+}
+
+#' Turn Per-Age Statistics On/Off
+#'
+#' @param value Desired value. (Calling \code{SetPerAgeStats()} with
+#' no parameters or value = NULL returns the current state.)
+#'
+#' @return Previous flag value (invisible)
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' pacehrh::SetPerAgeStats(TRUE) # Turn on per-age statistics
+#' pacehrh::SetPerAgeStats(() # Return current state
+#' }
+SetPerAgeStats <- function(value = NULL){
+  prevValue <- GPE$stochasticity
+
+  if (!is.null(value)){
+    if (rlang::is_logical(value)){
+      GPE$perAgeStats <- value
+    } else {
+      traceMessage(paste0(value, " is not an allowed per-age flag value"))
     }
   }
 

@@ -62,7 +62,11 @@ test_that("Population predictions: flat", {
   local_vars("roundingLaw", envir = e)
 
   inputFile <- "./simple_config/super_simple_inputs.xlsx"
-  pacehrh:::setGlobalConfig(inputExcelFilePath = inputFile)
+
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile(inputFile)
+  e$globalConfigLoaded <- TRUE
 
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
 
@@ -106,7 +110,10 @@ test_that("Population predictions: rising", {
   local_vars("roundingLaw", envir = e)
 
   inputFile <- "./simple_config/super_simple_inputs.xlsx"
-  pacehrh:::setGlobalConfig(inputExcelFilePath = inputFile)
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile(inputFile)
+  e$globalConfigLoaded <- TRUE
 
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, inputFile)
 

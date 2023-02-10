@@ -33,6 +33,7 @@ GPE$globalDebug <- FALSE
 
 GPE$traceState <- FALSE
 GPE$inputExcelFile <- "./config/model_inputs.xlsx"
+GPE$ignoreGlobalConfigExcelFileSetting <- FALSE
 
 GPE$startYear <- 2020
 GPE$endYear <- 2040
@@ -56,6 +57,7 @@ GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
 GPE$roundingLaw <- .defaultRoundingLaw
+GPE$perAgeStats <- FALSE
 
 BVE$seasonalityCurves <- NULL
 BVE$seasonalityOffsets <- NULL

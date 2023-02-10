@@ -43,22 +43,22 @@ RunExperiment <- function(debug = FALSE){
   results$AnnualTimes <- t$Time
   results$AnnualCounts <- t$N
 
-
-  # COMPUTE PER-AGE ANNUAL TIMES FOR TASKS
-  results$AnnualPerAge <- TaskTimesEx()
-
-
-
-
-  .correctForOffsets(results$AnnualPerAge)
-
-
-
-
-
   # USE ANNUAL TIMES TO COMPUTE SEASONALLY ADJUSTED MONTHLY TIMES
   seasonalityResults <- runSeasonalityExperiment(results)
   results$SeasonalityResults <- seasonalityResults
+
+  # COMPUTE PER-AGE ANNUAL TIMES FOR TASKS
+
+  # Note: Environments are passed by reference, reducing the need to copy large
+  # structures. Results from the next couple of calls are written directly into
+  # the temp environment, not passed back from the procedures.
+
+  if (GPE$perAgeStats){
+    e <- rlang::env()
+    ComputePerAgeTaskTimes(e)
+    results$AnnualPerAge <- e$AnnualPerAge
+    results$MonthlyPerAge <- as.list(e)
+  }
 
   return(results)
 }
@@ -118,12 +118,4 @@ RunExperiment <- function(debug = FALSE){
     FemaleRanges = rf,
     MaleRanges = rm
   ))
-}
-
-
-
-
-.correctForOffsets <- function(l){
-  # print(BVE$seasonalTasks)
-  # print(which(BVE$taskData$Indicator %in% BVE$seasonalTasks))
 }

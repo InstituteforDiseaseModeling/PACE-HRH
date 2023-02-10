@@ -5,6 +5,20 @@ withr::local_dir("..")
 gpe <- pacehrh:::GPE
 bve <- pacehrh:::BVE
 
+test_that("Configuration: loadGlobalConfig", {
+  local_vars("inputExcelFile", envir = gpe)
+  local_vars("ignoreGlobalConfigExcelFileSetting", envir = gpe)
+  local_vars("rngSeed", envir = gpe)
+  local_vars("startYear", envir = gpe)
+  local_vars("endYear", envir = gpe)
+
+  gpe$ignoreGlobalConfigExcelFileSetting <- FALSE
+  gpe$inputExcelFile <- "notafile"
+
+  pacehrh:::loadGlobalConfig()
+  testthat::expect_false(gpe$inputExcelFile == "notafile")
+})
+
 test_that("Configuration: stochasticity", {
   local_vars("stochasticity", envir = gpe)
 
@@ -28,4 +42,31 @@ test_that("Configuration: stochasticity", {
   value <- pacehrh::SetStochasticity('invalidvalue')
   testthat::expect_equal(value, TRUE)
   testthat::expect_equal(pacehrh::SetStochasticity(), TRUE)
+})
+
+test_that("Configuration: SetInputExcelFile", {
+  local_vars("inputExcelFile", envir = gpe)
+  local_vars("ignoreGlobalConfigExcelFileSetting", envir = gpe)
+
+  errorMessageRegex <- "Input file <.*> not found\\."
+
+  testthat::expect_warning(pacehrh::SetInputExcelFile(NULL),
+                           regexp = errorMessageRegex)
+
+  testthat::expect_warning(pacehrh::SetInputExcelFile(""),
+                           regexp = errorMessageRegex)
+
+  testthat::expect_warning(pacehrh::SetInputExcelFile("notafile"),
+                           regexp = errorMessageRegex)
+
+  defaultFile <- "./config/model_inputs.xlsx"
+  simpleFile <- "./simple_config/super_simple_inputs.xlsx"
+
+  pacehrh::SetInputExcelFile()
+  testthat::expect_equal(GPE$inputExcelFile, defaultFile)
+  testthat::expect_true(GPE$ignoreGlobalConfigExcelFileSetting)
+
+  pacehrh::SetInputExcelFile(simpleFile)
+  testthat::expect_equal(GPE$inputExcelFile, simpleFile)
+  testthat::expect_true(GPE$ignoreGlobalConfigExcelFileSetting)
 })

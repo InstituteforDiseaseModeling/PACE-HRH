@@ -10,7 +10,10 @@ test_that("Scenario configuration: basic read from Excel", {
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
 
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
   testthat::expect_true(is.null(e$scenarios))
@@ -28,7 +31,10 @@ test_that("Scenario configuration: bad sheet name", {
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
 
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
   testthat::expect_true(is.null(e$scenarios))
@@ -44,7 +50,10 @@ test_that("Scenario configuration: bad Excel file", {
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
 
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/notafile.xlsx")
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  e$inputExcelFile <- "./simple_config/notafile.xlsx"
+  e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
   # This should fail (ie not return a scenario table) because the filename is bogus
@@ -61,7 +70,10 @@ test_that("Scenario configuration: non-Excel configuration", {
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
 
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
   testthat::expect_true(is.null(e$scenarios))
