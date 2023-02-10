@@ -106,10 +106,13 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 }
 
 .convertAnnualToMonthly <- function(values, curve){
-  monthly <- unlist(lapply(values, function(v){
-    return(curve * v)
-  }))
-  return(round(monthly, 0))
+  monthly <- as.vector(matrix(data = curve, ncol = 1) %*% matrix(data = values, nrow = 1))
+
+  if (GPE$roundingLaw != "none"){
+    return(round(monthly, 0))
+  } else {
+    return(monthly)
+  }
 }
 
 .getSeasonalityCurve <- function(curveType) {
