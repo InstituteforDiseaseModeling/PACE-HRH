@@ -86,7 +86,7 @@ for (f in files){
 ```
 ## Model Requirement Check:
 <br><br>
-```{r echo=FALSE, comment=''}
+```{r echo=FALSE, comment='', warning=FALSE}
 cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep = '\n')
 ```
 ## Custom Data Check:
@@ -109,4 +109,9 @@ cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep 
     set_caption_color("none")
   }
   
+```
+## Additional Logs:
+<br><br>
+```{r echo=FALSE, comment='', warning=FALSE}
+cat(readLines(paste(params$outputDir, .errorLogfile, sep = "/")), sep = '\n')
 ```
