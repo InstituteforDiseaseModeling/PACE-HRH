@@ -262,7 +262,7 @@ SetRoundingLaw <- function(value = NULL){
 #' @examples
 #' \dontrun{
 #' pacehrh::SetStochasticity(FALSE) # Turn off stochasticity
-#' pacehrh::SetStochasticity(() # Return current stochasticity state
+#' pacehrh::SetStochasticity() # Return current stochasticity state
 #' }
 SetStochasticity <- function(value = NULL){
   prevValue <- GPE$stochasticity
@@ -289,7 +289,7 @@ SetStochasticity <- function(value = NULL){
 #' @examples
 #' \dontrun{
 #' pacehrh::SetPerAgeStats(TRUE) # Turn on per-age statistics
-#' pacehrh::SetPerAgeStats(() # Return current state
+#' pacehrh::SetPerAgeStats() # Return current state
 #' }
 SetPerAgeStats <- function(value = NULL){
   prevValue <- GPE$stochasticity
