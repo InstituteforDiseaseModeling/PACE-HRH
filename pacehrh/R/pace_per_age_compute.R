@@ -35,15 +35,29 @@
 #
 
 ComputePerAgeTaskTimes <- function(e){
-  e$AnnualPerAge <- NULL
-
-  .computeAnnualTaskTimes(e)
-
-  if (!is.null(e$AnnualPerAge)){
-    .computeMonthlyTaskTimes(e)
+  if (GPE$perAgeStats == "off"){
+    return(invisible(NULL))
   }
+  
+  e$AnnualPerAge <- NULL
+  .computeAnnualTaskTimes(e)
+  
+  # Stop if user only wants annual stats (much faster to calculate, but not
+  # as accurate since seasonality and seasonality offsets are ignored).
+  if (GPE$perAgeStats == "annual"){
+    return(invisible(NULL))
+  }
+  
+  # Continue if user wants monthly stats (GPE$perAgeStats == "monthly")
+  if (GPE$perAgeStats == "monthly"){
+    if (!is.null(e$AnnualPerAge)){
+      .computeMonthlyTaskTimes(e)
+    }
 
-  remove(AnnualPerAge, pos = e)
+    remove(AnnualPerAge, pos = e)
+  }
+  
+  return(invisible(NULL))
 }
 
 .computeAnnualTaskTimes <- function(e)
@@ -110,9 +124,11 @@ ComputePerAgeTaskTimes <- function(e){
     mmT[,,i] <- mT
   }
 
-  dimnames(mfT) <- list(Tasks = BVE$taskData$Indicator, Ages = GPE$ages, Years = BVE$years)
-  dimnames(mmT) <- list(Tasks = BVE$taskData$Indicator, Ages = GPE$ages, Years = BVE$years)
-
+  dimnames(mfT) <- list(Task = BVE$taskData$Indicator, Age = GPE$ages, Year = BVE$years)
+  dimnames(mmT) <- list(Task = BVE$taskData$Indicator, Age = GPE$ages, Year = BVE$years)
+  dimnames(mfN) <- list(Task = BVE$taskData$Indicator, Age = GPE$ages, Year = BVE$years)
+  dimnames(mmN) <- list(Task = BVE$taskData$Indicator, Age = GPE$ages, Year = BVE$years)
+  
   e$AnnualPerAge$Times$Female <- mfT
   e$AnnualPerAge$Times$Male <- mmT
   e$AnnualPerAge$Counts$Female <- mfN

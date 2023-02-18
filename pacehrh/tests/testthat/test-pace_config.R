@@ -70,3 +70,28 @@ test_that("Configuration: SetInputExcelFile", {
   testthat::expect_equal(GPE$inputExcelFile, simpleFile)
   testthat::expect_true(GPE$ignoreGlobalConfigExcelFileSetting)
 })
+
+test_that("Configuration: SetPerAgeStats", {
+  local_vars("perAgeStats", envir = gpe)
+  
+  testthat::expect_equal(gpe$perAgeStats, "off")
+  
+  # Interrogate current value. Should be "off".
+  value <- pacehrh::SetPerAgeStats()
+  testthat::expect_equal(value, "off")
+
+  # Check that trying to set a bad value doesn't overwrite existing
+  value <- pacehrh::SetPerAgeStats("invalidvalue")
+  testthat::expect_equal(value, "off")
+  testthat::expect_equal(pacehrh::SetPerAgeStats(), "off")
+  
+  # Flip to "monthly"
+  value <- pacehrh::SetPerAgeStats("mOnThLy")
+  testthat::expect_equal(value, "off")
+  testthat::expect_equal(pacehrh::SetPerAgeStats(), "monthly")
+  
+  # Flip to "annual"
+  value <- pacehrh::SetPerAgeStats("aNnUaL")
+  testthat::expect_equal(value, "monthly")
+  testthat::expect_equal(pacehrh::SetPerAgeStats(), "annual")
+})

@@ -21,6 +21,14 @@ EXP <- experimentValuesEnvironment
 
 .defaultRoundingLaw <- .roundingLaws[1] # "early"
 
+.perAgeLevels <- c(
+  "off",
+  "annual",
+  "monthly"
+)
+
+.defaultPerAgeLevel <- .perAgeLevels[1] # "off"
+
 .colorM <- rgb(96,131,180, maxColorValue = 255)
 .colorF <- rgb(210,120,135, maxColorValue = 255)
 
@@ -57,7 +65,7 @@ GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
 GPE$roundingLaw <- .defaultRoundingLaw
-GPE$perAgeStats <- FALSE
+GPE$perAgeStats <- .defaultPerAgeLevel
 
 BVE$seasonalityCurves <- NULL
 BVE$seasonalityOffsets <- NULL

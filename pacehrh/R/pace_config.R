@@ -283,24 +283,25 @@ SetStochasticity <- function(value = NULL){
 #' @param value Desired value. (Calling \code{SetPerAgeStats()} with
 #' no parameters or value = NULL returns the current state.)
 #'
-#' @return Previous flag value (invisible)
+#' @return Previous value (invisible)
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' pacehrh::SetPerAgeStats(TRUE) # Turn on per-age statistics
+#' pacehrh::SetPerAgeStats("monthly") # Turn on per-age statistics
 #' pacehrh::SetPerAgeStats() # Return current state
 #' }
 SetPerAgeStats <- function(value = NULL){
-  prevValue <- GPE$stochasticity
+  prevValue <- GPE$perAgeStats
 
   if (!is.null(value)){
-    if (rlang::is_logical(value)){
-      GPE$perAgeStats <- value
+    if (tolower(value) %in% .perAgeLevels){
+      GPE$perAgeStats <- tolower(value)
     } else {
-      traceMessage(paste0(value, " is not an allowed per-age flag value"))
+      traceMessage(paste0(value, " is not an allowed per-age setting"))
     }
   }
-
+  
   return(invisible(prevValue))
 }
+

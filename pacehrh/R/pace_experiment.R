@@ -53,11 +53,15 @@ RunExperiment <- function(debug = FALSE){
   # structures. Results from the next couple of calls are written directly into
   # the temp environment, not passed back from the procedures.
 
-  if (GPE$perAgeStats){
+  if (GPE$perAgeStats != "off"){
     e <- rlang::env()
     ComputePerAgeTaskTimes(e)
-    results$AnnualPerAge <- e$AnnualPerAge
-    results$MonthlyPerAge <- as.list(e)
+    
+    if (GPE$perAgeStats == "annual"){
+      results$AnnualPerAge <- e$AnnualPerAge
+    } else {
+      results$MonthlyPerAge <- as.list(e)
+    }
   }
 
   return(results)

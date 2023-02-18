@@ -41,7 +41,7 @@ test_that("Per-Age: baseline", {
   pacehrh::SetGlobalStartEndYears(2025, 2055)
   pacehrh::SetStochasticity(FALSE)
   pacehrh::SetRoundingLaw("none")
-  pacehrh::SetPerAgeStats(TRUE)
+  pacehrh::SetPerAgeStats("monthly")
 
   scenario <- "TEST_Simple_2"
   nTrials <- 5
@@ -94,4 +94,74 @@ test_that("Per-Age: baseline", {
   })
 
   testthat::expect_true(all(out))
+})
+
+test_that("Per-Age: annual only", {
+  local_vars("inputExcelFile", envir = gpe)
+  local_vars("ignoreGlobalConfigExcelFileSetting", envir = gpe)
+  local_vars("globalConfigLoaded", envir = gpe)
+  local_vars("perAgeStats", envir = gpe)
+  local_vars("stochasticity", envir = gpe)
+  local_vars("roundingLaw", envir = gpe)
+  
+  gpe$globalConfigLoaded <- FALSE
+  
+  pacehrh::SetInputExcelFile("./simple_config/super_simple_inputs.xlsx")
+  testthat::expect_true(gpe$ignoreGlobalConfigExcelFileSetting)
+  
+  pacehrh::InitializePopulation(popSheet = "Flat_Population")
+  .validateSuperSimpleInitialPopulation(bve$initialPopulation)
+  
+  pacehrh::InitializeScenarios()
+  pacehrh::InitializeStochasticParameters()
+  pacehrh::InitializeSeasonality()
+  
+  pacehrh::SetGlobalStartEndYears(2025, 2055)
+  pacehrh::SetStochasticity(FALSE)
+  pacehrh::SetRoundingLaw("none")
+  pacehrh::SetPerAgeStats("annual")
+  
+  scenario <- "TEST_Simple_2"
+  nTrials <- 5
+  
+  results <-
+    pacehrh::RunExperiments(scenarioName = scenario,
+                            trials = nTrials)
+  
+  testthat::expect_true(!is.null(results))
+  testthat::expect_equal(length(results), nTrials)
+  
+  r <- results[[1]]
+  expectedDataNames <- c("AnnualTimes", "AnnualCounts", "SeasonalityResults", "AnnualPerAge", "Population", "PopulationRates")
+  testthat::expect_true(length(setdiff(names(r), expectedDataNames)) == 0)
+  testthat::expect_true(length(setdiff(expectedDataNames, names(r))) == 0)
+  
+  r <- results[[1]]$AnnualPerAge
+  testthat::expect_true(!is.null(r))
+  if (is.null(r)){
+    message("Major failure: results structure did not include AnnualPerAge section")
+    return()
+  }
+  
+  # A couple of oddnesses here:
+  #
+  # - The order of sub-sections in the AnnualPerAge section is {$Times, $Counts}, 
+  # but in the MonthlyPerAge section is {$Counts, $Times}. This might be because
+  # the MonthlyPerAge section is stored as an environment - which hashes it's 
+  # contents - before being converted to a list. The as.list() operation picks
+  # up the hashed order of the sub-sections instead of the order of creation.
+  #
+  # - The AnnualPerAge section includes shoulder years. That's because the
+  # shoulder years are needed for the seasonality calculations that would
+  # follow if MonthlyPerAge stats were selected.
+  
+  testthat::expect_equal(names(r), c("Times", "Counts"))
+  testthat::expect_equal(names(r$Counts), c("Female", "Male"))
+  testthat::expect_equal(names(r$Times), c("Female", "Male"))
+  
+  nTasks <- length(pacehrh:::BVE$taskData$computeMethod)
+  nAges <- length(pacehrh:::GPE$ages)
+  nYears <- length(pacehrh:::BVE$years) # BVE$years includes shoulder years
+  
+  testthat::expect_equal(dim(r$Times$Female), c(nTasks, nAges, nYears))
 })
