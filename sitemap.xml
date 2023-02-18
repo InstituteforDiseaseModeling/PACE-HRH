@@ -178,7 +178,16 @@
     <loc>/reference/SetGlobalStartEndYears.html</loc>
   </url>
   <url>
+    <loc>/reference/SetInputExcelFile.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SetPerAgeStats.html</loc>
+  </url>
+  <url>
     <loc>/reference/SetRoundingLaw.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SetStochasticity.html</loc>
   </url>
   <url>
     <loc>/reference/TaskTimes.html</loc>

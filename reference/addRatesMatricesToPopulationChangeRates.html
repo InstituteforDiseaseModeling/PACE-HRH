@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5</span>
       </span>
     </div>
 
@@ -96,7 +96,6 @@
 <span class="r-in"><span><span class="va">initPop</span> <span class="op">&lt;-</span> <span class="fu">pacehrh</span><span class="fu">:::</span><span class="fu"><a href="loadInitialPopulation.html">loadInitialPopulation</a></span><span class="op">(</span>sheetName <span class="op">=</span> <span class="st">"Flat_Population"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pcr</span> <span class="op">&lt;-</span> <span class="fu">pacehrh</span><span class="fu">:::</span><span class="fu">loadPopulationChangeRates</span><span class="op">(</span>sheetName <span class="op">=</span> <span class="st">"Flat_Rates"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pars</span> <span class="op">&lt;-</span> <span class="fu">pacehrh</span><span class="fu">:::</span><span class="fu"><a href="loadStochasticParameters.html">loadStochasticParameters</a></span><span class="op">(</span>sheetName <span class="op">=</span> <span class="st">"Flat_StochasticParms"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Turn off stochasticity and generate several years of rates</span></span></span>
 <span class="r-in"><span><span class="va">years</span> <span class="op">&lt;-</span> <span class="fl">2020</span><span class="op">:</span><span class="fl">2040</span></span></span>
 <span class="r-in"><span><span class="va">pcr</span> <span class="op">&lt;-</span> <span class="fu">pacehrh</span><span class="fu">:::</span><span class="fu">addRatesMatricesToPopulationChangeRates</span><span class="op">(</span><span class="va">pcr</span>, <span class="va">years</span>, <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
