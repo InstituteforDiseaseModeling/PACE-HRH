@@ -40,13 +40,29 @@ RunExperiment <- function(debug = FALSE){
 
   # COMPUTE ANNUAL TIMES FOR TASKS
   t <- TaskTimes()
-
   results$AnnualTimes <- t$Time
   results$AnnualCounts <- t$N
 
   # USE ANNUAL TIMES TO COMPUTE SEASONALLY ADJUSTED MONTHLY TIMES
   seasonalityResults <- runSeasonalityExperiment(results)
   results$SeasonalityResults <- seasonalityResults
+
+  # COMPUTE PER-AGE ANNUAL TIMES FOR TASKS
+
+  # Note: Environments are passed by reference, reducing the need to copy large
+  # structures. Results from the next couple of calls are written directly into
+  # the temp environment, not passed back from the procedures.
+
+  if (GPE$perAgeStats != "off"){
+    e <- rlang::env()
+    ComputePerAgeTaskTimes(e)
+    
+    if (GPE$perAgeStats == "annual"){
+      results$AnnualPerAge <- e$AnnualPerAge
+    } else {
+      results$MonthlyPerAge <- as.list(e)
+    }
+  }
 
   return(results)
 }
@@ -65,14 +81,6 @@ RunExperiment <- function(debug = FALSE){
 
   return(retVal)
 }
-
-
-# ---------------------------------------
-#
-# TODO: Remove this testing-only function
-#
-# ---------------------------------------
-
 
 #' Compute Population Range Sizes Based On Population Predictions
 #'

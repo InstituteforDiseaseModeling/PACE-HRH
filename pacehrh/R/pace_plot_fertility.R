@@ -184,7 +184,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
     group = Label
   ))
   g <- g + geom_ribbon(aes(ymin = m - CI, ymax = m + CI, fill = Label), alpha = 0.5)
-  g <- g + geom_line(size = .5)
+  g <- g + geom_line(linewidth = .5)
   g <- g + facet_wrap(vars(Label))
   g <- g + scale_x_discrete(breaks = seq(2000, 2100, 5))
   g <- g + theme(legend.position = "none")

@@ -11,6 +11,7 @@ TaskTimes <- function(){
   taskvals <- EXP$taskParameters
   prm <- EXP$populationRangeMatrices
   pm <- EXP$prevalenceRatesMatrix
+  taskIds <- tasks$Indicator
 
   # Blank minutes-per-contact values should be zero
   mpc <- taskvals[,"MinsPerContact"]
@@ -54,6 +55,9 @@ TaskTimes <- function(){
       tasksN[tRatioMask] <- 1
     }
 
+    names(tasksN) <- taskIds
+    names(tasksT) <- taskIds
+
     return(list(N = tasksN, Time = tasksT))
   })
 
@@ -64,13 +68,10 @@ TaskTimes <- function(){
   return(list(N = n, Time = t))
 }
 
+
 .extractPyramid <- function(varName, year){
   df <- eval(parse(text = paste(varName, "$`", as.character(year), "`", sep = "")))
   return(df)
-}
-
-.computeApplicablePopulationVector <- function(pop, label){
-  return(42)
 }
 
 .getApplicablePopulation <- function(year, label){

@@ -67,11 +67,6 @@ function, or this global configuration value.
 - _endYear_: Ending year for simulations. Default = 2040. Note: Users can also
 use the `SetGlobalStartEndYears()` function to set start and end years.
 
-### Setting global configuration variables programmatically
-
-Users can set the global configuration programmatically with the `setGlobalConfig()`
-function. 
-
 ## Terminology
 
 - _Trial_: A single prediction of healthcare task impacts. PACE-HRH 

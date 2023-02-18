@@ -7,6 +7,10 @@
 #'
 #' @return Rates matrix
 generatePrevalenceRatesMatrix <- function(){
+  if (!GPE$stochasticity){
+    return(.generateNonStochPrm())
+  }
+
   # Gather stuff we're going to need
   pars <- BVE$stochasticParams
   years <- BVE$years
@@ -81,6 +85,69 @@ generatePrevalenceRatesMatrix <- function(){
       b = lims[2]
     )
     deltas <- deltaRatios[sMask] * (1 + e)
+    m[sMask, j] <- m[sMask, j-1] * deltas
+  }
+
+  return(m)
+}
+
+.generateNonStochPrm <- function(){
+  years <- BVE$years
+
+  tasks <-
+    BVE$taskData[, c(
+      "Indicator",
+      "StartingRateInPop",
+      "AnnualDeltaRatio",
+      "ServiceCat",
+      "RelevantPop",
+      "applyStochasticity"
+    )]
+
+  nRows = NROW(tasks)
+  nCols = length(years)
+
+  # Mask for tasks affected by prevalence stochasticity
+  sMask <- tasks$applyStochasticity
+
+  # Determine which rows refer to Malaria/HIV/TB
+  mhivtbMask <-
+    (
+      tasks$ServiceCat == "Malaria" |
+        tasks$ServiceCat == "Tuberculosis" | tasks$ServiceCat == "HIV"
+    )
+
+  # Determine which rows refer to childhood diseases
+  childDisMask <- (tasks$RelevantPop == "1-4")
+
+  initRates <- rep(1.0, nRows)
+  initRates[sMask] <- tasks[sMask,]$StartingRateInPop
+
+  # Initialize a rates matrix
+  m <-
+    matrix(
+      data = 1.0,
+      nrow = nRows,
+      ncol = nCols,
+      dimnames = list(tasks$Indicator, as.character(years))
+    )
+  m[, 1] <- initRates
+
+  # Grab the annual prevalence deltas
+  deltaRatios <- tasks$AnnualDeltaRatio
+
+  # Set annual prevalence deltas to unity if the scenario requires it
+  if (BVE$scenario$o_MHIVTB_decr == FALSE){
+    deltaRatios[mhivtbMask] <- 1
+  }
+
+  if (BVE$scenario$o_ChildDis_decr == FALSE){
+    deltaRatios[childDisMask] <- 1
+  }
+
+  # Derive the rest of the matrix
+  deltas <- deltaRatios[sMask]
+  for (j in 2:nCols){
     m[sMask, j] <- m[sMask, j-1] * deltas
   }
 

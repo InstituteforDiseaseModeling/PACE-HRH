@@ -1,7 +1,7 @@
 Type: Package
 Package: pacehrh
 Title: Population-Aware Capacity Estimator for Human Resources for Health
-Version: 1.0.4
+Version: 1.0.5
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
 Description: This package models the healthcare needs of a given population so you
@@ -63,6 +63,7 @@ Collate:
     'pace_task_manage.R'
     'pace_task_time.R'
     'pace_task_time_stochasticity.R'
+    'pace_per_age_compute.R'
     'pace_experiment.R'
     'pace_experiments.R'
     'pace_scenarios_config.R'

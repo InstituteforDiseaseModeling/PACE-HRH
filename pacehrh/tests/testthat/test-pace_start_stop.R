@@ -3,6 +3,9 @@ library(pacehrh)
 withr::local_dir("..")
 
 test_that("Full suite: basic", {
+  e <- pacehrh:::GPE
+  local_vars("globalConfigLoaded", envir = e)
+
   pacehrh::InitializePopulation()
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()

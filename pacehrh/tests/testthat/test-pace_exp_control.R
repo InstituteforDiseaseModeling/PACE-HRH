@@ -10,7 +10,10 @@ test_that("Experiment control: bad scenarios", {
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
 
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$globalConfigLoaded <- TRUE
 
   pacehrh::InitializeScenarios()
   testthat::expect_true(!is.null(e$scenarios))
@@ -42,11 +45,15 @@ test_that("Experiment control: basic read from Excel", {
   local_vars("seasonalityCurves", envir = bve)
   local_vars("seasonalityOffsets", envir = bve)
 
-  pacehrh:::setGlobalConfig(inputExcelFilePath = "./simple_config/Test Inputs.xlsx")
+  # Set input file, and cheat the system into thinking the global configuration
+  # is already loaded
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
   pacehrh::InitializePopulation()
   pacehrh::InitializeScenarios()
+  pacehrh::InitializeSeasonality()
 
   testthat::expect_true(!is.null(e$scenarios))
 

@@ -21,8 +21,18 @@ EXP <- experimentValuesEnvironment
 
 .defaultRoundingLaw <- .roundingLaws[1] # "early"
 
-.colorM = rgb(96,131,180, maxColorValue = 255)
-.colorF = rgb(210,120,135, maxColorValue = 255)
+.perAgeLevels <- c(
+  "off",
+  "annual",
+  "monthly"
+)
+
+.defaultPerAgeLevel <- .perAgeLevels[1] # "off"
+
+.colorM <- rgb(96,131,180, maxColorValue = 255)
+.colorF <- rgb(210,120,135, maxColorValue = 255)
+
+.defaultPopSheet <- "TotalPop"
 
 # GLOBAL VARIABLES
 
@@ -31,6 +41,7 @@ GPE$globalDebug <- FALSE
 
 GPE$traceState <- FALSE
 GPE$inputExcelFile <- "./config/model_inputs.xlsx"
+GPE$ignoreGlobalConfigExcelFileSetting <- FALSE
 
 GPE$startYear <- 2020
 GPE$endYear <- 2040
@@ -38,6 +49,8 @@ GPE$years <- seq(from = GPE$startYear,
                  to = GPE$endYear,
                  by = 1)
 GPE$shoulderYears <- 1
+
+GPE$stochasticity <- TRUE
 
 GPE$ageMin <- 0
 GPE$ageMax <- 100
@@ -52,6 +65,7 @@ GPE$scenarios <- NULL
 
 GPE$rngSeed <- 12345
 GPE$roundingLaw <- .defaultRoundingLaw
+GPE$perAgeStats <- .defaultPerAgeLevel
 
 BVE$seasonalityCurves <- NULL
 BVE$seasonalityOffsets <- NULL

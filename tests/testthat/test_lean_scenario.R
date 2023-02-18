@@ -15,7 +15,7 @@ minimum_input_file <- "pacehrh/inst/extdata/model_inputs_template_lean.xlsx"
 # Set up necessary steps for default minimum template
 test_template <- function(){
     dir.create("tests/results", showWarnings = FALSE)
-    pacehrh:::setGlobalConfig(inputExcelFilePath = minimum_input_file)
+    pacehrh::SetInputExcelFile(inputExcelFilePath = minimum_input_file)
     Trace(TRUE)
     InitializePopulation()
     InitializeScenarios()
@@ -40,10 +40,10 @@ test_that("simple regression", {
     numtrials <- 2
     dir.create("tests/results/regression", showWarnings = FALSE)
     # Run through the full scenario list.
-    for (i in 1:nrow(pacehrh:::GPE$scenarios)){
+    for (i in 1:nrow(pacehrh:::loadScenarios())){
       cat(paste("Starting scenario",i))
-      scenario <- pacehrh:::GPE$scenarios$UniqueID[i]
-      geoname <- pacehrh:::GPE$scenarios$Geography_dontedit[i]
+      scenario <- pacehrh:::loadScenarios()$UniqueID[i]
+      geoname <- pacehrh:::loadScenarios()$Geography_dontedit[i]
       results <- RunExperiments(scenarioName = scenario, trials = numtrials, debug = TRUE)
       expect_true(all(!is.na(results)))
       filename <- paste("tests/results/regression/results_", geoname, scenario,".csv",sep="")
@@ -52,7 +52,7 @@ test_that("simple regression", {
       SaveSuiteResults(results, filename, scenario, 1)
       expect_true(file.exists(filename))
       result <- read.csv(filename)
-      result <- result %>% arrange("Task_ID", "Scenario_ID", "Trial_num", "Run_num", "Year", "Month")
+      result <- result %>% dplyr::arrange("Task_ID", "Scenario_ID", "Trial_num", "Run_num", "Year", "Month")
       sorted_filename <- gsub("results_", "results_sorted_", filename)
       write.csv(result, sorted_filename)
       # assuming no data change the stochastic randomness, result should be the same using the default seed
@@ -79,14 +79,17 @@ test_that("pop matrix number match", {
       for (trial in seq(1,2)){
         # Check Female only
         expect_equal(computed_m[[trial]]["women 30-39",y],
-                     sum(results[[trial]][["Population"]][[y]]$Female[31:40]))
+                     sum(results[[trial]][["Population"]][[y]]$Female[31:40]),
+                     label= glue::glue("failed in y {y} and trial: {trial}"))
         # Check Male Only
         l <- length(results[[trial]][["Population"]][[y]]$Male)
         expect_equal(computed_m[[trial]]["men 18+",y],
-                     sum(results[[trial]][["Population"]][[y]]$Male[19:l]))
+                     sum(results[[trial]][["Population"]][[y]]$Male[19:l]),
+                     label= glue::glue("failed in y {y} and trial: {trial}"))
         #Check Both
         expect_equal(computed_m[[trial]][["1-18",y]],
-                     sum(results[[trial]][["Population"]][[y]]$Male[2:19] + results[[trial]][["Population"]][[y]]$Female[2:19]))
+                     sum(results[[trial]][["Population"]][[y]]$Male[2:19] + results[[trial]][["Population"]][[y]]$Female[2:19]),
+                     label= glue::glue("failed in y {y} and trial: {trial}"))
 
       }
     }

@@ -4,7 +4,10 @@
 \alias{InitializePopulation}
 \title{Initialize Population Data}
 \usage{
-InitializePopulation()
+InitializePopulation(popSheet = .defaultPopSheet)
+}
+\arguments{
+\item{popSheet}{Sheet name from the model input Excel file}
 }
 \value{
 NULL (invisible)
