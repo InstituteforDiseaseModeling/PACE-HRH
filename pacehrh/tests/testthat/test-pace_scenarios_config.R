@@ -86,3 +86,84 @@ test_that("Scenario configuration: non-Excel configuration", {
   testthat::expect_equal(names(e$scenarios[pacehrh:::.scenarioColumnNames]), pacehrh:::.scenarioColumnNames)
   testthat::expect_equal(nrow(e$scenarios), 0)
 })
+
+test_that("Scenario configuration: missing columns", {
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+  
+  e <- pacehrh:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("scenarios", envir = e)
+  local_vars("traceState", envir = e)
+  
+  # Set input file
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$scenarios <- NULL
+  
+  # The TEST_Scenarios_1 sheet is missing two required columns
+  testthat::expect_true(is.null(e$scenarios))
+  testthat::expect_message(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_1"),
+                           regexp = "Missing required columns")
+  testthat::expect_true(is.null(e$scenarios))
+})
+
+test_that("Scenario configuration: mis-typed columns", {
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+  
+  e <- pacehrh:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("scenarios", envir = e)
+  local_vars("traceState", envir = e)
+  
+  # Set input file
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$scenarios <- NULL
+  
+  # The TEST_Scenarios_2 sheet has two required columns with incorrect types
+  testthat::expect_true(is.null(e$scenarios))
+  testthat::expect_message(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_2"),
+                           regexp = "Columns with incorrect types")
+  testthat::expect_true(is.null(e$scenarios))
+})
+
+test_that("Scenario configuration: no optional columns", {
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+  
+  e <- pacehrh:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("scenarios", envir = e)
+  local_vars("traceState", envir = e)
+  
+  # Set input file
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$scenarios <- NULL
+  
+  # The TEST_Scenarios_3 sheet has no optional columns
+  testthat::expect_true(is.null(e$scenarios))
+  pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_3")
+  testthat::expect_true(!is.null(e$scenarios))
+  
+  testthat::expect_true(setequal(pacehrh:::.scenarioMetaData$cols, names(e$scenarios)))
+})
+
+test_that("Scenario configuration: optional columns, wrong type", {
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+  
+  e <- pacehrh:::GPE
+  local_vars("inputExcelFile", envir = e)
+  local_vars("globalConfigLoaded", envir = e)
+  local_vars("scenarios", envir = e)
+  local_vars("traceState", envir = e)
+  
+  # Set input file
+  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  e$scenarios <- NULL
+  
+  # The TEST_Scenarios_4 sheet has an optional column, but the type is wrong
+  testthat::expect_true(is.null(e$scenarios))
+  testthat::expect_message(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_4"),
+                           regexp = "Columns with incorrect types")
+  testthat::expect_true(is.null(e$scenarios))
+})
