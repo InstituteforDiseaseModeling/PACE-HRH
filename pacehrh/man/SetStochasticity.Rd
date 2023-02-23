@@ -22,6 +22,6 @@ By default the system is set up with stochasticity on.
 \examples{
 \dontrun{
 pacehrh::SetStochasticity(FALSE) # Turn off stochasticity
-pacehrh::SetStochasticity(() # Return current stochasticity state
+pacehrh::SetStochasticity() # Return current stochasticity state
 }
 }

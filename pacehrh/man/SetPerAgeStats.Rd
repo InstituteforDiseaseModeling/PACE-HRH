@@ -7,18 +7,19 @@
 SetPerAgeStats(value = NULL)
 }
 \arguments{
-\item{value}{Desired value. (Calling \code{SetPerAgeStats()} with
-no parameters or value = NULL returns the current state.)}
+\item{value}{Desired value. Allowed values = {"none" | "monthly" | "annual"}. 
+Calling \code{SetPerAgeStats()} with no parameters or value = NULL returns
+the current state.}
 }
 \value{
-Previous flag value (invisible)
+Previous value (invisible)
 }
 \description{
 Turn Per-Age Statistics On/Off
 }
 \examples{
 \dontrun{
-pacehrh::SetPerAgeStats(TRUE) # Turn on per-age statistics
-pacehrh::SetPerAgeStats(() # Return current state
+pacehrh::SetPerAgeStats("monthly") # Turn on per-age statistics
+pacehrh::SetPerAgeStats() # Return current state
 }
 }
