@@ -1,4 +1,4 @@
-local_edition(3)
+testthat::local_edition(3)
 setwd("../..")
 source("ValidateInput.R")
 

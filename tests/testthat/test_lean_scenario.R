@@ -1,5 +1,5 @@
-local_edition(3)
-packages = c("dplyr","testthat", "vdiffr")
+testthat::local_edition(3)
+packages = c("dplyr", "vdiffr", "testthat")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
