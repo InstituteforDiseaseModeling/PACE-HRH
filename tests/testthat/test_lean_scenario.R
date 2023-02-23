@@ -1,4 +1,3 @@
-context("Test minimum template")
 local_edition(3)
 packages = c("dplyr","testthat", "vdiffr")
 for(i in packages){
@@ -29,13 +28,23 @@ test_template <- function(input_file, rounding="", setting="annual"){
     withr::defer_parent(unlink("tests/results", recursive = TRUE,  force = TRUE))
 }
 
-test_that("check_template", {
+test_that("check_package_template", {
   # TODO:
   # There is currently warning about
   # tasks in the scenario offsets table are not used in task values sheets
   # We need to define the validate behavior in lint
   expect_true(pacehrh::CheckInputExcelFileFormat(minimum_input_file) %in% c(pacehrh:::.Success, pacehrh:::.warnProblemsFound))
 
+})
+
+test_that("check_user_template", {
+  # TODO:
+  # There is currently warning about
+  # tasks in the scenario offsets table are not used in task values sheets
+  # We need to define the validate behavior in lint
+  input_file <- "config/model_inputs.xlsx"
+  expect_true(pacehrh::CheckInputExcelFileFormat(input_file) %in% c(pacehrh:::.Success, pacehrh:::.warnProblemsFound))
+  
 })
 
 test_that("model regression annual",{
