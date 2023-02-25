@@ -280,8 +280,9 @@ SetStochasticity <- function(value = NULL){
 
 #' Turn Per-Age Statistics On/Off
 #'
-#' @param value Desired value. (Calling \code{SetPerAgeStats()} with
-#' no parameters or value = NULL returns the current state.)
+#' @param value Desired value. Allowed values = {"none" | "monthly" | "annual"}. 
+#'   Calling \code{SetPerAgeStats()} with no parameters or value = NULL returns
+#'   the current state.
 #'
 #' @return Previous value (invisible)
 #' @export

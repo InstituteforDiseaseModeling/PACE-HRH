@@ -39,6 +39,8 @@ loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
   return(seasonalityCurvesData)
 }
 
+
+
 #' Load Seasonality Offsets
 #'
 #' Read the seasonality offsets from the model inputs Excel file. The
@@ -76,6 +78,12 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
                              GPE$inputExcelFile,
                              sep = ""))
   }
+  
+  seasonalityOffsetsData <-
+    validateTableAgainstSchema(seasonalityOffsetsData,
+                               .seasonalityOffsetMetaData,
+                               convertType = TRUE)
+  
 
   return(seasonalityOffsetsData)
 }

@@ -43,6 +43,8 @@ Collate:
     'pace_package_env.R'
     'pace_debug_utils.R'
     'pace_utils.R'
+    'pace_table_tools.R'
+    'pace_table_schemas.R'
     'pace_lint.R'
     'pace_trace.R'
     'pace_config.R'

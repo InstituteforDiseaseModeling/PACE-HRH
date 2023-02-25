@@ -90,16 +90,18 @@
   return(l)
 }
 
-loadPopulationChangeRates <- function(sheetName = "PopValues"){
-  popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+.defaultPopulationRatesSheet <- "PopValues"
 
-  if (length(setdiff(.popValuesColumns, names(popValues))) > 0){
-    traceMessage(paste("Population Values sheet is missing the following columns: ",
-                       paste0(setdiff(.popValuesColumns, names(popValues)), collapse = ", ")))
+loadPopulationChangeRates <- function(sheetName = .defaultPopulationRatesSheet){
+  traceMessage(paste0("Loading population change rates sheet ", sheetName))
+  
+  popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  popValues <- validateTableAgainstSchema(popValues, .populationChangeRateColumnMetaData)
+  
+  if (is.null(popValues)){
     return(NULL)
   }
-
-  popValues <- popValues[.popValuesColumns]
+  
   popValues <- .splitPopulationRatesTable(popValues)
 
   popValues <- lapply(popValues, function(p){
