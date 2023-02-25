@@ -1,5 +1,4 @@
-context("Test ValidateInputExcelFileContent")
-local_edition(3)
+testthat::local_edition(3)
 setwd("../..")
 source("ValidateInput.R")
 
@@ -22,7 +21,7 @@ test_that("Validation capture", {
   # skip_if(.Platform$OS.type != "windows")
   testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                 outputDir = logdir,
-                                                                sheetNames = c("SeasonalityCurves")), error=TRUE)
+                                                                sheetNames = c("SeasonalityCurves")))
   
 })
 # test validation success

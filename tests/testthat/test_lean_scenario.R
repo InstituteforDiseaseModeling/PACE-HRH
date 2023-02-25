@@ -1,6 +1,5 @@
-context("Test minimum template")
-local_edition(3)
-packages = c("dplyr","testthat")
+testthat::local_edition(3)
+packages = c("dplyr", "vdiffr", "testthat")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -11,21 +10,25 @@ for(i in packages){
 library(pacehrh)
 setwd("../..")
 minimum_input_file <- "pacehrh/inst/extdata/model_inputs_template_lean.xlsx"
+source("tests/testthat/test_per_age.R")
 
 # Set up necessary steps for default minimum template
-test_template <- function(){
+test_template <- function(input_file, rounding="", setting="annual"){
     dir.create("tests/results", showWarnings = FALSE)
-    pacehrh::SetInputExcelFile(inputExcelFilePath = minimum_input_file)
+    dir.create("tests/results/regression", showWarnings = FALSE)
+    pacehrh::SetInputExcelFile(inputExcelFilePath = input_file)
     Trace(TRUE)
     InitializePopulation()
     InitializeScenarios()
     InitializeStochasticParameters()
     InitializeSeasonality()
     SetGlobalStartEndYears(start = 2020, end = 2040)
+    if (rounding!=""){pacehrh::SetRoundingLaw(rounding)}
+    pacehrh::SetPerAgeStats(setting)
     withr::defer_parent(unlink("tests/results", recursive = TRUE,  force = TRUE))
 }
 
-test_that("check_template", {
+test_that("check_package_template", {
   # TODO:
   # There is currently warning about
   # tasks in the scenario offsets table are not used in task values sheets
@@ -34,11 +37,53 @@ test_that("check_template", {
 
 })
 
+test_that("check_user_template", {
+  # TODO:
+  # There is currently warning about
+  # tasks in the scenario offsets table are not used in task values sheets
+  # We need to define the validate behavior in lint
+  input_file <- "config/model_inputs.xlsx"
+  expect_true(pacehrh::CheckInputExcelFileFormat(input_file) %in% c(pacehrh:::.Success, pacehrh:::.warnProblemsFound))
+  
+})
+
+test_that("model regression annual",{
+  input_file <- "config/model_inputs.xlsx"
+  local({
+    setting = "annual"
+    test_template(input_file, setting = setting)
+    numtrials <- 2
+    scenario <- "ComprehensiveModel"
+    results <- RunExperiments(scenarioName = scenario, trials = numtrials, debug = TRUE)
+    expect_true(all(!is.na(results)))
+    # save results for selected tasks that are representative of seasonality
+    expect_doppelganger("FH.MN.ANC.1",  draw_comparison(results, "FH.MN.ANC.1", numtrials , setting, 1))
+    expect_doppelganger("FH.MN.D.3",  draw_comparison(results, "FH.MN.D.3", numtrials , setting, 1))
+    expect_doppelganger("Record keeping",  draw_comparison(results, "Record keeping", numtrials , setting, 1))
+  })
+})
+
+test_that("model regression monthly",{
+  input_file <- "config/model_inputs.xlsx"
+  local({
+    setting = "monthly"
+    test_template(input_file, setting = setting)
+    numtrials <- 2
+    scenario <- "ComprehensiveModel"
+    results <- RunExperiments(scenarioName = scenario, trials = numtrials, debug = TRUE)
+    expect_true(all(!is.na(results)))
+    # save results for selected tasks that are representative of seasonality
+    expect_doppelganger("FH.MN.ANC.1_monthly",  draw_comparison(results, "FH.MN.ANC.1", numtrials , setting, 1))
+    expect_doppelganger("FH.MN.D.3_monthly",  draw_comparison(results, "FH.MN.D.3", numtrials , setting, 1))
+    expect_doppelganger("Record keeping_monthly",  draw_comparison(results, "Record keeping", numtrials , setting, 1))
+  })
+})
+
 test_that("simple regression", {
   local({
-    test_template()
+    test_template(minimum_input_file)
     numtrials <- 2
-    dir.create("tests/results/regression", showWarnings = FALSE)
+    
     # Run through the full scenario list.
     for (i in 1:nrow(pacehrh:::loadScenarios())){
       cat(paste("Starting scenario",i))
@@ -56,7 +101,7 @@ test_that("simple regression", {
       sorted_filename <- gsub("results_", "results_sorted_", filename)
       write.csv(result, sorted_filename)
       # assuming no data change the stochastic randomness, result should be the same using the default seed
-      expect_snapshot_file(sorted_filename)
+      expect_snapshot_file(sorted_filename, compare=testthat::compare_file_text)
       # Check population 
       df <- SaveSuiteDemographics(results)
       df <- df %>%
@@ -64,7 +109,7 @@ test_that("simple regression", {
         dplyr::summarize(Female = sum(Female), Male = sum(Male)) %>%
         dplyr::arrange(Trial, Year, Age)
       write.csv(df, filename_d, row.names = FALSE)
-      expect_snapshot_file(filename_d)
+      expect_snapshot_file(filename_d, compare=testthat::compare_file_text)
     }
   })
 
