@@ -8,7 +8,9 @@
 #'
 #' @return Data frame of experiment scenario parameters, or NULL on error
 #'
-loadScenarios <- function(sheetName = "Scenarios") {
+loadScenarios <- function(sheetName = .defaultScenariosSheet) {
+  traceMessage(paste0("Loading scenarios sheet ", sheetName))
+
   scenarios <- NULL
 
   if (file.exists(GPE$inputExcelFile)){

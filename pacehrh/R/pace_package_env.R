@@ -33,6 +33,12 @@ EXP <- experimentValuesEnvironment
 .colorF <- rgb(210,120,135, maxColorValue = 255)
 
 .defaultPopSheet <- "TotalPop"
+.defaultPopLabelSheet <- "Lookup"
+.defaultPopulationRatesSheet <- "PopValues"
+.defaultSeasonalityCurvesSheet <- "SeasonalityCurves"
+.defaultTaskValuesSheet <- "TaskValues"
+.defaultScenariosSheet <- "Scenarios"
+.defaultStochasticParametersSheet <- "StochasticParameters"
 
 # GLOBAL VARIABLES
 

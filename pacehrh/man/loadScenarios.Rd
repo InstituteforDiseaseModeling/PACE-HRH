@@ -4,7 +4,7 @@
 \alias{loadScenarios}
 \title{Load Experiment Scenario Information}
 \usage{
-loadScenarios(sheetName = "Scenarios")
+loadScenarios(sheetName = .defaultScenariosSheet)
 }
 \arguments{
 \item{sheetName}{Sheet name from the model input Excel file}

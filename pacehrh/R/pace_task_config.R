@@ -8,7 +8,9 @@
 #'
 #' @return Data frame of healthcare task parameters
 #'
-loadTaskParameters <- function(sheetName = "TaskValues"){
+loadTaskParameters <- function(sheetName = .defaultTaskValuesSheet){
+  traceMessage(paste0("Loading task values sheet ", sheetName))
+
   taskData <- NULL
 
   if (file.exists(GPE$inputExcelFile)){
@@ -39,6 +41,11 @@ loadTaskParameters <- function(sheetName = "TaskValues"){
   if (is.null(taskData)){
     return(NULL)
   }
+  
+  taskData <-
+    validateTableAgainstSchema(taskData,
+                               .taskValuesMetaData,
+                               convertType = TRUE)
 
   # Convert some of the NA values to sensible defaults
   assertthat::has_name(taskData, "StartingRateInPop")

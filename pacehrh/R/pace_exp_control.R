@@ -59,7 +59,11 @@ SaveBaseSettings <- function(scenarioName = ""){
   } else {
     BVE$seasonalityCurves <- loadSeasonalityCurves()
   }
-
+  
+  if (is.null(BVE$seasonalityCurves)){
+    return(NULL)
+  }
+  
   # Load Task parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
@@ -71,6 +75,10 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskData <- loadTaskParameters()
   }
 
+  if (is.null(BVE$taskData)){
+    return(NULL)
+  }
+  
   # Check that all the population labels in the tasks list are included in
   # the populationLabels lookup. (This connection is also enforced by logic
   # in the input spreadsheet.)

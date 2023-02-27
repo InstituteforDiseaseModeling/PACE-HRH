@@ -18,26 +18,28 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
 }
 
 .checkColumns <- function(table, schema, convertType){
-  rCols <- .checkRequiredColumns()
+  e <- rlang::current_env()
+
+  rCols <- .checkRequiredColumns(e)
   if (is.null(rCols)){
     return(NULL)
   }
   
-  oCols <- .checkOptionalColumns()
+  oCols <- .checkOptionalColumns(e)
   if (is.null(oCols)){
     return(NULL)
   }
-  
+
+  assertthat::assert_that(setequal(c(rCols, oCols), schema$cols))
+    
   table <- table[c(rCols, oCols)]
   
-  .removeBadRows()
+  .removeBadRows(e)
   
   return(table)  
 }
 
-.removeBadRows <- function(){
-  e <- rlang::caller_env()
-
+.removeBadRows <- function(e){
   if (is.null(e$schema$kcols)){
     return(invisible(NULL))
   }
@@ -47,9 +49,7 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   }
 }
 
-.checkRequiredColumns <- function(){
-  e <- rlang::caller_env()
-  
+.checkRequiredColumns <- function(e){
   columns <- names(e$table)
   
   # Test that all required columns have shown up
@@ -65,16 +65,7 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
       # Convert columns to correct types if possible
       indexes <- which(!correctTypesMask)
       for (i in indexes){
-        colName <- e$schema$rcols[i]
-        colType <- e$schema$rtype[i]
-        
-        # TODO - catch "NAs introduced by coercion" warning
-        
-        if (colType == "double"){
-          e$table[[colName]] <- as.numeric(e$table[[colName]])
-        } else if (colType == "character") {
-          e$table[[colName]] <- as.character(e$table[[colName]])
-        }
+        .changeColumnType(e, e$schema$rcols[i], e$schema$rtype[i])
       }
     } else {
       .raiseAlarm(e$schema$rcols[!correctTypesMask], alarmType = "type")
@@ -86,9 +77,17 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   return(e$schema$rcols)
 }
 
-.checkOptionalColumns <- function(){
-  e <- rlang::caller_env()
+.changeColumnType <- function(e, colName, colType){
+  # TODO - catch "NAs introduced by coercion" warning
   
+  if (colType == "double"){
+    e$table[[colName]] <- as.numeric(e$table[[colName]])
+  } else if (colType == "character") {
+    e$table[[colName]] <- as.character(e$table[[colName]])
+  }
+}
+
+.checkOptionalColumns <- function(e){
   out <- vector(mode = "character")
 
   if (is.null(e$schema$ocols)){
@@ -107,7 +106,12 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
       if (types[col] == type){ # If the column has the right type
         out <- c(out, col)
       } else {
-        badTypeColumnsList <- c(badTypeColumnsList, col)
+        if (e$convertType){
+          .changeColumnType(e, col, type)
+          out <- c(out, col)
+        } else {
+          badTypeColumnsList <- c(badTypeColumnsList, col)
+        }
       }
     } else { # Add optional column with default values
       e$table[[col]] <- vector(mode = type, length = NROW(e$table))

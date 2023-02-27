@@ -1,12 +1,3 @@
-.popValuesColumns <- c("Description",
-                       "Label",
-                       "Type",
-                       "Sex",
-                       "BandStart",
-                       "BandEnd",
-                       "InitValue",
-                       "ChangeRate")
-
 .computeFullPopRates <- function(p){
   assertthat::assert_that(nrow(p) > 0)
 
@@ -89,8 +80,6 @@
 
   return(l)
 }
-
-.defaultPopulationRatesSheet <- "PopValues"
 
 loadPopulationChangeRates <- function(sheetName = .defaultPopulationRatesSheet){
   traceMessage(paste0("Loading population change rates sheet ", sheetName))

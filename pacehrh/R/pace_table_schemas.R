@@ -159,3 +159,109 @@
     types = .populationChangeRateColumnTypes,
     kcols = .populationChangeRateKeyColumns
   )
+
+# ------------------------------------------------------------------------------
+#
+# TASK VALUES TABLE
+#
+# ------------------------------------------------------------------------------
+
+.taskValuesColumnNames <-
+  c(
+    "Indicator",
+    "CommonName",
+    "ClinicalOrNon",
+    "ClinicalCat",
+    "ServiceCat",
+    "RelevantPop",
+    "StartingRateInPop",
+    "RateMultiplier",
+    "AnnualDeltaRatio",
+    "NumContactsPerUnit",
+    "NumContactsAnnual",
+    "MinsPerContact",
+    "HoursPerWeek"
+  )
+
+.taskValuesColumnTypes <-
+  c(
+    "character",
+    "character",
+    "character",
+    "character",
+    "character",
+    "character",
+    "double",
+    "double",
+    "double",
+    "double",
+    "double",
+    "double",
+    "double"
+  )
+
+.taskValuesColumnNamesOptional <-
+  c(
+    "RateType",
+    "MultiplierReason",
+    "FTEratio"
+  )
+
+.taskValuesColumnTypesOptional <-
+  c(
+    "character",
+    "character",
+    "double"
+  )
+
+.taskValuesKeyColumns <-
+  c(
+    "Indicator"
+  )
+
+.taskValuesMetaData <-
+  list(
+    rcols = .taskValuesColumnNames,
+    rtypes = .taskValuesColumnTypes,
+    ocols = .taskValuesColumnNamesOptional,
+    otypes = .taskValuesColumnTypesOptional,
+    cols = c(.taskValuesColumnNames, .taskValuesColumnNamesOptional),
+    types = c(.taskValuesColumnTypes, .taskValuesColumnTypesOptional),
+    kcols = .taskValuesKeyColumns
+  )
+
+# ------------------------------------------------------------------------------
+#
+# SEASONALITY CURVES TABLE
+#
+# ------------------------------------------------------------------------------
+
+.seasonlityCurvesColumnNames <-
+  c(
+    "Month"
+  )
+
+.scenarioColumnTypes <-
+  c(
+    "character"
+  )
+
+# .scenarioColumnNamesOptional <-
+#   c(
+#     "DeliveryModel"
+#   )
+# 
+# .scenarioColumnTypesOptional <-
+#   c(
+#     "character"
+#   )
+# 
+# .scenarioMetaData <-
+#   list(
+#     rcols = .scenarioColumnNames,
+#     rtypes = .scenarioColumnTypes,
+#     ocols = .scenarioColumnNamesOptional,
+#     otypes = .scenarioColumnTypesOptional,
+#     cols = c(.scenarioColumnNames, .scenarioColumnNamesOptional),
+#     types = c(.scenarioColumnTypes, .scenarioColumnTypesOptional)
+#   )

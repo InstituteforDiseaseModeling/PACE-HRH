@@ -4,7 +4,9 @@
 #'
 #' @return Dataframe of stochastic parameters
 #'
-loadStochasticParameters <- function(sheetName = "StochasticParameters"){
+loadStochasticParameters <- function(sheetName = .defaultStochasticParametersSheet){
+  traceMessage(paste0("Loading stochastic parameters sheet ", sheetName))
+  
   stochData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   # Keep the first three columns
