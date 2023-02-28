@@ -7,10 +7,25 @@
 loadStochasticParameters <- function(sheetName = .defaultStochasticParametersSheet){
   traceMessage(paste0("Loading stochastic parameters sheet ", sheetName))
   
-  stochData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-
-  # Keep the first three columns
-  stochData <- stochData[1:3]
+  stochData <- tryCatch({
+    readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  },
+  error = function(e){
+    return(NULL)
+  },
+  finally = {
+  })
+  
+  if (is.null(stochData)){
+    warning("Could not read stochastic parameters sheet")
+    return(NULL)
+  }
+  
+  stochData <-
+    validateTableAgainstSchema(stochData,
+                               .stochasticParametersMetaData,
+                               convertType = FALSE)
+  
   return(stochData)
 }
 

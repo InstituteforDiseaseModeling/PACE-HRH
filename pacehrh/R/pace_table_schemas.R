@@ -265,3 +265,38 @@
 #     cols = c(.scenarioColumnNames, .scenarioColumnNamesOptional),
 #     types = c(.scenarioColumnTypes, .scenarioColumnTypesOptional)
 #   )
+
+# ------------------------------------------------------------------------------
+#
+# STOCHASTIC PARAMETERS TABLE
+#
+# ------------------------------------------------------------------------------
+
+.stochasticParametersColumnNames <-
+  c(
+    "Value",
+    "p",
+    "q"
+  )
+
+.stochasticParametersColumnTypes <-
+  c(
+    "character",
+    "double",
+    "double"
+  )
+
+.stochasticParametersKeyColumns <-
+  c(
+    "Value",
+    "p"
+  )
+
+.stochasticParametersMetaData <-
+  list(
+    rcols = .stochasticParametersColumnNames,
+    rtypes = .stochasticParametersColumnTypes,
+    cols = .stochasticParametersColumnNames,
+    types = .stochasticParametersColumnTypes,
+    kcols = .stochasticParametersKeyColumns
+  )
