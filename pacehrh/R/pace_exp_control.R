@@ -26,14 +26,28 @@
 #' result <- pacehrh::SaveBaseSettings(scenario)
 #' }
 SaveBaseSettings <- function(scenarioName = ""){
-  .zeroExpBaseVariables()
-
-  BVE$scenario <- .getScenarioConfig(scenarioName)
-
-  if (is.null(BVE$scenario)){
+  # Check for tables that should have been loaded during initialization
+  
+  if (is.null(GPE$scenarios)){
+    return(NULL)
+  }
+  
+  if (is.null(BVE$seasonalityOffsets)){
+    return(NULL)
+  }
+  
+  if (is.null(BVE$stochasticParams)){
     return(NULL)
   }
 
+  .zeroExpBaseVariables()
+  
+  BVE$scenario <- .getScenarioConfig(scenarioName)
+  
+  if (is.null(BVE$scenario)){
+    return(NULL)
+  }
+  
   # Load Population change parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 

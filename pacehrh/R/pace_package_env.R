@@ -36,6 +36,7 @@ EXP <- experimentValuesEnvironment
 .defaultPopLabelSheet <- "Lookup"
 .defaultPopulationRatesSheet <- "PopValues"
 .defaultSeasonalityCurvesSheet <- "SeasonalityCurves"
+.defaultSeasonalityOffsetsSheet <- "SeasonalityOffsets"
 .defaultTaskValuesSheet <- "TaskValues"
 .defaultScenariosSheet <- "Scenarios"
 .defaultStochasticParametersSheet <- "StochasticParameters"

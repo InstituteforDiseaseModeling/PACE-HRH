@@ -102,7 +102,7 @@ test_that("Scenario configuration: missing columns", {
   
   # The TEST_Scenarios_1 sheet is missing two required columns
   testthat::expect_true(is.null(e$scenarios))
-  testthat::expect_message(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_1"),
+  testthat::expect_warning(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_1"),
                            regexp = "Missing required columns")
   testthat::expect_true(is.null(e$scenarios))
 })
@@ -122,7 +122,7 @@ test_that("Scenario configuration: mis-typed columns", {
   
   # The TEST_Scenarios_2 sheet has two required columns with incorrect types
   testthat::expect_true(is.null(e$scenarios))
-  testthat::expect_message(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_2"),
+  testthat::expect_warning(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_2"),
                            regexp = "Columns with incorrect types")
   testthat::expect_true(is.null(e$scenarios))
 })
@@ -163,7 +163,7 @@ test_that("Scenario configuration: optional columns, wrong type", {
   
   # The TEST_Scenarios_4 sheet has an optional column, but the type is wrong
   testthat::expect_true(is.null(e$scenarios))
-  testthat::expect_message(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_4"),
+  testthat::expect_warning(pacehrh::InitializeScenarios(sheetName = "TEST_Scenarios_4"),
                            regexp = "Columns with incorrect types")
   testthat::expect_true(is.null(e$scenarios))
 })

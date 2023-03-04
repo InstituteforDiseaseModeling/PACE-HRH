@@ -50,8 +50,10 @@ loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesShe
 #' @param sheetNameOffsets Sheet name from the model input Excel file
 #'
 #' @return Seasonality offsets data frame.
-#'
-loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
+#' 
+loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet){
+  traceMessage(paste0("Loading seasonality offsets sheet ", sheetNameOffsets))
+  
   seasonalityOffsetsData <- NULL
 
   if (file.exists(GPE$inputExcelFile)){

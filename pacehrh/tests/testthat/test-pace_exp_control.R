@@ -39,6 +39,9 @@ test_that("Experiment control: basic read from Excel", {
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
 
+  local_vars("traceState", envir = e)
+  pacehrh::Trace(TRUE)  
+  
   local_vars("initialPopulation", envir = bve)
   local_vars("populationLabels", envir = bve)
   local_vars("scenarios", envir = e)
@@ -54,7 +57,8 @@ test_that("Experiment control: basic read from Excel", {
   pacehrh::InitializePopulation()
   pacehrh::InitializeScenarios()
   pacehrh::InitializeSeasonality()
-
+  pacehrh::InitializeStochasticParameters()
+  
   testthat::expect_true(!is.null(e$scenarios))
 
   scenarioName <- "TEST_CustomSheets_1"

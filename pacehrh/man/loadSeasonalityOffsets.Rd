@@ -4,7 +4,7 @@
 \alias{loadSeasonalityOffsets}
 \title{Load Seasonality Offsets}
 \usage{
-loadSeasonalityOffsets(sheetNameOffsets = "SeasonalityOffsets")
+loadSeasonalityOffsets(sheetNameOffsets = .defaultSeasonalityOffsetsSheet)
 }
 \arguments{
 \item{sheetNameOffsets}{Sheet name from the model input Excel file}

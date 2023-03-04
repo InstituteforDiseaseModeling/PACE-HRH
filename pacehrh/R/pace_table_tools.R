@@ -65,7 +65,9 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
       # Convert columns to correct types if possible
       indexes <- which(!correctTypesMask)
       for (i in indexes){
-        .changeColumnType(e, e$schema$rcols[i], e$schema$rtype[i])
+        if (.changeColumnType(e, e$schema$rcols[i], e$schema$rtype[i]) == FALSE){
+          return(NULL)
+        }
       }
     } else {
       .raiseAlarm(e$schema$rcols[!correctTypesMask], alarmType = "type")
@@ -78,13 +80,43 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
 }
 
 .changeColumnType <- function(e, colName, colType){
-  # TODO - catch "NAs introduced by coercion" warning
-  
   if (colType == "double"){
-    e$table[[colName]] <- as.numeric(e$table[[colName]])
-  } else if (colType == "character") {
-    e$table[[colName]] <- as.character(e$table[[colName]])
-  }
+    retVal <- tryCatch(
+      {
+        e$table[[colName]] <- as.numeric(e$table[[colName]])
+        TRUE
+      },
+      warning = function(w){
+        if (length(grep("NAs introduced", w$message)) > 0){
+          .raiseChangeAlarm(colName, colType)
+          FALSE
+        }
+      },
+      finally = function(){}
+    )
+
+    return(retVal)
+  }  
+    
+  if (colType == "character"){
+    retVal <- tryCatch(
+      {
+        e$table[[colName]] <- as.character(e$table[[colName]])
+        TRUE
+      },
+      warning = function(w){
+        if (length(grep("NAs introduced", w$message)) > 0){
+          .raiseChangeAlarm(colName, colType)
+          FALSE
+        }
+      },
+      finally = function(){}
+    )
+    
+    return(retVal)
+  }  
+  
+  return(FALSE)
 }
 
 .checkOptionalColumns <- function(e){
@@ -107,7 +139,9 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
         out <- c(out, col)
       } else {
         if (e$convertType){
-          .changeColumnType(e, col, type)
+          if (.changeColumnType(e, col, type) == FALSE){
+            return(NULL)
+          }
           out <- c(out, col)
         } else {
           badTypeColumnsList <- c(badTypeColumnsList, col)
@@ -138,5 +172,18 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
     errorMsg <- paste0("Columns with incorrect types in table: ", colStr)
   }
   
-  raiseMessage(errorMsg)
+  warning(errorMsg, call. = FALSE)
+}
+
+.raiseChangeAlarm <- function(colName, colType){
+  warning(
+    paste0(
+      "Column ",
+      colName,
+      " could not be converted to type ",
+      colType,
+      " without introducing NAs. Check for typos in column data?"
+    ),
+    call. = FALSE
+  )
 }
