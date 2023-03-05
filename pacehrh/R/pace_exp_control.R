@@ -216,8 +216,7 @@ SaveBaseSettings <- function(scenarioName = ""){
                    "NumContactsPerUnit",
                    "NumContactsAnnual",
                    "MinsPerContact",
-                   "HoursPerWeek",
-                   "FTEratio")
+                   "HoursPerWeek")
 
 .convertTaskDfToMatrix <- function(df){
   # Extract numeric data columns from a taskData dataframe as read from the

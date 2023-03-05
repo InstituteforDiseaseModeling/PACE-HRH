@@ -335,8 +335,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
       "NumContactsPerUnit",
       "NumContactsAnnual",
       "MinsPerContact",
-      "HoursPerWeek",
-      "FTEratio"
+      "HoursPerWeek"
     )
 
   l <- lapply(e$taskValuesSheetData, function(sheetData){

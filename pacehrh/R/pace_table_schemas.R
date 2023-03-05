@@ -1,6 +1,5 @@
 # Table metadata consists of a list with the following entries:
 #
-#
 # rcols : vector of names of required columns
 # rtypes : vector of types of required columns
 # ocols : [optional] vector of names of optional columns
@@ -203,15 +202,13 @@
 .taskValuesColumnNamesOptional <-
   c(
     "RateType",
-    "MultiplierReason",
-    "FTEratio"
+    "MultiplierReason"
   )
 
 .taskValuesColumnTypesOptional <-
   c(
     "character",
-    "character",
-    "double"
+    "character"
   )
 
 .taskValuesKeyColumns <-
