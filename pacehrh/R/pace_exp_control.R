@@ -27,16 +27,7 @@
 #' }
 SaveBaseSettings <- function(scenarioName = ""){
   # Check for tables that should have been loaded during initialization
-  
-  if (is.null(GPE$scenarios)){
-    return(NULL)
-  }
-  
-  if (is.null(BVE$seasonalityOffsets)){
-    return(NULL)
-  }
-  
-  if (is.null(BVE$stochasticParams)){
+  if (.checkForBaseTables() == FALSE){
     return(NULL)
   }
 
@@ -136,6 +127,33 @@ SaveBaseSettings <- function(scenarioName = ""){
   .mergeSeasonalityCurves()
 
   return(BVE$scenario)
+}
+
+.checkForBaseTables <- function(){
+  varsToCheck <- c(expression(GPE$scenarios),
+                   expression(BVE$seasonalityOffsets),
+                   expression(BVE$stochasticParams),
+                   expression(BVE$initialPopulation),
+                   expression(BVE$populationLabels),
+                   expression(BVE$populationRangesTable)
+                   )
+  
+  checks <- sapply(varsToCheck, function(v){
+    return(!is.null(eval(v)))
+  })
+  
+  if (all(checks)){
+    return(TRUE)
+  }
+
+  varNames <- sapply(varsToCheck, deparse)
+  badVars <- varNames[checks == FALSE]
+  badVarsStr <- paste(badVars, collapse = ", " )
+
+  errorMsg <- paste0("Uninitialized variables: ", badVarsStr)
+  warning(errorMsg, call. = FALSE)
+
+  return(FALSE)
 }
 
 # Extend the SeasonalityOffsets table with the seasonality curve values from the
