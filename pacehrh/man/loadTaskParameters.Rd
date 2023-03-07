@@ -4,7 +4,7 @@
 \alias{loadTaskParameters}
 \title{Load Healthcare Task Information}
 \usage{
-loadTaskParameters(sheetName = "TaskValues")
+loadTaskParameters(sheetName = .defaultTaskValuesSheet)
 }
 \arguments{
 \item{sheetName}{Sheet name from the model input Excel file}

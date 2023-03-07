@@ -6,9 +6,11 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @return Data frame of experiment scenario parameters
+#' @return Data frame of experiment scenario parameters, or NULL on error
 #'
-loadScenarios <- function(sheetName = "Scenarios") {
+loadScenarios <- function(sheetName = .defaultScenariosSheet) {
+  traceMessage(paste0("Loading scenarios sheet ", sheetName))
+
   scenarios <- NULL
 
   if (file.exists(GPE$inputExcelFile)){
@@ -36,16 +38,12 @@ loadScenarios <- function(sheetName = "Scenarios") {
                              sep = ""))
   }
 
-  if (!is.null(scenarios)){
-    # We only care about some of the sheet
-    scenarios <- scenarios[.scenarioColumnNames]
-
-    # Asserts test that all the expected columns have shown up
-    assertthat::are_equal(length(.scenarioColumnNames), length(.scenarioColumnTypes))
-    assertthat::are_equal(names(scenarios), .scenarioColumnNames)
-    assertthat::assert_that(all(sapply(scenarios,typeof) == .scenarioColumnTypes))
+  if (is.null(scenarios)){
+    return(NULL)
   }
-
+    
+  scenarios <- validateTableAgainstSchema(scenarios, .scenarioMetaData)
+  
   return(scenarios)
 }
 

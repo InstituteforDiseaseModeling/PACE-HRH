@@ -1,12 +1,3 @@
-.popValuesColumns <- c("Description",
-                       "Label",
-                       "Type",
-                       "Sex",
-                       "BandStart",
-                       "BandEnd",
-                       "InitValue",
-                       "ChangeRate")
-
 .computeFullPopRates <- function(p){
   assertthat::assert_that(nrow(p) > 0)
 
@@ -90,16 +81,16 @@
   return(l)
 }
 
-loadPopulationChangeRates <- function(sheetName = "PopValues"){
+loadPopulationChangeRates <- function(sheetName = .defaultPopulationRatesSheet){
+  traceMessage(paste0("Loading population change rates sheet ", sheetName))
+  
   popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-
-  if (length(setdiff(.popValuesColumns, names(popValues))) > 0){
-    traceMessage(paste("Population Values sheet is missing the following columns: ",
-                       paste0(setdiff(.popValuesColumns, names(popValues)), collapse = ", ")))
+  popValues <- validateTableAgainstSchema(popValues, .populationChangeRateColumnMetaData)
+  
+  if (is.null(popValues)){
     return(NULL)
   }
-
-  popValues <- popValues[.popValuesColumns]
+  
   popValues <- .splitPopulationRatesTable(popValues)
 
   popValues <- lapply(popValues, function(p){

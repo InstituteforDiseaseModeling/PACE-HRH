@@ -30,8 +30,7 @@
 # ----------
 # Per-age stats only make sense for clinical tasks associated with population
 # ranges. Other kinds of per-HCW administrative tasks - computeMethod ==
-# "TimeAddedOn" or computeMethod == "TimeRatio" - are excluded from the
-# final reported results.
+# "TimeAddedOn" - are excluded from the final reported results.
 #
 
 ComputePerAgeTaskTimes <- function(e){

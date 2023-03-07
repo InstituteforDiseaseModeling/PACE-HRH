@@ -50,7 +50,7 @@ test_that("Population rates configuration: Load and compute", {
   testthat::expect_true(all(results))
 
   # Sheet unusable - missing columns
-  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_2")
+  testthat::expect_warning(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_2"))
   testthat::expect_true(is.null(popRates))
 
   # Sheet incomplete - no femaleFertility values

@@ -44,17 +44,6 @@ TaskTimes <- function(){
       tasksN[taoMask] <- 1
     }
 
-    # Perform a separate calculation for TimeRatio tasks
-    tRatioMask <- (tasks$computeMethod == "TimeRatio")
-    if (sum(tRatioMask) > 0){
-      baseTime <- sum(tasksT[tasks$ClinicalOrNon == "Clinical"])
-
-      fteRatio <- taskvals[,"FTEratio"]
-      tr <- baseTime * (fteRatio / (1 - fteRatio))
-      tasksT[tRatioMask] <- tr[tRatioMask]
-      tasksN[tRatioMask] <- 1
-    }
-
     names(tasksN) <- taskIds
     names(tasksT) <- taskIds
 
@@ -67,7 +56,6 @@ TaskTimes <- function(){
   colnames(n) <- BVE$years
   return(list(N = n, Time = t))
 }
-
 
 .extractPyramid <- function(varName, year){
   df <- eval(parse(text = paste(varName, "$`", as.character(year), "`", sep = "")))
