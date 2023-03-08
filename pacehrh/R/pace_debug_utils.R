@@ -1,21 +1,4 @@
-#' Display Contents of the Working Environments
-#'
-#' @return NULL (invisible)
-dispEnvs <- function(){
-  print("----- GLOBAL -----")
-  print(ls.str(globalPackageEnvironment))
-  print("------ BASE ------")
-  print(ls.str(baseValuesEnvironment))
-  print("--- EXPERIMENT ---")
-  print(ls.str(experimentValuesEnvironment))
-  invisible(NULL)
-}
-
 writeCurrentExpDemographics_wide <- function(filename = "out.csv") {
-  if (!exists("experimentValuesEnvironment$demographics")) {
-    return(invisible(NULL))
-  }
-
   popData <- EXP$demographics
 
   if (is.null(popData)) {

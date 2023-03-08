@@ -4,29 +4,25 @@ withr::local_dir("..")
 
 test_that("Experiment control: missing tables", {
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
-  
+
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
   local_vars("globalConfigLoaded", envir = e)
   local_vars("scenarios", envir = e)
-  
+
+  # Clear out the BVE environment
+  e$scenarios <- NULL
+  rm(list = ls(name = pacehrh:::BVE, all.names = TRUE), pos = pacehrh:::BVE)
+
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
   pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
   e$globalConfigLoaded <- TRUE
-  
+
   # Attempt to run experiments without any required initialization. Two warnings
   # should be raised.
   scenario <- "BasicModel"
-  testthat::expect_warning(
-    testthat::expect_warning(
-      results <-
-        pacehrh::RunExperiments(scenarioName = scenario, trials = 5),
-      regexp = "Uninitialized variables"
-    ),
-    regexp = "Critical failure"
-  )
-  
+  testthat::expect_snapshot(results <- pacehrh::RunExperiments(scenarioName = scenario, trials = 5))
   testthat::expect_true(is.null(results))
 })
 
@@ -47,7 +43,7 @@ test_that("Experiment control: bad scenarios", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeSeasonality()
   pacehrh::InitializeStochasticParameters()
-  
+
   testthat::expect_true(!is.null(e$scenarios))
 
   out <- SaveBaseSettings(scenarioName = "")
@@ -87,7 +83,7 @@ test_that("Experiment control: basic read from Excel", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeSeasonality()
   pacehrh::InitializeStochasticParameters()
-  
+
   testthat::expect_true(!is.null(e$scenarios))
 
   scenarioName <- "TEST_CustomSheets_1"
