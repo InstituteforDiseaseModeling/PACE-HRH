@@ -10,6 +10,8 @@
 #' \code{Female}, \code{Male} and \code{Total}
 #'
 loadInitialPopulation <- function(sheetName = .defaultPopSheet){
+  traceMessage(paste0("Loading initial population sheet ", sheetName))
+
   popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
 
   namesFound <- names(popData)
@@ -72,7 +74,9 @@ loadInitialPopulation <- function(sheetName = .defaultPopSheet){
 .popLabelColumns <-
   c("Labels", "Male", "Female", "Start", "End")
 
-loadPopulationLabels <- function(sheetName = "Lookup"){
+loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet){
+  traceMessage(paste0("Loading population labels sheet ", sheetName))
+  
   df <- tryCatch({
       readxl::read_xlsx(GPE$inputExcelFile,
                         sheet = sheetName,

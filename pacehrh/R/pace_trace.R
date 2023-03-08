@@ -26,12 +26,19 @@ Trace <- function(state = NULL){
 #' Log A Trace Message
 #'
 #' @param msgString Trace message
+#' @noRd
 traceMessage <- function(msgString){
   if (GPE$traceState == TRUE){
-    # o <- sys.calls()[[sys.nframe() - 1]]
-    # fname <- deparse(o[[1]])
-    # message(paste0(fname, ": ", msgString))
-    # message(traceback(x = 0))
     message(msgString)
   }
+}
+
+#' Raise A Trace Message
+#' 
+#' Same as `traceMessage()`, but doesn't depend on traceMessage value
+#'
+#' @param msgString Trace message
+#' @noRd
+raiseMessage <- function(msgString){
+  message(msgString)
 }

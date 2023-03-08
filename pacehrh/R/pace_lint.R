@@ -295,10 +295,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
       return(character(0))
     } else {
       tasks <- sheetData$Indicator
-      geos <- sheetData$Geography
-      assertthat::assert_that(length(tasks) == length(geos))
-      keys <- paste(tasks, "$$$", geos, sep = "")
-      return(tasks[duplicated(keys)])
+      return(tasks[duplicated(tasks)])
     }
   })
 
@@ -335,8 +332,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
       "NumContactsPerUnit",
       "NumContactsAnnual",
       "MinsPerContact",
-      "HoursPerWeek",
-      "FTEratio"
+      "HoursPerWeek"
     )
 
   l <- lapply(e$taskValuesSheetData, function(sheetData){

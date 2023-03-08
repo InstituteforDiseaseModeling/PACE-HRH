@@ -1,41 +1,3 @@
-.scenarioColumnNames <-
-  c(
-    "UniqueID",
-    "WeeksPerYr",
-    "HrsPerWeek",
-    "BaselinePop",
-    "o_PopGrowth",
-    "o_Fertility_decr",
-    "o_MHIVTB_decr",
-    "o_ChildDis_decr",
-    "sheet_TaskValues",
-    "sheet_PopValues",
-    "sheet_SeasonalityCurves",
-    "sheet_Cadre",
-    "DeliveryModel",
-    "Geography_dontedit"
-  )
-
-.scenarioColumnTypes <-
-  c(
-    "character",
-    "double",
-    "double",
-    "double",
-    "logical",
-    "logical",
-    "logical",
-    "logical",
-    "character",
-    "character",
-    "character",
-    "character",
-    "character",
-    "character"
-  )
-
-.scenarioMetaData <- list(cols = .scenarioColumnNames, types = .scenarioColumnTypes)
-
 #' Create A New Scenarios Table
 #'
 #' @return Blank scenarios table
@@ -48,11 +10,11 @@
 #' tbl <- pacehrh::AddScenario(tbl, "Scenario 1")
 #' }
 CreateScenariosTable <- function() {
-  l <- lapply(1:length(.scenarioColumnNames), function(i) {
-    return(vector(mode = .scenarioColumnTypes[i]))
+  l <- lapply(1:length(.scenarioMetaData$cols), function(i) {
+    return(vector(mode = .scenarioMetaData$types[i]))
   })
 
-  names(l) <- .scenarioColumnNames
+  names(l) <- .scenarioMetaData$cols
 
   tbl <- do.call(tibble::tibble, l)
 
@@ -79,7 +41,6 @@ CreateScenariosTable <- function() {
 #' * __sheet_SeasonalityCurves__ (character)
 #' * __sheet_sheet_Cadre__ (character)
 #' * __DeliveryModel__ (character)
-#' * __Geography_dontedit__ (character)
 #'
 #' @return Updated scenarios table
 #' @export
@@ -201,7 +162,6 @@ DeleteScenario <-
 #' * __sheet_SeasonalityCurves__ (character)
 #' * __sheet_sheet_Cadre__ (character)
 #' * __DeliveryModel__ (character)
-#' * __Geography_dontedit__ (character)
 #'
 #' @return Updated scenarios table
 #' @export
@@ -300,7 +260,7 @@ ReadScenario <-
     # TODO: insert type checking (prevent columns being coerced to characters)
 
     # It should never happen that there are two records with the same UniqueID
-    # value, but in case it does happen we use the first match.
+    # value, but in case it does happen use the first match.
     rowNum <- rowNum[1]
 
     return(tbl[rowNum,])
@@ -325,5 +285,3 @@ ReadScenario <-
 
   return(TRUE)
 }
-
-

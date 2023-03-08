@@ -41,7 +41,7 @@ RunExperiments <-
       warning("Critical failure. RunExperiments() ended.")
       return(NULL)
     }
-
+    
     set.seed(seed)
 
     l <- lapply(seq_len(trials), function(trial) {

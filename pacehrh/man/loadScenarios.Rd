@@ -4,13 +4,13 @@
 \alias{loadScenarios}
 \title{Load Experiment Scenario Information}
 \usage{
-loadScenarios(sheetName = "Scenarios")
+loadScenarios(sheetName = .defaultScenariosSheet)
 }
 \arguments{
 \item{sheetName}{Sheet name from the model input Excel file}
 }
 \value{
-Data frame of experiment scenario parameters
+Data frame of experiment scenario parameters, or NULL on error
 }
 \description{
 Read the experiment scenario information from the model inputs Excel file.

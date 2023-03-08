@@ -26,23 +26,32 @@
 #' result <- pacehrh::SaveBaseSettings(scenario)
 #' }
 SaveBaseSettings <- function(scenarioName = ""){
-  .zeroExpBaseVariables()
-
-  BVE$scenario <- .getScenarioConfig(scenarioName)
-
-  if (is.null(BVE$scenario)){
+  # Check for tables that should have been loaded during initialization
+  if (.checkForBaseTables() == FALSE){
     return(NULL)
   }
 
+  .zeroExpBaseVariables()
+  
+  BVE$scenario <- .getScenarioConfig(scenarioName)
+  
+  if (is.null(BVE$scenario)){
+    return(NULL)
+  }
+  
   # Load Population change parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
   popValsSheet <- BVE$scenario$sheet_PopValues
-
+  
   if (!is.blank(popValsSheet)) {
     BVE$populationChangeRates <- loadPopulationChangeRates(popValsSheet)
   } else {
     BVE$populationChangeRates <- loadPopulationChangeRates()
+  }
+  
+  if (is.null(BVE$populationChangeRates)){
+    return(NULL)
   }
 
   # Load Seasonality parameter data from the appropriate Excel sheet, as specified
@@ -55,7 +64,11 @@ SaveBaseSettings <- function(scenarioName = ""){
   } else {
     BVE$seasonalityCurves <- loadSeasonalityCurves()
   }
-
+  
+  if (is.null(BVE$seasonalityCurves)){
+    return(NULL)
+  }
+  
   # Load Task parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
@@ -67,6 +80,10 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$taskData <- loadTaskParameters()
   }
 
+  if (is.null(BVE$taskData)){
+    return(NULL)
+  }
+  
   # Check that all the population labels in the tasks list are included in
   # the populationLabels lookup. (This connection is also enforced by logic
   # in the input spreadsheet.)
@@ -110,6 +127,33 @@ SaveBaseSettings <- function(scenarioName = ""){
   .mergeSeasonalityCurves()
 
   return(BVE$scenario)
+}
+
+.checkForBaseTables <- function(){
+  varsToCheck <- c(expression(GPE$scenarios),
+                   expression(BVE$seasonalityOffsets),
+                   expression(BVE$stochasticParams),
+                   expression(BVE$initialPopulation),
+                   expression(BVE$populationLabels),
+                   expression(BVE$populationRangesTable)
+                   )
+  
+  checks <- sapply(varsToCheck, function(v){
+    return(!is.null(eval(v)))
+  })
+  
+  if (all(checks)){
+    return(TRUE)
+  }
+
+  varNames <- sapply(varsToCheck, deparse)
+  badVars <- varNames[checks == FALSE]
+  badVarsStr <- paste(badVars, collapse = ", " )
+
+  errorMsg <- paste0("Uninitialized variables: ", badVarsStr)
+  warning(errorMsg, call. = FALSE)
+
+  return(FALSE)
 }
 
 # Extend the SeasonalityOffsets table with the seasonality curve values from the
@@ -172,8 +216,7 @@ SaveBaseSettings <- function(scenarioName = ""){
                    "NumContactsPerUnit",
                    "NumContactsAnnual",
                    "MinsPerContact",
-                   "HoursPerWeek",
-                   "FTEratio")
+                   "HoursPerWeek")
 
 .convertTaskDfToMatrix <- function(df){
   # Extract numeric data columns from a taskData dataframe as read from the

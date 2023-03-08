@@ -8,8 +8,8 @@ test_that("Scenario management: create empty scenarios table", {
   testthat::expect_equal(class(tbl), c("tbl_df", "tbl", "data.frame"))
   testthat::expect_equal(nrow(tbl), 0L)
 
-  testthat::expect_equal(names(tbl), pacehrh:::.scenarioColumnNames)
-  testthat::expect_true(all(sapply(tbl,typeof) == pacehrh:::.scenarioColumnTypes))
+  testthat::expect_equal(names(tbl), pacehrh:::.scenarioMetaData$cols)
+  testthat::expect_true(all(sapply(tbl,typeof) == pacehrh:::.scenarioMetaData$types))
 })
 
 test_that("Scenario management: AddScenario", {

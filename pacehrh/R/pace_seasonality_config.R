@@ -8,7 +8,9 @@
 #'
 #' @return Seasonality curves data frame.
 #'
-loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
+loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesSheet){
+  traceMessage(paste0("Loading seasonality curves sheet ", sheetNameCurves))
+
   seasonalityCurvesData <- NULL
 
   if (file.exists(GPE$inputExcelFile)){
@@ -48,8 +50,10 @@ loadSeasonalityCurves <- function(sheetNameCurves = "SeasonalityCurves"){
 #' @param sheetNameOffsets Sheet name from the model input Excel file
 #'
 #' @return Seasonality offsets data frame.
-#'
-loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
+#' 
+loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet){
+  traceMessage(paste0("Loading seasonality offsets sheet ", sheetNameOffsets))
+  
   seasonalityOffsetsData <- NULL
 
   if (file.exists(GPE$inputExcelFile)){
@@ -76,7 +80,12 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = "SeasonalityOffsets"){
                              GPE$inputExcelFile,
                              sep = ""))
   }
-
+  
+  seasonalityOffsetsData <-
+    validateTableAgainstSchema(seasonalityOffsetsData,
+                               .seasonalityOffsetMetaData,
+                               convertType = TRUE)
+  
   return(seasonalityOffsetsData)
 }
 
