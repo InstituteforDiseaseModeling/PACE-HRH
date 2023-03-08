@@ -205,17 +205,6 @@ ReadAndCollateSuiteResults <- function(files = NULL,
     return(FALSE)
   }
 
-  # Check that the scenarios table only refers to one geography
-  geographies <- unique(GPE$scenarios$Geography_dontedit)
-
-  if (length(geographies) > 1){
-    traceMessage(paste0("Too many geographies in the scenarios table ..."))
-    for (geo in geographies){
-      traceMessage(paste0("* ", geo))
-    }
-    return(FALSE)
-  }
-
   # Get stochastic parameters. If none has already been loaded, call the
   # appropriate initialization function.
   if (is.null(BVE$stochasticParams)){
