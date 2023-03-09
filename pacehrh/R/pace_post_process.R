@@ -143,7 +143,13 @@ ReadAndCollateSuiteResults <- function(files = NULL,
                                        postProcFunc = .defPostProcFunc){
   DR <- NULL
 
-  if (!.initReadAndCollateSuiteResults(files, dir, pattern, configFile)){
+  files <- .getFilesList(files, dir, pattern)
+
+  if (is.null(files)){
+    return(NULL)
+  }
+
+  if (!.initReadAndCollateSuiteResults(configFile)){
     return(NULL)
   }
 
@@ -172,30 +178,30 @@ ReadAndCollateSuiteResults <- function(files = NULL,
   return(postProcFunc(DR))
 }
 
-.initReadAndCollateSuiteResults <- function(files, dir, pattern, configFile){
-  # Test that the files and dir parameters make sense
+.getFilesList <- function(files = NULL, dir = NULL, pattern = "^.*\\.csv"){
   if (is.null(files) & is.null(dir)){
-    traceMessage("readAndCollateSuiteResults() requires either a file list or a directory")
-    return(FALSE)
+    traceMessage("ReadAndCollateSuiteResults() requires either a file list or a directory")
+    return(NULL)
   }
 
-  # The dir parameter is used if the file parameter is missing
   if (is.null(files)){
     if (!dir.exists(dir)){
       traceMessage(paste0("Directory ", dir, " does not exist"))
-      return(FALSE)
+      return(NULL)
     }
 
     files <- dir(path = dir, pattern = pattern, full.names = TRUE)
   }
 
   if (is.null(files) | length(files) == 0){
-    traceMessage(paste0("No files to read: ", dir, " does not exist"))
-    return(FALSE)
+    traceMessage(paste0("No files to read"))
+    return(NULL)
   }
 
-  # Get scenarios information. If none has already been loaded, call the
-  # appropriate initialization function.
+  return(files)
+}
+
+.initReadAndCollateSuiteResults <- function(configFile){
   if (is.null(GPE$scenarios)){
     InitializeScenarios()
   }
