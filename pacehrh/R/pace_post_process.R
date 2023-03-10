@@ -229,10 +229,6 @@ ReadAndCollateSuiteResults <- function(files = NULL,
   # Load and collate all the referenced task value sheets (~150 lines per sheet),
   # adding a SheetRef value along the way.
 
-
-  ## <<< MOVE GEOGRAPHIES TESTS HERE
-
-
   tvSheets <- unique(scenarios$sheet_TaskValues)
   l <- lapply(tvSheets, function(sheet){
     taskValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheet)
