@@ -16,6 +16,7 @@
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
 #' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 .data
 #'
 #' @examples
 #' \dontrun{
@@ -35,37 +36,43 @@
 #' pacehrh::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
 #' }
 #'
-PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
+PlotPopulationCurve <-
+  function(pop,
+           xaxis = NULL,
+           color = .colorM,
+           title = "") {
+    if (is.null(xaxis)) {
+      # seq_along produces 1 ... n, but population curves usually start at 0, so
+      # reset the x values to start at 0.
+      xaxis <- seq_along(pop) - 1
+    }
 
-  if (is.null(xaxis)){
-    # seq_along produces 1 ... n, but population curves usually start at 0, so
-    # reset the x values to start at 0.
-    xaxis <- seq_along(pop) - 1
+    assertthat::assert_that(length(pop) == length(xaxis))
+
+    df <- data.frame(Age = xaxis, Population = pop)
+
+    g <- ggplot2::ggplot(data = df)
+    g <- g + geom_line(aes(x = .data$Age, y = .data$Population), color = color)
+    g <-
+      g + geom_point(aes(x = .data$Age, y = .data$Population),
+                     color = color,
+                     shape = 0)
+    g <- g + scale_y_continuous(labels = scales::comma)
+    g <- g + ggtitle(title)
+
+    return(g)
   }
 
-  assertthat::assert_that(length(pop) == length(xaxis))
-
-  df <- data.frame(Age = xaxis, Population = pop)
-
-  g <- ggplot2::ggplot(data = df)
-  g <- g + geom_line(aes(x = Age, y = Population), color = color)
-  g <- g + geom_point(aes(x = Age, y = Population), color = color, shape = 0)
-  g <- g + scale_y_continuous(labels = scales::comma)
-  g <- g + ggtitle(title)
-
-  return(g)
-}
-
-.validResultsParams <- function(results, trial, year){
-  if (is.null(results)){
+.validResultsParams <- function(results, trial, year) {
+  if (is.null(results)) {
     return(FALSE)
   }
 
-  if ((year %in% GPE$years) != TRUE){
+  if ((year %in% GPE$years) != TRUE) {
     return(FALSE)
   }
 
-  if (trial < 1 | trial > length(results)){
+  if (trial < 1 || trial > length(results)) {
     return(FALSE)
   }
 
@@ -90,38 +97,44 @@ PlotPopulationCurve <- function(pop, xaxis = NULL, color = .colorM, title = ""){
 #' @examples
 #' \dontrun{
 #' # These two function calls produce the same output:
-#' pacehrh::PlotResultsPopulationCurve(results, trial = 26, year = 2025, sex = "m")
+#' pacehrh::PlotResultsPopulationCurve(results,
+#'   trial = 26, year = 2025, sex = "m")
 #' pacehrh::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
 #' }
-PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f", ...){
-  if (!.validResultsParams(results, trial, year)){
-    return(NULL)
+PlotResultsPopulationCurve <-
+  function(results,
+           trial = 1,
+           year = 2020,
+           sex = "f",
+           ...) {
+    if (!.validResultsParams(results, trial, year)) {
+      return(NULL)
+    }
+
+    if ((tolower(sex) %in% c("m", "f")) == FALSE) {
+      sex <- "f"
+    }
+
+    args <- list(...)
+
+    # Use the color argument if it's provided, otherwise use the standard
+    # male/female colors
+    if (("color" %in% names(args)) != TRUE) {
+      args$color <- ifelse(tolower(sex) == "m", .colorM, .colorF)
+    }
+
+    demographics <- results[[trial]]$Population[[as.character(year)]]
+
+    if (sex == "f") {
+      pop <- demographics$Female
+    } else {
+      pop <- demographics$Male
+    }
+
+    args$pop <- pop
+
+    return(do.call(PlotPopulationCurve, args))
   }
-
-  if ((tolower(sex) %in% c("m", "f")) == FALSE){
-    sex <- "f"
-  }
-
-  args <- list(...)
-
-  # Use the color argument if it's provided, otherwise use the standard
-  # male/female colors
-  if (("color" %in% names(args)) != TRUE){
-    args$color <- ifelse(tolower(sex) == "m", .colorM, .colorF)
-  }
-
-  demographics <- results[[trial]]$Population[[as.character(year)]]
-
-  if (sex == "f"){
-    pop <- demographics$Female
-  } else {
-    pop <- demographics$Male
-  }
-
-  args$pop <- pop
-
-  return(do.call(PlotPopulationCurve, args))
-}
 
 #' Plot A Family Of Population Curves
 #'
@@ -154,48 +167,52 @@ PlotResultsPopulationCurve <- function(results, trial = 1, year = 2020, sex = "f
 #' )
 #' print(g)
 #' }
-PlotPopulationCurves <- function(... , xaxis = NULL, colors = NULL, shapes = NULL){
-  pops <- list(...)
+PlotPopulationCurves <-
+  function(...,
+           xaxis = NULL,
+           colors = NULL,
+           shapes = NULL) {
+    pops <- list(...)
 
-  assertthat::assert_that(length(pops) > 0)
+    assertthat::assert_that(length(pops) > 0)
 
-  if (is.null(xaxis)){
-    xaxis <- seq_along(pops[[1]]) - 1
+    if (is.null(xaxis)) {
+      xaxis <- seq_along(pops[[1]]) - 1
+    }
+
+    # Check that all the population vectors have the same length, and that
+    # length is the same as the xaxis
+    lengths <- sapply(pops, length)
+    assertthat::assert_that(length(unique(lengths)) == 1)
+    assertthat::assert_that(unique(lengths)[1] == length(xaxis))
+
+    if (is.null(colors)) {
+      colors <- c("blue", "red")
+    }
+
+    if (is.null(shapes)) {
+      shapes <- c(0)
+    }
+
+    colorIter <- iter(colors, recycle = TRUE)
+    shapeIter <- iter(shapes, recycle = TRUE)
+
+    g <- ggplot2::ggplot(data = NULL)
+
+    for (pop in pops) {
+      color <- nextElem(colorIter)
+      shape <- nextElem(shapeIter)
+
+      g <- g + geom_line(aes(x = xaxis, y = pop), color = color)
+      g <-
+        g + geom_point(aes(x = xaxis, y = pop), color = color, shape = shape)
+    }
+
+    g <- g + xlab("Age") + ylab("Population")
+    g <- g + scale_y_continuous(labels = scales::comma)
+
+    return(g)
   }
-
-  # Check that all the population vectors have the same length, and that
-  # length is the same as the xaxis
-  lengths <- sapply(pops, length)
-  assertthat::assert_that(length(unique(lengths)) == 1)
-  assertthat::assert_that(unique(lengths)[1] == length(xaxis))
-
-  if (is.null(colors)){
-    colors = c("blue", "red")
-  }
-
-  if (is.null(shapes)){
-    shapes = c(0)
-  }
-
-  colorIter <- iter(colors, recycle = TRUE)
-  shapeIter <- iter(shapes, recycle = TRUE)
-
-  g <- ggplot2::ggplot(data = NULL)
-
-  nul <- lapply(pops, function(pop){
-    color <- nextElem(colorIter)
-    shape <- nextElem(shapeIter)
-
-    g <<- g + geom_line(aes(x = xaxis, y = pop), color = color)
-    g <<- g + geom_point(aes(x = xaxis, y = pop), color = color, shape = shape)
-    return(1)
-  })
-
-  g <- g + xlab("Age") + ylab("Population")
-  g <- g + scale_y_continuous(labels = scales::comma)
-
-  return(g)
-}
 
 #' Convert Population Pyramids Into One Dataframe
 #'
@@ -206,8 +223,8 @@ PlotPopulationCurves <- function(... , xaxis = NULL, colors = NULL, shapes = NUL
 #' @param pops List of population pyramids for several years
 #'
 #' @return Long skinny dataframe of population information
-gatherPopulation <- function(pops){
-  if (is.null(pops) | length(pops) == 0){
+gatherPopulation <- function(pops) {
+  if (is.null(pops) || length(pops) == 0) {
     return(NULL)
   }
 
@@ -215,39 +232,49 @@ gatherPopulation <- function(pops){
 
   rangeVector <- GPE$ages
   rangeSize <- length(rangeVector)
-  yearVector <- vector(mode = "numeric", length = rangeSize)
   genderVectorMale <- vector(mode = "character", length = rangeSize)
-  genderVectorFemale <- vector(mode = "character", length = rangeSize)
-  genderVectorTotal <- vector(mode = "character", length = rangeSize)
+  genderVectorFemale <-
+    vector(mode = "character", length = rangeSize)
+  genderVectorTotal <-
+    vector(mode = "character", length = rangeSize)
   genderVectorMale <- "M"
   genderVectorFemale <- "F"
   genderVectorTotal <- "FM"
 
-  x <- lapply(years, FUN = function(year){
-    pop <- pops[[year]]
+  x <- lapply(
+    years,
+    FUN = function(year) {
+      pop <- pops[[year]]
 
-    yearVector <- as.numeric(year)
+      yearVector <- as.numeric(year)
 
-    assertthat::are_equal(rangeSize, length(pop$Female))
-    assertthat::are_equal(rangeSize, length(pop$Male))
+      assertthat::are_equal(rangeSize, length(pop$Female))
+      assertthat::are_equal(rangeSize, length(pop$Male))
 
-    df.f <- data.frame(Year = yearVector,
-                       Gender = genderVectorFemale,
-                       Age = rangeVector,
-                       Population = pop$Female)
+      dfF <- data.frame(
+        Year = yearVector,
+        Gender = genderVectorFemale,
+        Age = rangeVector,
+        Population = pop$Female
+      )
 
-    df.m <- data.frame(Year = yearVector,
-                       Gender = genderVectorMale,
-                       Age = rangeVector,
-                       Population = pop$Male)
+      dfM <- data.frame(
+        Year = yearVector,
+        Gender = genderVectorMale,
+        Age = rangeVector,
+        Population = pop$Male
+      )
 
-    df.fm <- data.frame(Year = yearVector,
-                       Gender = genderVectorTotal,
-                       Age = rangeVector,
-                       Population = pop$Female + pop$Male)
+      dfFM <- data.frame(
+        Year = yearVector,
+        Gender = genderVectorTotal,
+        Age = rangeVector,
+        Population = pop$Female + pop$Male
+      )
 
-    return(data.table::rbindlist(list(df.f, df.m, df.fm)))
-  })
+      return(data.table::rbindlist(list(dfF, dfM, dfFM)))
+    }
+  )
 
   return(data.table::rbindlist(x))
 }
@@ -279,18 +306,18 @@ gatherPopulation <- function(pops){
 #' g <- pacehrh::PlotPyramid(df, 2021)
 #' print(g)
 #' }
-PlotPyramid <- function(df, year){
-  df <- df[df$Year == year,]
-  df.f <- df[df$Gender == 'F',]
-  df.m <- df[df$Gender == 'M',]
+PlotPyramid <- function(df, year) {
+  df <- df[df$Year == year, ]
+  dfF <- df[df$Gender == "F", ]
+  dfM <- df[df$Gender == "M", ]
 
-  totalF <- sum(df.f$Population)
-  totalM <- sum(df.m$Population)
+  totalF <- sum(dfF$Population)
+  totalM <- sum(dfM$Population)
 
-  df.f$Percent <- 100* (df.f$Population / totalF)
-  df.m$Percent <- 100* (df.m$Population / totalM)
+  dfF$Percent <- 100 * (dfF$Population / totalF)
+  dfM$Percent <- 100 * (dfM$Population / totalM)
 
-  max <- max(max(df.f$Percent), max(df.m$Percent))
+  max <- max(max(dfF$Percent), max(dfM$Percent))
 
   limits <- ceiling(abs(max)) * c(-1, 1)
   breaks <- seq(limits[1], limits[2], 1)
@@ -322,32 +349,35 @@ PlotPyramid <- function(df, year){
       )
     ))
 
-  g <- ggplot(data = df, aes(x = Age))
+  g <- ggplot(data = df, aes(x = .data$Age))
   g <-
     g + geom_segment(
-      data = df.f,
+      data = dfF,
       aes(
-        x = Age,
+        x = .data$Age,
         y = 0,
-        xend = Age,
-        yend = Percent
+        xend = .data$Age,
+        yend = .data$Percent
       ),
       color = .colorF,
       linewidth = 1.5
     )
   g <-
     g + geom_segment(
-      data = df.m,
+      data = dfM,
       aes(
-        x = Age,
+        x = .data$Age,
         y = 0,
-        xend = Age,
-        yend = (-1 * Percent)
+        xend = .data$Age,
+        yend = (-1 * .data$Percent)
       ),
       color = .colorM,
       linewidth = 1.5
     )
-  g <- g + scale_y_continuous(limits = limits, breaks = breaks, labels = labels)
+  g <-
+    g + scale_y_continuous(limits = limits,
+                           breaks = breaks,
+                           labels = labels)
   g <- g + xlab("Age") + ylab("Percent of Population")
   g <- g + coord_flip()
   g <- g + annotation_custom(grobF) + annotation_custom(grobM)
@@ -383,47 +413,53 @@ PlotPyramid <- function(df, year){
 #' }
 PlotPyramids <- function(df) {
   dff <-
-    df %>% group_by(Year, Gender) %>% summarize(Total = sum(Population))
+    df %>%
+    group_by(.data$Year, .data$Gender) %>%
+    summarize(Total = sum(.data$Population))
   mdf <- merge(df, dff)
 
   mdf$Percent <- 100 * (mdf$Population / mdf$Total)
 
-  mdf.f <- mdf[Gender == 'F', ]
-  mdf.m <- mdf[Gender == 'M', ]
+  mdfF <- mdf[mdf$Gender == "F", ]
+  mdfM <- mdf[mdf$Gender == "M", ]
 
-  max <- max(max(mdf.f$Percent), max(mdf.m$Percent))
+  max <- max(max(mdfF$Percent), max(mdfM$Percent))
 
   limits <- ceiling(abs(max)) * c(-1, 1)
   breaks <- seq(limits[1], limits[2], 1)
   labels <- scales::label_comma(accuracy = .1)(abs(breaks))
 
   g <-
-    ggplot(data = mdf, aes(x = Age)) + facet_wrap(vars(Year), ncol = 5)
+    ggplot(data = mdf, aes(x = .data$Age)) +
+    facet_wrap(vars(.data$Year), ncol = 5)
   g <-
     g + geom_segment(
-      data = mdf.f,
+      data = mdfF,
       aes(
-        x = Age,
+        x = .data$Age,
         y = 0,
-        xend = Age,
-        yend = Percent
+        xend = .data$Age,
+        yend = .data$Percent
       ),
       color = .colorF,
       linewidth = 1
     )
   g <-
     g + geom_segment(
-      data = mdf.m,
+      data = mdfM,
       aes(
-        x = Age,
+        x = .data$Age,
         y = 0,
-        xend = Age,
-        yend = (-1 * Percent)
+        xend = .data$Age,
+        yend = (-1 * .data$Percent)
       ),
       color = .colorM,
       linewidth = 1
     )
-  g <- g + scale_y_continuous(limits = limits, breaks = breaks, labels = labels)
+  g <-
+    g + scale_y_continuous(limits = limits,
+                           breaks = breaks,
+                           labels = labels)
   g <- g + xlab("Age") + ylab("Percent of Population")
   g <- g + coord_flip()
   print(g)
@@ -456,17 +492,21 @@ PlotPyramids <- function(df) {
 #' g <- pacehrh::PlotResultsMortalityRates(results, 49, 2030)
 #' print(g)
 #' }
-PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
-  if (!.validResultsParams(results, trial, year)) {
-    return(NULL)
-  }
+PlotResultsMortalityRates <-
+  function(results,
+           trial = 1,
+           year = 2020) {
+    if (!.validResultsParams(results, trial, year)) {
+      return(NULL)
+    }
 
-  return(PlotMortalityRates(results[[trial]]$PopulationRates, year))
-}
+    return(PlotMortalityRates(results[[trial]]$PopulationRates, year))
+  }
 
 #' Plot Mortality Rates
 #'
-#' @param populationRates Population rates list, as returned by \code{RunExperiments()}
+#' @param populationRates Population rates list, as returned by
+#'   \code{RunExperiments()}
 #' @param year Year
 #'
 #' @return ggplot grob
@@ -499,7 +539,7 @@ PlotResultsMortalityRates <- function(results, trial = 1, year = 2020){
 #' g <- pacehrh::PlotMortalityRates(results[[49]]$PopulationRates, 2030)
 #' print(g)
 #' }
-PlotMortalityRates <- function(populationRates, year){
+PlotMortalityRates <- function(populationRates, year) {
   rates <- .explodeRates(populationRates, year)
 
   df <- as.data.frame(rates)
@@ -517,15 +557,15 @@ PlotMortalityRates <- function(populationRates, year){
       values_to = "Rate"
     )
 
-  dff <- dff[dff$Sex %in% c("femaleMortality", "maleMortality"),]
+  dff <- dff[dff$Sex %in% c("femaleMortality", "maleMortality"), ]
 
   titleStr <- paste("Mortality Rates (", year, ")", sep = "")
 
-  g <- ggplot(dff, aes(x = Age, y = Rate, color = Sex))
+  g <- ggplot(dff, aes(x = .data$Age, y = .data$Rate, color = .data$Sex))
   g <- g + scale_color_manual(values = c(.colorF, .colorM))
   g <- g + theme(legend.position = "none")
   g <- g + geom_point(alpha = 0.5)
-  g <- g + facet_grid(cols = vars(Sex))
+  g <- g + facet_grid(cols = vars(.data$Sex))
   g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Rate")
   return(g)
 }

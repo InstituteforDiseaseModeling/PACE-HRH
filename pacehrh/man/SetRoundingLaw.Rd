@@ -7,27 +7,27 @@
 SetRoundingLaw(value = NULL)
 }
 \arguments{
-\item{value}{Rounding law. Allowed values are "early", "late", "none" and NULL}
+\item{value}{Rounding law. Allowed values are "early", "late", "none" and
+NULL}
 }
 \value{
 Previous rounding law value (invisible)
 }
 \description{
-The rounding law determines how the system handles rounding for
-processes that in nature would always return integer counts, such as
-births.
+The rounding law determines how the system handles rounding for processes
+that in nature would always return integer counts, such as births.
 }
 \details{
-For example: Take 35 age groups, each containing 100 fertile women, and
-each with a fertility rate of 0.0564 births/woman/year. Say we want to
-calculate the total number of births for a year.
+For example: Take 35 age groups, each containing 100 fertile women, and each
+with a fertility rate of 0.0564 births/woman/year. Say we want to calculate
+the total number of births for a year.
 
-"early" law: N = round(100 * 0.0564) * 35 = 210
-"late" law: N = round(100 * 0.0564 * 35) = 197
-"none" law: N = 100 * 0.0564 * 35 = 197.4
+"early" law: N = round(100 * 0.0564) * 35 = 210 "late" law: N = round(100 *
+0.0564 * 35) = 197 "none" law: N = 100 * 0.0564 * 35 = 197.4
 
-Rounding laws apply to several PACE-HRH calculations (e.g. population predictions).
-In many cases there is no difference between "early" and "late" laws.
+Rounding laws apply to several PACE-HRH calculations (e.g. population
+predictions). In many cases there is no difference between "early" and "late"
+laws.
 
 By default the system is set up with the "early" rounding law.
 }
