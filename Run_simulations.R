@@ -12,23 +12,22 @@ library(tidyverse)
 rmarkdown::render(input = "validation_report.Rmd",
                   output_format = "html_document",
                   output_dir = "log",
-                  params=list(inputFile="config/model_inputs_demo.xlsx", outputDir="log", optional_sheets=list(CountryPop="rules_TotalPop.yaml")))
+                  params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
 shell.exec(normalizePath("log/validation_report.html"))
 print("Please check validation results in \"log\" folder", quote=FALSE)
 
 rm(list = ls())
 
 pacehrh::Trace(TRUE)
-pacehrh::SetInputExcelFile("config/model_inputs_demo.xlsx")
-pacehrh::InitializePopulation(popSheet = "CountryPop")
+pacehrh::InitializePopulation()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
 pacehrh::SetRoundingLaw("Late")
 
-scenarios <- read_xlsx("config/model_inputs_demo.xlsx",sheet="Scenarios")
+scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
 
-numtrials <- 2
+numtrials <- 50
 date <- Sys.Date()
 usefuldescription <- scenarios$Geography_dontedit[1]
 
@@ -126,4 +125,3 @@ write.csv(Mean_Total,paste("results/Mean_Total_",usefuldescription,"_",date,".cs
 write.csv(Stats_ClinMonth,paste("results/Stats_ClinMonth_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(ByRun_ClinMonth,paste("results/ByRun_ClinMonth_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Mean_Alloc,paste("results/Mean_Alloc_",usefuldescription,"_",date,".csv",sep=""))
-
