@@ -396,7 +396,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 
     normSumDeviation <- abs(normSums - 1.0)
 
-    if (all(normSumDeviation < 1e-9)){
+    if (all(normSumDeviation < 1e-9,  na.rm = TRUE)){
       .catLine("- ", sheet, " : ", "OK")
     } else {
       errcode <- .warnProblemsFound

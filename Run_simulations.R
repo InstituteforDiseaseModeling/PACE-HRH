@@ -12,22 +12,23 @@ library(tidyverse)
 rmarkdown::render(input = "validation_report.Rmd",
                   output_format = "html_document",
                   output_dir = "log",
-                  params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
+                  params=list(inputFile="config/model_inputs_demo.xlsx", outputDir="log", optional_sheets=list(CountryPop="rules_TotalPop.yaml")))
 shell.exec(normalizePath("log/validation_report.html"))
 print("Please check validation results in \"log\" folder", quote=FALSE)
 
 rm(list = ls())
 
 pacehrh::Trace(TRUE)
-pacehrh::InitializePopulation()
+pacehrh::SetInputExcelFile("config/model_inputs_demo.xlsx")
+pacehrh::InitializePopulation(popSheet = "CountryPop")
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
 pacehrh::SetRoundingLaw("Late")
 
-scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
+scenarios <- read_xlsx("config/model_inputs_demo.xlsx",sheet="Scenarios")
 
-numtrials <- 50
+numtrials <- 2
 date <- Sys.Date()
 usefuldescription <- scenarios$Geography_dontedit[1]
 

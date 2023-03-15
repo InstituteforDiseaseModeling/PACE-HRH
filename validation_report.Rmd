@@ -9,6 +9,7 @@ output:
 params:
   inputFile: config/model_inputs.xlsx
   outputDir: log
+  optional_sheets: !r NULL
 ---
 ```{css, echo=FALSE}
 div.error { background-color: IndianRed; }
@@ -24,7 +25,7 @@ div.info { background-color: lightblue; }
 ```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE}
 source("ValidateInput.R")
 source("ValidateInput_plot.R")
-Validate(inputFile = params$inputFile, outputDir = params$outputDir)
+Validate(inputFile = params$inputFile, outputDir = params$outputDir, optional_sheets=params$optional_sheets)
 ```
 
 ```{r echo=FALSE, results='asis'}
