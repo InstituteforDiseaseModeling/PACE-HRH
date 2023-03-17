@@ -1,21 +1,4 @@
-#' Display Contents of the Working Environments
-#'
-#' @return NULL (invisible)
-dispEnvs <- function(){
-  print("----- GLOBAL -----")
-  print(ls.str(globalPackageEnvironment))
-  print("------ BASE ------")
-  print(ls.str(baseValuesEnvironment))
-  print("--- EXPERIMENT ---")
-  print(ls.str(experimentValuesEnvironment))
-  invisible(NULL)
-}
-
 writeCurrentExpDemographics_wide <- function(filename = "out.csv") {
-  if (!exists("experimentValuesEnvironment$demographics")) {
-    return(invisible(NULL))
-  }
-
   popData <- EXP$demographics
 
   if (is.null(popData)) {
@@ -38,9 +21,9 @@ writeCurrentExpDemographics_wide <- function(filename = "out.csv") {
     outdf <- cbind(outdf, df)
 
     # Emit fertility and mortality rates data if present
-    if (length(which(names(pop) == "frates.Female")) == 1) {
+    if (!is.null(pop$rates.femaleFertility)) {
       df <-
-        data.frame(pop$frates.Female, pop$mrates.Female, pop$mrates.Male)
+        data.frame(pop$rates.femaleFertility, pop$rates.femaleMortality, pop$rates.maleMortality)
       colNames <- c(
         paste(year, "frates.F", sep = "_"),
         paste(year, "mrates.F", sep = "_"),
