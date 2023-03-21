@@ -1,5 +1,5 @@
 testthat::local_edition(3)
-packages = c("tidyr", "dplyr", "ggplot2", "readxl", "stringr", "vdiffr", "testthat", "patrick")
+packages = c("DescTools", "tidyr", "dplyr", "ggplot2", "readxl", "stringr", "vdiffr", "testthat", "patrick")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
