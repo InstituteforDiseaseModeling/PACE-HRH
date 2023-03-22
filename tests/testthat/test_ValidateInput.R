@@ -8,7 +8,7 @@ test_that("Validation no rules", {
   logdir <- tempdir()
   testthat::expect_error(ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                        outputDir = logdir,
-                                                       sheetNames = c("Total_Pop2")), "Unable to check sheet")
+                                                       optional_sheets = list(Total_Pop="rules_TotalPop2.yaml")), "Unable to check sheet")
   
 })
 # test validation capture
@@ -21,7 +21,7 @@ test_that("Validation capture", {
   # skip_if(.Platform$OS.type != "windows")
   testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
                                                                 outputDir = logdir,
-                                                                sheetNames = c("SeasonalityCurves")))
+                                                                optional_sheets = list(SeasonalityCurves="rules_SeasonalityCurves.yaml")))
   
 })
 # test validation success
@@ -31,7 +31,7 @@ test_that("Validation capture Success", {
   logdir <- tempdir()
   testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation2.xlsx",
                                                                       outputDir = logdir,
-                                                                      sheetNames = c("SeasonalityCurves")))
+                                                                optional_sheets = list(SeasonalityCurves="rules_SeasonalityCurves.yaml")))
   
 })
 
@@ -40,9 +40,9 @@ test_that("Validation capture Success", {
   errCode <- .Success
   # In this example, rule is set as warning level so violation is not causing error but output files will be available
   logdir <- tempdir()
-  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation.xlsx",
+  testthat::expect_equal(errCode, ValidateInputExcelFileContent(inputFile = "tests/testthat/sample_config/Test_validation3.xlsx",
                                                                       outputDir = logdir,
-                                                                      sheetNames = c("StochasticParameters")))
+                                                                optional_sheets = list(StochasticParameters="rules_StochasticParameters.yaml")))
   result_file <- paste(logdir, "StochasticParameters_info_violation_Large_SD_value.csv", sep="/")
   testthat::expect_true(file.exists(result_file))
   violations <- read.csv(result_file)
