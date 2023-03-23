@@ -53,7 +53,7 @@ test_that("simple regression", {
     test_template(input_file)
     numtrials <- 5
     
-    scenarios <-read_xlsx(input_file, sheetName = "Scenarios")%>% 
+    scenarios <-read_xlsx(input_file, sheet = "Scenarios")%>% 
       filter(!is.na(UniqueID)) %>%
       filter(sheet_TaskValues == "TaskValues_basic")
     # Run through the full scenario list.
