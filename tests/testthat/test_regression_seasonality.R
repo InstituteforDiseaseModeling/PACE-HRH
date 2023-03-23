@@ -5,10 +5,10 @@ source("tests/testthat/test_utils.R")
 with_parameters_test_that("demo model seasonality",{
   input_file <- "config/model_inputs_demo.xlsx"
   local({
-    test_template(input_file)
-    numtrials <- 2
     start = 2020
     end = 2040
+    test_template(input_file, start = start, end=end)
+    numtrials <- 2
     # scenario <- "BasicServices"
     # task <- "Malaria_test"
     # type <- "Malaria"

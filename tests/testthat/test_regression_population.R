@@ -8,7 +8,7 @@ plot_pop <- function(results, scenario,  startyear=2020, endyear=2035){
   popsummary <- resultspop %>%
     group_by(Year, Gender, Age) %>%
     summarize(Population=mean(Population))
-  popStart <- subset(popsummary, Year==startyear)
+  popStart <- subset(popsummary, Year=startyear)
   popStartM <- sum(popStart$Population[popStart$Gender=="Male"])
   print(paste(str(startyear), " Male population is: ", round(popStartM,0)))
   popStartF <- sum(popStart$Population[popStart$Gender=="Female"])
@@ -29,14 +29,14 @@ plot_pop <- function(results, scenario,  startyear=2020, endyear=2035){
 test_that("demo model population",{
   input_file <- "config/model_inputs_demo.xlsx"
   local({
-    test_template(input_file)
-    numtrials <- 10
     start = 2020
     end = 2040
+    test_template(input_file, start=start, end=end)
+    numtrials <- 10
     scenario <- "BasicServices"
     results <- RunExperiments(scenarioName = scenario, trials = numtrials, debug = TRUE)
     expect_true(all(!is.na(results)))
-    expect_doppelganger(glue::glue("{scenario}_population"), plot_pop(results, scenario))
+    expect_doppelganger(glue::glue("{scenario}_population"), plot_pop(results, scenario, start, end))
     
   })
 })

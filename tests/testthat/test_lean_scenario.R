@@ -26,6 +26,7 @@ test_that("model regression annual",{
     expect_true(all(!is.na(results)))
     # save results for selected tasks that are representative of seasonality
     expect_doppelganger("ANC",  draw_comparison(results, "ANC", numtrials , setting, 1))
+    expect_doppelganger("Diarrhea_U5",  draw_comparison(results, "Diarrhea_U5", numtrials , setting, 1))
     expect_doppelganger("Malaria_test",  draw_comparison(results, "Malaria_test", numtrials , setting, 1))
   })
 })
@@ -41,6 +42,7 @@ test_that("model regression monthly",{
     expect_true(all(!is.na(results)))
     # save results for selected tasks that are representative of seasonality
     expect_doppelganger("ANC_monthly",  draw_comparison(results, "ANC", numtrials , setting, 1))
+    expect_doppelganger("Diarrhea_U5_monthly",  draw_comparison(results, "Diarrhea_U5", numtrials , setting, 1))
     expect_doppelganger("Malaria_test_monthly",  draw_comparison(results, "Malaria_test", numtrials , setting, 1))
   })
 })
