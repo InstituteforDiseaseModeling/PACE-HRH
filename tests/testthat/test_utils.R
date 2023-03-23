@@ -93,6 +93,7 @@ calculate_decomposition <- function(DR_test, scenario, task, type){
 # Set up necessary configuration for demo
 test_template <- function(input_file, rounding="", setting="annual", popSheet="CountryPop", start = 2020, end = 040){
   dir.create("tests/results", showWarnings = FALSE)
+  dir.create("tests/results/regression", showWarnings = FALSE)
   dir.create("tests/results/regression_demo", showWarnings = FALSE)
   pacehrh::SetInputExcelFile(inputExcelFilePath = input_file)
   Trace(TRUE)
