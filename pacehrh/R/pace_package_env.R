@@ -40,6 +40,7 @@ EXP <- experimentValuesEnvironment
 .defaultTaskValuesSheet <- "TaskValues"
 .defaultScenariosSheet <- "Scenarios"
 .defaultStochasticParametersSheet <- "StochasticParameters"
+.defaultCadreRolesSheet <- "CadreRoles"
 
 # GLOBAL VARIABLES
 
