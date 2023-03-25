@@ -8,16 +8,16 @@ plot_pop <- function(results, scenario,  startyear=2020, endyear=2035){
   popsummary <- resultspop %>%
     group_by(Year, Gender, Age) %>%
     summarize(Population=mean(Population))
-  popStart <- subset(popsummary, Year=startyear)
+  popStart <- subset(popsummary, Year==startyear)
   popStartM <- sum(popStart$Population[popStart$Gender=="Male"])
   print(paste(str(startyear), " Male population is: ", round(popStartM,0)))
   popStartF <- sum(popStart$Population[popStart$Gender=="Female"])
-  print(paste("2020 Female population is: ", round(popStartF,0)))
+  print(paste(str(startyear), " Female population is: ", round(popStartF,0)))
   popEnd <- subset(popsummary, Year==endyear)
   popEndM <- sum(popEnd$Population[popEnd$Gender=="Male"])
-  print(paste("2035 Male population is: ", round(popEndM,0)))
+  print(paste(str(endyear), " Male population is: ", round(popEndM,0)))
   popEndF <- sum(popEnd$Population[popEnd$Gender=="Female"])
-  print(paste("2035 Female population is: ", round(popEndF,0)))
+  print(paste(str(endyear), " Female population is: ", round(popEndF,0)))
   plot_checkpop <- ggplot()+
     theme_bw()+
     geom_point(data = popStart, aes(x=Age, y=Population, color=Gender), shape=1, position = "jitter")+
