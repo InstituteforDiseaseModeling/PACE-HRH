@@ -36,7 +36,7 @@ colnames(custom_test$df_reason) <- c("name", "description", "severity")
 #' @return Error code.
 #' 0 = Success
 #' -1 = validation error
-Validate <- function(inputFile, outputDir = "log"){
+Validate <- function(inputFile, outputDir = "log", optional_sheets = NULL){
   
   # Make sure outputDir is empty
   tryCatch(
@@ -49,7 +49,7 @@ Validate <- function(inputFile, outputDir = "log"){
   )
   dir.create(outputDir, showWarnings = FALSE)
   
-  result_d <- ValidateInputExcelFileContent(inputFile = inputFile, outputDir = outputDir, sheetNames = NULL)
+  result_d <- ValidateInputExcelFileContent(inputFile = inputFile, outputDir = outputDir, optional_sheets = optional_sheets)
   sink(file = paste(outputDir, "model_input_check.log", sep = "/"))
   result_m <- pacehrh::CheckInputExcelFileFormat(inputFile = inputFile)
   sink()
@@ -60,11 +60,12 @@ Validate <- function(inputFile, outputDir = "log"){
 
 ValidateInputExcelFileContent <- function(inputFile,
                                           outputDir = "log",
-                                          sheetNames = NULL){
+                                          optional_sheets = NULL){
   
   logfile <- file.path(outputDir, .errorLogfile)
   lf <- log_open(file_name = logfile, show_notes = FALSE)
   
+  input_sheetNames <- readxl::excel_sheets(path = inputFile)
   tryCatch(
     {
       errcode <- .Success
@@ -76,38 +77,44 @@ ValidateInputExcelFileContent <- function(inputFile,
       all_sheetNames <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", list.files("config/validation/rules"))
       
       # check all available rules
-      if (is.null(sheetNames)){
-        
-        # Identify rules to apply from scenario tab
-        scenarios <- read_xlsx(inputFile, "Scenarios")
-        checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
-        checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
-        checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
-        
-        for (f in list.files("config/validation/rules")){
-          default_rulename <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f)
-          if (!f %in% checklist$rule){
+   
+      # Identify rules to apply from scenario tab
+      scenarios <- read_xlsx(inputFile, "Scenarios")
+      checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
+      checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
+      checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
+      
+      for (f in list.files("config/validation/rules")){
+        default_rulename <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f)
+        if (!f %in% checklist$rule){
+          # although we assume the rule names will match sheet names, if sheet does not exist, we will not check it
+          if (default_rulename %in% input_sheetNames){
             checklist[nrow(checklist) + 1,] <- list(sheet=default_rulename, rule=f)
           }
           else{
-            # add key column to the sheets specified in the Scenarios
-            new_keys <- as.list(checklist %>% filter (rule ==f) %>% select (sheet))
-            if (default_rulename %in% names(key_cols)){
-              for (k in new_keys){
-                key_cols[k] <- list(key_cols[[default_rulename]])
-              }
+            log_print(glue("sheet: {default_rulename} is missing, check will be skipped unless specified in optional_sheets argument."))
+          }
+          
+        }
+        else{
+          # add key column to the sheets specified in the Scenarios
+          new_keys <- as.list(checklist %>% filter (rule ==f) %>% select (sheet))
+          if (default_rulename %in% names(key_cols)){
+            for (k in new_keys){
+              key_cols[k] <- list(key_cols[[default_rulename]])
             }
           }
         }
-        key_cols <<- key_cols
-      } else {
-        # sheetNames must match the rule name if provided
-        for (s in sheetNames){
-          if (s %in% all_sheetNames){
-            checklist[nrow(checklist) + 1,] <- list(s, glue("rules_{s}.yaml"))
+      }
+      key_cols <<- key_cols
+    
+      if (!is.null(optional_sheets)){
+        for (i in 1:length(optional_sheets)){
+          if (optional_sheets[i] %in% list.files("config/validation/rules")){
+            checklist[nrow(checklist) + 1,] <- list(sheet=names(optional_sheets[i]), rule=paste(optional_sheets[i]))
           }
           else{
-            stop(glue("Unable to check sheet: {s}."))
+            stop(glue("Unable to check sheet: {names(optional_sheets[i])}. Cannot find a matching rule : {paste(optional_sheets[i])}"))
           }
         }
       }

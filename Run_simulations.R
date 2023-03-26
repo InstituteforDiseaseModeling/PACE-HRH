@@ -125,4 +125,3 @@ write.csv(Mean_Total,paste("results/Mean_Total_",usefuldescription,"_",date,".cs
 write.csv(Stats_ClinMonth,paste("results/Stats_ClinMonth_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(ByRun_ClinMonth,paste("results/ByRun_ClinMonth_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Mean_Alloc,paste("results/Mean_Alloc_",usefuldescription,"_",date,".csv",sep=""))
-
