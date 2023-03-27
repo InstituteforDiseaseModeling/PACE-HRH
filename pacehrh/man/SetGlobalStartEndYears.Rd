@@ -11,8 +11,8 @@ SetGlobalStartEndYears(start = 2020, end = 2040, shoulderYears = 1)
 
 \item{end}{Ending year (must be greater than \code{start})}
 
-\item{shoulderYears}{Number of years to add to the end of a simulation time-series
-to accomodate negative delivery offsets (default = 1)}
+\item{shoulderYears}{Number of years to add to the end of a simulation
+time-series to accomodate negative delivery offsets (default = 1)}
 }
 \value{
 NULL (invisible)

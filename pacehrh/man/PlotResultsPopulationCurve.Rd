@@ -26,7 +26,8 @@ More intuitive interface to \code{\link[=PlotPopulationCurve]{PlotPopulationCurv
 \examples{
 \dontrun{
 # These two function calls produce the same output:
-pacehrh::PlotResultsPopulationCurve(results, trial = 26, year = 2025, sex = "m")
+pacehrh::PlotResultsPopulationCurve(results,
+  trial = 26, year = 2025, sex = "m")
 pacehrh::PlotPopulationCurve(results[[26]]$Population[["2025"]]$Male)
 }
 }

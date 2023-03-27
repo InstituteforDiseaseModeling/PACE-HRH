@@ -27,71 +27,65 @@
 #'
 #' @return NULL (invisible)
 #'
-loadGlobalConfig <- function(path = "./globalconfig.json"){
-  if (file.exists(path)){
-    out <- tryCatch(
-      {
-        configInfo <- jsonlite::read_json(path)
+loadGlobalConfig <- function(path = "./globalconfig.json") {
+  if (file.exists(path)) {
+    tryCatch({
+      configInfo <- jsonlite::read_json(path)
 
-        # Check whether to use the Excel file name from the global config file
-        if (!GPE$ignoreGlobalConfigExcelFileSetting){
-
-          if (!is.null(configInfo$configDirectoryLocation)){
-            configDirPath <- configInfo$configDirectoryLocation
-          } else {
-            configDirPath <- "."
-          }
-
-          if (!is.null(configInfo$inputExcelFile)){
-            GPE$inputExcelFile <-
-              paste(configDirPath,
-                    configInfo$inputExcelFile,
-                    sep = "/")
-          }
+      # Check whether to use the Excel file name from the global config file
+      if (!GPE$ignoreGlobalConfigExcelFileSetting) {
+        if (!is.null(configInfo$configDirectoryLocation)) {
+          configDirPath <- configInfo$configDirectoryLocation
+        } else {
+          configDirPath <- "."
         }
 
-        if (!is.null(configInfo$suiteRngSeed)){
-          i <- as.integer(configInfo$suiteRngSeed)
-          if (!is.na(i)){
-            GPE$rngSeed <- i
-          }
+        if (!is.null(configInfo$inputExcelFile)) {
+          GPE$inputExcelFile <-
+            paste(configDirPath,
+                  configInfo$inputExcelFile,
+                  sep = "/")
         }
+      }
 
-        start <- GPE$startYear
-        end <- GPE$endYear
-
-        if (!is.null(configInfo$startYear)){
-          i <- as.integer(configInfo$startYear)
-          if (!is.na(i)){
-            start <- i
-          }
+      if (!is.null(configInfo$suiteRngSeed)) {
+        i <- as.integer(configInfo$suiteRngSeed)
+        if (!is.na(i)) {
+          GPE$rngSeed <- i
         }
+      }
 
-        if (!is.null(configInfo$endYear)){
-          i <- as.integer(configInfo$endYear)
-          if (!is.na(i)){
-            end <- i
-          }
+      start <- GPE$startYear
+      end <- GPE$endYear
+
+      if (!is.null(configInfo$startYear)) {
+        i <- as.integer(configInfo$startYear)
+        if (!is.na(i)) {
+          start <- i
         }
+      }
 
-        SetGlobalStartEndYears(start, end)
+      if (!is.null(configInfo$endYear)) {
+        i <- as.integer(configInfo$endYear)
+        if (!is.na(i)) {
+          end <- i
+        }
+      }
 
-        traceMessage(paste0("Global configuration loaded from ", path))
-      },
-      warning = function(war)
-      {
-        traceMessage(paste("WARNING:", war))
-      },
-      error = function(err)
-      {
-        traceMessage(paste("ERROR:", err))
-      },
-      finally =
-        {
+      SetGlobalStartEndYears(start, end)
 
-        })
-  }
-  else {
+      traceMessage(paste0("Global configuration loaded from ", path))
+    },
+    warning = function(war) {
+      traceMessage(paste("WARNING:", war))
+    },
+    error = function(err) {
+      traceMessage(paste("ERROR:", err))
+    },
+    finally = {
+
+    })
+  } else {
     traceMessage("Could not find global configuration file - using defaults")
   }
 
@@ -104,24 +98,24 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 # TODO: Add (...) support so the path= parameter can be passed through to allow
 # for using files other than globalconfig.json
 
-.checkAndLoadGlobalConfig <- function(){
-  if (!GPE$globalConfigLoaded){
+.checkAndLoadGlobalConfig <- function() {
+  if (!GPE$globalConfigLoaded) {
     loadGlobalConfig()
     GPE$globalConfigLoaded <- TRUE
   }
   return(invisible(NULL))
 }
 
-.validInputFile <- function(filepath){
-  if (is.null(filepath)){
+.validInputFile <- function(filepath) {
+  if (is.null(filepath)) {
     return(FALSE)
   }
 
-  if (is.blank(filepath)){
+  if (is.blank(filepath)) {
     return(FALSE)
   }
 
-  if (!file.exists(filepath)){
+  if (!file.exists(filepath)) {
     return(FALSE)
   }
 
@@ -145,23 +139,24 @@ loadGlobalConfig <- function(path = "./globalconfig.json"){
 #' \dontrun{
 #' pacehrh::SetInputExcelFile(inputExcelFilePath = "config_file.xlsx")
 #' }
-SetInputExcelFile <- function(inputExcelFilePath = "./config/model_inputs.xlsx"){
-  if (!.validInputFile(inputExcelFilePath)){
-    warning(paste0("Input file <", inputExcelFilePath, "> not found."))
-  } else {
-    GPE$inputExcelFile <- inputExcelFilePath
-    GPE$ignoreGlobalConfigExcelFileSetting <- TRUE
-  }
+SetInputExcelFile <-
+  function(inputExcelFilePath = "./config/model_inputs.xlsx") {
+    if (!.validInputFile(inputExcelFilePath)) {
+      warning(paste0("Input file <", inputExcelFilePath, "> not found."))
+    } else {
+      GPE$inputExcelFile <- inputExcelFilePath
+      GPE$ignoreGlobalConfigExcelFileSetting <- TRUE
+    }
 
-  return(invisible(NULL))
-}
+    return(invisible(NULL))
+  }
 
 #' Set Global Start And End Year Parameters
 #'
 #' @param start Starting year
 #' @param end Ending year (must be greater than \code{start})
-#' @param shoulderYears Number of years to add to the end of a simulation time-series
-#' to accomodate negative delivery offsets (default = 1)
+#' @param shoulderYears Number of years to add to the end of a simulation
+#'   time-series to accomodate negative delivery offsets (default = 1)
 #'
 #' @return NULL (invisible)
 #'
@@ -171,7 +166,9 @@ SetInputExcelFile <- function(inputExcelFilePath = "./config/model_inputs.xlsx")
 #' \dontrun{
 #' pacehrh::SetGlobalStartEndYears(2020, 2035)
 #' }
-SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) {
+SetGlobalStartEndYears <- function(start = 2020,
+                                   end = 2040,
+                                   shoulderYears = 1) {
   if (!assertthat::is.number(start)) {
     return(invisible(NULL))
   }
@@ -205,24 +202,24 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) 
 
 #' Set Rounding Law
 #'
-#' The rounding law determines how the system handles rounding for
-#' processes that in nature would always return integer counts, such as
-#' births.
+#' The rounding law determines how the system handles rounding for processes
+#' that in nature would always return integer counts, such as births.
 #'
-#' For example: Take 35 age groups, each containing 100 fertile women, and
-#' each with a fertility rate of 0.0564 births/woman/year. Say we want to
-#' calculate the total number of births for a year.
+#' For example: Take 35 age groups, each containing 100 fertile women, and each
+#' with a fertility rate of 0.0564 births/woman/year. Say we want to calculate
+#' the total number of births for a year.
 #'
-#' "early" law: N = round(100 * 0.0564) * 35 = 210
-#' "late" law: N = round(100 * 0.0564 * 35) = 197
-#' "none" law: N = 100 * 0.0564 * 35 = 197.4
+#' "early" law: N = round(100 * 0.0564) * 35 = 210 "late" law: N = round(100 *
+#' 0.0564 * 35) = 197 "none" law: N = 100 * 0.0564 * 35 = 197.4
 #'
-#' Rounding laws apply to several PACE-HRH calculations (e.g. population predictions).
-#' In many cases there is no difference between "early" and "late" laws.
+#' Rounding laws apply to several PACE-HRH calculations (e.g. population
+#' predictions). In many cases there is no difference between "early" and "late"
+#' laws.
 #'
 #' By default the system is set up with the "early" rounding law.
 #'
-#' @param value Rounding law. Allowed values are "early", "late", "none" and NULL
+#' @param value Rounding law. Allowed values are "early", "late", "none" and
+#'   NULL
 #'
 #' @return Previous rounding law value (invisible)
 #' @export
@@ -231,11 +228,11 @@ SetGlobalStartEndYears <- function(start = 2020, end = 2040, shoulderYears = 1) 
 #' \dontrun{
 #' pacehrh::SetRoundingLaw("none")
 #' }
-SetRoundingLaw <- function(value = NULL){
+SetRoundingLaw <- function(value = NULL) {
   prevValue <- GPE$roundingLaw
 
-  if (!is.null(value)){
-    if (tolower(value) %in% .roundingLaws){
+  if (!is.null(value)) {
+    if (tolower(value) %in% .roundingLaws) {
       GPE$roundingLaw <- tolower(value)
     } else {
       traceMessage(paste0(value, " is not an allowed rounding law value"))
@@ -264,11 +261,11 @@ SetRoundingLaw <- function(value = NULL){
 #' pacehrh::SetStochasticity(FALSE) # Turn off stochasticity
 #' pacehrh::SetStochasticity() # Return current stochasticity state
 #' }
-SetStochasticity <- function(value = NULL){
+SetStochasticity <- function(value = NULL) {
   prevValue <- GPE$stochasticity
 
-  if (!is.null(value)){
-    if (rlang::is_logical(value)){
+  if (!is.null(value)) {
+    if (rlang::is_logical(value)) {
       GPE$stochasticity <- value
     } else {
       traceMessage(paste0(value, " is not an allowed stochasticity flag value"))
@@ -280,7 +277,7 @@ SetStochasticity <- function(value = NULL){
 
 #' Turn Per-Age Statistics On/Off
 #'
-#' @param value Desired value. Allowed values = {"none" | "monthly" | "annual"}. 
+#' @param value Desired value. Allowed values = {"none" | "monthly" | "annual"}.
 #'   Calling \code{SetPerAgeStats()} with no parameters or value = NULL returns
 #'   the current state.
 #'
@@ -292,17 +289,16 @@ SetStochasticity <- function(value = NULL){
 #' pacehrh::SetPerAgeStats("monthly") # Turn on per-age statistics
 #' pacehrh::SetPerAgeStats() # Return current state
 #' }
-SetPerAgeStats <- function(value = NULL){
+SetPerAgeStats <- function(value = NULL) {
   prevValue <- GPE$perAgeStats
 
-  if (!is.null(value)){
-    if (tolower(value) %in% .perAgeLevels){
+  if (!is.null(value)) {
+    if (tolower(value) %in% .perAgeLevels) {
       GPE$perAgeStats <- tolower(value)
     } else {
       traceMessage(paste0(value, " is not an allowed per-age setting"))
     }
   }
-  
+
   return(invisible(prevValue))
 }
-

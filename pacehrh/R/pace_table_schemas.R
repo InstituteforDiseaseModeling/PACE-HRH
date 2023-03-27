@@ -247,12 +247,12 @@
 #   c(
 #     "DeliveryModel"
 #   )
-# 
+#
 # .scenarioColumnTypesOptional <-
 #   c(
 #     "character"
 #   )
-# 
+#
 # .scenarioMetaData <-
 #   list(
 #     rcols = .scenarioColumnNames,
@@ -296,4 +296,45 @@
     cols = .stochasticParametersColumnNames,
     types = .stochasticParametersColumnTypes,
     kcols = .stochasticParametersKeyColumns
+  )
+
+# ------------------------------------------------------------------------------
+#
+# CADRE ROLES TABLE
+#
+# ------------------------------------------------------------------------------
+
+.cadreRolesColumnNames <-
+  c(
+    "ScenarioID",
+    "RoleID",
+    "RoleDescription",
+    "OverheadHoursPerWeek",
+    "StartYear",
+    "EndYear"
+  )
+
+.cadreRolesColumnTypes <-
+  c(
+    "character",
+    "character",
+    "character",
+    "double",
+    "double",
+    "double"
+  )
+
+.cadreRolesKeyColumns <-
+  c(
+    "ScenarioID",
+    "RoleID"
+  )
+
+.cadreRolesMetaData <-
+  list(
+    rcols = .cadreRolesColumnNames,
+    rtypes = .cadreRolesColumnTypes,
+    cols = .cadreRolesColumnNames,
+    types = .cadreRolesColumnTypes,
+    kcols = .cadreRolesKeyColumns
   )
