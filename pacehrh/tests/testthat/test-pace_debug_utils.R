@@ -32,5 +32,5 @@ test_that("Debugging tools: basic", {
   outFileName <- "wide_demographics.csv"
   writeCurrentExpDemographics_wide(filename = outFileName)
   testthat::expect_true(file.exists(outFileName))
-#  testthat::expect_snapshot_file(outFileName)
+  testthat::expect_snapshot_file(outFileName)
 })
