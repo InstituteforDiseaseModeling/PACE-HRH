@@ -14,33 +14,6 @@ loadInitialPopulation <- function(sheetName = .defaultPopSheet){
 
   popData <- readSheet(sheetName = sheetName)
 
-  # popData <- NULL
-  #
-  # if (file.exists(GPE$inputExcelFile)){
-  #   out <- tryCatch(
-  #     {
-  #       popData <-
-  #         readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-  #     },
-  #     warning = function(war)
-  #     {
-  #       traceMessage(paste("WARNING:", war))
-  #     },
-  #     error = function(err)
-  #     {
-  #       traceMessage(paste("ERROR:", err))
-  #     },
-  #     finally =
-  #       {
-  #
-  #       }
-  #   )
-  # } else {
-  #   traceMessage(paste("Could not find model input file ",
-  #                      GPE$inputExcelFile,
-  #                      sep = ""))
-  # }
-
   if (!is.null(popData)){
     popData <- validateTableAgainstSchema(popData, .populationMetaData)
   }

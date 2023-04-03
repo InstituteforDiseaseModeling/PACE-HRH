@@ -19,7 +19,28 @@ test_that("Sheet read: basic", {
 
   cols <- names(data)
   schemaCols <- pacehrh:::.cadreRolesColumnNames
-  testthat::expect_true(length(setdiff(cols, schemaCols)) == 0)
+  testthat::expect_true(length(setdiff(schemaCols, cols)) == 0)
+})
+
+test_that("Sheet read: non-default intput file", {
+  gpe <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
+
+  local_vars("inputExcelFile", envir = gpe)
+
+  local_vars("traceState", envir = gpe)
+  pacehrh::Trace(state = TRUE)
+
+  gpe$inputExcelFile <-
+  data <- pacehrh:::readSheet(path = "./simple_config/super_simple_inputs.xlsx",
+                              sheetName = "Flat_Rates")
+
+  testthat::expect_true(!is.null(data))
+  testthat::expect_s3_class(data, c("tbl_df", "tbl", "data.frame"))
+
+  cols <- names(data)
+  schemaCols <- pacehrh:::.populationChangeRateColumnNames
+  testthat::expect_true(length(setdiff(schemaCols, cols)) == 0)
 })
 
 test_that("Sheet read: bad file", {
