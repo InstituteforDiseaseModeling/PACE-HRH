@@ -47,6 +47,7 @@ Collate:
     'pace_table_schemas.R'
     'pace_lint.R'
     'pace_trace.R'
+    'pace_read_sheet.R'
     'pace_config.R'
     'pace_initialize.R'
     'pace_pop_rates_config.R'

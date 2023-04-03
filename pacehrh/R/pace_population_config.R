@@ -12,13 +12,40 @@
 loadInitialPopulation <- function(sheetName = .defaultPopSheet){
   traceMessage(paste0("Loading initial population sheet ", sheetName))
 
-  popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  popData <- readSheet(sheetName = sheetName)
 
-  namesFound <- names(popData)
-  namesExpected <- c("Age", "Male", "Female")
+  # popData <- NULL
+  #
+  # if (file.exists(GPE$inputExcelFile)){
+  #   out <- tryCatch(
+  #     {
+  #       popData <-
+  #         readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  #     },
+  #     warning = function(war)
+  #     {
+  #       traceMessage(paste("WARNING:", war))
+  #     },
+  #     error = function(err)
+  #     {
+  #       traceMessage(paste("ERROR:", err))
+  #     },
+  #     finally =
+  #       {
+  #
+  #       }
+  #   )
+  # } else {
+  #   traceMessage(paste("Could not find model input file ",
+  #                      GPE$inputExcelFile,
+  #                      sep = ""))
+  # }
 
-  if (length(setdiff(namesExpected, namesFound)) != 0){
-    warning(paste0("Incorrect columns in ", sheetName, ". Could not load initial population."))
+  if (!is.null(popData)){
+    popData <- validateTableAgainstSchema(popData, .populationMetaData)
+  }
+
+  if (is.null(popData)){
     return(NULL)
   }
 
@@ -76,7 +103,7 @@ loadInitialPopulation <- function(sheetName = .defaultPopSheet){
 
 loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet){
   traceMessage(paste0("Loading population labels sheet ", sheetName))
-  
+
   df <- tryCatch({
       readxl::read_xlsx(GPE$inputExcelFile,
                         sheet = sheetName,
