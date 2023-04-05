@@ -8,18 +8,30 @@ PaceInitialize(
   globalConfigFile = NULL,
   inputFile = NULL,
   populationSheet = NULL,
+  scenariosSheet = NULL,
+  stochasticParametersSheet = NULL,
+  seasonalityCurvesSheet = NULL,
+  seasonalityOffsetsSheet = NULL,
   forceGlobalConfigReload = TRUE
 )
 }
 \arguments{
-\item{globalConfigFile}{stuff stuff stuff}
+\item{globalConfigFile}{Path to the global configuration JSON file}
 
-\item{inputFile}{One entry from the results structure as returned by
-\code{RunExperiments()}}
+\item{inputFile}{Path to the model inputs Excel file}
 
-\item{populationSheet}{stuff stuff stuff}
+\item{populationSheet}{Baseline population sheet name}
 
-\item{forceGlobalConfigReload}{TRUE/FALSE, default = TRUE. Force a reload of the global configuration if `globalConfigFile` is specified.}
+\item{scenariosSheet}{Scenarios sheet name}
+
+\item{stochasticParametersSheet}{Stochastic parameters sheet name}
+
+\item{seasonalityCurvesSheet}{Seasonality curves sheet name}
+
+\item{seasonalityOffsetsSheet}{Seasonality offsets sheet name}
+
+\item{forceGlobalConfigReload}{TRUE/FALSE, default = TRUE. Force a reload of
+the global configuration if `globalConfigFile` is specified.}
 }
 \value{
 TRUE/FALSE
