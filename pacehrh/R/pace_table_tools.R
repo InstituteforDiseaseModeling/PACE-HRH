@@ -193,29 +193,7 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
 loadTable <- function(file, sheet, schema = NULL, convertType = FALSE) {
   traceMessage(paste0("Loading sheet ", sheet))
 
-  data <- NULL
-
-  if (file.exists(file)){
-    data <- tryCatch(
-      {
-        readxl::read_xlsx(file, sheet = sheet)
-      },
-      warning = function(war)
-      {
-        traceMessage(paste("WARNING:", war))
-      },
-      error = function(err)
-      {
-        traceMessage(paste("ERROR:", err))
-      },
-      finally =
-      {
-
-      }
-    )
-  } else {
-    traceMessage(paste0("Could not find input file ", file))
-  }
+  data <- readSheet(path = file, sheetName = sheet)
 
   if (!is.null(data) & !is.null(schema)){
     data <- validateTableAgainstSchema(data, schema, convertType)
