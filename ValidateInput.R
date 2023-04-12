@@ -358,6 +358,42 @@ ValidateInputExcelFileContent <- function(inputFile,
     .custom_check_write_result(description, filename, severity, violation)
   }
   
+  ##### Check if cadre sheets have all years cover the startYear, endYear defined in CadreRoles sheet
+  defaultEndYear = 2040
+  cadreRoles <- read_xlsx(inputFile, sheet="CadreRoles")
+  cadreRoles <- cadreRoles %>% 
+    inner_join(scenarios, by=c('ScenarioID'='UniqueID')) %>%
+    select(ScenarioID, RoleID, StartYear, EndYear, sheet_Cadre) %>%
+    mutate(EndYear = if_else(is.na(EndYear), 2040, EndYear))
+  cadre_list <- split(cadreRoles, cadreRoles$sheet_Cadre)
+  for (i in seq_along(cadre_list)) {
+    df <- cadre_list[[i]]
+    filename <- file.path(custom_dir, glue("violation_header_not_in_{unique(df$sheet_Cadre)}.csv"))
+    description <- glue("Expected headers based on CadreRoles should be found in {unique(df$sheet_Cadre)}.")
+    severity <- "warning"
+    
+    cadre_headers <- read_xlsx(inputFile, sheet=unique(df$sheet_Cadre), n_max=2, col_names = FALSE)
+    df_violations <-  data.frame(RoleID =character(), Expected_header = character(), stringsAsFactors = FALSE)
+    for (j in 1:nrow(df)){
+      expected_cols <- unname(as.list(paste0("StartYear", seq(floor(df$StartYear[j]/5)*5, ceiling(df$EndYear[j]/5)*5, by=5))))
+      if(!any(cadre_headers[2,]==df$RoleID[j])){
+        # if the role is defined in the CadreRoles, it must appear in cadre sheet
+        for (k in expected_cols){
+          df_violations[nrow(df_violations)+1, ] = c(df$RoleID[j],expected_cols[k])
+        }
+      }
+      else{
+        # check for year that is not defined within StartYear and EndYear
+        actual <- unname(as.list(cadre_headers[1,which(cadre_headers[2,]==df$RoleID[j])]))
+        missing <- setdiff(expected_cols, actual)
+        for (k in length(missing)){
+          df_violations[nrow(df_violations)+1, ] = c(df$RoleID[j], missing[k])
+        }
+      }
+     
+    }
+    .custom_check_write_result(description, filename, severity, df_violations)
+  }
  
   # writing metadata for custom check
   write.csv(custom_test$df_reason, file.path(custom_dir, "custom_validation_results.csv"))
