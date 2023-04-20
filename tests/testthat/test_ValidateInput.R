@@ -136,6 +136,8 @@ test_that("Check rule3 execution", {
     df[nrow(df), "StartYear"] = 2023
     .cadre_check_scenarios(df, testdata$inputFile, logdir)
     testthat::expect_true(file.exists(file.path(logdir, "violation_startyear_not_in_header_Cadres_Comprehensive.csv")))
+    violation <- read.csv(file.path(logdir, "violation_startyear_not_in_header_Cadres_Comprehensive.csv"))
+    testthat::expect_true("2023" %in% violation$StartYear)
   })
 })
 
@@ -165,4 +167,18 @@ test_that("Check rule5 execution", {
   })
 })
 
+test_that("Check rule6 execution", {
+  local({
+    lf <- log_open(file_name = "tests/log.txt", show_notes = FALSE)
+    logdir <- tempdir()
+    testdata <- get_cadre_roles_default()
+    df <- testdata$df
+    #  Change the RoleID to make some definition non-existent
+    df[which(df$RoleID=="HEW1"), "RoleID"] = "HEW3"
+    .cadre_check_scenarios(df, testdata$inputFile, logdir)
+    testthat::expect_true(file.exists(file.path(logdir, "no_definition_in_cadreroles_Cadres_Comprehensive.csv")))
+    violation <- read.csv(file.path(logdir, "no_definition_in_cadreroles_Cadres_Comprehensive.csv"))
+    testthat::expect_true("HEW1" %in% violation$RoleID)
+  })
+})
 

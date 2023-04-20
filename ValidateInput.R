@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "plyr", "reshape2", "scales", "glue", "logr")
+packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "plyr", "reshape2", "scales", "glue", "logr", "gridExtra")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -259,6 +259,24 @@ ValidateInputExcelFileContent <- function(inputFile,
 
 .cadre_check_scenarios <- function(df, inputFile, custom_dir){
   
+  ### Read Cadre headers in long format
+  cadre_headers <- read_xlsx(inputFile, sheet=unique(df$sheet_Cadre), n_max=2, col_names = FALSE)
+  cadre_headers <- cadre_headers[,grepl("StartYear", cadre_headers[1, ])] %>% 
+    mutate_all(~str_replace(.,"StartYear", ""))
+  cadre_headers <- as.data.frame(t(cadre_headers))
+  colnames(cadre_headers) <- c("StartYear", "RoleID")
+  cadre_headers <- cadre_headers %>% mutate(StartYear = as.numeric(StartYear))
+  cadre_headers <- cadre_headers[cadre_headers$RoleID!="Total",]
+  
+  ### Plot cadre headers
+  cadreoplot <- ggplot(cadre_headers, aes(x = StartYear, y = RoleID, color= RoleID)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    labs(title = glue('Headers in sheet: {unique(df$sheet_Cadre)}'),
+         x ="StartYear",
+         y = "RoleID",
+         color ="RoleID")
+  
   ### Check2: (EndYear+1) must appear in StartYear 
   StartYears <- df %>% select(StartYear) %>% unique()
   violation2 <- df %>% mutate(EndYear_plus = EndYear+1) %>%
@@ -272,16 +290,10 @@ ValidateInputExcelFileContent <- function(inputFile,
     # Stop the check here as this is fatal
     .custom_check_write_result(description2, filename2, "error", violation2)
     log_print(glue::glue("Fatal error found in CadreRoles sheet: {description2}, unable to check further. Please fix it and rerun the validation."))
-    return()
+    return (cadreoplot)
   }
   
   ### Check3: "ScenarioID" + "RoleID" + "StartYear" must appear in the corresponding cadre_ sheets' headers
-  cadre_headers <- read_xlsx(inputFile, sheet=unique(df$sheet_Cadre), n_max=2, col_names = FALSE)
-  cadre_headers <- cadre_headers[,grepl("StartYear", cadre_headers[1, ])] %>% 
-    mutate_all(~str_replace(.,"StartYear", ""))
-  cadre_headers <- as.data.frame(t(cadre_headers))
-  colnames(cadre_headers) <- c("StartYear", "RoleID")
-  cadre_headers <-  cadre_headers %>% mutate(StartYear = as.numeric(StartYear))
   bucket_rank <- as.data.frame(sort(unique(cadre_headers$StartYear), index.return=TRUE), col.names = c("StartYear", "Rank"))
   cadre_rank <- cadre_headers %>% 
     inner_join(bucket_rank) 
@@ -303,7 +315,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   .custom_check_write_result(description4, filename4, "error", violation4)
   
   
-  ### Check5: : For each "RoleID", it should appear in continuous sections on the cadre_ sheets' headers in between StartYear and EndYear.
+  ### Check5: For each "RoleID", it should appear in continuous sections on the cadre_ sheets' headers in between StartYear and EndYear.
   expected <- df %>% 
     mutate(no_EndYear = if_else(is.na(EndYear), T , F)) %>%
     mutate(EndYear = if_else(is.na(EndYear), max(StartYear)-1 , EndYear)) %>%
@@ -334,6 +346,18 @@ ValidateInputExcelFileContent <- function(inputFile,
   filename5 <- file.path(custom_dir, glue("roles_missing_years_{unique(df$sheet_Cadre)}.csv"))
   description5 <- glue("sheet {unique(df$sheet_Cadre)} is missing columns corresponding the following RoleID + missing_bucket")
   .custom_check_write_result(description5, filename5, "error", violation5)
+  
+  ### Check6: On each scenario-specific cadre_sheet, the pair "StartYear" + "RoleID" must appear in CadreRoles for the corresponding ScenarioID
+  violation6 <- cadre_headers %>% anti_join(df, by=c("RoleID" = "RoleID")) %>% arrange({{StartYear}})
+  description6 <- glue('On Sheet {unique(df$sheet_Cadre)}, the pair "StartYear" + "RoleID" must appear in CadreRoles for the corresponding ScenarioID')
+  filename6 <- file.path(custom_dir, glue("no_definition_in_cadreroles_{unique(df$sheet_Cadre)}.csv"))
+  .custom_check_write_result(description6, filename6, "error", violation6)
+ 
+  if (all(sapply(2:6,FUN = \(x) {nrow(get(paste0("violation", x))) == 0}) == TRUE)){
+    # if no violation objects are present, it means sheet is good
+    log_print(glue::glue("Sheet: {unique(df$sheet_Cadre)} passed the CadreRoles checks!"))
+  }
+  return (cadreoplot)
   
 }
 
@@ -458,8 +482,11 @@ ValidateInputExcelFileContent <- function(inputFile,
   }
   else{
     # Split by scenario as the cader_sheet is different
+    # Check rule 2 to rule 6
     cadre_list <- split(cadreRoles, cadreRoles$sheet_Cadre)
-    lapply(cadre_list, .cadre_check_scenarios, inputFile=inputFile, custom_dir=custom_dir)
+    plot_list <-lapply(cadre_list, .cadre_check_scenarios, inputFile=inputFile, custom_dir=custom_dir)
+    combined_cadre_plots <- do.call(grid.arrange, c(plot_list, nrow = length(plot_list)))
+    ggsave(file.path(custom_dir, "custom_cadres.png"), combined_cadre_plots, width = 160, height = 60*length(plot_list), units="mm")
   }
   
   # writing metadata for custom check
