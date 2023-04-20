@@ -271,7 +271,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   if (nrow(violation2) >0 ){
     # Stop the check here as this is fatal
     .custom_check_write_result(description2, filename2, "error", violation2)
-    log_print("Fatal error found in CadreRoles sheet: {description2}, unable to check further. Please fix it and rerun the validation.")
+    log_print(glue::glue("Fatal error found in CadreRoles sheet: {description2}, unable to check further. Please fix it and rerun the validation."))
     return()
   }
   
@@ -287,7 +287,7 @@ ValidateInputExcelFileContent <- function(inputFile,
     inner_join(bucket_rank) 
   violation3 <- df %>% anti_join(cadre_rank)
   filename3 <- file.path(custom_dir, glue("violation_startyear_not_in_header_{unique(df$sheet_Cadre)}.csv"))
-  description3 <- glue("For{unique(df$sheet_Cadre)}, StartYear must be present for each role.")
+  description3 <- glue("Sheet: {unique(df$sheet_Cadre)} is missing columns corresponding to the following pair: RoleID + StartYear")
   .custom_check_write_result(description3, filename3, "error", violation3)
   
   ### Check4: For each "ScenarioID" with no "EndYear" it must appear in the max(StartYear) section in the corresponding cadre_ sheets
@@ -299,22 +299,31 @@ ValidateInputExcelFileContent <- function(inputFile,
     select(RoleID) 
   violation4 <- df  %>% filter(is.na(EndYear)) %>% anti_join(max_year_roles)
   filename4 <- file.path(custom_dir, glue("violation_startyear_max_missing_{unique(df$sheet_Cadre)}.csv"))
-  description4 <- glue("CadreRoles rows with no 'EndYear' must appear in the max(StartYear) section in the {unique(df$sheet_Cadre)}")
+  description4 <- glue("Sheet: {unique(df$sheet_Cadre)} is missing columns corresponding to the following RoleID + {max_startYear}")
   .custom_check_write_result(description4, filename4, "error", violation4)
   
   
   ### Check5: : For each "RoleID", it should appear in continuous sections on the cadre_ sheets' headers in between StartYear and EndYear.
-  expected <- df %>% filter(!is.na(EndYear)) %>%
+  expected <- df %>% 
+    mutate(no_EndYear = if_else(is.na(EndYear), T , F)) %>%
+    mutate(EndYear = if_else(is.na(EndYear), max(StartYear)-1 , EndYear)) %>%
     mutate(lastBucketYear = EndYear + 1) %>%
-    select(RoleID, lastBucketYear) %>% 
-    inner_join(bucket_rank, by=c("lastBucketYear" = "StartYear")) %>%
-    mutate(Rank = Rank-1) %>%
-    select(RoleID, Rank) %>%
+    select(RoleID, StartYear, lastBucketYear, no_EndYear)
+  expected <- bind_cols(expected, 
+                       expected %>%  #look up for rank for Start/End
+                         mutate_all(~bucket_rank$Rank[match(., bucket_rank$StartYear)]) %>% 
+                         select(-RoleID, -no_EndYear) %>% 
+                         rename(c('StartYear' = 'StartRank', 'lastBucketYear' = "EndRank"))) %>%
+    drop_na(StartRank, EndRank) %>%
     group_by(RoleID) %>% 
-    complete(Rank = 1:max(Rank)) 
+    mutate(EndRank = if_else(no_EndYear==T, EndRank, EndRank-1)) %>%
+    complete(StartRank = StartRank:EndRank) %>%
+    rename(c('StartRank' = "Rank")) %>%
+    select(RoleID, Rank)
+  
   ### expected to see the role appears in 1 to LastRank
   violation5 <- expected %>% anti_join(
-    df %>% filter(!is.na(EndYear))  %>%
+    df %>%
       select(-StartYear) %>%
       inner_join(cadre_rank, multiple="all")
   ) %>% inner_join(df) %>%
@@ -323,7 +332,7 @@ ValidateInputExcelFileContent <- function(inputFile,
     dplyr::rename(missing_bucket= StartYear) %>%
     select(-Rank)
   filename5 <- file.path(custom_dir, glue("roles_missing_years_{unique(df$sheet_Cadre)}.csv"))
-  description5 <- glue("CadreRoles rows have missing years in the header section of the {unique(df$sheet_Cadre)}")
+  description5 <- glue("sheet {unique(df$sheet_Cadre)} is missing columns corresponding the following RoleID + missing_bucket")
   .custom_check_write_result(description5, filename5, "error", violation5)
   
 }
@@ -445,7 +454,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   if (nrow(violation1) >0 ){
     # Stop the check here as this is fatal
     .custom_check_write_result(description1, filename1, "error", violation1)
-    log_print("Fatal error found in CadreRoles sheet: {description1}, unable to check further. Please fix it and rerun the validation.")
+    log_print(glue::glue("Fatal error found in CadreRoles sheet: {description1}, unable to check further. Please fix it and rerun the validation."))
   }
   else{
     # Split by scenario as the cader_sheet is different
