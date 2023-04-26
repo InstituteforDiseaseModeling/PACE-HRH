@@ -328,7 +328,7 @@ ValidateInputExcelFileContent <- function(inputFile,
                          dplyr::rename(c('StartRank' = 'StartYear', "EndRank" ='lastBucketYear'))) %>%
     drop_na(StartRank, EndRank) %>%
     group_by(RoleID) %>% 
-    dplyr::mutate(EndRank = dplyr::if_else(no_EndYear==T, EndRank, EndRank-1)) %>%
+    dplyr::mutate(EndRank = ifelse(no_EndYear==T, EndRank, EndRank-1)) %>%
     complete(StartRank = StartRank:EndRank) %>%
     dplyr::rename(c("Rank"='StartRank')) %>%
     select(RoleID, Rank)
