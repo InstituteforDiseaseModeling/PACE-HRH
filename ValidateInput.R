@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "plyr", "reshape2", "scales", "glue", "logr", "gridExtra")
+packages = c("validate","readxl", "plyr", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "reshape2", "scales", "glue", "logr", "gridExtra")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -325,12 +325,12 @@ ValidateInputExcelFileContent <- function(inputFile,
                        expected %>%  #look up for rank for Start/End
                          mutate_all(~bucket_rank$Rank[match(., bucket_rank$StartYear)]) %>% 
                          select(-RoleID, -no_EndYear) %>% 
-                         rename(c('StartYear' = 'StartRank', 'lastBucketYear' = "EndRank"))) %>%
+                         rename(c('StartRank' = 'StartYear', "EndRank" ='lastBucketYear'))) %>%
     drop_na(StartRank, EndRank) %>%
     group_by(RoleID) %>% 
     mutate(EndRank = if_else(no_EndYear==T, EndRank, EndRank-1)) %>%
     complete(StartRank = StartRank:EndRank) %>%
-    rename(c('StartRank' = "Rank")) %>%
+    rename(c("Rank"='StartRank')) %>%
     select(RoleID, Rank)
   
   ### expected to see the role appears in 1 to LastRank
@@ -348,7 +348,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   .custom_check_write_result(description5, filename5, "error", violation5)
   
   ### Check6: On each scenario-specific cadre_sheet, the pair "StartYear" + "RoleID" must appear in CadreRoles for the corresponding ScenarioID
-  violation6 <- cadre_headers %>% anti_join(df, by=c("RoleID" = "RoleID")) %>% arrange({{StartYear}})
+  violation6 <- cadre_headers %>% anti_join(df, by=c("RoleID" = "RoleID")) %>% arrange(StartYear)
   description6 <- glue('On Sheet {unique(df$sheet_Cadre)}, the pair "StartYear" + "RoleID" must appear in CadreRoles for the corresponding ScenarioID')
   filename6 <- file.path(custom_dir, glue("no_definition_in_cadreroles_{unique(df$sheet_Cadre)}.csv"))
   .custom_check_write_result(description6, filename6, "error", violation6)
