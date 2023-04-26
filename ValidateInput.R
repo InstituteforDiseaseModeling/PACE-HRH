@@ -82,9 +82,9 @@ ValidateInputExcelFileContent <- function(inputFile,
    
       # Identify rules to apply from scenario tab
       scenarios <- read_xlsx(inputFile, "Scenarios")
-      checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
-      checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
-      checklist = rbind(checklist, scenarios %>% mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
+      checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
+      checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
+      checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
       
       for (f in list.files("config/validation/rules")){
         default_rulename <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f)
@@ -164,11 +164,11 @@ ValidateInputExcelFileContent <- function(inputFile,
           # combine results in the loop
           if (length(result)==0){
             result <- validate::as.data.frame(validate::summary(out))
-            result <- result %>% mutate (sheet_name = sheet)
+            result <- result %>% dplyr::mutate (sheet_name = sheet)
           }
           else {
             new_result <- validate::as.data.frame(validate::summary(out))
-            new_result <- new_result %>% mutate (sheet_name = sheet)
+            new_result <- new_result %>% dplyr::mutate (sheet_name = sheet)
             result <- rbind(result,  new_result, make.row.names=TRUE, stringsAsFactors = FALSE)
           }
           
@@ -236,7 +236,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   final_result <- result_details %>%
     select(c("name", "severity", "items", "fails", "passes", "expression")) %>%
     pivot_longer(cols=c("passes", "fails"), names_to = "result", values_to = "total") %>%
-    mutate(result = if_else(severity != 'error' & result == 'fails', severity, result))
+    dplyr::mutate(result = dplyr::if_else(severity != 'error' & result == 'fails', severity, result))
   
   outfile <- file.path(outputDir, "input_validation_results.png")
   p <- ggplot(final_result, aes(x=total/items, y=name, fill=result)) +
@@ -265,7 +265,7 @@ ValidateInputExcelFileContent <- function(inputFile,
     mutate_all(~str_replace(.,"StartYear", ""))
   cadre_headers <- as.data.frame(t(cadre_headers))
   colnames(cadre_headers) <- c("StartYear", "RoleID")
-  cadre_headers <- cadre_headers %>% mutate(StartYear = as.numeric(StartYear))
+  cadre_headers <- cadre_headers %>% dplyr::mutate(StartYear = as.numeric(StartYear))
   cadre_headers <- cadre_headers[cadre_headers$RoleID!="Total",]
   
   ### Plot cadre headers
@@ -279,7 +279,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   
   ### Check2: (EndYear+1) must appear in StartYear 
   StartYears <- df %>% select(StartYear) %>% unique()
-  violation2 <- df %>% mutate(EndYear_plus = EndYear+1) %>%
+  violation2 <- df %>% dplyr::mutate(EndYear_plus = EndYear+1) %>%
     select(-StartYear) %>%
     filter(!is.na(EndYear)) %>%
     anti_join(StartYears, by=c("EndYear_plus" = "StartYear")) %>%
@@ -317,20 +317,20 @@ ValidateInputExcelFileContent <- function(inputFile,
   
   ### Check5: For each "RoleID", it should appear in continuous sections on the cadre_ sheets' headers in between StartYear and EndYear.
   expected <- df %>% 
-    mutate(no_EndYear = if_else(is.na(EndYear), T , F)) %>%
-    mutate(EndYear = if_else(is.na(EndYear), max(StartYear)-1 , EndYear)) %>%
-    mutate(lastBucketYear = EndYear + 1) %>%
+    dplyr::mutate(no_EndYear = dplyr::if_else(is.na(EndYear), T , F)) %>%
+    dplyr::mutate(EndYear = dplyr::if_else(is.na(EndYear), max(StartYear)-1 , EndYear)) %>%
+    dplyr::mutate(lastBucketYear = EndYear + 1) %>%
     select(RoleID, StartYear, lastBucketYear, no_EndYear)
   expected <- bind_cols(expected, 
                        expected %>%  #look up for rank for Start/End
                          mutate_all(~bucket_rank$Rank[match(., bucket_rank$StartYear)]) %>% 
                          select(-RoleID, -no_EndYear) %>% 
-                         rename(c('StartRank' = 'StartYear', "EndRank" ='lastBucketYear'))) %>%
+                         dplyr::rename(c('StartRank' = 'StartYear', "EndRank" ='lastBucketYear'))) %>%
     drop_na(StartRank, EndRank) %>%
     group_by(RoleID) %>% 
-    mutate(EndRank = if_else(no_EndYear==T, EndRank, EndRank-1)) %>%
+    dplyr::mutate(EndRank = dplyr::if_else(no_EndYear==T, EndRank, EndRank-1)) %>%
     complete(StartRank = StartRank:EndRank) %>%
-    rename(c("Rank"='StartRank')) %>%
+    dplyr::rename(c("Rank"='StartRank')) %>%
     select(RoleID, Rank)
   
   ### expected to see the role appears in 1 to LastRank
@@ -469,7 +469,7 @@ ValidateInputExcelFileContent <- function(inputFile,
   cadreRoles <- cadreRoles %>% 
     inner_join(scenarios, by=c('ScenarioID'='UniqueID')) %>%
     select(ScenarioID, RoleID, StartYear, EndYear, sheet_Cadre) %>%
-    mutate(StartYear = as.numeric(StartYear), EndYear = as.numeric(EndYear))
+    dplyr::mutate(StartYear = as.numeric(StartYear), EndYear = as.numeric(EndYear))
   
   ### Check 1: columns StartYear and EndYear can not be outside of the model default range
   violation1 <- cadreRoles %>% filter(StartYear < defaultStartYear | EndYear > defaultEndYear)
