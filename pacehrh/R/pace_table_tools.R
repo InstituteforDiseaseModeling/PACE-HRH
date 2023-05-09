@@ -1,6 +1,6 @@
 #' Validate Tables Against Their Schemas
 #'
-#' When a table is imported from a preadsheet we need to be careful to guard
+#' When a table is imported from a spreadsheet we need to be careful to guard
 #' against random challenges - valid and invalid - users might have introduced '
 #' into the spreadsheet, such as extra columns, extra rows, invalid data types,
 #' etc.
@@ -187,18 +187,3 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
     call. = FALSE
   )
 }
-
-# ------------------------------------------------------------------------------
-
-loadTable <- function(file, sheet, schema = NULL, convertType = FALSE) {
-  traceMessage(paste0("Loading sheet ", sheet))
-
-  data <- readSheet(path = file, sheetName = sheet)
-
-  if (!is.null(data) & !is.null(schema)){
-    data <- validateTableAgainstSchema(data, schema, convertType)
-  }
-
-  return(data)
-}
-
