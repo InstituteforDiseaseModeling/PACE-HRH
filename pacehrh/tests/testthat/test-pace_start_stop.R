@@ -10,6 +10,7 @@ test_that("Full suite: basic", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   # Make sure to use a scenario that has seasonality results!
   scenario <- "MergedModel"

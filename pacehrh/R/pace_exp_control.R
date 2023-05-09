@@ -32,24 +32,24 @@ SaveBaseSettings <- function(scenarioName = ""){
   }
 
   .zeroExpBaseVariables()
-  
+
   BVE$scenario <- .getScenarioConfig(scenarioName)
-  
+
   if (is.null(BVE$scenario)){
     return(NULL)
   }
-  
+
   # Load Population change parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
   popValsSheet <- BVE$scenario$sheet_PopValues
-  
+
   if (!is.blank(popValsSheet)) {
     BVE$populationChangeRates <- loadPopulationChangeRates(popValsSheet)
   } else {
     BVE$populationChangeRates <- loadPopulationChangeRates()
   }
-  
+
   if (is.null(BVE$populationChangeRates)){
     return(NULL)
   }
@@ -64,11 +64,11 @@ SaveBaseSettings <- function(scenarioName = ""){
   } else {
     BVE$seasonalityCurves <- loadSeasonalityCurves()
   }
-  
+
   if (is.null(BVE$seasonalityCurves)){
     return(NULL)
   }
-  
+
   # Load Task parameter data from the appropriate Excel sheet, as specified
   # in the Scenarios sheet.
 
@@ -83,7 +83,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   if (is.null(BVE$taskData)){
     return(NULL)
   }
-  
+
   # Check that all the population labels in the tasks list are included in
   # the populationLabels lookup. (This connection is also enforced by logic
   # in the input spreadsheet.)
@@ -126,6 +126,9 @@ SaveBaseSettings <- function(scenarioName = ""){
   # Merge seasonality curves into the seasonality offsets table
   .mergeSeasonalityCurves()
 
+  # Compute cadre allocation times, etc
+  BVE$cadreData <- computeCadreData(BVE$scenario, BVE$cadreRoles)
+
   return(BVE$scenario)
 }
 
@@ -137,11 +140,11 @@ SaveBaseSettings <- function(scenarioName = ""){
                    expression(BVE$populationLabels),
                    expression(BVE$populationRangesTable)
                    )
-  
+
   checks <- sapply(varsToCheck, function(v){
     return(!is.null(eval(v)))
   })
-  
+
   if (all(checks)){
     return(TRUE)
   }

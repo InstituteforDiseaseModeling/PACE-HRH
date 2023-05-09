@@ -56,7 +56,7 @@ RunExperiment <- function(debug = FALSE){
   if (GPE$perAgeStats != "off"){
     e <- rlang::env()
     ComputePerAgeTaskTimes(e)
-    
+
     if (GPE$perAgeStats == "annual"){
       results$AnnualPerAge <- e$AnnualPerAge
     } else {
