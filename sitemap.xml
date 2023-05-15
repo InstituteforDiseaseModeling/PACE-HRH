@@ -64,9 +64,6 @@
     <loc>/reference/DeleteScenario.html</loc>
   </url>
   <url>
-    <loc>/reference/dispEnvs.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-computePopulationRangeMatrices.html</loc>
   </url>
   <url>
@@ -194,9 +191,6 @@
   </url>
   <url>
     <loc>/reference/Trace.html</loc>
-  </url>
-  <url>
-    <loc>/reference/traceMessage.html</loc>
   </url>
   <url>
     <loc>/reference/UpdateScenario.html</loc>
