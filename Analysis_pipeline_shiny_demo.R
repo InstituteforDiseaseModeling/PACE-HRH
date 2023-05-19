@@ -22,13 +22,14 @@ library(RColorBrewer)
 rm(list = ls())
 
 pacehrh::Trace(TRUE)
+pacehrh::SetInputExcelFile("./config/model_inputs_shiny_demo.xlsx")
 pacehrh::InitializePopulation()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
 pacehrh::SetRoundingLaw("Late")
 
-scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
+scenarios <- read_xlsx("config/model_inputs_shiny_demo.xlsx",sheet="Scenarios")
 
 numtrials <- 10
 date <- Sys.Date()
@@ -250,7 +251,7 @@ plot <- ggplot(ServiceCat_Clinical,aes(x=Year,y=RatioTo1,group=ServiceCat) )+
 
 print(plot)
 
-# time allocation by Cadre [Results look weird, skipping for now]
+# time allocation by Cadre 
 unique(Mean_Alloc$Cadre)
 
 Cadre_labelled <- Mean_Alloc %>% 
