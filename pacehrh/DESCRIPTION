@@ -77,5 +77,6 @@ Collate:
     'pace_sanity_checks.R'
     'pace_cadre_config.R'
     'pace_cadre_process.R'
+    'pace_save_cadre_data.R'
     'pace_post_process.R'
 VignetteBuilder: knitr

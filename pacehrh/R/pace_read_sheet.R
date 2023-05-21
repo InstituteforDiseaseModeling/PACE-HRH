@@ -1,4 +1,4 @@
-readSheet <- function(path = GPE$inputExcelFile, sheetName) {
+readSheet <- function(path = GPE$inputExcelFile, sheetName, ...) {
   sheetData <- NULL
 
   if (file.exists(path)) {
@@ -41,6 +41,10 @@ loadTable <- function(file = GPE$inputExcelFile,
                       schema = NULL,
                       convertType = FALSE) {
   data <- readSheet(path = file, sheetName = sheet)
+
+  if (is.null(data)){
+    traceMessage(paste0("Failed to load sheet ", sheet))
+  }
 
   if (!is.null(data) & !is.null(schema)) {
     data <- validateTableAgainstSchema(data, schema, convertType)

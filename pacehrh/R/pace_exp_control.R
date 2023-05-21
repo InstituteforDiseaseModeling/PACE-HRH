@@ -126,8 +126,18 @@ SaveBaseSettings <- function(scenarioName = ""){
   # Merge seasonality curves into the seasonality offsets table
   .mergeSeasonalityCurves()
 
-  # Compute cadre allocation times, etc
+  # Compute cadre member overhead times, etc
   BVE$cadreData <- computeCadreData(BVE$scenario, BVE$cadreRoles)
+
+  # Load Cadre parameter data from the appropriate Excel sheet, as specified
+  # in the Scenarios sheet.
+  taskCadresSheet <- BVE$scenario$sheet_Cadre
+
+  if (!is.blank(taskCadresSheet)){
+    BVE$taskCadresData <- loadTaskCadres(taskCadresSheet)
+  } else {
+    BVE$taskCadresData <- loadTaskCadres()
+  }
 
   return(BVE$scenario)
 }

@@ -11,6 +11,7 @@ test_that("Post-processing: basic", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   scenario <- "MergedModel"
 
@@ -32,15 +33,17 @@ test_that("Post-processing: basic", {
   pacehrh::SaveSuiteResults(results, resultsFile, scenario, "Run-1")
 
   testthat::expect_true(file.exists(resultsFile))
-  DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFile)
+#  DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFile)
+  DR <- pacehrh::SaveExtendedSuiteResults(results)
 
   testthat::expect_true(!is.null(DR))
 
-  CA <- pacehrh:::ComputeCadreAllocations(DR)
+#  CA <- pacehrh:::ComputeCadreAllocations(DR)
+  CA <- pacehrh::SaveCadreAllocations(DR)
 
   testthat::expect_true(!is.null(CA))
 
-  stats <- pacehrh::ComputeSummaryStats(DR,CA)
+  stats <- pacehrh::ComputeSummaryStats(DR, CA)
 
   testthat::expect_true(!is.null(stats))
 })

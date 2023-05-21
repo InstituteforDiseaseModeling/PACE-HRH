@@ -18,6 +18,7 @@ pacehrh::InitializePopulation()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
+pacehrh::InitializeCadreRoles()
 
 pacehrh::SetGlobalStartEndYears(2020, 2040)
 

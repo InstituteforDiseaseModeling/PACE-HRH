@@ -7,9 +7,9 @@
 ComputeSummaryStats(DR = NULL, CA = NULL)
 }
 \arguments{
-\item{DR}{From \code{ReadAndCollateSuiteResults()} function}
+\item{DR}{From [ReadAndCollateSuiteResults()] function}
 
-\item{CA}{From \code{ComputeCadreAllocations()} function}
+\item{CA}{From [ComputeCadreAllocations()] function}
 }
 \value{
 List of computed summary tables

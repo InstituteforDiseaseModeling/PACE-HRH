@@ -201,6 +201,13 @@ ReadAndCollateSuiteResults <- function(files = NULL,
   return(files)
 }
 
+#' The functions in this script require information loaded when normal
+#' experiments are run. This function checks that the necessary tables have been
+#' loaded.
+#'
+#' @param configFile For future expansion. Currently unused.
+#'
+#' @noRd
 .initReadAndCollateSuiteResults <- function(configFile){
   if (is.null(GPE$scenarios)){
     InitializeScenarios()
@@ -277,7 +284,8 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #' @param DR Task time results from \code{ReadAndCollateSuiteResults()}
 #'
 #' @return data.table
-#' @export
+#'
+#' @noRd
 #'
 #' @examples
 #' \dontrun{
@@ -288,7 +296,7 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
 #' CA <- pacehrh:::ComputeCadreAllocations(DR)
 #' }
-ComputeCadreAllocations <- function(DR = NULL){
+xxxComputeCadreAllocations <- function(DR = NULL){
   if (is.null(DR)){
     return(NULL)
   }
@@ -397,8 +405,8 @@ ComputeCadreAllocations <- function(DR = NULL){
 
 #' Compute Summary Statistics
 #'
-#' @param DR From \code{ReadAndCollateSuiteResults()} function
-#' @param CA From \code{ComputeCadreAllocations()} function
+#' @param DR From [ReadAndCollateSuiteResults()] function
+#' @param CA From [ComputeCadreAllocations()] function
 #'
 #' @return List of computed summary tables
 #' @export
@@ -521,18 +529,23 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
                   keyby = .(Scenario_ID, Year, WeeksPerYr, HrsPerWeek)]
 
   traceMessage("Making Alloc tables")
-  ByRun_Alloc <-
-    CA[,
-       .(MW_hrs = sum(MW_Alloc),
-         HO_hrs = sum(HO_Alloc),
-         RN_hrs = sum(RN_Alloc),
-         EH_hrs = sum(EH_Alloc),
-         FH_hrs = sum(FH_Alloc),
-         UN_hrs = sum(UN_Alloc),
-         HEW_hrs = sum(HEW_Alloc)),
-       keyby = .(Scenario_ID, DeliveryModel, Trial_num, Year, WeeksPerYr)]
 
+  # Find the time columns (suffix = "Alloc") and sum over them, aggregating by
+  # year and trial number (run)
+  cols <- colnames(CA)
+  timeCols <- cols[grep("_Alloc", cols)]
 
+  ByRun_Alloc <- CA[,
+                    lapply(.SD, sum),
+                    keyby = .(Scenario_ID, DeliveryModel, Trial_num, Year, WeeksPerYr),
+                    .SDcols = timeCols]
+
+  cols <- colnames(ByRun_Alloc)
+  destCols <- sub("_Alloc", "_hrs", cols)
+  colnames(ByRun_Alloc) <- destCols
+
+  # Melt the resulting table to convert multiple time columns each representing
+  # a different cadre member into rows.
   suppressWarnings(
     ByRun_Alloc_melt <-
       data.table::melt(
