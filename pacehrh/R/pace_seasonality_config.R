@@ -5,38 +5,19 @@
 #' configuration JSON file.
 #'
 #' @param sheetNameCurves Sheet name from the model input Excel file
+#' @param ... Throw away other parameters
 #'
 #' @return Seasonality curves data frame.
 #'
-loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesSheet){
+loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesSheet, ...){
   traceMessage(paste0("Loading seasonality curves sheet ", sheetNameCurves))
 
   seasonalityCurvesData <- NULL
 
-  if (file.exists(GPE$inputExcelFile)){
-    out <- tryCatch(
-      {
-        seasonalityCurvesData <-
-          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetNameCurves)
-      },
-      warning = function(war)
-      {
-        traceMessage(paste("WARNING:", war))
-      },
-      error = function(err)
-      {
-        traceMessage(paste("ERROR:", err))
-      },
-      finally =
-        {
+  seasonalityCurvesData <- readSheet(sheetName = sheetNameCurves)
 
-        }
-    )
-  } else {
-    traceMessage(paste("Could not find model input file ",
-                             GPE$inputExcelFile,
-                             sep = ""))
-  }
+  # TODO: Insert schema validation once the orientation of the curves sheet
+  # has been flipped.
 
   return(seasonalityCurvesData)
 }
@@ -48,44 +29,24 @@ loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesShe
 #' configuration JSON file.
 #'
 #' @param sheetNameOffsets Sheet name from the model input Excel file
+#' @param ... Throw away other parameters
 #'
 #' @return Seasonality offsets data frame.
-#' 
-loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet){
+#'
+loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet, ...){
   traceMessage(paste0("Loading seasonality offsets sheet ", sheetNameOffsets))
-  
+
   seasonalityOffsetsData <- NULL
 
-  if (file.exists(GPE$inputExcelFile)){
-    out <- tryCatch(
-      {
-        seasonalityOffsetsData <-
-          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetNameOffsets)
-      },
-      warning = function(war)
-      {
-        traceMessage(paste("WARNING:", war))
-      },
-      error = function(err)
-      {
-        traceMessage(paste("ERROR:", err))
-      },
-      finally =
-        {
+  seasonalityOffsetsData <- readSheet(sheetName = sheetNameOffsets)
 
-        }
-    )
-  } else {
-    traceMessage(paste("Could not find model input file ",
-                             GPE$inputExcelFile,
-                             sep = ""))
+  if (!is.null(seasonalityOffsetsData)) {
+    seasonalityOffsetsData <-
+      validateTableAgainstSchema(seasonalityOffsetsData,
+                                 .seasonalityOffsetMetaData,
+                                 convertType = TRUE)
   }
-  
-  seasonalityOffsetsData <-
-    validateTableAgainstSchema(seasonalityOffsetsData,
-                               .seasonalityOffsetMetaData,
-                               convertType = TRUE)
-  
+
   return(seasonalityOffsetsData)
 }
 

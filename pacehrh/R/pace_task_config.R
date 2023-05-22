@@ -13,75 +13,44 @@ loadTaskParameters <- function(sheetName = .defaultTaskValuesSheet){
 
   taskData <- NULL
 
-  if (file.exists(GPE$inputExcelFile)){
-    out <- tryCatch(
-      {
-        taskData <-
-          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-      },
-      warning = function(war)
-      {
-        traceMessage(paste("WARNING:", war))
-      },
-      error = function(err)
-      {
-        traceMessage(paste("ERROR:", err))
-      },
-      finally =
-        {
-
-        }
-    )
-  } else {
-    traceMessage(paste("Could not find model input file ",
-                             GPE$inputExcelFile,
-                             sep = ""))
-  }
+  taskData <- readSheet(sheetName = sheetName)
 
   if (is.null(taskData)){
     return(NULL)
   }
-  
+
   taskData <-
     validateTableAgainstSchema(taskData,
                                .taskValuesMetaData,
                                convertType = TRUE)
 
-  # Convert some of the NA values to sensible defaults
-  assertthat::has_name(taskData, "StartingRateInPop")
-  taskData$StartingRateInPop[is.na(taskData$StartingRateInPop)] <- 0
+  if (!is.null(taskData)) {
+    # Convert some of the NA values to sensible defaults. Note that
+    # validateTableAgainstSchema() guarantees the presence of these columns.
+    taskData$StartingRateInPop[is.na(taskData$StartingRateInPop)] <- 0
+    taskData$RateMultiplier[is.na(taskData$RateMultiplier)] <- 1
+    taskData$AnnualDeltaRatio[is.na(taskData$AnnualDeltaRatio)] <- 1
+    taskData$NumContactsPerUnit[is.na(taskData$NumContactsPerUnit)] <- 0
+    taskData$NumContactsAnnual[is.na(taskData$NumContactsAnnual)] <- 0
+    taskData$HoursPerWeek[is.na(taskData$HoursPerWeek)] <- 0
 
-  assertthat::has_name(taskData, "RateMultiplier")
-  taskData$RateMultiplier[is.na(taskData$RateMultiplier)] <- 1
+    computeMethod <- replicate(nrow(taskData), "TimePerTask")
+    computeMethod[taskData$HoursPerWeek != 0] <- "TimeAddedOn"
+    taskData$computeMethod <- computeMethod
 
-  assertthat::has_name(taskData, "AnnualDeltaRatio")
-  taskData$AnnualDeltaRatio[is.na(taskData$AnnualDeltaRatio)] <- 1
+    # Apply some rules to determine which tasks are affected by stochastically
+    # changing prevalence.
+    #
+    # Stochastically changing prevalence only applies to TimePerTask computations.
+    #
+    # If StartingRateInPop == 1, do NOT compute prevalence. Stochasticity for
+    # these tasks is driven by the population dynamics.
 
-  assertthat::has_name(taskData, "NumContactsPerUnit")
-  taskData$NumContactsPerUnit[is.na(taskData$NumContactsPerUnit)] <- 0
-
-  assertthat::has_name(taskData, "NumContactsAnnual")
-  taskData$NumContactsAnnual[is.na(taskData$NumContactsAnnual)] <- 0
-
-  assertthat::has_name(taskData, "HoursPerWeek")
-  taskData$HoursPerWeek[is.na(taskData$HoursPerWeek)] <- 0
-
-  computeMethod <- replicate(nrow(taskData), "TimePerTask")
-  computeMethod[taskData$HoursPerWeek != 0] <- "TimeAddedOn"
-  taskData$computeMethod <- computeMethod
-
-  # Apply some rules to determine which tasks are affected by stochastically
-  # changing prevalence.
-  #
-  # Stochastically changing prevalence only applies to TimePerTask computations.
-  #
-  # If StartingRateInPop == 1, do NOT compute prevalence. Stochasticity for
-  # these tasks is driven by the population dynamics.
-
-  applyStochasticity <- replicate(nrow(taskData), TRUE)
-  applyStochasticity[taskData$StartingRateInPop == 1] <- FALSE
-  applyStochasticity[taskData$computeMethod != "TimePerTask"] <- FALSE
-  taskData$applyStochasticity <- applyStochasticity
+    applyStochasticity <- replicate(nrow(taskData), TRUE)
+    applyStochasticity[taskData$StartingRateInPop == 1] <- FALSE
+    applyStochasticity[taskData$computeMethod != "TimePerTask"] <- FALSE
+    taskData$applyStochasticity <- applyStochasticity
+  }
 
   return(taskData)
 }

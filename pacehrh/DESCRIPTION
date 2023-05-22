@@ -1,7 +1,7 @@
 Type: Package
 Package: pacehrh
 Title: Population-Aware Capacity Estimator for Human Resources for Health
-Version: 1.0.5
+Version: 1.0.7
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
 Description: This package models the healthcare needs of a given population so you
@@ -38,7 +38,7 @@ Roxygen: list(roclets = c("namespace", "rd",
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Collate: 
     'pace_package_env.R'
     'pace_debug_utils.R'
@@ -47,7 +47,9 @@ Collate:
     'pace_table_schemas.R'
     'pace_lint.R'
     'pace_trace.R'
+    'pace_read_sheet.R'
     'pace_config.R'
+    'pace_initialize.R'
     'pace_pop_rates_config.R'
     'pace_exp_control.R'
     'pace_rates_matrix.R'
@@ -73,5 +75,8 @@ Collate:
     'pace_stochasticity_config.R'
     'pace_save_results.R'
     'pace_sanity_checks.R'
+    'pace_cadre_config.R'
+    'pace_cadre_process.R'
+    'pace_save_cadre_data.R'
     'pace_post_process.R'
 VignetteBuilder: knitr

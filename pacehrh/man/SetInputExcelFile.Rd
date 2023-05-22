@@ -11,7 +11,7 @@ SetInputExcelFile(inputExcelFilePath = "./config/model_inputs.xlsx")
 "./config/model_inputs.xlsx")}
 }
 \value{
-NULL (invisible)
+TRUE/FALSE
 }
 \description{
 Declare the Excel file to be used for reading configuration information. The

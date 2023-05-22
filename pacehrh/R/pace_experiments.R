@@ -41,8 +41,10 @@ RunExperiments <-
       warning("Critical failure. RunExperiments() ended.")
       return(NULL)
     }
-    
+
     set.seed(seed)
+
+    traceMessage("Experiments starting ...")
 
     l <- lapply(seq_len(trials), function(trial) {
       ConfigureExperimentValues()

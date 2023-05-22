@@ -10,6 +10,7 @@ test_that("Full suite: basic", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   # Make sure to use a scenario that has seasonality results!
   scenario <- "MergedModel"
@@ -92,5 +93,12 @@ test_that("Full suite: basic", {
 
   testthat::expect_equal(nrow(outdf), (length(pacehrh:::GPE$ages) * (length(startYear:endYear) + shoulderYears) * nTrials))
   testthat::expect_true(setequal(names(outdf), csvCols))
+
+  # ---------------------------------
+  # Save cadre data
+
+#  pacehrh::SaveCadreData(run = "Run_1")
+
+
 })
 

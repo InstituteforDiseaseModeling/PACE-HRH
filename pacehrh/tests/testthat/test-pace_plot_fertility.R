@@ -11,6 +11,7 @@ test_that("Rates graphs: flat", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   scenario <- "MergedModel"
   nTrials <- 5

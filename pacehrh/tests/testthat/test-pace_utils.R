@@ -16,6 +16,7 @@ test_that("Utilities: GetSuiteRates", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   scenario <- "MergedModel"
   nTrials <- 5

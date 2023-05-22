@@ -41,6 +41,7 @@ EXP <- experimentValuesEnvironment
 .defaultScenariosSheet <- "Scenarios"
 .defaultStochasticParametersSheet <- "StochasticParameters"
 .defaultCadreRolesSheet <- "CadreRoles"
+.defaultTaskCadresSheet <- "TaskCadres"
 
 # GLOBAL VARIABLES
 
@@ -81,3 +82,6 @@ BVE$populationLabels <- NULL
 BVE$initialPopulation <- NULL
 BVE$stochasticParams <- NULL
 BVE$populationRangesTable <- NULL
+BVE$cadreRoles <- NULL
+BVE$taskCadresData <- NULL
+
