@@ -55,7 +55,7 @@ test_that("Per-Age: baseline", {
   testthat::expect_equal(length(results), nTrials)
 
   r <- results[[1]]
-  expectedDataNames <- c("AnnualTimes", "AnnualCounts", "SeasonalityResults", "MonthlyPerAge", "Population", "PopulationRates")
+  expectedDataNames <- c("AnnualTimes", "AnnualCounts", "SeasonalityResults", "MonthlyPerAge", "Population", "PopulationRates", "Config")
   testthat::expect_true(length(setdiff(names(r), expectedDataNames)) == 0)
   testthat::expect_true(length(setdiff(expectedDataNames, names(r))) == 0)
 
@@ -134,7 +134,7 @@ test_that("Per-Age: annual only", {
   testthat::expect_equal(length(results), nTrials)
 
   r <- results[[1]]
-  expectedDataNames <- c("AnnualTimes", "AnnualCounts", "SeasonalityResults", "AnnualPerAge", "Population", "PopulationRates")
+  expectedDataNames <- c("AnnualTimes", "AnnualCounts", "SeasonalityResults", "AnnualPerAge", "Population", "PopulationRates", "Config")
   testthat::expect_true(length(setdiff(names(r), expectedDataNames)) == 0)
   testthat::expect_true(length(setdiff(expectedDataNames, names(r))) == 0)
 
