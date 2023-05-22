@@ -22,7 +22,7 @@ div.info { background-color: lightblue; }
 
 ## Input Data Check:
 <br><br>
-```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE}
+```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE, fig.show = "hide"}
 source("ValidateInput.R")
 source("ValidateInput_plot.R")
 Validate(inputFile = params$inputFile, outputDir = params$outputDir, optional_sheets=params$optional_sheets)
