@@ -64,6 +64,10 @@ RunExperiment <- function(debug = FALSE){
     }
   }
 
+
+  results$Config$PaceHrhVersion = packageVersion("pacehrh")
+
+
   return(results)
 }
 
