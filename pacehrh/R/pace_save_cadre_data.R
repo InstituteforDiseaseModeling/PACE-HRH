@@ -12,15 +12,14 @@
 #' }
 SaveCadreOverheadData <- function(filepath = NULL, run = "Run-1") {
   scenario <- BVE$scenario$UniqueID
-  roleNames <- rownames(data)
 
-  data <-  BVE$cadreData$annualOverheads
-
+  # Transpose the Annual Overheads matrix, and add a Year column
   M <- BVE$cadreData$annualOverheads
   M <- M / 60.0
   dt <- data.table::data.table(t(M))
   dt <- dt[, Year := dimnames(M)[2]]
 
+  # Melt the table to create one row per Role_ID + Year combination
   dt <-
     data.table::melt(
       dt,
@@ -30,9 +29,11 @@ SaveCadreOverheadData <- function(filepath = NULL, run = "Run-1") {
       variable.factor = FALSE
     )
 
+  # Add some more columns
   dt <- dt[, Scenario_ID := scenario]
   dt <- dt[, Run := run]
 
+  # Set the column order
   data.table::setcolorder(dt, c("Scenario_ID", "Role_ID", "Year", "Run", "OverheadTime"))
 
   if (!is.null(filepath)) {
