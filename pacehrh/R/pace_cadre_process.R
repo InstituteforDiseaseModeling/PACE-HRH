@@ -184,12 +184,6 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
 #'
 #' @examples
 #' \dontrun{
-#' resultsFiles <- c("results/results_BasicModel_Jul04.csv",
-#'                   "results/results_ComprehensiveModel_Jul04.csv",
-#'                   "results/results_MergedModel_Jul04.csv")
-#'
-#' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
-#' CA <- pacehrh:::ComputeCadreAllocations(DR)
 #' }
 SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
   scenarioName <- BVE$scenario$UniqueID

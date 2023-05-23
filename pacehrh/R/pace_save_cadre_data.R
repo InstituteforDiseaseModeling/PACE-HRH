@@ -1,69 +1,46 @@
 #' Save Cadre Information From A Suite Of Experiments
 #'
-#' @param filepath CSV file to write to (default = "cadre.csv")
+#' @param filepath CSV file to write to (default = NULL)
+#' @param run Identifier for the experiment run
 #'
-#' @return NULL (invisible)
+#' @return Cadre overhead data data table
 #' @export
 #'
 #' @md
 #' @examples
 #' \dontrun{
-#'
-#' CHANGE THIS EXAMPLE
-#'
-#' scenario <- "ScenarioName"
-#'
-#'results <-
-#'  pacehrh::RunExperiments(scenarioName = scenario,
-#'                       trials = 100)
-#'
-#' df <- pacehrh::SaveSuiteDemographics(results, breaks = c(50))
-#'
-#' df <- df %>%
-#'   dplyr::group_by(Trial, Year, AgeBucket) %>%
-#'   dplyr::summarize(Female = sum(Female), Male = sum(Male))
 #' }
-SaveCadreData <- function(filepath = "cadre.csv", run = "") {
-  data <- BVE$cadreData$monthlyOverheads
+SaveCadreOverheadData <- function(filepath = NULL, run = "Run-1") {
   scenario <- BVE$scenario$UniqueID
   roleNames <- rownames(data)
 
-  l <- strsplit(colnames(data), "\\.")
-  years <- as.numeric(sapply(l, function(x)
-    x[1]))
-  months <- as.numeric(sapply(l, function(x)
-    x[2]))
+  data <-  BVE$cadreData$annualOverheads
 
-  msize <- length(months)
+  M <- BVE$cadreData$annualOverheads
+  M <- M / 60.0
+  dt <- data.table::data.table(t(M))
+  dt <- dt[, Year := dimnames(M)[2]]
 
-  scenarioCol <- character(length = msize)
-  scenarioCol <- scenario
-
-  runCol <- character(length = msize)
-  runCol <- run
-
-  roleCol <- character(length = msize)
-
-  l <- lapply(1:dim(data)[1], function(i) {
-    roleName <- roleNames[i]
-    timeData <- data[i, ]
-
-    return(
-      data.frame(
-        "Scenario_ID" = scenarioCol,
-        "Role_ID" = roleName,
-        "Run" = runCol,
-        "Year" = years,
-        "Month" = months,
-        "OverheadTime" = timeData
-      )
+  dt <-
+    data.table::melt(
+      dt,
+      id.vars = c("Year"),
+      variable.name = "Role_ID",
+      value.name = "OverheadTime",
+      variable.factor = FALSE
     )
-  })
 
-  out <- data.table::rbindlist(l)
+  dt <- dt[, Scenario_ID := scenario]
+  dt <- dt[, Run := run]
 
-  data.table::fwrite(out,
-                     file = filepath,
-                     row.names = FALSE,
-                     na = "NA")
+  data.table::setcolorder(dt, c("Scenario_ID", "Role_ID", "Year", "Run", "OverheadTime"))
+
+  if (!is.null(filepath)) {
+    data.table::fwrite(dt,
+                       file = filepath,
+                       row.names = FALSE,
+                       na = "NA")
+  }
+
+  return(dt)
 }
