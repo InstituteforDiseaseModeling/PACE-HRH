@@ -36,7 +36,7 @@ jobs:
         shell: cmd
       - name: Run Integration tests
         run: |
-          Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'))"
+          Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'), stop_on_failure=TRUE, stop_on_warning=FALSE)"
         env:
           NOT_CRAN: true
           
