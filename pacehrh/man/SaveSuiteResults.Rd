@@ -7,11 +7,11 @@
 SaveSuiteResults(results, filepath, scenario, run)
 }
 \arguments{
-\item{results}{Results structure as returned by \code{RunExperiments()}}
+\item{results}{Results structure as returned by \code{\link[=RunExperiments]{RunExperiments()}}}
 
 \item{filepath}{Location to write CSV file}
 
-\item{scenario}{Name of experiments scenario, as passed to \code{RunExperiments()}}
+\item{scenario}{Name of experiments scenario, as passed to \code{\link[=RunExperiments]{RunExperiments()}}}
 
 \item{run}{Run ID}
 }

@@ -113,12 +113,13 @@ SaveSuiteDemographics <- function(results, filepath = "out.csv", breaks = NULL) 
 #'
 #' @param results Results structure (as returned by [RunExperiments()])
 #' @param filepath CSV file to write to (default = "out.csv")
-#' @param scenario Name of experiments scenario, as passed to \code{RunExperiments()}
+#' @param scenario Name of experiments scenario, as passed to [RunExperiments()]
 #' @param trial Integer index of trial in results structure
 #' @param run Run ID
 #'
 #' @return CSV file contents as a data table
 #'
+#' @md
 #' @export
 #'
 #' @examples
@@ -169,13 +170,14 @@ SaveResults <- function(results, filepath = "out.csv", scenario, trial = NULL, r
 
 #' Save Experiment Suite Results As CSV File
 #'
-#' @param results Results structure as returned by \code{RunExperiments()}
+#' @param results Results structure as returned by [RunExperiments()]
 #' @param filepath Location to write CSV file
-#' @param scenario Name of experiments scenario, as passed to \code{RunExperiments()}
+#' @param scenario Name of experiments scenario, as passed to [RunExperiments()]
 #' @param run Run ID
 #'
 #' @return NULL (invisible)
 #'
+#' @md
 #' @export
 #'
 #' @examples

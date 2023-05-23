@@ -7,7 +7,7 @@
 SaveExtendedSuiteResults(results = NULL, filepath = NULL, run = "Run-1")
 }
 \arguments{
-\item{results}{Results structure (as returned by [RunExperiments()]).}
+\item{results}{Results structure (as returned by \code{\link[=RunExperiments]{RunExperiments()}}).}
 
 \item{filepath}{Destination CSV file to write results. Default = NULL.}
 

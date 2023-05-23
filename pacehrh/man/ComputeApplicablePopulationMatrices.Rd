@@ -10,7 +10,7 @@ ComputeApplicablePopulationMatrices(
 )
 }
 \arguments{
-\item{results}{Results structure as returned by \code{RunExperiments()}}
+\item{results}{Results structure as returned by \code{\link[=RunExperiments]{RunExperiments()}}}
 
 \item{labels}{Population labels structure}
 }

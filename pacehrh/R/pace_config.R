@@ -253,12 +253,13 @@ SetRoundingLaw <- function(value = NULL) {
 
 #' By default the system is set up with stochasticity on.
 #'
-#' @param value Desired stochasticity. (Calling \code{SetStochasiticity()} with
+#' @param value Desired stochasticity. (Calling [SetStochasiticity()] with
 #' no parameters or value = NULL returns the current state.)
 #'
 #' @return Previous stochasticity flag value (invisible)
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' pacehrh::SetStochasticity(FALSE) # Turn off stochasticity
@@ -281,12 +282,13 @@ SetStochasticity <- function(value = NULL) {
 #' Turn Per-Age Statistics On/Off
 #'
 #' @param value Desired value. Allowed values = {"none" | "monthly" | "annual"}.
-#'   Calling \code{SetPerAgeStats()} with no parameters or value = NULL returns
+#'   Calling [SetPerAgeStats()] with no parameters or value = NULL returns
 #'   the current state.
 #'
 #' @return Previous value (invisible)
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' pacehrh::SetPerAgeStats("monthly") # Turn on per-age statistics

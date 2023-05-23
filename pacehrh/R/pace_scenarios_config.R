@@ -29,12 +29,13 @@ loadScenarios <- function(sheetName = .defaultScenariosSheet) {
 #'
 #' @param loadFromExcel If TRUE, initialize the scenarios list from the model
 #' inputs Excel file. If FALSE, initialize with a blank scenarios table.
-#' @param ... See \code{loadScenarios()}
+#' @param ... See [loadScenarios()]
 #'
 #' @export
 #'
 #' @return NULL (invisible)
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' library(pacehrh)

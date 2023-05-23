@@ -83,15 +83,15 @@ PlotPopulationCurve <-
 #'
 #' More intuitive interface to [PlotPopulationCurve()]
 #'
-#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param results Results list (as returned by [RunExperiments()])
 #' @param trial Trial number (index into the results list)
 #' @param year Year in trial timeseries to plot
 #' @param sex Sex to plot (from c("m", "M", "f", "F"), defaults to female)
 #' @param ... Parameters passed to [PlotPopulationCurve()]
 #'
-#' @md
-#'
 #' @return ggplot grob, or NULL on error
+#'
+#' @md
 #' @export
 #'
 #' @examples
@@ -467,13 +467,14 @@ PlotPyramids <- function(df) {
 
 #' Plot A Single Pair of Mortality Rates Curves From A Results List
 #'
-#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param results Results list (as returned by [RunExperiments()])
 #' @param trial Trail number (index into the results list)
 #' @param year Year in trial timeseries to plot
 #'
 #' @return ggplot grob, or NULL on error
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' library(pacehrh)
@@ -505,11 +506,12 @@ PlotResultsMortalityRates <-
 
 #' Plot Mortality Rates
 #'
-#' @param populationRates Population rates list, as returned by
-#'   \code{RunExperiments()}
+#' @param populationRates Population rates list, as returned by [RunExperiments()]
 #' @param year Year
 #'
 #' @return ggplot grob
+#'
+#' @md
 #' @export
 #'
 #' @importFrom ggplot2 ggplot

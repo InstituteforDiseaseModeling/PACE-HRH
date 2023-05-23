@@ -7,7 +7,7 @@
 GetSuiteRates(results, rateCategory = .populationRateCategories[1])
 }
 \arguments{
-\item{results}{Results structure (as returned by [RunExperiments()])}
+\item{results}{Results structure (as returned by \code{\link[=RunExperiments]{RunExperiments()}})}
 
 \item{rateCategory}{Rate type ({"femaleFertility" | "maleFertility" | "femaleMortality" | "maleMortality"})}
 }

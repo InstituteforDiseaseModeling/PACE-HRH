@@ -276,17 +276,17 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #' Compute Cadre Allocations
 #'
 #' Different healthcare delivery models involve different mixtures of types
-#' of healthcare workers ("Cadres"). \code{ComputeCadresAllocations()} reads
+#' of healthcare workers ("Cadres"). [ComputeCadresAllocations()] reads
 #' cadre information from the input Excel file, then combines the allocation
 #' percentages with computed task times to produce a table showing how much
 #' time each cadre spends per year on each healthcare task.
 #'
-#' @param DR Task time results from \code{ReadAndCollateSuiteResults()}
+#' @param DR Task time results from [ReadAndCollateSuiteResults()]
 #'
 #' @return data.table
 #'
 #' @noRd
-#'
+#' @md
 #' @examples
 #' \dontrun{
 #' resultsFiles <- c("results/results_BasicModel_Jul04.csv",

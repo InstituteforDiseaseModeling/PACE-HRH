@@ -50,13 +50,15 @@
 
 #' Plot Fertility Rates Statistics
 #'
-#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param results Results list (as returned by [RunExperiments()])
 #' @param se Whether to show standard error or standard deviation confidence intervals.
 #' Note: the \code{se} parameter does not apply to the "boxplot" type.
 #' @param type Plot type (options = "lines", "ribbon", "boxplot")
 #' @param log Use log scale for rates (default = TRUE). Applies only to "boxplot" type.
 #'
 #' @return ggplot grob
+#'
+#' @md
 #' @export
 #'
 #' @importFrom ggplot2 ggplot
@@ -224,10 +226,11 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
 
 #' Plot Fertility Rates
 #'
-#' @param populationRates Population rates list, as returned by \code{RunExperiments()}
+#' @param populationRates Population rates list, as returned by [RunExperiments()]
 #' @param year Year
 #'
 #' @return ggplot grob
+#' @md
 #' @export
 #'
 #' @importFrom ggplot2 ggplot
@@ -290,13 +293,14 @@ PlotFertilityRates <- function(populationRates, year){
 
 #' Plot A Single Pair of Fertility Rates Curves From A Results List
 #'
-#' @param results Results list (as returned by \code{RunExperiments()})
+#' @param results Results list (as returned by [RunExperiments()])
 #' @param trial Trail number (index into the results list)
 #' @param year Year in trial timeseries to plot
 #'
 #' @return ggplot grob, or NULL on error
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' library(pacehrh)

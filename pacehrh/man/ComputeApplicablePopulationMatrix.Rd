@@ -7,7 +7,7 @@
 ComputeApplicablePopulationMatrix(result, labels = BVE$populationLabels$Labels)
 }
 \arguments{
-\item{result}{One entry from the results structure as returned by \code{RunExperiments()}}
+\item{result}{One entry from the results structure as returned by \code{\link[=RunExperiments]{RunExperiments()}}}
 
 \item{labels}{Population labels structure}
 }

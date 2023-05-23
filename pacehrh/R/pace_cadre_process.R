@@ -75,6 +75,7 @@ computeCadreData <- function(scenario = NULL, roles = NULL) {
 #' @return Data frame version of CSV file.
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' }
