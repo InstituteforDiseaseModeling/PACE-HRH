@@ -42,8 +42,8 @@ jobs:
           
       - name: Check input spreadsheet
         run: |
+          $ErrorActionPreference = "Stop"
           Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/model_inputs.xlsx', outputDir='log'), output_dir='log')"
-          if errorlevel 1 exit 1
       - uses: actions/upload-artifact@v3
         with:
           name: validation-results
