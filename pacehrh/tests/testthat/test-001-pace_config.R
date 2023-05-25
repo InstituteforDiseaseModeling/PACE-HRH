@@ -233,6 +233,11 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(2020, 2050, "c"))
+  testthat::expect_equal(e$startYear, originalStartYear)
+  testthat::expect_equal(e$endYear, originalEndYear)
+  testthat::expect_equal(e$years, originalYears)
+
   testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(120, 100))
   testthat::expect_equal(e$startYear, originalStartYear)
   testthat::expect_equal(e$endYear, originalEndYear)
