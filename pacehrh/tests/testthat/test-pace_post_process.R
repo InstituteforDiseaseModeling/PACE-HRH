@@ -2,7 +2,7 @@ library(pacehrh)
 
 withr::local_dir("..")
 
-test_that("Post-processing: basic", {
+test_that("Cadre processing: basic", {
   e <- pacehrh:::GPE
   local_vars("globalConfigLoaded", envir = e)
   e$globalConfigLoaded <- FALSE
@@ -33,12 +33,10 @@ test_that("Post-processing: basic", {
   pacehrh::SaveSuiteResults(results, resultsFile, scenario, "Run-1")
 
   testthat::expect_true(file.exists(resultsFile))
-#  DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFile)
   DR <- pacehrh::SaveExtendedSuiteResults(results)
 
   testthat::expect_true(!is.null(DR))
 
-#  CA <- pacehrh:::ComputeCadreAllocations(DR)
   CA <- pacehrh::SaveCadreAllocations(DR)
 
   testthat::expect_true(!is.null(CA))
