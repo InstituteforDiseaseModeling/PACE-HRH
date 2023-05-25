@@ -171,18 +171,19 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
 #' Compute And Save Cadre Allocations
 #'
 #' Different healthcare delivery models involve different mixtures of types of
-#' healthcare workers ("Cadres"). `SaveCadreAllocations()` uses cadre
+#' healthcare workers ("Cadres"). [SaveCadreAllocations()] uses cadre
 #' information read earlier as part of running an experiment, then combines the
 #' allocation percentages with computed task times to produce a table showing
 #' how much time each cadre spends per year on each healthcare task.
 #'
-#' @param suiteResults Extended suite results as returned by `SaveExtendedSuiteResults()`
+#' @param suiteResults Extended suite results as returned by [SaveExtendedSuiteResults()]
 #' @param filepath File location to save cadre allocations. Default = NULL
 #' @param annual Report as annual times instead of monthly? Default = TRUE
 #'
 #' @return data.table
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' }
@@ -190,7 +191,7 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
   scenarioName <- BVE$scenario$UniqueID
 
   # Do some sanity checking
-  if (!identical(GPE$years, unique(suiteResults$Year))) {
+  if (!identical(GPE$years, as.numeric(unique(suiteResults$Year)))) {
     traceMessage("Configured year range (GPE) does not match reported year range")
     return(NULL)
   }

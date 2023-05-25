@@ -7,7 +7,7 @@
 SaveCadreAllocations(suiteResults, filepath = NULL, annual = TRUE)
 }
 \arguments{
-\item{suiteResults}{Extended suite results as returned by `SaveExtendedSuiteResults()`}
+\item{suiteResults}{Extended suite results as returned by \code{\link[=SaveExtendedSuiteResults]{SaveExtendedSuiteResults()}}}
 
 \item{filepath}{File location to save cadre allocations. Default = NULL}
 
@@ -18,7 +18,7 @@ data.table
 }
 \description{
 Different healthcare delivery models involve different mixtures of types of
-healthcare workers ("Cadres"). `SaveCadreAllocations()` uses cadre
+healthcare workers ("Cadres"). \code{\link[=SaveCadreAllocations]{SaveCadreAllocations()}} uses cadre
 information read earlier as part of running an experiment, then combines the
 allocation percentages with computed task times to produce a table showing
 how much time each cadre spends per year on each healthcare task.
