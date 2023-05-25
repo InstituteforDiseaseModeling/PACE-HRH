@@ -1,7 +1,9 @@
 packages = c("tidyverse")
 for(i in packages){
   if(!require(i, character.only = T)){
+    print(paste0("try to install package:", i))
     install.packages(i)
+    print(paste0("package installed:", i))
     library(i, character.only = T)
   }
 }

@@ -2,7 +2,9 @@ testthat::local_edition(3)
 packages = c("DescTools", "tidyr", "dplyr", "ggplot2", "readxl", "stringr", "vdiffr", "testthat", "patrick")
 for(i in packages){
   if(!require(i, character.only = T)){
+    print(paste0("try to install package:", i))
     install.packages(i)
+    print(paste0("package installed:", i))
     library(i, character.only = T)
   }
 }
