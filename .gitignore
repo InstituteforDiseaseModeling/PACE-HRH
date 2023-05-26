@@ -8,6 +8,8 @@
 .RDataTmp2
 .csv
 .pdf
+/*.tar.gz
+/*.Rcheck/
 lint*.txt
 pacehrh/tests/*.png
 pacehrh/tests/*.csv
