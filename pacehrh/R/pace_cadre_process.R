@@ -256,7 +256,7 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
   suiteResults <-
     dplyr::left_join(
       suiteResults,
-      pacehrh:::BVE$taskCadresData,
+      BVE$taskCadresData,
       by = dplyr::join_by(Task_ID == Indicator, joinYear == Year)
     )
   suiteResults$joinYear <- NULL
