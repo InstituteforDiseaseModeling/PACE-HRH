@@ -140,7 +140,7 @@ InitializePopulation <- function(popSheet = .defaultPopSheet){
   BVE$populationLabels <- NULL
   BVE$populationRangesTable <- NULL
 
-  BVE$initialPopulation <- loadInitialPopulation(sheet = popSheet)
+  BVE$initialPopulation <- loadInitialPopulation(sheetName = popSheet)
   BVE$populationLabels <- loadPopulationLabels()
   BVE$populationRangesTable <- .computePopulationRanges(BVE$populationLabels)
 
