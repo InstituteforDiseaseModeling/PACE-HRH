@@ -15,7 +15,6 @@ Imports:
     ggplot2,
     jsonlite,
     magrittr,
-    methods,
     readxl,
     rlang,
     scales,
