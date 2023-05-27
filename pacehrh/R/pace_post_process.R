@@ -296,6 +296,8 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
 #' CA <- pacehrh:::ComputeCadreAllocations(DR)
 #' }
+NULL
+
 # xxxComputeCadreAllocations <- function(DR = NULL){
 #   if (is.null(DR)){
 #     return(NULL)

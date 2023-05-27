@@ -63,8 +63,6 @@ InitializeCadreRoles <- function(...){
 #' @param sheetName
 #'
 #' @return Data table of per-year cadre allocation definitions
-#' @export
-#'
 #' @noRd
 loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
   traceMessage(paste0("Loading task cadres sheet ", sheetName))
