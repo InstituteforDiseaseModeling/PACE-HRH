@@ -190,7 +190,7 @@ InitializePopulation <- function(popSheet = .defaultPopSheet){
 
   m <- do.call(rbind, l)
 
-  rownames(m) <- lt[,Labels]
+  rownames(m) <- lt[, Labels]
   colnames(m) <- GPE$ages
 
   return(m)

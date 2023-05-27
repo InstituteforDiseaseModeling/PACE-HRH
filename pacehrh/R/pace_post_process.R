@@ -22,19 +22,37 @@
   keep <- vector(mode = "logical", length = nrow(dt))
   keep[] <- TRUE
 
-  mask <- dt$DeliveryModel == "Merged" & (dt$Task_ID %in% c("Overhead_staff3", "Overhead_staff4", "Overhead_staff5", "Overhead_staff6"))
+  mask <-
+    dt$DeliveryModel == "Merged" &
+    (
+      dt$Task_ID %in% c(
+        "Overhead_staff3",
+        "Overhead_staff4",
+        "Overhead_staff5",
+        "Overhead_staff6"
+      )
+    )
   keep[mask] <- FALSE
 
-  mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID %in% c("Overhead_staff3") & dt$Year < 2025)
+  mask <-
+    dt$DeliveryModel == "Basic" &
+    (dt$Task_ID %in% c("Overhead_staff3") & dt$Year < 2025)
   keep[mask] <- FALSE
 
-  mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID %in% c("Overhead_staff4") & dt$Year < 2030)
+  mask <-
+    dt$DeliveryModel == "Basic" &
+    (dt$Task_ID %in% c("Overhead_staff4") & dt$Year < 2030)
   keep[mask] <- FALSE
 
-  mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID %in% c("Overhead_staff5", "Overhead_staff6"))
+  mask <-
+    dt$DeliveryModel == "Basic" &
+    (dt$Task_ID %in% c("Overhead_staff5", "Overhead_staff6"))
   keep[mask] <- FALSE
 
-  mask <- dt$DeliveryModel == "Comprehensive" & (dt$Task_ID %in% c("Overhead_staff3", "Overhead_staff4") & dt$Year < 2025)
+  mask <-
+    dt$DeliveryModel == "Comprehensive" &
+    (dt$Task_ID %in% c("Overhead_staff3", "Overhead_staff4") &
+       dt$Year < 2025)
   keep[mask] <- FALSE
 
   dt <- dt[keep]
@@ -111,20 +129,26 @@
 #'   keep <- vector(mode = "logical", length = nrow(dt))
 #'   keep[] <- TRUE
 #'
-#'   mask <- dt$DeliveryModel == "Merged" & (dt$Task_ID %in% c("Overhead_staff3", "Overhead_staff4", "Overhead_staff5", "Overhead_staff6"))
-#'   keep[mask] <- FALSE
+#' mask <-
+#'   dt$DeliveryModel == "Basic" &
+#'   (dt$Task_ID %in% c("Overhead_staff3") & dt$Year < 2025)
+#' keep[mask] <- FALSE
 #'
-#'   mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID %in% c("Overhead_staff3") & dt$Year < 2025)
-#'   keep[mask] <- FALSE
+#' mask <-
+#'   dt$DeliveryModel == "Basic" &
+#'   (dt$Task_ID %in% c("Overhead_staff4") & dt$Year < 2030)
+#' keep[mask] <- FALSE
 #'
-#'   mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID %in% c("Overhead_staff4") & dt$Year < 2030)
-#'   keep[mask] <- FALSE
+#' mask <-
+#'   dt$DeliveryModel == "Basic" &
+#'   (dt$Task_ID %in% c("Overhead_staff5", "Overhead_staff6"))
+#' keep[mask] <- FALSE
 #'
-#'   mask <- dt$DeliveryModel == "Basic" & (dt$Task_ID %in% c("Overhead_staff5", "Overhead_staff6"))
-#'   keep[mask] <- FALSE
-#'
-#'   mask <- dt$DeliveryModel == "Comprehensive" & (dt$Task_ID %in% c("Overhead_staff3", "Overhead_staff4") & dt$Year < 2025)
-#'   keep[mask] <- FALSE
+#' mask <-
+#'   dt$DeliveryModel == "Comprehensive" &
+#'   (dt$Task_ID %in% c("Overhead_staff3", "Overhead_staff4") &
+#'      dt$Year < 2025)
+#' keep[mask] <- FALSE
 #'
 #'   dt <- dt[keep]
 #'   return(dt)
