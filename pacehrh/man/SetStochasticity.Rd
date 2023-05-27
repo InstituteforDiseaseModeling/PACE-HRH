@@ -7,7 +7,7 @@
 SetStochasticity(value = NULL)
 }
 \arguments{
-\item{value}{Desired stochasticity. (Calling \code{\link[=SetStochasiticity]{SetStochasiticity()}} with
+\item{value}{Desired stochasticity. (Calling \code{\link[=SetStochasticity]{SetStochasticity()}} with
 no parameters or value = NULL returns the current state.)}
 }
 \value{

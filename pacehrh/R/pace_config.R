@@ -253,7 +253,7 @@ SetRoundingLaw <- function(value = NULL) {
 
 #' By default the system is set up with stochasticity on.
 #'
-#' @param value Desired stochasticity. (Calling [SetStochasiticity()] with
+#' @param value Desired stochasticity. (Calling [SetStochasticity()] with
 #' no parameters or value = NULL returns the current state.)
 #'
 #' @return Previous stochasticity flag value (invisible)

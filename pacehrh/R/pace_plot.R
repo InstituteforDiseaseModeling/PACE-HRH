@@ -8,16 +8,6 @@
 #' @return ggplot grob
 #' @export
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_point
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 xlab
-#' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 ggtitle
-#' @importFrom ggplot2 .data
-#'
 #' @examples
 #' \dontrun{
 #' library(pacehrh)
@@ -145,12 +135,6 @@ PlotResultsPopulationCurve <-
 #'
 #' @return ggplot grob
 #' @export
-#'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_point
-#' @importFrom ggplot2 scale_y_continuous
 #'
 #' @examples
 #' \dontrun{
@@ -284,19 +268,6 @@ gatherPopulation <- function(pops) {
 #' @param df Long, skinny dataframe of population data
 #' @param year Year to graph
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_segment
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 xlab
-#' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 coord_flip
-#' @importFrom ggplot2 annotation_custom
-#' @importFrom scales label_comma
-#' @importFrom grid grobTree
-#' @importFrom grid textGrob
-#' @importFrom grid gpar
-#'
 #' @return Graphics grob
 #' @export
 #'
@@ -388,19 +359,6 @@ PlotPyramid <- function(df, year) {
 #' Plot A Family Of Population Pyramids
 #'
 #' @param df Long, skinny dataframe of population data
-#'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_segment
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 xlab
-#' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 coord_flip
-#' @importFrom ggplot2 annotation_custom
-#' @importFrom scales label_comma
-#' @importFrom grid grobTree
-#' @importFrom grid textGrob
-#' @importFrom grid gpar
 #'
 #' @return Graphics grob
 #' @export
@@ -513,15 +471,6 @@ PlotResultsMortalityRates <-
 #'
 #' @md
 #' @export
-#'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_point
-#' @importFrom ggplot2 facet_grid
-#' @importFrom ggplot2 vars
-#' @importFrom ggplot2 ggtitle
-#' @importFrom ggplot2 scale_color_manual
-#' @importFrom tidyr pivot_longer
 #'
 #' @examples
 #' \dontrun{
