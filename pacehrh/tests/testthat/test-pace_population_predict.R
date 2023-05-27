@@ -12,7 +12,7 @@ test_that("computeBirths: basic", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
   pop <- pacehrh:::loadInitialPopulation(sheetName = "TEST_TotalPop")
 
   rates <- vector(mode = "double", length = length(pacehrh:::GPE$ages))
@@ -33,7 +33,7 @@ test_that("computeDeaths: basic", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
   pop <- pacehrh:::loadInitialPopulation(sheetName = "TEST_TotalPop")
 
   rates <- vector(mode = "double", length = length(pacehrh:::GPE$ages))

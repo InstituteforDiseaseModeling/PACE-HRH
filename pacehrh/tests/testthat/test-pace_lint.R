@@ -17,7 +17,7 @@ test_that("Lint: basic", {
 test_that("Lint: basic", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "./bad_config/Test Inputs - malformed.xlsx"
+  e$inputExcelFile <- "./bad_config/model_inputs-malformed.xlsx"
 
   outFile = "lintout_01_dirty.txt"
   errCode <- pacehrh::CheckInputExcelFileFormat(outputFile = outFile)
@@ -28,7 +28,7 @@ test_that("Lint: basic", {
 test_that("Lint: bad scenario steet name", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
 
   outFile = "lintout_02.txt"
   errCode <- pacehrh::CheckInputExcelFileFormat(outputFile = outFile, scenarioSheet = "notasheet")
@@ -40,7 +40,7 @@ test_that("Lint: bad scenario steet name", {
 test_that("Lint: bad seasonality offsets sheet name", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
 
   outFile = "lintout_05.txt"
   errCode <- pacehrh::CheckInputExcelFileFormat(outputFile = outFile, seasonalityOffsetsSheet = "notasheet")

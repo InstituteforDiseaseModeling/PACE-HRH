@@ -9,7 +9,7 @@ test_that("Population configuration: basic population", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
   pop <- pacehrh:::loadInitialPopulation(sheetName = "TEST_TotalPop")
 
   pseq <- seq(10000, 0, -100)
