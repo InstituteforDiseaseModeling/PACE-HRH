@@ -27,6 +27,7 @@
 #'
 #' @return NULL (invisible)
 #'
+#' @noRd
 loadGlobalConfig <- function(path = "./globalconfig.json") {
   if (file.exists(path)) {
     tryCatch({

@@ -296,6 +296,8 @@ ConfigureExperimentValues <- function(){
 #'
 #' @return Population Change Rates structure with predicted rates matrices added
 #'
+#' @noRd
+#'
 #' @examples
 #' \dontrun{
 #' initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")

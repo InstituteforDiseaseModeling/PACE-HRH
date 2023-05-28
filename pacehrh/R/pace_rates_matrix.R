@@ -3,6 +3,8 @@
 #' @param label Lookup string for the rates type
 #'
 #' @return Rates matrix
+#'
+#' @noRd
 generateRatesMatrix <- function(label = NULL){
   pars <- BVE$stochasticParams
   years <- BVE$years

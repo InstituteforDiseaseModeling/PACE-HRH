@@ -104,9 +104,7 @@
 #' @param preProcFunc (default = .defPreProcFunc)
 #' @param postProcFunc (default = .defPostProcFunc)
 #'
-#' @return Data table.
-#'
-#' @import data.table
+#' @return Data table
 #'
 #' @md
 #' @export

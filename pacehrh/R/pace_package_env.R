@@ -26,6 +26,7 @@ EXP <- experimentValuesEnvironment
 #' @importFrom withr with_output_sink
 #' @importFrom magrittr %>%
 #' @importFrom dplyr group_by summarize
+#' @import data.table
 NULL
 
 # INTERNAL CONSTANTS

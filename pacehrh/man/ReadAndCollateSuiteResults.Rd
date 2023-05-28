@@ -31,7 +31,7 @@ is used. (default = NULL)}
 \item{postProcFunc}{(default = .defPostProcFunc)}
 }
 \value{
-Data table.
+Data table
 }
 \description{
 Combine a family of suite results into one big file, and join with scenario

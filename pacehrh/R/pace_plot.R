@@ -207,6 +207,8 @@ PlotPopulationCurves <-
 #' @param pops List of population pyramids for several years
 #'
 #' @return Long skinny dataframe of population information
+#'
+#' @noRd
 gatherPopulation <- function(pops) {
   if (is.null(pops) || length(pops) == 0) {
     return(NULL)

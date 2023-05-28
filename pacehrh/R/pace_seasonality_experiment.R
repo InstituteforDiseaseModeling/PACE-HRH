@@ -5,6 +5,7 @@
 #'
 #' @return List of dataframes of per-task times, or NULL
 #'
+#' @noRd
 runSeasonalityExperiment <- function(results, debug = FALSE){
   # The seasonality "curve" used when we don't know the seasonality
   dummyCurve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12

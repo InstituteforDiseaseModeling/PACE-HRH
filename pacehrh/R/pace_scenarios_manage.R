@@ -39,7 +39,7 @@ CreateScenariosTable <- function() {
 #' * __sheet_TaskValues__ (character)
 #' * __sheet_PopValues__ (character)
 #' * __sheet_SeasonalityCurves__ (character)
-#' * __sheet_sheet_Cadre__ (character)
+#' * __sheet_Cadre__ (character)
 #' * __DeliveryModel__ (character)
 #'
 #' @return Updated scenarios table
