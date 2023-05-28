@@ -9,6 +9,14 @@
 #' @md
 #' @examples
 #' \dontrun{
+#' results <-
+#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
+#'                           trials = 20)
+#'
+#' SR <- pacehrh::SaveExtendedSuiteResults(results, filepath = "_SR.csv", run = "Run-1")
+#' CA <- pacehrh::SaveCadreAllocations(SR, filepath = "_CA.csv")
+#' cadreOverheadTimes <- pacehrh::SaveCadreOverheadData(filepath = "_COD.csv")
+#' summaryStats <- pacehrh::ComputeSummaryStats(SR, CA)
 #' }
 SaveCadreOverheadData <- function(filepath = NULL, run = "Run-1") {
   scenario <- BVE$scenario$UniqueID
