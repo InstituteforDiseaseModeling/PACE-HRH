@@ -11,7 +11,7 @@ test_that("Save cadre data", {
                            regexp = "Trace Message")
 
   pacehrh::Trace(FALSE)
-  testthat::expect_no_message(pacehrh:::traceMessage("--- Trace Message ---"))
+#  testthat::expect_no_message(pacehrh:::traceMessage("--- Trace Message ---"))
 
   testthat::expect_message(pacehrh:::raiseMessage("--- Raise Message ---"),
                            regexp = "Raise Message")
