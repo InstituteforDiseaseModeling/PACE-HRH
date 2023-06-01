@@ -40,13 +40,16 @@ jobs:
       - name: Run Integration tests
         run: |
           Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'), stop_on_failure=TRUE, stop_on_warning=FALSE)"
+          if errorlevel 1 exit 1
+        shell: cmd
         env:
           NOT_CRAN: true
           
       - name: Check input spreadsheet
         run: |
-          $ErrorActionPreference = "Stop"
           Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/model_inputs.xlsx', outputDir='log'), output_dir='log')"
+          if errorlevel 1 exit 1
+        shell: cmd
       - uses: actions/upload-artifact@v3
         with:
           name: validation-results
