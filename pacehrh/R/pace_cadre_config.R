@@ -82,6 +82,20 @@ loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
     return(NULL)
   }
 
+  # Sanity check: the header rows should start with the Indicator and CommonName
+  # fields
+  if (all.equal(as.vector(unlist(headerRows[2, 1:2])), c("Indicator", "CommonName")) != TRUE) {
+    traceMessage(
+      paste0(
+        "Incorrect cadre config header names: (",
+        as.character(headerRows[2, 1]),
+        "; ",
+        as.character(headerRows[2, 2]), ")"
+      )
+    )
+    return(NULL)
+  }
+
   # Remove the first two entries from the header rows to focus on the members and
   # year info. Extract members and years, then combine into a single token to
   # use in the subsequent table melt operation.

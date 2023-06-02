@@ -6,6 +6,9 @@ test_that("Full suite: basic", {
   e <- pacehrh:::GPE
   local_vars("globalConfigLoaded", envir = e)
 
+  # withr::defer(pacehrh::Trace(originalTraceState))
+  # originalTraceState <- pacehrh::Trace(TRUE)
+
   pacehrh::InitializePopulation()
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()

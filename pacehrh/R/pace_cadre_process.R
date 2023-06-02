@@ -206,6 +206,11 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
     return(NULL)
   }
 
+  if (is.null( BVE$taskCadresData)) {
+    traceMessage(paste0("No task-to-cadre allocation data"))
+    return(NULL)
+  }
+
   # Filter the extended suite results
   allocCalcColumns <- c("Task_ID",
                         "Scenario_ID",

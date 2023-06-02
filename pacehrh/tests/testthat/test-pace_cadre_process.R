@@ -79,3 +79,58 @@ test_that("Cadre computations", {
   testthat::expect_true(!is.null(summaryStatsFromCsv))
   testthat::expect_true(isTRUE(all.equal(summaryStats, summaryStatsFromCsv)))
 })
+
+test_that("Cadre computations - bad cadre task sheet", {
+  gpe <- pacehrh:::GPE
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
+
+  # withr::defer(pacehrh::Trace(originalTraceState))
+  # originalTraceState <- pacehrh::Trace(TRUE)
+
+  local_vars("inputExcelFile", envir = GPE)
+  local_vars("globalConfigLoaded", envir = GPE)
+  local_vars("scenarios", envir = GPE)
+
+  pacehrh::SetInputExcelFile("./bad_config/model_inputs_bad_cadre.xlsx")
+
+  pacehrh::InitializePopulation()
+  pacehrh::InitializeScenarios()
+  pacehrh::InitializeStochasticParameters()
+  pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
+
+  # Make sure to use a scenario that has seasonality results!
+  scenario <- "MergedModel"
+  nTrials <- 5
+  startYear <- 2025
+  endYear <- 2050
+  nMonths <- 12 * length(startYear:endYear)
+
+  shoulderYears <- pacehrh:::GPE$shoulderYears
+
+  pacehrh::SetGlobalStartEndYears(startYear, endYear)
+
+  withr::defer(pacehrh::Trace(originalTraceState))
+  originalTraceState <- pacehrh::Trace(TRUE)
+
+  # The code should generate a message because the cadre task sheet can't be
+  # loaded. This error doesn't stop the experiments from running, but it will
+  # prevent later computation of cadre allocations.
+  testthat::expect_snapshot({
+    results <-
+      pacehrh::RunExperiments(scenarioName = scenario,
+                              trials = nTrials)
+  })
+
+  testthat::expect_true(!is.null(results))
+
+  srData <- pacehrh::SaveExtendedSuiteResults(results, run = "runName")
+  testthat::expect_true(!is.null(srData))
+
+  testthat::expect_message({
+    caData <- pacehrh::SaveCadreAllocations(srData)
+  },
+  regexp = "No task-to-cadre allocation data")
+
+  testthat::expect_true(is.null(caData))
+})
