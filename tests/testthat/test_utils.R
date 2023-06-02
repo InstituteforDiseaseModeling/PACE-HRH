@@ -103,6 +103,7 @@ test_template <- function(input_file, rounding="", setting="annual", popSheet="T
   InitializeScenarios()
   InitializeStochasticParameters()
   InitializeSeasonality()
+  InitializeCadreRoles()
   SetGlobalStartEndYears(start = start, end = end)
   if (rounding!=""){pacehrh::SetRoundingLaw(rounding)}
   pacehrh::SetPerAgeStats(setting)
