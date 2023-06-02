@@ -93,7 +93,7 @@ calculate_decomposition <- function(DR_test, scenario, task, type){
 }
 
 # Set up necessary configuration for demo
-test_template <- function(input_file, rounding="", setting="annual", popSheet="CountryPop", start = 2020, end = 040){
+test_template <- function(input_file, rounding="", setting="annual", popSheet="TotalPop", start = 2020, end = 2040){
   dir.create("tests/results", showWarnings = FALSE)
   dir.create("tests/results/regression", showWarnings = FALSE)
   dir.create("tests/results/regression_demo", showWarnings = FALSE)
@@ -103,9 +103,15 @@ test_template <- function(input_file, rounding="", setting="annual", popSheet="C
   InitializeScenarios()
   InitializeStochasticParameters()
   InitializeSeasonality()
+  InitializeCadreRoles()
   SetGlobalStartEndYears(start = start, end = end)
-  if (rounding!=""){pacehrh::SetRoundingLaw(rounding)}
+  if (rounding!=""){
+    pacehrh::SetRoundingLaw(rounding)}
+  else{
+    pacehrh::SetRoundingLaw("early")
+  }
   pacehrh::SetPerAgeStats(setting)
   withr::defer_parent(unlink("tests/results", recursive = TRUE,  force = TRUE))
+  withr::defer_parent(pacehrh::SetRoundingLaw("early"))
 }
 
