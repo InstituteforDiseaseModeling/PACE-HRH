@@ -78,12 +78,12 @@ cadreOverheadTime$Year = as.integer(cadreOverheadTime$Year)
 
 AnnualOverheadTime <- cadreOverheadTime %>% 
   group_by(Scenario_ID, Year) %>% 
-  summarise(CI05 = sum(OverheadTime), 
+  dplyr::summarise(CI05 = sum(OverheadTime), 
             CI25 = sum(OverheadTime), 
             MeanHrs = sum(OverheadTime),
             CI75 = sum(OverheadTime), 
             CI95 = sum(OverheadTime)) %>% 
-  mutate(ClinicalOrNon = "Overhead", ClinicalCat = "-") %>% 
+  dplyr::mutate(ClinicalOrNon = "Overhead", ClinicalCat = "-") %>% 
   filter(Year>=StartYear & Year<=EndYear)
 
 for (each in SS_list){
@@ -142,7 +142,7 @@ Mean_Total <- Mean_Total %>%
   select(-WeeksPerYr, -HrsPerWeek) %>% 
   rbind(AnnualOverheadTime[,1:7]) %>% 
   group_by(Scenario_ID, Year) %>% 
-  summarise(CI05 = sum(CI05),
+  dplyr::summarise(CI05 = sum(CI05),
             CI25 = sum(CI25),
             MeanHrs = sum(MeanHrs),
             CI75 = sum(CI75),
@@ -153,7 +153,7 @@ Mean_Alloc <- Mean_Alloc %>%
   left_join(cadreOverheadTime, by = c("Scenario_ID","Role_ID", "Year")) %>% 
   left_join(cadreroles, by = c("Scenario_ID"="ScenarioID", "Role_ID"="RoleID")) %>% 
   group_by(Scenario_ID, Year, RoleDescription) %>% 
-  summarise(CI05 = sum(CI05+OverheadTime), 
+  dplyr::summarise(CI05 = sum(CI05+OverheadTime), 
             CI25 = sum(CI25+OverheadTime), 
             CI50 = sum(CI50+OverheadTime), 
             CI75 = sum(CI75+OverheadTime), 
@@ -185,7 +185,6 @@ Mean_Alloc <- Mean_Alloc %>%
   inner_join(scenarios, by= c("Scenario_ID"="UniqueID"))
 
 write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat_",usefuldescription,"_",date,".csv",sep=""))
-write.csv(Mean_MonthlyTask,paste("results/Mean_MonthlyTask_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Stats_TotClin,paste("results/Stats_TotClin_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Mean_ClinCat,paste("results/Mean_ClinCat_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Mean_Total,paste("results/Mean_Total_",usefuldescription,"_",date,".csv",sep=""))
