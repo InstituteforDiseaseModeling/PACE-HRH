@@ -4,7 +4,7 @@ on:
   # todo:  we need to decide later if these tests are only run on releases
   pull_request:
     branches:
-      - "main"
+      - "**"
 jobs:
   install:
     runs-on: windows-latest
