@@ -52,7 +52,7 @@ test_that("demo model cadre allocation",{
                        CI50 = sum(CI50+OverheadTime), 
                        CI75 = sum(CI75+OverheadTime), 
                        CI95 = sum(CI95+OverheadTime))
-    summary_HPW <- Mean_Alloc %>% group_by(RoleDescription, Year) %>% summarise(CI50/WeeksPerYr) %>% arrange(RoleDescription, Year)
+    summary_HPW <- Mean_Alloc %>% group_by(RoleDescription, Year) %>% dplyr::summarise(CI50/WeeksPerYr) %>% dplyr::arrange(RoleDescription, Year)
     filename = "tests/results/regression/extended_allocation.csv"
     write.csv(summary_HPW, "tests/results/regression/extended_allocation.csv")
     expect_snapshot_file(filename, compare=testthat::compare_file_text)
