@@ -39,7 +39,7 @@ jobs:
         shell: cmd
       - name: Run Integration tests
         run: |
-          Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'), stop_on_failure=TRUE, stop_on_warning=FALSE)"
+          Rscript -e "testthat::test_dir('tests/testthat/', stop_on_failure=TRUE, stop_on_warning=FALSE)"
           if errorlevel 1 echo "::error:: Integration tests failed" && exit 1
         shell: cmd
         continue-on-error: false
