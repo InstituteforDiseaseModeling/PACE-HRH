@@ -5,120 +5,187 @@ library(readxl)
 library(devtools)
 library(beepr)
 library(tidyverse)
+library(tidyr)
 
-#############################################################
-#Run the lines below after changing model_inputs.xlsx file#
-#############################################################
-rmarkdown::render(input = "validation_report.Rmd",
-                  output_format = "html_document",
-                  output_dir = "log",
-                  params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
-shell.exec(normalizePath("log/validation_report.html"))
-print("Please check validation results in \"log\" folder", quote=FALSE)
+###############################################################
+#Compatible with pacehrh v1.0.7 and later                     #
+#Run all the lines below after changing model_inputs.xlsx file#
+###############################################################
+# rmarkdown::render(input = "validation_report.Rmd",
+#                   output_format = "html_document",
+#                   output_dir = "log",
+#                   params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
+# shell.exec(normalizePath("log/validation_report.html"))
+# print("Please check validation results in \"log\" folder", quote=FALSE)
 
 rm(list = ls())
 
 pacehrh::Trace(TRUE)
+SetInputExcelFile(inputExcelFilePath = "./config/model_inputs_demo.xlsx")
 pacehrh::InitializePopulation()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
+pacehrh::InitializeCadreRoles()
+pacehrh::SetGlobalStartEndYears(2020, 2040)
 pacehrh::SetRoundingLaw("Late")
 
-scenarios <- read_xlsx("config/model_inputs.xlsx",sheet="Scenarios")
+scenarios <- read_xlsx("config/model_inputs_demo.xlsx",sheet="Scenarios")
+cadreroles <- read_xlsx("config/model_inputs_demo.xlsx",sheet="CadreRoles")
 
 numtrials <- 50
 date <- Sys.Date()
-usefuldescription <- scenarios$Geography_dontedit[1]
+usefuldescription <- "test"
+
+SS_list <- list()
+OH_list <- list()
 
 # Run through the full scenario list.
 for (i in 1:nrow(scenarios)){
   print(paste("Starting scenario",i))
   scenario <- scenarios$UniqueID[i]
-  geoname <- scenarios$Geography_dontedit[i]
   results <- pacehrh::RunExperiments(scenarioName = scenario, trials = numtrials, debug = FALSE)
-  # create demographic plots and save them to a pdf file for visual inspection
-  # destination = paste("results/population", geoname, scenario, date, ".pdf", sep="_")
-  # pdf(file=destination)
-  # visually inspect population predictions of the model
-  resultspop <- SaveSuiteDemographics(results) %>%
-    pivot_longer(c("Female", "Male"), names_to ="Gender", values_to = "Population")
-  popsummary <- resultspop %>%
-    group_by(Year, Gender, Age) %>%
-    summarize(Population=mean(Population))
-  pop2020 <- subset(popsummary, Year==2020)
-  pop2020M <- sum(pop2020$Population[pop2020$Gender=="Male"])
-  print(paste("2020 Male population is: ", round(pop2020M,0)))
-  pop2020F <- sum(pop2020$Population[pop2020$Gender=="Female"])
-  print(paste("2020 Female population is: ", round(pop2020F,0)))
-  pop2035 <- subset(popsummary, Year==2035)
-  pop2035M <- sum(pop2035$Population[pop2035$Gender=="Male"])
-  print(paste("2035 Male population is: ", round(pop2035M,0)))
-  pop2035F <- sum(pop2035$Population[pop2035$Gender=="Female"])
-  print(paste("2035 Female population is: ", round(pop2035F,0)))
-  plot_checkpop <- ggplot()+
-    theme_bw()+
-    geom_point(data = pop2020, aes(x=Age, y=Population, color=Gender), shape=1, position = "jitter")+
-    geom_point(data = pop2035, aes(x=Age, y=Population, color=Gender), shape=4, position = "jitter")+
-    labs(title=paste(scenario,"Start Pop M:", round(pop2020M,0), "F:", round(pop2020F,0), "; End Pop M:", round(pop2035M,0), "F:", round(pop2035F,0)))
-  print(plot_checkpop)
-  # visually inspect fertility rates predictions of the model
-  plot_checkfertility <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
-  print(plot_checkfertility)
-  # visually inspect mortality rates predictions of the model, by male and female
-  mortalityrates_male <- GetSuiteRates(results, "maleMortality")
-  plot_checkmortality_m <- ggplot(mortalityrates_male, aes(x = Year, y = Rate, color = Label, group = Year)) +
-    geom_boxplot() +
-    theme(legend.position = "none") +
-    facet_wrap(vars(Label), scales = "free_y", ncol=2)+
-    labs(title="Male mortality rates predictions")
-  print(plot_checkmortality_m)
-  mortalityrates_female <- GetSuiteRates(results, "femaleMortality")
-  plot_checkmortality_f <- ggplot(mortalityrates_female, aes(x = Year, y = Rate, color = Label, group = Year)) +
-    geom_boxplot() +
-    theme(legend.position = "none") +
-    facet_wrap(vars(Label), scales = "free_y", ncol=2)+
-    labs(title="Female mortality rates predictions")
-  print(plot_checkmortality_f)
-  #dev.off()
-  #save simulation results to csv files, by scenario
-  pacehrh::SaveSuiteResults(results, paste("results/results_",usefuldescription,"_",scenario,"_",date,".csv",sep=""), scenario, 1)
+  # extract task-level simulation results
+  SR <- pacehrh::SaveExtendedSuiteResults(results)
+  # extract task-level service time allocation to cadre
+  CA <- pacehrh::SaveCadreAllocations(SR)
+  # generate summary stats tables
+  print("Compute summary stats")
+  summarystats <- pacehrh::ComputeSummaryStats(SR, CA)
+  assign(paste0("SS_", scenario), summarystats)
+  SS_list = append(SS_list, paste0("SS_", scenario))
+  # extract health staff overhead times
+  cadreOverheadHrs <- pacehrh::SaveCadreOverheadData(run = paste("Run", i , sep = "_"))
+  assign(paste0("OH_",scenario), cadreOverheadHrs)
+  OH_list = append(OH_list, paste0("OH_", scenario))
 }
 
 beep()
 
-#Post-processing steps: read and collate simulation results into summary statistics tables to be used in analyses
-resultsFiles <- vector(mode='list', 0)
-for (i in 1:nrow(scenarios)){
-  resultsFiles <- c(resultsFiles, paste("results/results_",usefuldescription,"_",scenarios$UniqueID[i],"_",date,".csv",sep=""))
+# Post-processing steps: 
+# collate summary statistics tables across scenarios to be used in analyses
+remove(cadreOverheadTime, Mean_Alloc, Mean_ClinCat, Mean_ServiceCat, Mean_Total, Stats_ClinMonth, ByRun_ClinMonth, Stats_TotClin )
+StartYear = min(SR$Year)
+EndYear = max(SR$Year)
+
+for (each in OH_list){
+  if(!exists('cadreOverheadTime')){
+    cadreOverheadTime <- get(each)
+  }else{
+    cadreOverheadTime <- rbind(cadreOverheadTime, get(each))
+  }
+}
+cadreOverheadTime$Year = as.integer(cadreOverheadTime$Year)
+
+AnnualOverheadTime <- cadreOverheadTime %>% 
+  group_by(Scenario_ID, Year) %>% 
+  dplyr::summarise(CI05 = sum(OverheadTime), 
+            CI25 = sum(OverheadTime), 
+            MeanHrs = sum(OverheadTime),
+            CI75 = sum(OverheadTime), 
+            CI95 = sum(OverheadTime)) %>% 
+  dplyr::mutate(ClinicalOrNon = "Overhead", ClinicalCat = "-") %>% 
+  filter(Year>=StartYear & Year<=EndYear)
+
+for (each in SS_list){
+  SS_temp <-  get(each)
+  
+  if(!exists('Mean_Total')){
+    Mean_Total <- SS_temp$Mean_Total
+  }else{
+    Mean_Total <- rbind(Mean_Total, SS_temp$Mean_Total)
+  }
+  
+  if(!exists('Mean_ClinCat')){
+    Mean_ClinCat <- SS_temp$Mean_ClinCat
+  }else{
+    Mean_ClinCat <- rbind(Mean_ClinCat, SS_temp$Mean_ClinCat)
+  }
+  
+  if(!exists('Mean_ServiceCat')){
+    Mean_ServiceCat <- SS_temp$Mean_ServiceCat
+  }else{
+    Mean_ServiceCat <- rbind(Mean_ServiceCat, SS_temp$Mean_ServiceCat)
+  }
+  
+  if(!exists('Mean_Alloc')){
+    Mean_Alloc <- SS_temp$Mean_Alloc
+  }else{
+    Mean_Alloc <- rbind(Mean_Alloc, SS_temp$Mean_Alloc)
+  }
+  
+  if(!exists('Stats_ClinMonth')){
+    Stats_ClinMonth <- SS_temp$Stats_ClinMonth
+  }else{
+    Stats_ClinMonth <- rbind(Stats_ClinMonth, SS_temp$Stats_ClinMonth)
+  }
+  
+  if(!exists('ByRun_ClinMonth')){
+    ByRun_ClinMonth <- SS_temp$ByRun_ClinMonth
+  }else{
+    ByRun_ClinMonth <- rbind(ByRun_ClinMonth, SS_temp$ByRun_ClinMonth)
+  }
+  
+  if(!exists('Stats_TotClin')){
+    Stats_TotClin <- SS_temp$Stats_TotClin
+  }else{
+    Stats_TotClin <- rbind(Stats_TotClin, SS_temp$Stats_TotClin)
+  }
 }
 
-print("Read and collate results")
-DR_test <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
-print("Compute Cadre allocation")
-CA <- pacehrh:::ComputeCadreAllocations(DR_test)
-print("Compute summary stats")
-SS <- pacehrh:::ComputeSummaryStats(DR_test, CA)
+# Add in overhead hours for summary stats tables that include both clinical and non-clinical tasks
+print("Add in overhead hours to relevant tables")
+Mean_ClinCat <- Mean_ClinCat %>% 
+  select(-WeeksPerYr) %>% 
+  rbind(AnnualOverheadTime)
+
+Mean_Total <- Mean_Total %>%
+  select(-WeeksPerYr, -HrsPerWeek) %>% 
+  rbind(AnnualOverheadTime[,1:7]) %>% 
+  group_by(Scenario_ID, Year) %>% 
+  dplyr::summarise(CI05 = sum(CI05),
+            CI25 = sum(CI25),
+            MeanHrs = sum(MeanHrs),
+            CI75 = sum(CI75),
+            CI95 = sum(CI95))
+
+Mean_Alloc <- Mean_Alloc %>% 
+  separate(col = Cadre,into =  c("Role_ID", "suffix"), sep = "_", remove = FALSE) %>% 
+  left_join(cadreOverheadTime, by = c("Scenario_ID","Role_ID", "Year")) %>% 
+  left_join(cadreroles, by = c("Scenario_ID"="ScenarioID", "Role_ID"="RoleID")) %>% 
+  group_by(Scenario_ID, Year, RoleDescription) %>% 
+  dplyr::summarise(CI05 = sum(CI05+OverheadTime), 
+            CI25 = sum(CI25+OverheadTime), 
+            CI50 = sum(CI50+OverheadTime), 
+            CI75 = sum(CI75+OverheadTime), 
+            CI95 = sum(CI95+OverheadTime))
+
+# Attach scenario details 
 print("Attach scenario details")
-Mean_ServiceCat <- SS$Mean_ServiceCat %>%
-  inner_join(scenarios, by= c("Scenario_ID" = "UniqueID"))
-Mean_MonthlyTask <- SS$Mean_AnnualTask %>% 
-  inner_join(scenarios, by=c("Scenario_ID" = "UniqueID"))
-Stats_TotClin <- SS$Stats_TotClin %>%
+
+Stats_TotClin <- Stats_TotClin %>%
   inner_join(scenarios, by= c("Scenario_ID"="UniqueID", "WeeksPerYr", "HrsPerWeek"))
-Mean_ClinCat <- SS$Mean_ClinCat %>%
-  inner_join(scenarios, by=c("Scenario_ID"="UniqueID", "WeeksPerYr"))
-Mean_Total <- SS$Mean_Total %>%
+
+Stats_ClinMonth <- Stats_ClinMonth %>%
   inner_join(scenarios, by= c("Scenario_ID"="UniqueID", "WeeksPerYr", "HrsPerWeek"))
-Stats_ClinMonth <- SS$Stats_ClinMonth %>%
+
+ByRun_ClinMonth <- ByRun_ClinMonth %>% 
   inner_join(scenarios, by= c("Scenario_ID"="UniqueID", "WeeksPerYr", "HrsPerWeek"))
-ByRun_ClinMonth <- SS$ByRun_ClinMonth %>% 
-  inner_join(scenarios, by= c("Scenario_ID"="UniqueID", "WeeksPerYr", "HrsPerWeek"))
-Mean_Alloc <- SS$Mean_Alloc %>%
-  inner_join(scenarios, by= c("Scenario_ID"="UniqueID", "WeeksPerYr"))
+
+Mean_ServiceCat <- Mean_ServiceCat %>%
+  inner_join(scenarios, by= c("Scenario_ID" = "UniqueID")) %>% 
+  filter(ClinicalOrNon == "Clinical")
+
+Mean_ClinCat <- Mean_ClinCat %>%
+  inner_join(scenarios, by=c("Scenario_ID"="UniqueID"))
+
+Mean_Total <- Mean_Total %>%
+  inner_join(scenarios, by= c("Scenario_ID"="UniqueID"))
+
+Mean_Alloc <- Mean_Alloc %>%
+  inner_join(scenarios, by= c("Scenario_ID"="UniqueID"))
 
 write.csv(Mean_ServiceCat,paste("results/Mean_ServiceCat_",usefuldescription,"_",date,".csv",sep=""))
-write.csv(Mean_MonthlyTask,paste("results/Mean_MonthlyTask_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Stats_TotClin,paste("results/Stats_TotClin_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Mean_ClinCat,paste("results/Mean_ClinCat_",usefuldescription,"_",date,".csv",sep=""))
 write.csv(Mean_Total,paste("results/Mean_Total_",usefuldescription,"_",date,".csv",sep=""))
