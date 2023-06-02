@@ -54,8 +54,7 @@ test_that("simple regression", {
     numtrials <- 5
     
     scenarios <-read_xlsx(input_file, sheet = "Scenarios")%>% 
-      filter(!is.na(UniqueID)) %>%
-      filter(sheet_TaskValues == "TaskValues_basic")
+      filter(UniqueID == "BasicServices")
     # Run through the full scenario list.
     for (i in 1:nrow(scenarios)){
       cat(paste("Starting scenario",i))
