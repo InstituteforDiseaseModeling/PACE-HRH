@@ -105,8 +105,13 @@ test_template <- function(input_file, rounding="", setting="annual", popSheet="T
   InitializeSeasonality()
   InitializeCadreRoles()
   SetGlobalStartEndYears(start = start, end = end)
-  if (rounding!=""){pacehrh::SetRoundingLaw(rounding)}
+  if (rounding!=""){
+    pacehrh::SetRoundingLaw(rounding)}
+  else{
+    pacehrh::SetRoundingLaw("early")
+  }
   pacehrh::SetPerAgeStats(setting)
   withr::defer_parent(unlink("tests/results", recursive = TRUE,  force = TRUE))
+  withr::defer_parent(pacehrh::SetRoundingLaw("early"))
 }
 
