@@ -20,7 +20,7 @@ test_that("demo model cadre allocation",{
   local({
     start = 2020
     end = 2035
-    test_template(input_file, popSheet="TotalPop", start=start, end=end)
+    test_template(input_file, popSheet="TotalPop", start=start, end=end, rounding="Late")
     numtrials <- 50
     scenario <- "Expanded"
     scenarios <- read_xlsx(input_file,sheet="Scenarios")
