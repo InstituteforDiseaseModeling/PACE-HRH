@@ -7,7 +7,7 @@
 PlotResultsPopulationCurve(results, trial = 1, year = 2020, sex = "f", ...)
 }
 \arguments{
-\item{results}{Results list (as returned by \code{RunExperiments()})}
+\item{results}{Results list (as returned by \code{\link[=RunExperiments]{RunExperiments()}})}
 
 \item{trial}{Trial number (index into the results list)}
 

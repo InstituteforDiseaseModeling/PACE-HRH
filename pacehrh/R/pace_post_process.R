@@ -201,6 +201,13 @@ ReadAndCollateSuiteResults <- function(files = NULL,
   return(files)
 }
 
+#' The functions in this script require information loaded when normal
+#' experiments are run. This function checks that the necessary tables have been
+#' loaded.
+#'
+#' @param configFile For future expansion. Currently unused.
+#'
+#' @noRd
 .initReadAndCollateSuiteResults <- function(configFile){
   if (is.null(GPE$scenarios)){
     InitializeScenarios()
@@ -269,16 +276,17 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #' Compute Cadre Allocations
 #'
 #' Different healthcare delivery models involve different mixtures of types
-#' of healthcare workers ("Cadres"). \code{ComputeCadresAllocations()} reads
+#' of healthcare workers ("Cadres"). [ComputeCadresAllocations()] reads
 #' cadre information from the input Excel file, then combines the allocation
 #' percentages with computed task times to produce a table showing how much
 #' time each cadre spends per year on each healthcare task.
 #'
-#' @param DR Task time results from \code{ReadAndCollateSuiteResults()}
+#' @param DR Task time results from [ReadAndCollateSuiteResults()]
 #'
 #' @return data.table
-#' @export
 #'
+#' @noRd
+#' @md
 #' @examples
 #' \dontrun{
 #' resultsFiles <- c("results/results_BasicModel_Jul04.csv",
@@ -288,117 +296,117 @@ ReadAndCollateSuiteResults <- function(files = NULL,
 #' DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
 #' CA <- pacehrh:::ComputeCadreAllocations(DR)
 #' }
-ComputeCadreAllocations <- function(DR = NULL){
-  if (is.null(DR)){
-    return(NULL)
-  }
-
-  if (!.initComputeCadreAllocations()){
-    return(NULL)
-  }
-
-  # Read the cadre allocation sheets from Excel. The individual sheets are in
-  # task x (year, allocation-model) format. The format is converted to a skinny
-  # version so the sheets can be concatenated. Along the way the (year, allocation-model)
-  # encoding is tokenized.
-  cadreSheetNames <- GPE$scenarios$sheet_Cadre
-  deliveryModels <- GPE$scenarios$DeliveryModel
-
-  l <- lapply(seq_along(cadreSheetNames), function(i) {
-    dt <-
-      data.table::setDT(readxl::read_xlsx(GPE$inputExcelFile, sheet = cadreSheetNames[i]))
-
-    suppressWarnings(
-      dt_melt <-
-        data.table::melt(
-          dt,
-          id.vars = c("Indicator", "CommonName"),
-          variable.name = "Category",
-          value.name = "allocation",
-          variable.factor = FALSE
-        )
-    )
-
-    # Some data manipulation ...
-    # - Split the category values (e.g. "20_HEW") into two tokens, and use
-    #   the tokens to populate new Cadre and Year columns
-    # - Add a DeliveryModel column
-    # - Remove rows with Cadre == TOTAL (it's a development diagnostic artifact)
-    # - Convert allocation == NA to allocation == 0
-
-    tokens <- tstrsplit(dt_melt[,Category], "_")
-
-    dt_melt[, Year := as.numeric(tokens[[1]]) + 2000]
-    dt_melt[, Cadre := tokens[[2]]]
-    dt_melt[, DeliveryModel := deliveryModels[i]]
-
-    dt_melt <- dt_melt[Cadre != "TOTAL"]
-    dt_melt <- dt_melt[is.na(allocation), allocation := 0]
-
-    return(dt_melt)
-  })
-
-  CadreAllocations <- data.table::rbindlist(l)
-
-  # Make a wide version of the cadre allocations, with one row per task/model/year,
-  # and separate columns for allocations to each worker type.
-
-  caWide <-
-    data.table::dcast(
-      CadreAllocations,
-      Indicator + DeliveryModel + Year ~ Cadre,
-      value.var = "allocation",
-      fill = 0
-    )
-
-  allocCalcColumns <- c("Task_ID",
-                        "Scenario_ID",
-                        "DeliveryModel",
-                        "Trial_num",
-                        "Year",
-                        "Service_time",
-                        "WeeksPerYr")
-
-  AllocCalcs <- DR[ , ..allocCalcColumns]
-
-  # Define match years for which delivery model will be in operation
-  AllocCalcs[, MatchYear := 2020]
-  AllocCalcs[Year > 2024, MatchYear := 2025]
-  AllocCalcs[Year > 2029, MatchYear := 2030]
-  AllocCalcs[Year > 2034, MatchYear := 2035]
-
-  # Left-join AllocCalcs table to caWide table
-  AllocCalcs <-
-    AllocCalcs[caWide, on = c(
-      "Task_ID" = "Indicator",
-      "DeliveryModel" = "DeliveryModel",
-      "MatchYear" = "Year"
-    ), nomatch = NULL]
-
-  workerTypes <- c(HEW = "HEW",
-                   MW = "Midwife",
-                   HO = "HealthOfficer",
-                   FH = "FamilyHealth",
-                   RN = "Nurse",
-                   EH = "EnvironHealth",
-                   UN = "Unassigned")
-
-  # Convert allocation percentages into allocated time
-  AllocCalcs[, HEW_Alloc := HEW * Service_time / 100.0]
-  AllocCalcs[, MW_Alloc := Midwife * Service_time / 100.0]
-  AllocCalcs[, HO_Alloc := HealthOfficer * Service_time / 100.0]
-  AllocCalcs[, FH_Alloc := FamilyHealth * Service_time / 100.0]
-  AllocCalcs[, RN_Alloc := Nurse * Service_time / 100.0]
-  AllocCalcs[, EH_Alloc := EnvironHealth * Service_time / 100.0]
-  AllocCalcs[, UN_Alloc := Unassigned * Service_time / 100.0]
-
-  return(AllocCalcs)
-}
+# xxxComputeCadreAllocations <- function(DR = NULL){
+#   if (is.null(DR)){
+#     return(NULL)
+#   }
+#
+#   if (!.initComputeCadreAllocations()){
+#     return(NULL)
+#   }
+#
+#   # Read the cadre allocation sheets from Excel. The individual sheets are in
+#   # task x (year, allocation-model) format. The format is converted to a skinny
+#   # version so the sheets can be concatenated. Along the way the (year, allocation-model)
+#   # encoding is tokenized.
+#   cadreSheetNames <- GPE$scenarios$sheet_Cadre
+#   deliveryModels <- GPE$scenarios$DeliveryModel
+#
+#   l <- lapply(seq_along(cadreSheetNames), function(i) {
+#     dt <-
+#       data.table::setDT(readxl::read_xlsx(GPE$inputExcelFile, sheet = cadreSheetNames[i]))
+#
+#     suppressWarnings(
+#       dt_melt <-
+#         data.table::melt(
+#           dt,
+#           id.vars = c("Indicator", "CommonName"),
+#           variable.name = "Category",
+#           value.name = "allocation",
+#           variable.factor = FALSE
+#         )
+#     )
+#
+#     # Some data manipulation ...
+#     # - Split the category values (e.g. "20_HEW") into two tokens, and use
+#     #   the tokens to populate new Cadre and Year columns
+#     # - Add a DeliveryModel column
+#     # - Remove rows with Cadre == TOTAL (it's a development diagnostic artifact)
+#     # - Convert allocation == NA to allocation == 0
+#
+#     tokens <- tstrsplit(dt_melt[,Category], "_")
+#
+#     dt_melt[, Year := as.numeric(tokens[[1]]) + 2000]
+#     dt_melt[, Cadre := tokens[[2]]]
+#     dt_melt[, DeliveryModel := deliveryModels[i]]
+#
+#     dt_melt <- dt_melt[Cadre != "TOTAL"]
+#     dt_melt <- dt_melt[is.na(allocation), allocation := 0]
+#
+#     return(dt_melt)
+#   })
+#
+#   CadreAllocations <- data.table::rbindlist(l)
+#
+#   # Make a wide version of the cadre allocations, with one row per task/model/year,
+#   # and separate columns for allocations to each worker type.
+#
+#   caWide <-
+#     data.table::dcast(
+#       CadreAllocations,
+#       Indicator + DeliveryModel + Year ~ Cadre,
+#       value.var = "allocation",
+#       fill = 0
+#     )
+#
+#   allocCalcColumns <- c("Task_ID",
+#                         "Scenario_ID",
+#                         "DeliveryModel",
+#                         "Trial_num",
+#                         "Year",
+#                         "Service_time",
+#                         "WeeksPerYr")
+#
+#   AllocCalcs <- DR[ , ..allocCalcColumns]
+#
+#   # Define match years for which delivery model will be in operation
+#   AllocCalcs[, MatchYear := 2020]
+#   AllocCalcs[Year > 2024, MatchYear := 2025]
+#   AllocCalcs[Year > 2029, MatchYear := 2030]
+#   AllocCalcs[Year > 2034, MatchYear := 2035]
+#
+#   # Left-join AllocCalcs table to caWide table
+#   AllocCalcs <-
+#     AllocCalcs[caWide, on = c(
+#       "Task_ID" = "Indicator",
+#       "DeliveryModel" = "DeliveryModel",
+#       "MatchYear" = "Year"
+#     ), nomatch = NULL]
+#
+#   workerTypes <- c(HEW = "HEW",
+#                    MW = "Midwife",
+#                    HO = "HealthOfficer",
+#                    FH = "FamilyHealth",
+#                    RN = "Nurse",
+#                    EH = "EnvironHealth",
+#                    UN = "Unassigned")
+#
+#   # Convert allocation percentages into allocated time
+#   AllocCalcs[, HEW_Alloc := HEW * Service_time / 100.0]
+#   AllocCalcs[, MW_Alloc := Midwife * Service_time / 100.0]
+#   AllocCalcs[, HO_Alloc := HealthOfficer * Service_time / 100.0]
+#   AllocCalcs[, FH_Alloc := FamilyHealth * Service_time / 100.0]
+#   AllocCalcs[, RN_Alloc := Nurse * Service_time / 100.0]
+#   AllocCalcs[, EH_Alloc := EnvironHealth * Service_time / 100.0]
+#   AllocCalcs[, UN_Alloc := Unassigned * Service_time / 100.0]
+#
+#   return(AllocCalcs)
+# }
 
 #' Compute Summary Statistics
 #'
-#' @param DR From \code{ReadAndCollateSuiteResults()} function
-#' @param CA From \code{ComputeCadreAllocations()} function
+#' @param DR From [ReadAndCollateSuiteResults()] function
+#' @param CA From [ComputeCadreAllocations()] function
 #'
 #' @return List of computed summary tables
 #' @export
@@ -521,18 +529,23 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
                   keyby = .(Scenario_ID, Year, WeeksPerYr, HrsPerWeek)]
 
   traceMessage("Making Alloc tables")
-  ByRun_Alloc <-
-    CA[,
-       .(MW_hrs = sum(MW_Alloc),
-         HO_hrs = sum(HO_Alloc),
-         RN_hrs = sum(RN_Alloc),
-         EH_hrs = sum(EH_Alloc),
-         FH_hrs = sum(FH_Alloc),
-         UN_hrs = sum(UN_Alloc),
-         HEW_hrs = sum(HEW_Alloc)),
-       keyby = .(Scenario_ID, DeliveryModel, Trial_num, Year, WeeksPerYr)]
 
+  # Find the time columns (suffix = "Alloc") and sum over them, aggregating by
+  # year and trial number (run)
+  cols <- colnames(CA)
+  timeCols <- cols[grep("_Alloc", cols)]
 
+  ByRun_Alloc <- CA[,
+                    lapply(.SD, sum),
+                    keyby = .(Scenario_ID, DeliveryModel, Trial_num, Year, WeeksPerYr),
+                    .SDcols = timeCols]
+
+  cols <- colnames(ByRun_Alloc)
+  destCols <- sub("_Alloc", "_hrs", cols)
+  colnames(ByRun_Alloc) <- destCols
+
+  # Melt the resulting table to convert multiple time columns each representing
+  # a different cadre member into rows.
   suppressWarnings(
     ByRun_Alloc_melt <-
       data.table::melt(

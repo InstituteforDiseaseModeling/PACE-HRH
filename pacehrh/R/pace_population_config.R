@@ -12,13 +12,13 @@
 loadInitialPopulation <- function(sheetName = .defaultPopSheet){
   traceMessage(paste0("Loading initial population sheet ", sheetName))
 
-  popData <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+  popData <- readSheet(sheetName = sheetName)
 
-  namesFound <- names(popData)
-  namesExpected <- c("Age", "Male", "Female")
+  if (!is.null(popData)){
+    popData <- validateTableAgainstSchema(popData, .populationMetaData)
+  }
 
-  if (length(setdiff(namesExpected, namesFound)) != 0){
-    warning(paste0("Incorrect columns in ", sheetName, ". Could not load initial population."))
+  if (is.null(popData)){
     return(NULL)
   }
 
@@ -76,7 +76,7 @@ loadInitialPopulation <- function(sheetName = .defaultPopSheet){
 
 loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet){
   traceMessage(paste0("Loading population labels sheet ", sheetName))
-  
+
   df <- tryCatch({
       readxl::read_xlsx(GPE$inputExcelFile,
                         sheet = sheetName,
@@ -140,7 +140,7 @@ InitializePopulation <- function(popSheet = .defaultPopSheet){
   BVE$populationLabels <- NULL
   BVE$populationRangesTable <- NULL
 
-  BVE$initialPopulation <- loadInitialPopulation(sheet = popSheet)
+  BVE$initialPopulation <- loadInitialPopulation(sheetName = popSheet)
   BVE$populationLabels <- loadPopulationLabels()
   BVE$populationRangesTable <- .computePopulationRanges(BVE$populationLabels)
 

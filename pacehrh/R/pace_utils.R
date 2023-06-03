@@ -9,6 +9,8 @@
 #' @param rateCategory Rate type ({"femaleFertility" | "maleFertility" | "femaleMortality" | "maleMortality"})
 #'
 #' @return Data frame
+#'
+#' @md
 #' @export
 #'
 #' @examples

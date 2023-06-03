@@ -100,6 +100,7 @@ test_that("Task time computations: simple", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   scenario <- "TEST_Simple_2"
   nTrials <- 5

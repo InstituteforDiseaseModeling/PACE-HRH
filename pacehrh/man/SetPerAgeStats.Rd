@@ -8,7 +8,7 @@ SetPerAgeStats(value = NULL)
 }
 \arguments{
 \item{value}{Desired value. Allowed values = {"none" | "monthly" | "annual"}.
-Calling \code{SetPerAgeStats()} with no parameters or value = NULL returns
+Calling \code{\link[=SetPerAgeStats]{SetPerAgeStats()}} with no parameters or value = NULL returns
 the current state.}
 }
 \value{

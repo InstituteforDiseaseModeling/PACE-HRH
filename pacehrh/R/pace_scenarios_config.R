@@ -13,37 +13,12 @@ loadScenarios <- function(sheetName = .defaultScenariosSheet) {
 
   scenarios <- NULL
 
-  if (file.exists(GPE$inputExcelFile)){
-    out <- tryCatch(
-      {
-        scenarios <-
-          readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-      },
-      warning = function(war)
-      {
-        traceMessage(paste("WARNING:", war))
-      },
-      error = function(err)
-      {
-        traceMessage(paste("ERROR:", err))
-      },
-      finally =
-        {
+  scenarios <- readSheet(sheetName = sheetName)
 
-        }
-    )
-  } else {
-    traceMessage(paste("Could not find model input file ",
-                             GPE$inputExcelFile,
-                             sep = ""))
+  if (!is.null(scenarios)){
+    scenarios <- validateTableAgainstSchema(scenarios, .scenarioMetaData)
   }
 
-  if (is.null(scenarios)){
-    return(NULL)
-  }
-    
-  scenarios <- validateTableAgainstSchema(scenarios, .scenarioMetaData)
-  
   return(scenarios)
 }
 
@@ -54,12 +29,13 @@ loadScenarios <- function(sheetName = .defaultScenariosSheet) {
 #'
 #' @param loadFromExcel If TRUE, initialize the scenarios list from the model
 #' inputs Excel file. If FALSE, initialize with a blank scenarios table.
-#' @param ... See \code{loadScenarios()}
+#' @param ... See [loadScenarios()]
 #'
 #' @export
 #'
 #' @return NULL (invisible)
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' library(pacehrh)

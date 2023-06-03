@@ -75,6 +75,7 @@ loadGlobalConfig <- function(path = "./globalconfig.json") {
       SetGlobalStartEndYears(start, end)
 
       traceMessage(paste0("Global configuration loaded from ", path))
+      traceMessage(paste0("Input Excel file = ", GPE$inputExcelFile))
     },
     warning = function(war) {
       traceMessage(paste("WARNING:", war))
@@ -86,8 +87,10 @@ loadGlobalConfig <- function(path = "./globalconfig.json") {
 
     })
   } else {
-    traceMessage("Could not find global configuration file - using defaults")
+    warning("Could not find global configuration file - using defaults")
   }
+
+  GPE$ignoreGlobalConfigExcelFileSetting <- FALSE
 
   invisible(NULL)
 }
@@ -131,7 +134,7 @@ loadGlobalConfig <- function(path = "./globalconfig.json") {
 #' @param inputExcelFilePath Path to Excel file (default =
 #'   "./config/model_inputs.xlsx")
 #'
-#' @return NULL (invisible)
+#' @return TRUE/FALSE
 #'
 #' @export
 #'
@@ -143,12 +146,12 @@ SetInputExcelFile <-
   function(inputExcelFilePath = "./config/model_inputs.xlsx") {
     if (!.validInputFile(inputExcelFilePath)) {
       warning(paste0("Input file <", inputExcelFilePath, "> not found."))
+      return(FALSE)
     } else {
       GPE$inputExcelFile <- inputExcelFilePath
       GPE$ignoreGlobalConfigExcelFileSetting <- TRUE
+      return(TRUE)
     }
-
-    return(invisible(NULL))
   }
 
 #' Set Global Start And End Year Parameters
@@ -250,12 +253,13 @@ SetRoundingLaw <- function(value = NULL) {
 
 #' By default the system is set up with stochasticity on.
 #'
-#' @param value Desired stochasticity. (Calling \code{SetStochasiticity()} with
+#' @param value Desired stochasticity. (Calling [SetStochasiticity()] with
 #' no parameters or value = NULL returns the current state.)
 #'
 #' @return Previous stochasticity flag value (invisible)
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' pacehrh::SetStochasticity(FALSE) # Turn off stochasticity
@@ -278,12 +282,13 @@ SetStochasticity <- function(value = NULL) {
 #' Turn Per-Age Statistics On/Off
 #'
 #' @param value Desired value. Allowed values = {"none" | "monthly" | "annual"}.
-#'   Calling \code{SetPerAgeStats()} with no parameters or value = NULL returns
+#'   Calling [SetPerAgeStats()] with no parameters or value = NULL returns
 #'   the current state.
 #'
 #' @return Previous value (invisible)
 #' @export
 #'
+#' @md
 #' @examples
 #' \dontrun{
 #' pacehrh::SetPerAgeStats("monthly") # Turn on per-age statistics

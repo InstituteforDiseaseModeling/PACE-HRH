@@ -7,7 +7,7 @@
 PlotResultsFertilityRates(results, trial = 1, year = 2020)
 }
 \arguments{
-\item{results}{Results list (as returned by \code{RunExperiments()})}
+\item{results}{Results list (as returned by \code{\link[=RunExperiments]{RunExperiments()}})}
 
 \item{trial}{Trail number (index into the results list)}
 

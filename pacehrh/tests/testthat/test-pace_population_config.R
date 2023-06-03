@@ -58,6 +58,29 @@ test_that("Population configuration: InitializePopulation()", {
   testthat::expect_true(.validInitPopulation(bve$initialPopulation))
 })
 
+test_that("Population configuration: loadInitialPopulation() with bad input files", {
+  gpe <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
+
+  local_vars("inputExcelFile", envir = gpe)
+
+  local_vars("traceState", envir = gpe)
+#  pacehrh::Trace(state = TRUE)
+
+  gpe$inputExcelFile <- "notafile"
+  result <- pacehrh:::loadInitialPopulation()
+
+  testthat::expect_true(is.null(result))
+
+  # Attempt to load from a file that is not an XLSX file
+  notAnExcelFile <- "globalconfig.json"
+  testthat::expect_true(file.exists(notAnExcelFile))
+  gpe$inputExcelFile <- notAnExcelFile
+  result <- pacehrh:::loadInitialPopulation()
+
+  testthat::expect_true(is.null(result))
+})
+
 test_that("Population configuration: check labels", {
   e <- pacehrh:::GPE
   bve <- pacehrh:::BVE

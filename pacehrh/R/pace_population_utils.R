@@ -1,9 +1,11 @@
 #' Generate Matrices of Applicable Populations
 #'
-#' @param results Results structure as returned by \code{RunExperiments()}
+#' @param results Results structure as returned by [RunExperiments()]
 #' @param labels Population labels structure
 #'
 #' @return List of applicable population matrices (labels x years)
+#'
+#' @md
 #' @export
 #'
 #' @examples
@@ -33,10 +35,12 @@ ComputeApplicablePopulationMatrices <- function(results, labels = BVE$population
 
 #' Generate Matrix of Applicable Populations
 #'
-#' @param result One entry from the results structure as returned by \code{RunExperiments()}
+#' @param result One entry from the results structure as returned by [RunExperiments()]
 #' @param labels Population labels structure
 #'
 #' @return An applicable population matrix (labels x years)
+#'
+#' @md
 #' @export
 #'
 #' @examples

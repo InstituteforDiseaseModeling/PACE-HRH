@@ -7,7 +7,7 @@
 PlotFertilityRatesStats(results, se = FALSE, type = "lines", log = TRUE)
 }
 \arguments{
-\item{results}{Results list (as returned by \code{RunExperiments()})}
+\item{results}{Results list (as returned by \code{\link[=RunExperiments]{RunExperiments()}})}
 
 \item{se}{Whether to show standard error or standard deviation confidence intervals.
 Note: the \code{se} parameter does not apply to the "boxplot" type.}

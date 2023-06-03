@@ -7,8 +7,7 @@
 PlotMortalityRates(populationRates, year)
 }
 \arguments{
-\item{populationRates}{Population rates list, as returned by
-\code{RunExperiments()}}
+\item{populationRates}{Population rates list, as returned by \code{\link[=RunExperiments]{RunExperiments()}}}
 
 \item{year}{Year}
 }

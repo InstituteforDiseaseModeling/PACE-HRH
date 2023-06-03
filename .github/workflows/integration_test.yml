@@ -4,7 +4,7 @@ on:
   # todo:  we need to decide later if these tests are only run on releases
   pull_request:
     branches:
-      - "main"
+      - "**"
 jobs:
   install:
     runs-on: windows-latest
@@ -39,13 +39,19 @@ jobs:
         shell: cmd
       - name: Run Integration tests
         run: |
-          Rscript -e "testthat::test_dir('tests/testthat/', reporter = c('fail', 'progress','summary'))"
+          Rscript -e "testthat::test_dir('tests/testthat/')"
+          if errorlevel 1 echo "::error:: Integration tests failed" && exit 1
+        shell: cmd
+        continue-on-error: false
         env:
           NOT_CRAN: true
           
       - name: Check input spreadsheet
         run: |
           Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/model_inputs.xlsx', outputDir='log'), output_dir='log')"
+          if errorlevel 1 "::error:: Validate Input failed" && exit 1
+        shell: cmd
+        continue-on-error: false
       - uses: actions/upload-artifact@v3
         with:
           name: validation-results

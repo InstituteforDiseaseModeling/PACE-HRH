@@ -1,0 +1,7 @@
+{
+  "configDirectoryLocation" : "./simple_config",
+  "inputExcelFile" : "super_simple_inputs.xlsx",
+  "suiteRngSeed" : 12345,
+  "startYear" : 2020,
+  "endYear" : 2040
+}

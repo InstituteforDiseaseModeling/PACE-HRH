@@ -13,7 +13,7 @@ test_that("Population rates configuration: Load and compute", {
   withr::defer(pacehrh::Trace(originalTraceState))
   originalTraceState <- pacehrh::Trace(TRUE)
 
-  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "newPopValues")
+  testthat::expect_snapshot(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "newPopValues"))
   testthat::expect_true(!is.null(popRates))
 
   # Check that the banded rates and full rates agree
@@ -31,7 +31,7 @@ test_that("Population rates configuration: Load and compute", {
 
   testthat::expect_true(all(results))
 
-  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues")
+  testthat::expect_snapshot(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues"))
   testthat::expect_true(!is.null(popRates))
 
   # Check that the banded rates and full rates agree
@@ -50,11 +50,15 @@ test_that("Population rates configuration: Load and compute", {
   testthat::expect_true(all(results))
 
   # Sheet unusable - missing columns
-  testthat::expect_warning(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_2"))
+  testthat::expect_snapshot(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_2"))
   testthat::expect_true(is.null(popRates))
 
+  # Sheet incomplete - incomplete band (implemented as snapshot)
+  testthat::expect_snapshot(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_4"))
+  testthat::expect_true(!is.null(popRates))
+
   # Sheet incomplete - no femaleFertility values
-  popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_3")
+  testthat::expect_snapshot(popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_3"))
   testthat::expect_true(!is.null(popRates))
 
   n <- sapply(popRates, function(r){

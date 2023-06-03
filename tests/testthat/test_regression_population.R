@@ -6,8 +6,8 @@ plot_pop <- function(results, scenario,  startyear=2020, endyear=2035){
   resultspop <- SaveSuiteDemographics(results) %>%
     pivot_longer(c("Female", "Male"), names_to ="Gender", values_to = "Population")
   popsummary <- resultspop %>%
-    group_by(Year, Gender, Age) %>%
-    summarize(Population=mean(Population))
+    dplyr::group_by(Year, Gender, Age) %>%
+    dplyr::summarize(Population=mean(Population))
   popStart <- subset(popsummary, Year==startyear)
   popStartM <- sum(popStart$Population[popStart$Gender=="Male"])
   print(paste(str(startyear), " Male population is: ", round(popStartM,0)))

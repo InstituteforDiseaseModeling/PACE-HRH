@@ -11,6 +11,7 @@ test_that("Debugging tools: basic", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   # Make sure to use a scenario that has seasonality results!
   scenario <- "MergedModel"
@@ -32,5 +33,5 @@ test_that("Debugging tools: basic", {
   outFileName <- "wide_demographics.csv"
   writeCurrentExpDemographics_wide(filename = outFileName)
   testthat::expect_true(file.exists(outFileName))
-#  testthat::expect_snapshot_file(outFileName)
+  testthat::expect_snapshot_file(outFileName)
 })

@@ -10,21 +10,21 @@ library(jsonlite)
 # (LIFO) order when the unit test function terminates.
 withr::local_dir("..")
 
-configDir = "dir"
-configFile = "file"
-seed = 142857L
+configDir <- "dir"
+configFile <- "file"
+seed <- 142857L
 
 test_that("Global configuration: default", {
-  globalConfigFile = "globalconfig.json"
+  globalConfigFile <- "globalconfig.json"
 
   temp <- NULL
 
-  if (file.exists(globalConfigFile)){
+  if (file.exists(globalConfigFile)) {
     temp <- tempfile(tmpdir = ".")
     file.rename(globalConfigFile, temp)
   }
 
-  .doTest <- function(){
+  .doTest <- function() {
     withr::local_file(globalConfigFile)
 
     e <- pacehrh:::GPE
@@ -32,9 +32,11 @@ test_that("Global configuration: default", {
     originalInputExcelFile <- e$inputExcelFile
 
     testJson <-
-      list(configDirectoryLocation = configDir,
-           inputExcelFile = configFile,
-           suiteRngSeed = seed)
+      list(
+        configDirectoryLocation = configDir,
+        inputExcelFile = configFile,
+        suiteRngSeed = seed
+      )
     write_json(testJson, globalConfigFile)
 
     testthat::expect_invisible(pacehrh:::loadGlobalConfig())
@@ -45,13 +47,13 @@ test_that("Global configuration: default", {
 
   .doTest()
 
-  if (!is.null(temp)){
+  if (!is.null(temp)) {
     file.rename(temp, globalConfigFile)
   }
 })
 
 test_that("Global configuration: basic", {
-  globalConfigFile = "in.json"
+  globalConfigFile <- "in.json"
   withr::local_file(globalConfigFile)
 
   e <- pacehrh:::GPE
@@ -59,9 +61,11 @@ test_that("Global configuration: basic", {
   originalInputExcelFile <- e$inputExcelFile
 
   testJson <-
-    list(configDirectoryLocation = configDir,
-         inputExcelFile = configFile,
-         suiteRngSeed = seed)
+    list(
+      configDirectoryLocation = configDir,
+      inputExcelFile = configFile,
+      suiteRngSeed = seed
+    )
   write_json(testJson, globalConfigFile)
 
   testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
@@ -71,7 +75,7 @@ test_that("Global configuration: basic", {
 })
 
 test_that("Global configuration: bad seed", {
-  globalConfigFile = "in.json"
+  globalConfigFile <- "in.json"
   withr::local_file(globalConfigFile)
 
   e <- pacehrh:::GPE
@@ -81,9 +85,11 @@ test_that("Global configuration: bad seed", {
   originalSeed <- e$rngSeed
 
   testJson <-
-    list(configDirectoryLocation = configDir,
-         inputExcelFile = configFile,
-         suiteRngSeed = "notanumber")
+    list(
+      configDirectoryLocation = configDir,
+      inputExcelFile = configFile,
+      suiteRngSeed = "notanumber"
+    )
   write_json(testJson, globalConfigFile)
 
   testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
@@ -93,7 +99,7 @@ test_that("Global configuration: bad seed", {
 })
 
 test_that("Global configuration: missing seed", {
-  globalConfigFile = "in.json"
+  globalConfigFile <- "in.json"
   withr::local_file(globalConfigFile)
 
   e <- pacehrh:::GPE
@@ -114,7 +120,7 @@ test_that("Global configuration: missing seed", {
 })
 
 test_that("Global configuration: missing file", {
-  globalConfigFile = "notafile.json"
+  globalConfigFile <- "notafile.json"
 
   e <- pacehrh:::GPE
   withr::defer(e$inputExcelFile <- originalInputExcelFile)
@@ -123,13 +129,17 @@ test_that("Global configuration: missing file", {
   withr::defer(pacehrh::Trace(originalTraceState))
   originalTraceState <- pacehrh::Trace(TRUE)
 
-  testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
+  testthat::expect_warning(result <-
+                             pacehrh:::loadGlobalConfig(globalConfigFile),
+                           regexp = "Could not find global configuration file")
+
+  testthat::expect_null(result)
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
                          originalInputExcelFile)
 })
 
 test_that("Global configuration: bad file", {
-  globalConfigFile = "bad.json"
+  globalConfigFile <- "bad.json"
   withr::local_file(globalConfigFile)
 
   writeLines("this is not JSON!!!", globalConfigFile)
@@ -147,7 +157,7 @@ test_that("Global configuration: bad file", {
 })
 
 test_that("Global configuration: missing element", {
-  globalConfigFile = "bad.json"
+  globalConfigFile <- "bad.json"
   withr::local_file(globalConfigFile)
 
   testJson <-
@@ -162,11 +172,12 @@ test_that("Global configuration: missing element", {
   originalTraceState <- pacehrh::Trace(TRUE)
 
   testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, paste(".", configFile, sep = "/"))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
+                         paste(".", configFile, sep = "/"))
 })
 
 test_that("Global configuration: misnamed element", {
-  globalConfigFile = "bad.json"
+  globalConfigFile <- "bad.json"
   withr::local_file(globalConfigFile)
 
   testJson <-
@@ -182,7 +193,8 @@ test_that("Global configuration: misnamed element", {
   originalTraceState <- pacehrh::Trace(TRUE)
 
   testthat::expect_invisible(pacehrh:::loadGlobalConfig(globalConfigFile))
-  testthat::expect_equal(pacehrh:::GPE$inputExcelFile, paste(configDir, configFile, sep = "/"))
+  testthat::expect_equal(pacehrh:::GPE$inputExcelFile,
+                         paste(configDir, configFile, sep = "/"))
 })
 
 test_that("Global configuration: check-and-load", {
@@ -221,6 +233,11 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   testthat::expect_equal(e$endYear, originalEndYear)
   testthat::expect_equal(e$years, originalYears)
 
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(2020, 2050, "c"))
+  testthat::expect_equal(e$startYear, originalStartYear)
+  testthat::expect_equal(e$endYear, originalEndYear)
+  testthat::expect_equal(e$years, originalYears)
+
   testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(120, 100))
   testthat::expect_equal(e$startYear, originalStartYear)
   testthat::expect_equal(e$endYear, originalEndYear)
@@ -234,7 +251,9 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   start <- 100
   end <- 120
   shoulderYears <- 0
-  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start, end, shoulderYears))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start,
+                                                             end,
+                                                             shoulderYears))
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
@@ -243,16 +262,18 @@ test_that("Global configuration: SetGlobalStartEndYears", {
   start <- 100
   end <- 120
   shoulderYears <- 3
-  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start, end, shoulderYears))
+  testthat::expect_invisible(pacehrh::SetGlobalStartEndYears(start,
+                                                             end,
+                                                             shoulderYears))
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
   testthat::expect_equal(e$years, start:end)
   testthat::expect_equal(e$shoulderYears, shoulderYears)
 
   # Defaults
-  start = 2020
-  end = 2040
-  shoulderYears = 1
+  start <- 2020
+  end <- 2040
+  shoulderYears <- 1
   testthat::expect_invisible(pacehrh::SetGlobalStartEndYears())
   testthat::expect_equal(e$startYear, start)
   testthat::expect_equal(e$endYear, end)
@@ -269,11 +290,12 @@ test_that("Global configuration: SetRoundingLaw", {
   # Test that bad calls don't mess with anything
   testthat::expect_equal(pacehrh:::SetRoundingLaw(), originalRoundingLaw)
   testthat::expect_equal(pacehrh:::SetRoundingLaw(NULL), originalRoundingLaw)
-  testthat::expect_equal(pacehrh:::SetRoundingLaw("notaroundinglaw"), originalRoundingLaw)
+  testthat::expect_equal(pacehrh:::SetRoundingLaw("notaroundinglaw"),
+                         originalRoundingLaw)
 
   # Test that good calls always return the previously set value
   previousLaw <- originalRoundingLaw
-  for (law in pacehrh:::.roundingLaws){
+  for (law in pacehrh:::.roundingLaws) {
     testthat::expect_equal(pacehrh:::SetRoundingLaw(law), previousLaw)
     previousLaw <- law
   }

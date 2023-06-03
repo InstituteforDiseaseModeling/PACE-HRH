@@ -338,3 +338,39 @@
     types = .cadreRolesColumnTypes,
     kcols = .cadreRolesKeyColumns
   )
+
+# ------------------------------------------------------------------------------
+#
+# INITIAL POPULATION TABLE
+#
+# ------------------------------------------------------------------------------
+
+.populationColumnNames <-
+  c(
+    "Age",
+    "Male",
+    "Female"
+  )
+
+.populationColumnTypes <-
+  c(
+    "character",
+    "double",
+    "double"
+  )
+
+.populationKeyColumns <-
+  c(
+    "Age",
+    "Male",
+    "Female"
+  )
+
+.populationMetaData <-
+  list(
+    rcols = .populationColumnNames,
+    rtypes = .populationColumnTypes,
+    cols = .populationColumnNames,
+    types = .populationColumnTypes,
+    kcols = .populationKeyColumns
+  )

@@ -7,11 +7,11 @@
 SaveResults(results, filepath = "out.csv", scenario, trial = NULL, run)
 }
 \arguments{
-\item{results}{Results structure (as returned by [RunExperiments()])}
+\item{results}{Results structure (as returned by \code{\link[=RunExperiments]{RunExperiments()}})}
 
 \item{filepath}{CSV file to write to (default = "out.csv")}
 
-\item{scenario}{Name of experiments scenario, as passed to \code{RunExperiments()}}
+\item{scenario}{Name of experiments scenario, as passed to \code{\link[=RunExperiments]{RunExperiments()}}}
 
 \item{trial}{Integer index of trial in results structure}
 

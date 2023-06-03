@@ -4,10 +4,12 @@
 \alias{loadSeasonalityCurves}
 \title{Load Seasonality Curves}
 \usage{
-loadSeasonalityCurves(sheetNameCurves = .defaultSeasonalityCurvesSheet)
+loadSeasonalityCurves(sheetNameCurves = .defaultSeasonalityCurvesSheet, ...)
 }
 \arguments{
 \item{sheetNameCurves}{Sheet name from the model input Excel file}
+
+\item{...}{Throw away other parameters}
 }
 \value{
 Seasonality curves data frame.

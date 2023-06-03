@@ -22,6 +22,7 @@ test_that("Plotting: setup", {
   pacehrh::InitializeScenarios()
   pacehrh::InitializeStochasticParameters()
   pacehrh::InitializeSeasonality()
+  pacehrh::InitializeCadreRoles()
 
   pacehrh::SetGlobalStartEndYears(.startYear, .endYear)
 
