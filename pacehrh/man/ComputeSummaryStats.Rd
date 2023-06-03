@@ -19,12 +19,10 @@ Compute Summary Statistics
 }
 \examples{
 \dontrun{
-resultsFiles <- c("results/results_BasicModel_Jul04.csv",
-                  "results/results_ComprehensiveModel_Jul04.csv",
-                  "results/results_MergedModel_Jul04.csv")
 
-DR <- pacehrh::ReadAndCollateSuiteResults(files = resultsFiles)
-CA <- pacehrh::ComputeCadreAllocations(DR)
-stats <- pacehrh::ComputeSummaryStats(DR,CA)
+results <- pacehrh::RunExperiments(scenarioName = "scenario", trials = 10)
+DR <- pacehrh::SaveExtendedSuiteResults(results)
+CA <- pacehrh::SaveCadreAllocations(DR)
+stats <- pacehrh::ComputeSummaryStats(DR, CA)
 }
 }
