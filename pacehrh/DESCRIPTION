@@ -11,7 +11,7 @@ License: MIT + file LICENSE
 Imports:
     assertthat,
     data.table,
-    dplyr,
+    dplyr (>= 1.1.0),
     ggplot2,
     jsonlite,
     magrittr,
