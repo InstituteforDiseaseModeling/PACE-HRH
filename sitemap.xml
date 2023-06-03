@@ -46,13 +46,7 @@
     <loc>/reference/ComputeApplicablePopulationMatrix.html</loc>
   </url>
   <url>
-    <loc>/reference/ComputeCadreAllocations.html</loc>
-  </url>
-  <url>
     <loc>/reference/ComputePopulationProjection.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ComputeSummaryStats.html</loc>
   </url>
   <url>
     <loc>/reference/ConfigureExperimentValues.html</loc>
@@ -82,6 +76,9 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/InitializeCadreRoles.html</loc>
+  </url>
+  <url>
     <loc>/reference/InitializePopulation.html</loc>
   </url>
   <url>
@@ -92,6 +89,9 @@
   </url>
   <url>
     <loc>/reference/InitializeStochasticParameters.html</loc>
+  </url>
+  <url>
+    <loc>/reference/loadCadreRoles.html</loc>
   </url>
   <url>
     <loc>/reference/loadGlobalConfig.html</loc>
@@ -113,6 +113,9 @@
   </url>
   <url>
     <loc>/reference/loadTaskParameters.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PaceInitialize.html</loc>
   </url>
   <url>
     <loc>/reference/PlotFertilityRates.html</loc>
@@ -161,6 +164,15 @@
   </url>
   <url>
     <loc>/reference/SaveBaseSettings.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SaveCadreAllocations.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SaveCadreOverheadData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/SaveExtendedSuiteResults.html</loc>
   </url>
   <url>
     <loc>/reference/SaveResults.html</loc>

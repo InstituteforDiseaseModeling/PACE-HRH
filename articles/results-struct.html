@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.7</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
                         <h4 data-toc-skip class="author">Charles
 Eliot</h4>
             
-            <h4 data-toc-skip class="date">2023-05-15</h4>
+            <h4 data-toc-skip class="date">2023-06-03</h4>
       
       
       <div class="hidden name"><code>results-struct.Rmd</code></div>
@@ -102,6 +102,7 @@ like this:</p>
 <span><span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/InitializeScenarios.html">InitializeScenarios</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/InitializeStochasticParameters.html">InitializeStochasticParameters</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/InitializeSeasonality.html">InitializeSeasonality</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="../reference/InitializeCadreRoles.html">InitializeCadreRoles</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"MergedModel"</span></span>
 <span></span>
@@ -131,7 +132,7 @@ multiple <em>result</em> (singular) structures, one per trial.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">## [1] "AnnualTimes"        "AnnualCounts"       "SeasonalityResults"</span></span>
-<span><span class="co">## [4] "Population"         "PopulationRates"</span></span></code></pre></div>
+<span><span class="co">## [4] "Config"             "Population"         "PopulationRates"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="overview-of-the-calculations">Overview of the calculations<a class="anchor" aria-label="anchor" href="#overview-of-the-calculations"></a>
@@ -171,40 +172,40 @@ results are in the form of a matrix, with tasks along the row dimension
 and years along the columns.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">)</span></span>
-<span><span class="co">## [1] 124  22</span></span></code></pre></div>
+<span><span class="co">## [1] 122  22</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">)</span></span>
-<span><span class="co">##   [1] "FH.MN.ANC.1"     "FH.MN.PNC.7"     "FH.MN.S.12"      "FH.MN.S.13"     </span></span>
-<span><span class="co">##   [5] "FH.MN.S.14"      "FH.MN.15"        "FH.MN.17"        "FH.MN.18"       </span></span>
-<span><span class="co">##   [9] "FH.MN.19A"       "FH.MN.19B"       "FH.MN.19C"       "FH.MN.19D"      </span></span>
-<span><span class="co">##  [13] "FH.MN.23"        "FH.MN.24"        "FH.MN.29"        "FH.MN.30"       </span></span>
-<span><span class="co">##  [17] "FH.EPI.31"       "FH.EPI.32A"      "FH.EPI.32B"      "FH.EPI.32C"     </span></span>
-<span><span class="co">##  [21] "FH.EPI.32D"      "FH.EPI.33"       "FH.EPI.34"       "FH.EPI.35"      </span></span>
-<span><span class="co">##  [25] "FH.EPI.36"       "FH.EPI.37"       "FH.FP.38A"       "FH.FP.38B"      </span></span>
-<span><span class="co">##  [29] "FH.FP.38C"       "FH.FP.39"        "FH.FP.42"        "FH.FP.44"       </span></span>
-<span><span class="co">##  [33] "FH.FP.45"        "FH.FP.47"        "FH.FP.48"        "FH.FP.49"       </span></span>
-<span><span class="co">##  [37] "FH.FP.50"        "FH.FP.51"        "FH.FP.52"        "FH.FP.53"       </span></span>
-<span><span class="co">##  [41] "FH.FP.58"        "FH.FP.59"        "FH.FP.62"        "FH.Ntr.64"      </span></span>
-<span><span class="co">##  [45] "FH.Ntr.65"       "FH.Ntr.66"       "FH.Ntr.67"       "FH.Ntr.70"      </span></span>
-<span><span class="co">##  [49] "FH.Ntr.71"       "FH.Ntr.74"       "FH.Ntr.75"       "FH.Ntr.76"      </span></span>
-<span><span class="co">##  [53] "FH.Ntr.77"       "FH.Ntr.78"       "FH.Ntr.79"       "FH.Ntr.80"      </span></span>
-<span><span class="co">##  [57] "FH.Ntr.81"       "FH.Ntr.82"       "FH.Ntr.83"       "FH.Ntr.84"      </span></span>
-<span><span class="co">##  [61] "FH.Ntr.85"       "FH.Ntr.86"       "DPC.STI.95"      "DPC.STI.99"     </span></span>
-<span><span class="co">##  [65] "DPC.Mlr.102"     "DPC.Mlr.105"     "DPC.Mlr.106"     "DPC.Mlr.107"    </span></span>
-<span><span class="co">##  [69] "DPC.TB.108A"     "DPC.TB.108B"     "DPC.TB.110"      "DPC.Drug.112"   </span></span>
-<span><span class="co">##  [73] "DPC.Drug.113"    "DPC.Drug.114"    "DPC.Cncr.115"    "DPC.Cncr.117"   </span></span>
-<span><span class="co">##  [77] "DPC.Cncr.119A"   "DPC.Cncr.119B"   "DPC.Cncr.119C"   "DPC.Cncr.119D"  </span></span>
-<span><span class="co">##  [81] "DPC.Cncr.119E"   "DPC.Cncr.119F"   "DPC.Cncr.119G"   "DPC.Cncr.119H"  </span></span>
-<span><span class="co">##  [85] "DPC.Cncr.119I"   "DPC.Cncr.119J"   "DPC.Cncr.119K"   "DPC.Hyp.120"    </span></span>
-<span><span class="co">##  [89] "DPC.Dbt.123"     "DPC.Asth.126"    "DPC.Asth.127"    "DPC.MH.130A"    </span></span>
-<span><span class="co">##  [93] "DPC.MH.130B"     "DPC.MH.130C"     "DPC.MH.130D"     "DPC.MH.130E"    </span></span>
-<span><span class="co">##  [97] "DPC.MH.130F"     "DPC.MH.131"      "DPC.MH.132"      "DPC.MH.133"     </span></span>
-<span><span class="co">## [101] "DPC.MH.134"      "DPC.MH.135"      "DPC.Oph.136"     "DPC.Oph.137"    </span></span>
-<span><span class="co">## [105] "DPC.Oph.140"     "DPC.NTD.156"     "DPC.NTD.157"     "DPC.NTD.159"    </span></span>
-<span><span class="co">## [109] "DPC.NTD.160"     "DPC.NTD.162"     "DPC.NTD.163"     "DPC.NTD.164"    </span></span>
-<span><span class="co">## [113] "DPC.NTD.168"     "DPC.NTD.169"     "DPC.NTD.171"     "DPC.NTD.172"    </span></span>
-<span><span class="co">## [117] "DPC.NTD.175"     "MHH_HEH"         "MHH_HEP"         "Record keeping" </span></span>
-<span><span class="co">## [121] "Travel_HEH"      "Travel_HEP"      "Overhead_staff1" "Overhead_staff2"</span></span></code></pre></div>
+<span><span class="co">##   [1] "FH.MN.ANC.1"    "FH.MN.PNC.7"    "FH.MN.S.12"     "FH.MN.S.13"    </span></span>
+<span><span class="co">##   [5] "FH.MN.S.14"     "FH.MN.15"       "FH.MN.17"       "FH.MN.18"      </span></span>
+<span><span class="co">##   [9] "FH.MN.19A"      "FH.MN.19B"      "FH.MN.19C"      "FH.MN.19D"     </span></span>
+<span><span class="co">##  [13] "FH.MN.23"       "FH.MN.24"       "FH.MN.29"       "FH.MN.30"      </span></span>
+<span><span class="co">##  [17] "FH.EPI.31"      "FH.EPI.32A"     "FH.EPI.32B"     "FH.EPI.32C"    </span></span>
+<span><span class="co">##  [21] "FH.EPI.32D"     "FH.EPI.33"      "FH.EPI.34"      "FH.EPI.35"     </span></span>
+<span><span class="co">##  [25] "FH.EPI.36"      "FH.EPI.37"      "FH.FP.38A"      "FH.FP.38B"     </span></span>
+<span><span class="co">##  [29] "FH.FP.38C"      "FH.FP.39"       "FH.FP.42"       "FH.FP.44"      </span></span>
+<span><span class="co">##  [33] "FH.FP.45"       "FH.FP.47"       "FH.FP.48"       "FH.FP.49"      </span></span>
+<span><span class="co">##  [37] "FH.FP.50"       "FH.FP.51"       "FH.FP.52"       "FH.FP.53"      </span></span>
+<span><span class="co">##  [41] "FH.FP.58"       "FH.FP.59"       "FH.FP.62"       "FH.Ntr.64"     </span></span>
+<span><span class="co">##  [45] "FH.Ntr.65"      "FH.Ntr.66"      "FH.Ntr.67"      "FH.Ntr.70"     </span></span>
+<span><span class="co">##  [49] "FH.Ntr.71"      "FH.Ntr.74"      "FH.Ntr.75"      "FH.Ntr.76"     </span></span>
+<span><span class="co">##  [53] "FH.Ntr.77"      "FH.Ntr.78"      "FH.Ntr.79"      "FH.Ntr.80"     </span></span>
+<span><span class="co">##  [57] "FH.Ntr.81"      "FH.Ntr.82"      "FH.Ntr.83"      "FH.Ntr.84"     </span></span>
+<span><span class="co">##  [61] "FH.Ntr.85"      "FH.Ntr.86"      "DPC.STI.95"     "DPC.STI.99"    </span></span>
+<span><span class="co">##  [65] "DPC.Mlr.102"    "DPC.Mlr.105"    "DPC.Mlr.106"    "DPC.Mlr.107"   </span></span>
+<span><span class="co">##  [69] "DPC.TB.108A"    "DPC.TB.108B"    "DPC.TB.110"     "DPC.Drug.112"  </span></span>
+<span><span class="co">##  [73] "DPC.Drug.113"   "DPC.Drug.114"   "DPC.Cncr.115"   "DPC.Cncr.117"  </span></span>
+<span><span class="co">##  [77] "DPC.Cncr.119A"  "DPC.Cncr.119B"  "DPC.Cncr.119C"  "DPC.Cncr.119D" </span></span>
+<span><span class="co">##  [81] "DPC.Cncr.119E"  "DPC.Cncr.119F"  "DPC.Cncr.119G"  "DPC.Cncr.119H" </span></span>
+<span><span class="co">##  [85] "DPC.Cncr.119I"  "DPC.Cncr.119J"  "DPC.Cncr.119K"  "DPC.Hyp.120"   </span></span>
+<span><span class="co">##  [89] "DPC.Dbt.123"    "DPC.Asth.126"   "DPC.Asth.127"   "DPC.MH.130A"   </span></span>
+<span><span class="co">##  [93] "DPC.MH.130B"    "DPC.MH.130C"    "DPC.MH.130D"    "DPC.MH.130E"   </span></span>
+<span><span class="co">##  [97] "DPC.MH.130F"    "DPC.MH.131"     "DPC.MH.132"     "DPC.MH.133"    </span></span>
+<span><span class="co">## [101] "DPC.MH.134"     "DPC.MH.135"     "DPC.Oph.136"    "DPC.Oph.137"   </span></span>
+<span><span class="co">## [105] "DPC.Oph.140"    "DPC.NTD.156"    "DPC.NTD.157"    "DPC.NTD.159"   </span></span>
+<span><span class="co">## [109] "DPC.NTD.160"    "DPC.NTD.162"    "DPC.NTD.163"    "DPC.NTD.164"   </span></span>
+<span><span class="co">## [113] "DPC.NTD.168"    "DPC.NTD.169"    "DPC.NTD.171"    "DPC.NTD.172"   </span></span>
+<span><span class="co">## [117] "DPC.NTD.175"    "MHH_HEH"        "MHH_HEP"        "Record keeping"</span></span>
+<span><span class="co">## [121] "Travel_HEH"     "Travel_HEP"</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">results</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">AnnualTimes</span><span class="op">)</span></span>
 <span><span class="co">##  [1] "2020" "2021" "2022" "2023" "2024" "2025" "2026" "2027" "2028" "2029"</span></span>
