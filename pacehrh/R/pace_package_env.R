@@ -42,6 +42,7 @@ EXP <- experimentValuesEnvironment
 .defaultStochasticParametersSheet <- "StochasticParameters"
 .defaultCadreRolesSheet <- "CadreRoles"
 .defaultTaskCadresSheet <- "TaskCadres"
+.defaultCoverageRatesSheet <- "CoverageRates_slowramp"
 
 # GLOBAL VARIABLES
 
