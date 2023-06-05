@@ -5,9 +5,10 @@ on:
       - "main"
   pull_request:
     branches:
-      - "main"
+      - "**"
     paths:
       - 'pacehrh/**'
+      - '.github/**'
 jobs:
   build:
     runs-on: ubuntu-latest
