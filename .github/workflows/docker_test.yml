@@ -23,6 +23,9 @@ jobs:
       - name: Check package
         run: |
           echo y | apt-get install texinfo
+          echo y | apt-get install texlive-latex-base
+          echo y | apt-get install texlive-latex-extra
+          echo y | apt-get install texlive-fonts-recommended
           echo y | apt install texlive-fonts-extra
           R CMD check pacehrh --as-cran
       - name: Run unittest
