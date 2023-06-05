@@ -21,8 +21,7 @@ jobs:
         run: |
           Rscript install_dep_for_tests.R
       - name: Check package
-        working-directory: 'pacehrh'
-        run: R CMD check --as-cran
+        run: R CMD check pacehrh --as-cran
         
       - name: Run unittest
         working-directory: 'pacehrh'
