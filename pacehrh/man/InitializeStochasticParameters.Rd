@@ -4,7 +4,10 @@
 \alias{InitializeStochasticParameters}
 \title{Initialize Stochastic Parameters}
 \usage{
-InitializeStochasticParameters(...)
+InitializeStochasticParameters(
+  stochasticParametersSheetName = .defaultStochasticParametersSheet,
+  changeRateLimitsSheetName = .defaultChangeRateLimitsSheet
+)
 }
 \arguments{
 \item{...}{Parameters passed through to loadStochasticParameters()}

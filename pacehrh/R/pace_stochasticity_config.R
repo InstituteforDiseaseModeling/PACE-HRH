@@ -1,15 +1,15 @@
 #' Load Stochastic Parameters
 #'
-#' @param sheetName Sheet name from the model input Excel file
+#' @param stochasticParametersSheetName Sheet name from the model input Excel file
 #'
 #' @return Dataframe of stochastic parameters
 #'
 #' @noRd
-loadStochasticParameters <- function(sheetName = .defaultStochasticParametersSheet){
-  traceMessage(paste0("Loading stochastic parameters sheet ", sheetName))
+loadStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet) {
+  traceMessage(paste0("Loading stochastic parameters sheet ", stochasticParametersSheetName))
 
   stochData <- tryCatch({
-    readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
+    readxl::read_xlsx(GPE$inputExcelFile, sheet = stochasticParametersSheetName)
   },
   error = function(e){
     return(NULL)
@@ -28,6 +28,38 @@ loadStochasticParameters <- function(sheetName = .defaultStochasticParametersShe
                                convertType = FALSE)
 
   return(stochData)
+}
+
+#' Load Change Rate Limits
+#'
+#' @param changeRateLimitsSheetName Sheet name from the model input Excel file
+#'
+#' @return Dataframe of change rate limits
+#'
+#' @noRd
+loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateLimitsSheet) {
+  traceMessage(paste0("Loading change rate limits sheet ", changeRateLimitsSheetName))
+
+  limitData <- tryCatch({
+    readxl::read_xlsx(GPE$inputExcelFile, sheet = changeRateLimitsSheetName)
+  },
+  error = function(e){
+    return(NULL)
+  },
+  finally = {
+  })
+
+  if (is.null(limitData)){
+    warning("Could not read change rate limits sheet")
+    return(NULL)
+  }
+
+  limitData <-
+    validateTableAgainstSchema(limitData,
+                               .changeRateLimitsMetaData,
+                               convertType = FALSE)
+
+  return(limitData)
 }
 
 #' Initialize Stochastic Parameters
@@ -57,13 +89,11 @@ loadStochasticParameters <- function(sheetName = .defaultStochasticParametersShe
 #'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #' }
-InitializeStochasticParameters <- function(...){
+InitializeStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet,
+                                           changeRateLimitsSheetName = .defaultChangeRateLimitsSheet) {
   .checkAndLoadGlobalConfig()
 
-  stochData <- loadStochasticParameters(...)
-
-  # TODO: Insert error handling
-
-  BVE$stochasticParams <- stochData
+  BVE$stochasticParams <- loadStochasticParameters(stochasticParametersSheetName)
+  BVE$changeRateLimits <- loadChangeRateLimits(changeRateLimitsSheetName)
   return(invisible(NULL))
 }

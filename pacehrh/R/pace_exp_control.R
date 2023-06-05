@@ -302,7 +302,7 @@ ConfigureExperimentValues <- function(){
 #' \dontrun{
 #' initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
 #' pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Flat_Rates")
-#' pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
+#' pars <- pacehrh:::loadStochasticParameters(stochasticParametersSheetName = "Flat_StochasticParms")
 #' years <- 2020:2040
 #' pcr <- pacehrh:::addRatesMatricesToPopulationChangeRates(pcr, years, NULL)
 #' }

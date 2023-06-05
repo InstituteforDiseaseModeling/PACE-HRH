@@ -10,7 +10,7 @@ test_that("Fertility rates matrix: basic", {
 
   e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
 
-  pars <- pacehrh:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
+  pars <- pacehrh:::loadStochasticParameters(stochasticParametersSheetName = "TEST_StochasticParms")
   rates <- pacehrh:::loadPopulationChangeRates(sheetName = "TEST_PopValues")
   years <- pacehrh:::GPE$years
 
