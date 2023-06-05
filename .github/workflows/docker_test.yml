@@ -16,21 +16,20 @@ jobs:
       image: mewu/rimage:pandoc
     steps:
       - uses: actions/checkout@v2
-      - name: Check package
-        run: |
-          echo y | apt-get install texinfo
-          R CMD check pacehrh --as-cran
-        
       - name: Setup Dependency
         working-directory: 'tests/setup'
         run: |
           Rscript install_dep_for_tests.R
-      
+      - name: Check package
+        run: |
+          echo y | apt-get install texinfo
+          R CMD check pacehrh --as-cran
       - name: Run unittest
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
         
       - uses: actions/upload-artifact@v3
+        if: failure()
         with:
           name: r_cmd/check_result
           path: pacehrh.Rcheck
