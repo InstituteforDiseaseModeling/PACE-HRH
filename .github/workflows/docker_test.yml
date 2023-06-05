@@ -21,9 +21,8 @@ jobs:
           Rscript install_dep_for_tests.R
       - name: Check package
         working-directory: 'pacehrh'
-        run: Rscript -e 'devtools::check(error_on = c("error"))'
-        env:
-          NOT_CRAN: true
+        run: R CMD check --as-cran
+        
       - name: Run unittest
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
