@@ -31,6 +31,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: r_cmd/check_result
+          name: r_cmd_check_result
           path: pacehrh.Rcheck
           
