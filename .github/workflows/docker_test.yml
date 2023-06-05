@@ -5,9 +5,10 @@ on:
       - "main"
   pull_request:
     branches:
-      - "main"
+      - "**"
     paths:
       - 'pacehrh/**'
+      - '.github/**'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,10 +21,20 @@ jobs:
         run: |
           Rscript install_dep_for_tests.R
       - name: Check package
-        working-directory: 'pacehrh'
-        run: Rscript -e 'devtools::check(error_on = c("error"))'
-        env:
-          NOT_CRAN: true
+        run: |
+          echo y | apt-get install texinfo
+          echo y | apt-get install texlive-latex-base
+          echo y | apt-get install texlive-latex-extra
+          echo y | apt-get install texlive-fonts-recommended
+          echo y | apt install texlive-fonts-extra
+          R CMD check pacehrh --as-cran
       - name: Run unittest
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
+        
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: r_cmd_check_result
+          path: pacehrh.Rcheck/**/*.log
+          
