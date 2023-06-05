@@ -23,6 +23,7 @@ jobs:
       - name: Check package
         run: |
           echo y | apt-get install texinfo
+          echo y | apt install texlive-fonts-extra
           R CMD check pacehrh --as-cran
       - name: Run unittest
         working-directory: 'pacehrh'
@@ -32,5 +33,5 @@ jobs:
         if: failure()
         with:
           name: r_cmd_check_result
-          path: pacehrh.Rcheck
+          path: pacehrh.Rcheck/**/*.log
           
