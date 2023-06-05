@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Check package
         run: |
-          apt-get install texinfo
+          echo y | apt-get install texinfo
           R CMD check pacehrh --as-cran
         
       - name: Setup Dependency
@@ -29,3 +29,9 @@ jobs:
       - name: Run unittest
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
+        
+      - uses: actions/upload-artifact@v3
+        with:
+          name: r_cmd/check_result
+          path: pacehrh.Rcheck
+          
