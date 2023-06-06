@@ -41,6 +41,66 @@ test_that("Fertility rates matrix: basic", {
 
   testthat::expect_true(all(results))
 
+  # CASE A-1 - Decreasing with tight rate cap
+
+  limits <- c(0.99, 1.01)
+
+  m <-
+    pacehrh:::.generateRatesMatrix(pars,
+                                   years,
+                                   rates,
+                                   limits = limits,
+                                   stochasticity = FALSE,
+                                   optConstantFertility = FALSE)
+
+  testthat::expect_true(!is.null(m))
+
+  # Test that all rates values are above the lower limit
+  initValues <- m[, 1]
+  tf <- sapply(2:dim(m)[2], function(j){
+    return(all(m[,j] - (initValues * limits[1]) >= 0))
+  })
+
+  testthat::expect_true(all(tf))
+
+  # Test that all rates values are below the upper limit
+  initValues <- m[, 1]
+  tf <- sapply(2:dim(m)[2], function(j){
+    return(all((initValues * limits[2]) - m[,j] >= 0))
+  })
+
+  testthat::expect_true(all(tf))
+
+  # CASE A-2 - Decreasing with tight rate cap and stochasticity
+
+  limits <- c(0.99, 1.01)
+
+  m <-
+    pacehrh:::.generateRatesMatrix(pars,
+                                   years,
+                                   rates,
+                                   limits = limits,
+                                   stochasticity = TRUE,
+                                   optConstantFertility = FALSE)
+
+  testthat::expect_true(!is.null(m))
+
+  # Test that all rates values are above the lower limit
+  initValues <- m[, 1]
+  tf <- sapply(2:dim(m)[2], function(j){
+    return(all(m[,j] - (initValues * limits[1]) >= 0))
+  })
+
+  testthat::expect_true(all(tf))
+
+  # Test that all rates values are below the upper limit
+  initValues <- m[, 1]
+  tf <- sapply(2:dim(m)[2], function(j){
+    return(all((initValues * limits[2]) - m[,j] >= 0))
+  })
+
+  testthat::expect_true(all(tf))
+
   # CASE B
 
   mDecreasing <-
