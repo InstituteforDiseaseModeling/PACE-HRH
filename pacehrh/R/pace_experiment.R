@@ -92,6 +92,7 @@ RunExperiment <- function(debug = FALSE){
 #' @param popRanges Population range definitions as configured by [InitializePopulation()]
 #'
 #' @return List of population range sizes
+#' @noRd
 #'
 #' @examples
 #' \dontrun{

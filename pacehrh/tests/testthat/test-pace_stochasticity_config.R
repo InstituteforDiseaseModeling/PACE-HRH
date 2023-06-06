@@ -9,7 +9,7 @@ test_that("Stochasticity configuration: basic population", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
   pars <- pacehrh:::loadStochasticParameters(sheetName = "TEST_StochasticParms")
 
   testthat::expect_named(pars, c("Value", "p", "q"))

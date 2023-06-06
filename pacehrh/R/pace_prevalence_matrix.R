@@ -6,6 +6,8 @@
 #' Generate A Matrix Of Stochastically Varied Prevalence/Incidence Rates
 #'
 #' @return Rates matrix
+#'
+#' @noRd
 generatePrevalenceRatesMatrix <- function(){
   if (!GPE$stochasticity){
     return(.generateNonStochPrm())

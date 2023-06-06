@@ -41,5 +41,6 @@ Initialize PACE-HRH
 }
 \examples{
 \dontrun{
+pacehrh::PaceInitialize()
 }
 }

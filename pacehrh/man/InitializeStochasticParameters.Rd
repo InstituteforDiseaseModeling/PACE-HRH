@@ -7,7 +7,7 @@
 InitializeStochasticParameters(...)
 }
 \arguments{
-\item{...}{Parameters passed through to \code{\link[=loadStochasticParameters]{loadStochasticParameters()}}}
+\item{...}{Parameters passed through to loadStochasticParameters()}
 }
 \value{
 NULL (invisible)

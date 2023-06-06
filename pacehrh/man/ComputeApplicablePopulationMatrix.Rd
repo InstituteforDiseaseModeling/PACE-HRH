@@ -19,5 +19,10 @@ Generate Matrix of Applicable Populations
 }
 \examples{
 \dontrun{
+results <-
+  pacehrh::RunExperiments(scenarioName = scenario,
+                          trials = nTrials)
+
+ m <- pacehrh::ComputeApplicablePopulationMatrix(results)
 }
 }

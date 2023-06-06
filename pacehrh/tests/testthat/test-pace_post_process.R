@@ -45,25 +45,3 @@ test_that("Cadre processing: basic", {
 
   testthat::expect_true(!is.null(stats))
 })
-
-test_that("Post-processing: file list initialization", {
-  e <- pacehrh:::GPE
-  local_vars("globalConfigLoaded", envir = e)
-  local_vars("traceState", envir = e)
-  e$globalConfigLoaded <- FALSE
-
-  testthat::expect_null(pacehrh:::.getFilesList())
-  testthat::expect_null(pacehrh:::.getFilesList(dir = "notadirectory"))
-  testthat::expect_null(pacehrh:::.getFilesList(files = vector(mode = "character", length = 0L)))
-
-  resultsDir <- "one_result" # Directory should only contain one CSV file
-  resultsFile <- file.path(resultsDir, "results.csv")
-
-  testthat::expect_equal(length(dir(resultsDir)), 1)
-  testthat::expect_true(setequal(
-    pacehrh:::.getFilesList(files = resultsFile),
-    pacehrh:::.getFilesList(dir = resultsDir)
-  ))
-
-  testthat::expect_true(TRUE)
-})

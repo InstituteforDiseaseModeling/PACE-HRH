@@ -9,6 +9,7 @@
 #' @return Tibble with three population pyramid fields:
 #' \code{Female}, \code{Male} and \code{Total}
 #'
+#' @noRd
 loadInitialPopulation <- function(sheetName = .defaultPopSheet){
   traceMessage(paste0("Loading initial population sheet ", sheetName))
 
@@ -190,7 +191,7 @@ InitializePopulation <- function(popSheet = .defaultPopSheet){
 
   m <- do.call(rbind, l)
 
-  rownames(m) <- lt[,Labels]
+  rownames(m) <- lt[, Labels]
   colnames(m) <- GPE$ages
 
   return(m)

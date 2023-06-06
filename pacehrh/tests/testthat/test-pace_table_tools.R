@@ -2,7 +2,7 @@ library(pacehrh)
 
 withr::local_dir("..")
 
-loadTableTests <- "simple_config/LoadTable Tests.xlsx"
+loadTableTests <- "simple_config/LoadTable_Tests.xlsx"
 
 test_that("Table tools: basic table read", {
   table <- pacehrh:::loadTable(loadTableTests,

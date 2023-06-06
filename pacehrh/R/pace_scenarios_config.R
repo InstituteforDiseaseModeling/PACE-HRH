@@ -8,6 +8,7 @@
 #'
 #' @return Data frame of experiment scenario parameters, or NULL on error
 #'
+#' @noRd
 loadScenarios <- function(sheetName = .defaultScenariosSheet) {
   traceMessage(paste0("Loading scenarios sheet ", sheetName))
 
@@ -29,7 +30,7 @@ loadScenarios <- function(sheetName = .defaultScenariosSheet) {
 #'
 #' @param loadFromExcel If TRUE, initialize the scenarios list from the model
 #' inputs Excel file. If FALSE, initialize with a blank scenarios table.
-#' @param ... See [loadScenarios()]
+#' @param ... See loadScenarios()
 #'
 #' @export
 #'
