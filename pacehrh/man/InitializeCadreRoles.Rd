@@ -7,7 +7,7 @@
 InitializeCadreRoles(...)
 }
 \arguments{
-\item{...}{Parameters passed through to \code{\link[=loadCadreRoles]{loadCadreRoles()}}}
+\item{...}{Parameters passed through to loadCadreRoles()}
 }
 \value{
 NULL (invisible)

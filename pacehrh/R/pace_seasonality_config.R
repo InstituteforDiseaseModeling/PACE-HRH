@@ -9,6 +9,7 @@
 #'
 #' @return Seasonality curves data frame.
 #'
+#' @noRd
 loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesSheet, ...){
   traceMessage(paste0("Loading seasonality curves sheet ", sheetNameCurves))
 
@@ -33,6 +34,7 @@ loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesShe
 #'
 #' @return Seasonality offsets data frame.
 #'
+#' @noRd
 loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet, ...){
   traceMessage(paste0("Loading seasonality offsets sheet ", sheetNameOffsets))
 
@@ -56,8 +58,8 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsets
 #' save to a location in the global package environment.
 #'
 #' @md
-#' @param ... Parameters passed through to [loadSeasonalityCurves()] and
-#' [loadSeasonalityOffsets()]
+#' @param ... Parameters passed through to loadSeasonalityCurves() and
+#' loadSeasonalityOffsets()
 #'
 #' @export
 #'

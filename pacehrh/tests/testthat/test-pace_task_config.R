@@ -9,7 +9,7 @@ test_that("Task configuration: basic data", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
   tasks <- pacehrh:::loadTaskParameters(sheetName = "TEST_TaskValues")
 
   testthat::expect_true(!is.null(tasks))
@@ -28,7 +28,7 @@ test_that("Task configuration: invalid sheet name", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Test Inputs.xlsx"
+  e$inputExcelFile <- "./simple_config/model_inputs.xlsx"
   tasks <- pacehrh:::loadTaskParameters(sheetName = "notasheet")
 
   testthat::expect_null(tasks)

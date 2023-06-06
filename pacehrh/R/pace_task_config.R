@@ -8,6 +8,7 @@
 #'
 #' @return Data frame of healthcare task parameters
 #'
+#' @noRd
 loadTaskParameters <- function(sheetName = .defaultTaskValuesSheet){
   traceMessage(paste0("Loading task values sheet ", sheetName))
 

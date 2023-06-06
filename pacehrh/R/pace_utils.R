@@ -15,6 +15,11 @@
 #'
 #' @examples
 #' \dontrun{
+#' results <-
+#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
+#'                           trials = 20)
+#'
+#' df <- pacehrh::GetSuiteRates(results, rateCategory = "femaleFertility")
 #' }
 GetSuiteRates <- function(results, rateCategory = .populationRateCategories[1]) {
   if (is.null(results)){

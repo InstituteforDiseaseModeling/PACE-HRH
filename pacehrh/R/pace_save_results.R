@@ -8,8 +8,6 @@
 #' summarize the output, e.g. with dplyr.
 #' @export
 #'
-#' @importFrom magrittr %>%
-#'
 #' @md
 #' @examples
 #' \dontrun{

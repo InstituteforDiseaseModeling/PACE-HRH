@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' \dontrun{
-#` pacehrh::PaceInitialize()
+#' pacehrh::PaceInitialize()
 #' }
 PaceInitialize <- function(globalConfigFile = NULL,
                            inputFile = NULL,

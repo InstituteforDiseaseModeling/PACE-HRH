@@ -5,14 +5,8 @@
 #'
 #' @return List of dataframes of per-task times, or NULL
 #'
+#' @noRd
 runSeasonalityExperiment <- function(results, debug = FALSE){
-  scenario <- BVE$scenario
-
-  if (is.null(scenario)){
-    traceMessage(paste("No scenario data", scenarioName, sep = ""))
-    return(NULL)
-  }
-
   # The seasonality "curve" used when we don't know the seasonality
   dummyCurve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12
 

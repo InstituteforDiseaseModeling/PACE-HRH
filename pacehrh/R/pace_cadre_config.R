@@ -4,6 +4,7 @@
 #'
 #' @return Dataframe of cadre roles information
 #'
+#' @noRd
 loadCadreRoles <- function(sheetName = .defaultCadreRolesSheet){
   traceMessage(paste0("Loading cadre roles sheet ", sheetName))
 
@@ -18,7 +19,7 @@ loadCadreRoles <- function(sheetName = .defaultCadreRolesSheet){
 #' save to a location in the global package environment.
 #'
 #' @md
-#' @param ... Parameters passed through to [loadCadreRoles()]
+#' @param ... Parameters passed through to loadCadreRoles()
 #'
 #' @export
 #'
@@ -63,8 +64,6 @@ InitializeCadreRoles <- function(...){
 #' @param sheetName
 #'
 #' @return Data table of per-year cadre allocation definitions
-#' @export
-#'
 #' @noRd
 loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
   traceMessage(paste0("Loading task cadres sheet ", sheetName))

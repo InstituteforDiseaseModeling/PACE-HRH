@@ -61,23 +61,6 @@
 #' @md
 #' @export
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 vars
-#' @importFrom ggplot2 scale_x_discrete
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 geom_errorbar
-#' @importFrom ggplot2 geom_pointrange
-#' @importFrom ggplot2 geom_ribbon
-#' @importFrom ggplot2 geom_boxplot
-#' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 xlab
-#' @importFrom tidyr pivot_longer
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
-#'
 #' @examples
 #' \dontrun{
 #' library(pacehrh)
@@ -232,15 +215,6 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
 #' @return ggplot grob
 #' @md
 #' @export
-#'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_point
-#' @importFrom ggplot2 facet_grid
-#' @importFrom ggplot2 vars
-#' @importFrom ggplot2 ggtitle
-#' @importFrom ggplot2 scale_color_manual
-#' @importFrom tidyr pivot_longer
 #'
 #' @examples
 #' \dontrun{

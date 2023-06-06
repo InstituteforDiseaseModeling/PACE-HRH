@@ -78,8 +78,15 @@ computeCadreData <- function(scenario = NULL, roles = NULL) {
 #' @md
 #' @examples
 #' \dontrun{
+#' results <-
+#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
+#'                           trials = 20)
+#'
+#' SR <- pacehrh::SaveExtendedSuiteResults(results, filepath = "_SR.csv", run = "Run-1")
+#' CA <- pacehrh::SaveCadreAllocations(SR, filepath = "_CA.csv")
+#' cadreOverheadTimes <- pacehrh::SaveCadreOverheadData(filepath = "_COD.csv")
+#' summaryStats <- pacehrh::ComputeSummaryStats(SR, CA)
 #' }
-
 SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run-1") {
   if (is.null(results)) {
     return(NULL)
@@ -167,7 +174,6 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   return(out)
 }
 
-
 #' Compute And Save Cadre Allocations
 #'
 #' Different healthcare delivery models involve different mixtures of types of
@@ -186,6 +192,14 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
 #' @md
 #' @examples
 #' \dontrun{
+#' results <-
+#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
+#'                           trials = 20)
+#'
+#' SR <- pacehrh::SaveExtendedSuiteResults(results, filepath = "_SR.csv", run = "Run-1")
+#' CA <- pacehrh::SaveCadreAllocations(SR, filepath = "_CA.csv")
+#' cadreOverheadTimes <- pacehrh::SaveCadreOverheadData(filepath = "_COD.csv")
+#' summaryStats <- pacehrh::ComputeSummaryStats(SR, CA)
 #' }
 SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
   scenarioName <- BVE$scenario$UniqueID

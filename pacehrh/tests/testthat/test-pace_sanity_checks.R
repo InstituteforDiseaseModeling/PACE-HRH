@@ -11,7 +11,7 @@ test_that("Sanity checks: scenario check", {
   local_vars("scenarios", envir = e)
 
   # Set input file, and null out the previous scenarios table
-  pacehrh::SetInputExcelFile("./bad_config/model_inputs - bad scenarios sheet.xlsx")
+  pacehrh::SetInputExcelFile("./bad_config/model_inputs-bad_scenarios_sheet.xlsx")
   e$scenarios <- NULL
   e$globalConfigLoaded <- TRUE
 
@@ -26,7 +26,7 @@ test_that("Sanity checks: scenario check", {
   testthat::expect_snapshot(pacehrh:::.checkScenarios(autoCorrect = TRUE))
   testthat::expect_null(e$scenarios)
 
-  pacehrh::SetInputExcelFile("./bad_config/model_inputs - good scenarios sheet.xlsx")
+  pacehrh::SetInputExcelFile("./bad_config/model_inputs-good_scenarios_sheet.xlsx")
   e$scenarios <- NULL
 
   testthat::expect_snapshot(pacehrh:::.checkScenarios(autoCorrect = TRUE))

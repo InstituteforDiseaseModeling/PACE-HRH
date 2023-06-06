@@ -7,8 +7,8 @@
 InitializeSeasonality(...)
 }
 \arguments{
-\item{...}{Parameters passed through to \code{\link[=loadSeasonalityCurves]{loadSeasonalityCurves()}} and
-\code{\link[=loadSeasonalityOffsets]{loadSeasonalityOffsets()}}}
+\item{...}{Parameters passed through to loadSeasonalityCurves() and
+loadSeasonalityOffsets()}
 }
 \value{
 NULL (invisible)

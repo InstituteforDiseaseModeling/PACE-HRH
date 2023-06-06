@@ -3,6 +3,8 @@
 #' @param tasks Task parameter value matrix
 #'
 #' @return Adjusted task parameters matrix
+#'
+#' @noRd
 varyTaskValues <- function(tasks){
   # Do nothing if stochasticity is turned off
   if (!GPE$stochasticity){

@@ -8,7 +8,7 @@ test_that("Population rates configuration: Load and compute", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
 
-  e$inputExcelFile <- "./simple_config/Population Rates Test Data.xlsx"
+  e$inputExcelFile <- "./simple_config/Population_Rates_Test_Data.xlsx"
 
   withr::defer(pacehrh::Trace(originalTraceState))
   originalTraceState <- pacehrh::Trace(TRUE)

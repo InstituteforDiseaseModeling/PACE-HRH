@@ -12,7 +12,7 @@ test_that("Scenario configuration: basic read from Excel", {
 
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
@@ -33,7 +33,7 @@ test_that("Scenario configuration: bad sheet name", {
 
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
@@ -72,7 +72,7 @@ test_that("Scenario configuration: non-Excel configuration", {
 
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$globalConfigLoaded <- TRUE
   e$scenarios <- NULL
 
@@ -97,7 +97,7 @@ test_that("Scenario configuration: missing columns", {
   local_vars("traceState", envir = e)
 
   # Set input file
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$scenarios <- NULL
 
   # The TEST_Scenarios_1 sheet is missing two required columns
@@ -117,7 +117,7 @@ test_that("Scenario configuration: mis-typed columns", {
   local_vars("traceState", envir = e)
 
   # Set input file
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$scenarios <- NULL
 
   # The TEST_Scenarios_2 sheet has two required columns with incorrect types
@@ -137,7 +137,7 @@ test_that("Scenario configuration: no optional columns", {
   local_vars("traceState", envir = e)
 
   # Set input file
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$scenarios <- NULL
 
   # The TEST_Scenarios_3 sheet has no optional columns
@@ -158,7 +158,7 @@ test_that("Scenario configuration: optional columns, wrong type", {
   local_vars("traceState", envir = e)
 
   # Set input file
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$scenarios <- NULL
 
   # The TEST_Scenarios_4 sheet has an optional column, but the type is wrong

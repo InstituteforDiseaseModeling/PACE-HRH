@@ -16,7 +16,7 @@ test_that("Experiment control: missing tables", {
 
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$globalConfigLoaded <- TRUE
 
   # Attempt to run experiments without any required initialization. Two warnings
@@ -36,7 +36,7 @@ test_that("Experiment control: bad scenarios", {
 
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   e$globalConfigLoaded <- TRUE
 
   pacehrh::InitializePopulation()
@@ -77,7 +77,7 @@ test_that("Experiment control: basic read from Excel", {
 
   # Set input file, and cheat the system into thinking the global configuration
   # is already loaded
-  pacehrh::SetInputExcelFile("./simple_config/Test Inputs.xlsx")
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
   gpe$globalConfigLoaded <- TRUE
   gpe$scenarios <- NULL
 

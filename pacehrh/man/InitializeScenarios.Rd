@@ -10,7 +10,7 @@ InitializeScenarios(loadFromExcel = TRUE, ...)
 \item{loadFromExcel}{If TRUE, initialize the scenarios list from the model
 inputs Excel file. If FALSE, initialize with a blank scenarios table.}
 
-\item{...}{See \code{\link[=loadScenarios]{loadScenarios()}}}
+\item{...}{See loadScenarios()}
 }
 \value{
 NULL (invisible)
