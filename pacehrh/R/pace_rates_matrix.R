@@ -60,6 +60,34 @@ generateRatesMatrix <- function(label = NULL){
   return(limits)
 }
 
+.getMinMaxRates <- function(initRates, limits) {
+  if (!is.na(limits[1])) {
+    minRates <- initRates * limits[1]
+  } else {
+    minRates <- NULL
+  }
+
+  if (!is.na(limits[2])) {
+    maxRates <- initRates * limits[2]
+  } else {
+    maxRates <- NULL
+  }
+
+  return(list(min = minRates, max = maxRates))
+}
+
+.applyRateLimits <- function(rates, limits) {
+  if (!is.null(limits$max)) {
+    rates <- pmin(limits$max, rates)
+  }
+
+  if (!is.null(limits$min)) {
+    rates <- pmax(limits$min, rates)
+  }
+
+  return(rates)
+}
+
 #' Internal Function to Generate Rates Matrices
 #'
 #' @param pars Tibble of stochastic parameters
@@ -106,34 +134,14 @@ generateRatesMatrix <- function(label = NULL){
       deltaRatios[1:length(deltaRatios)] <- 1
     }
 
-    # Shortcut path if stochasticity is turned off.
     if (stochasticity == FALSE){
       # Compute min and max rate caps
-      if (!is.na(limits[1])) {
-        minRates <- initRates * limits[1]
-      } else {
-        minRates <- NULL
-      }
-
-      if (!is.na(limits[2])) {
-        maxRates <- initRates * limits[2]
-      } else {
-        maxRates <- NULL
-      }
-
+      rateLimits <- .getMinMaxRates(initRates, limits)
       m[, 1] <- initRates
 
       # Apply the same delta ratio to every year of the time series
       for (j in 2:nCols) {
-        m[, j] <- m[, j - 1] * deltaRatios
-
-        if (!is.null(maxRates)) {
-          m[, j] <- pmin(maxRates, m[, j])
-        }
-
-        if (!is.null(minRates)) {
-          m[, j] <- pmax(minRates, m[, j])
-        }
+        m[, j] <- .applyRateLimits(m[, j - 1] * deltaRatios, rateLimits)
       }
     } else {
       if (rates$type == "Fertility"){
@@ -146,18 +154,7 @@ generateRatesMatrix <- function(label = NULL){
       initRates <-
         initRates * (1 + runif(length(initRates), p[1], p[2]))
 
-      # Compute min and max rate caps
-      if (!is.na(limits[1])) {
-        minRates <- initRates * limits[1]
-      } else {
-        minRates <- NULL
-      }
-
-      if (!is.na(limits[2])) {
-        maxRates <- initRates * limits[2]
-      } else {
-        maxRates <- NULL
-      }
+      rateLimits <- .getMinMaxRates(initRates, limits)
 
       m[, 1] <- initRates
 
@@ -186,15 +183,7 @@ generateRatesMatrix <- function(label = NULL){
         )
         deltas <- deltaRatios * (1 + e)
 
-        m[, j] <- m[, j - 1] * deltas
-
-        if (!is.null(maxRates)) {
-          m[, j] <- pmin(maxRates, m[, j])
-        }
-
-        if (!is.null(minRates)) {
-          m[, j] <- pmax(minRates, m[, j])
-        }
+        m[, j] <- .applyRateLimits(m[, j - 1] * deltas, rateLimits)
       }
     }
 
