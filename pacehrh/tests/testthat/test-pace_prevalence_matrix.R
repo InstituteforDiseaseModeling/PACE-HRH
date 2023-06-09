@@ -77,6 +77,11 @@ test_that("Prevelance matrix generation: basic", {
 
       testthat::expect_true(all(tf))
 
+      # The IND.3 record should be constant in this configuration (Scenario =
+      # TEST_Prevalence, o_MHIVTB_decr = FALSE, and stochasticity turned off)
+      ind3Row <- m2["IND.3",]
+      testthat::expect_equal(min(ind3Row), max(ind3Row))
+
       pacehrh::SetStochasticity(TRUE)
     }
 
