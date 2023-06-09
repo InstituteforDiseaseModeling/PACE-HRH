@@ -67,9 +67,12 @@ loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateL
 #' Read the stochasticity information from the model inputs Excel file, and
 #' save to a location in the global package environment.
 #'
-#' @md
-#' @param ... Parameters passed through to loadStochasticParameters()
+#' @param stochasticParametersSheetName Name of Excel sheet holding stochastic
+#'   parameters (mean, variance, etc) for different computations
+#' @param changeRateLimitsSheetName Name of Excel sheet holding max/min ranges
+#'   for generated mortality, fertility, and incidence rate
 #'
+#' @md
 #' @export
 #'
 #' @return NULL (invisible)
@@ -89,6 +92,7 @@ loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateL
 #'   pacehrh::RunExperiments(scenarioName = scenario,
 #'                        trials = 100)
 #' }
+#'
 InitializeStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet,
                                            changeRateLimitsSheetName = .defaultChangeRateLimitsSheet) {
   .checkAndLoadGlobalConfig()

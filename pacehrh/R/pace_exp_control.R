@@ -20,6 +20,7 @@
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
+#' pacehrh::InitializeCadreRoles()
 #'
 #' scenario <- "ScenarioName"
 #'
@@ -148,7 +149,9 @@ SaveBaseSettings <- function(scenarioName = ""){
                    expression(BVE$stochasticParams),
                    expression(BVE$initialPopulation),
                    expression(BVE$populationLabels),
-                   expression(BVE$populationRangesTable)
+                   expression(BVE$populationRangesTable),
+                   expression(BVE$cadreRoles),
+                   expression(BVE$changeRateLimits)
                    )
 
   checks <- sapply(varsToCheck, function(v){

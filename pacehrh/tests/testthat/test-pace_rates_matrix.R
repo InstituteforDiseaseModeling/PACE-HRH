@@ -2,6 +2,50 @@ library(pacehrh)
 
 withr::local_dir("..")
 
+test_that("Rates limits", {
+  gpe <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
+  local_vars("inputExcelFile", envir = gpe)
+
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
+
+  # withr::defer(pacehrh::Trace(originalTraceState))
+  # originalTraceState <- pacehrh::Trace(TRUE)
+
+  pacehrh::InitializeStochasticParameters(
+    stochasticParametersSheetName = "TEST_StochasticParms",
+    changeRateLimitsSheetName = "ChangeRateLimits"
+  )
+
+  testthat::expect_true(!is.null(bve$changeRateLimits))
+
+  l <- pacehrh:::.getRatesLimits("femaleFertility")
+  testthat::expect_true(!is.na(l[[1]]))
+  testthat::expect_true(!is.na(l[[2]]))
+  testthat::expect_true(l[[1]] <= l[[2]])
+
+  l <- pacehrh:::.getRatesLimits("maleMortality")
+  testthat::expect_true(!is.na(l[[1]]))
+  testthat::expect_true(!is.na(l[[2]]))
+  testthat::expect_true(l[[1]] <= l[[2]])
+
+  l <- pacehrh:::.getRatesLimits("incidence")
+  testthat::expect_true(!is.na(l[[1]]))
+  testthat::expect_true(!is.na(l[[2]]))
+  testthat::expect_true(l[[1]] <= l[[2]])
+
+  l <- pacehrh:::.getRatesLimits("notalabel")
+  testthat::expect_true(is.na(l[[1]]))
+  testthat::expect_true(is.na(l[[2]]))
+
+  # Error case: NULL change rate limits table (perhaps through init failure)
+  local_vars("changeRateLimits", envir = bve)
+  bve$changeRateLimits <- NULL
+  l <- pacehrh:::.getRatesLimits("femaleFertility")
+  testthat::expect_true(is.na(l[[1]]))
+  testthat::expect_true(is.na(l[[2]]))
+})
+
 test_that("Fertility rates matrix: basic", {
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 

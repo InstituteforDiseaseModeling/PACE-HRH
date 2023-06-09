@@ -47,13 +47,17 @@ generateRatesMatrix <- function(label = NULL){
     return(c(NA_real_, NA_real_))
   }
 
-  if (length(grep("Fertility", rateTypeLabel)) == 1) {
+  if (length(grep("Fertility", rateTypeLabel, ignore.case = TRUE)) == 1) {
     row <- limitsTable[limitsTable$RateCategory == "Fertility", ]
     limits <- c(row$Min, row$Max)
-  } else if (length(grep("Mortality", rateTypeLabel)) == 1) {
+  } else if (length(grep("Mortality", rateTypeLabel, ignore.case = TRUE)) == 1) {
     row <- limitsTable[limitsTable$RateCategory == "Mortality", ]
     limits <- c(row$Min, row$Max)
-  } else {
+  } else if (tolower(rateTypeLabel) == "incidence") {
+    row <- limitsTable[limitsTable$RateCategory == "Incidence", ]
+    limits <- c(row$Min, row$Max)
+  }
+  else {
     limits <- c(NA_real_, NA_real_)
   }
 
