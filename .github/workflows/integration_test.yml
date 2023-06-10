@@ -48,7 +48,7 @@ jobs:
           
       - name: Check input spreadsheet
         run: |
-          Rscript -e "rmarkdown::render('validation_report.Rmd', 'html_document', params=list(inputFile='config/model_inputs.xlsx', outputDir='log'), output_dir='log')"
+          Rscript -e "rmarkdown::render('config/validation/validation_report.Rmd', 'html_document', params=list(inputFile='config/model_inputs.xlsx', outputDir='log'), output_dir='log')"
           if errorlevel 1 "::error:: Validate Input failed" && exit 1
         shell: cmd
         continue-on-error: false
