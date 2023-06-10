@@ -36,7 +36,7 @@ colnames(custom_test$df_reason) <- c("name", "description", "severity")
 #' @return Error code.
 #' 0 = Success
 #' -1 = validation error
-Validate <- function(inputFile, outputDir = "log", optional_sheets = NULL, rules_dir="config/validation/rules"){
+Validate <- function(inputFile, outputDir, optional_sheets = NULL, rules_dir="config/validation/rules"){
   
   # Make sure outputDir is empty
   tryCatch(
@@ -49,7 +49,7 @@ Validate <- function(inputFile, outputDir = "log", optional_sheets = NULL, rules
   )
   dir.create(outputDir, showWarnings = FALSE)
   log_file <- file.path(outputDir, .errorLogfile)
-  lf <- log_open(file_name = log_file, show_notes = FALSE)
+  lf <- log_open(file_name = log_file, show_notes = FALSE, logdir = FALSE)
   result_d <- ValidateInputExcelFileContent(inputFile = inputFile, 
                                             logFile =lf, 
                                             outputDir = outputDir, 
