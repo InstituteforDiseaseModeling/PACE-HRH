@@ -1,6 +1,6 @@
 testthat::local_edition(3)
 setwd("../..")
-source("ValidateInput.R")
+source("config/validation/ValidateInput.R")
 
 # test validate no rules
 test_that("Validation no rules", {
