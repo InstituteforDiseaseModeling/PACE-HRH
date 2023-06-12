@@ -150,8 +150,8 @@ SaveBaseSettings <- function(scenarioName = ""){
                    expression(BVE$initialPopulation),
                    expression(BVE$populationLabels),
                    expression(BVE$populationRangesTable),
-                   expression(BVE$cadreRoles),
-                   expression(BVE$changeRateLimits)
+                   expression(BVE$cadreRoles)
+#                   expression(BVE$changeRateLimits)
                    )
 
   checks <- sapply(varsToCheck, function(v){
