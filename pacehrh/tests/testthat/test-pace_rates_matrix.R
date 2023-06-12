@@ -46,6 +46,39 @@ test_that("Rates limits", {
   testthat::expect_true(is.na(l[[2]]))
 })
 
+test_that("Rates limits: no sheet", {
+  gpe <- pacehrh:::GPE
+  bve <- pacehrh:::BVE
+  local_vars("inputExcelFile", envir = gpe)
+
+  pacehrh::SetInputExcelFile("./simple_config/model_inputs.xlsx")
+
+  # withr::defer(pacehrh::Trace(originalTraceState))
+  # originalTraceState <- pacehrh::Trace(TRUE)
+
+  testthat::expect_warning(
+    {
+      pacehrh::InitializeStochasticParameters(
+        stochasticParametersSheetName = "TEST_StochasticParms",
+        changeRateLimitsSheetName = "notasheet"
+      )
+    },
+    regexp = "Could not read change rate limits sheet"
+  )
+
+  testthat::expect_true(is.null(bve$changeRateLimits))
+
+  # If nothing has been defined, trying to read rate limits should return the
+  # default "no limits" values.
+  l <- pacehrh:::.getRatesLimits("femaleFertility")
+  testthat::expect_true(is.na(l[[1]]))
+  testthat::expect_true(is.na(l[[2]]))
+
+  l <- pacehrh:::.getRatesLimits("notalabel")
+  testthat::expect_true(is.na(l[[1]]))
+  testthat::expect_true(is.na(l[[2]]))
+})
+
 test_that("Fertility rates matrix: basic", {
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 
