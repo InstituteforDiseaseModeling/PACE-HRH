@@ -138,6 +138,14 @@ SaveBaseSettings <- function(scenarioName = ""){
   } else {
     BVE$taskCadresData <- loadTaskCadres()
   }
+  
+  taskCoverageRatesSheet <- BVE$scenario$sheet_Coverage
+  if (!is.blank(taskCoverageRatesSheet)){
+    BVE$taskCoverageRates <- loadCoverageRates(taskCoverageRatesSheet)
+  } else {
+    BVE$taskCoverageRates <- loadCoverageRates()
+  }
+  
 
   return(BVE$scenario)
 }
