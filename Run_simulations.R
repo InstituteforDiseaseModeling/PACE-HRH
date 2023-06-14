@@ -11,12 +11,12 @@ library(tidyr)
 #Compatible with pacehrh v1.0.7 and later                     #
 #Run all the lines below after changing model_inputs.xlsx file#
 ###############################################################
-# rmarkdown::render(input = "validation_report.Rmd",
-#                   output_format = "html_document",
-#                   output_dir = "log",
-#                   params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
-# shell.exec(normalizePath("log/validation_report.html"))
-# print("Please check validation results in \"log\" folder", quote=FALSE)
+rmarkdown::render(input = "config/validation/validation_report.Rmd",
+                  output_format = "html_document",
+                  output_dir = getwd(),
+                  params=list(inputFile="config/model_inputs.xlsx", outputDir="log"))
+shell.exec(normalizePath("validation_report.html"))
+print("Please check validation results in \"log\" folder", quote=FALSE)
 
 rm(list = ls())
 
