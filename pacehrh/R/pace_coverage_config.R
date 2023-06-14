@@ -6,20 +6,18 @@
 #'
 #' @param sheetName Sheet name from the model input Excel file
 #'
-#' @return Tibble with three population pyramid fields:
-#' \code{Female}, \code{Male} and \code{Total}
+#' @return Data table of per-year task coverage levels
 #'
 loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
   traceMessage(paste0("Loading task coverage rates sheet ", sheetName))
   
   coverageRatesData <- NULL
   
-  coverageRatesData <- loadTable(sheet = sheetName) # loadTable does validation too
-  browser()
+  coverageRatesData <- loadTable(sheet = sheetName) # loadTable does validation
   
   hr <- colnames(coverageRatesData)
   
-  # First two columns should be indicator and common name:
+  # Sanity check: first two columns should be indicator and common name:
   if (!identical(hr[1:2], c("Indicator", "CommonName"))) {
     traceMessage(
       paste0(
@@ -31,20 +29,37 @@ loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
     return(NULL)
   }
   
-  # Strip out "Year" from the header names
-  #years <- 
-  colnames(coverageRatesData) <- gsub("Year ", "", hr)
+  
+  # total number of years in simulation
+  simYears <- length(BVE$years) 
+  
+  # all cols in coverageRatesData minus the indicator and common name cols
+  coverageYears <- length(coverageRatesData)-2 
+  
+  # Extend table to include all years if sim is longer than provided columns
+  if (simYears > coverageYears) {
+    coverageRatesData[sprintf("Year %d", seq(coverageYears, simYears-1))] <- NA
+  }
+  
+  # get the new header values
+  hr <- colnames(coverageRatesData)
+  
+  # Strip out "Year" from the header names and shift colnames to index from the 
+  # start year
+  cleanHeaders <- gsub("Year ", "", hr)
+  cleanHeaders <- c(cleanHeaders[1:2], paste(as.integer(cleanHeaders[3:length(cleanHeaders)]) + BVE$years[1]))
+  colnames(coverageRatesData) <- cleanHeaders
   
   # All missing values are assumed to be 1.0
   coverageRatesData[is.na(coverageRatesData)] <- 1.0
   
   # Make the data tidy
-  test <- 
+  tidyCoverageRatesData <-
     pivot_longer(coverageRatesData, !(c("Indicator", "CommonName")), 
                  names_to="years",
                  values_to="coverage")
   
-  return(coverageRatesData)
+  return(tidyCoverageRatesData)
 }
 
 .InitializeCoverageRates <- function(...){

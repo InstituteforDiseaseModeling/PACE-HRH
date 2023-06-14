@@ -27,7 +27,8 @@
     "sheet_TaskValues",
     "sheet_PopValues",
     "sheet_SeasonalityCurves",
-    "sheet_Cadre"
+    "sheet_Cadre",
+    "sheet_Coverage"
   )
 
 .scenarioColumnTypes <-
@@ -40,6 +41,7 @@
     "logical",
     "logical",
     "logical",
+    "character",
     "character",
     "character",
     "character",
