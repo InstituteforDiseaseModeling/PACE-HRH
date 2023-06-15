@@ -1,5 +1,5 @@
 testthat::local_edition(3)
-packages = c("DescTools", "tidyr", "dplyr", "ggplot2", "readxl", "stringr", "vdiffr", "testthat", "patrick")
+packages = c("DescTools", "tidyr", "dplyr", "ggplot2", "openxlsx", "readxl", "stringr", "vdiffr", "testthat", "patrick")
 for(i in packages){
   if(!require(i, character.only = T)){
     print(paste0("try to install package:", i))
@@ -93,7 +93,7 @@ calculate_decomposition <- function(DR_test, scenario, task, type){
 }
 
 # Set up necessary configuration for demo
-test_template <- function(input_file, rounding="", setting="annual", popSheet="TotalPop", start = 2020, end = 2040){
+test_template <- function(input_file, rounding="", setting="annual", popSheet="TotalPop", start = 2020, end = 2040, stochasticity=TRUE){
   dir.create("tests/results", showWarnings = FALSE)
   dir.create("tests/results/regression", showWarnings = FALSE)
   dir.create("tests/results/regression_demo", showWarnings = FALSE)
@@ -110,8 +110,11 @@ test_template <- function(input_file, rounding="", setting="annual", popSheet="T
   else{
     pacehrh::SetRoundingLaw("early")
   }
+  
+  SetStochasticity(stochasticity)
   pacehrh::SetPerAgeStats(setting)
   withr::defer_parent(unlink("tests/results", recursive = TRUE,  force = TRUE))
   withr::defer_parent(pacehrh::SetRoundingLaw("early"))
+  withr::defer_parent(pacehrh::SetStochasticity(TRUE))
 }
 

@@ -41,6 +41,33 @@ test_that("demo model population",{
   })
 })
 
+test_that("demo model population flat",{
+  # if rate change is capped at 1.0 with stochasticity turned off, fertility rate will look flat
+  input_file <- "config/model_inputs_demo.xlsx"
+  new_input_file <- "tests/flat_fertility.xlsx"
+  wb <- openxlsx::loadWorkbook(input_file)
+  flat_cap <- tibble(RateCategory = c("Mortality", "Fertility", "Incidence"),  Min = 1.0, Max=1.0)
+  openxlsx::writeData(wb, sheet = "ChangeRateLimits", flat_cap, colNames = TRUE, rowNames=FALSE)
+  openxlsx::saveWorkbook(wb, new_input_file, overwrite = TRUE)
+  on.exit(file.remove(new_input_file))
+  local({
+    start = 2020
+    end = 2040
+    test_template(new_input_file, start=start, end=end, stochasticity=FALSE)
+    numtrials <- 2
+    scenario <- "BasicServices"
+    # Sys.setenv( TESTTHAT_PKG="pacehrh")
+    # m <- local_mock(`pacehrh:::loadChangeRateLimits` = tibble::tibble(RateCategory = c("Mortality", "Fertility", "Incidence"),  Min = 1, Max=1),
+    #                 mock_env = as.environment("package:pacehrh"),
+    #                 eval_env = as.environment("package:pacehrh"))
+    
+    print(pacehrh:::BVE$changeRateLimits)
+    results <- RunExperiments(scenarioName = scenario, trials = numtrials, debug = TRUE)
+    expect_true(all(!is.na(results)))
+    expect_doppelganger(glue::glue("{scenario}_population_flat"), pacehrh::PlotFertilityRatesStats(results))
+  })
+})
+
 test_that("demo model fertility", {
   input_file <- "config/model_inputs_demo.xlsx"
   local({
