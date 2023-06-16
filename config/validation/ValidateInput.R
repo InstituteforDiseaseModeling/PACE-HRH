@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "plyr", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "reshape2", "scales", "glue", "logr", "gridExtra")
+packages = c("validate","readxl", "plyr", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "reshape2", "scales", "glue", "logr", "gridExtra", "MonoInc")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -14,8 +14,7 @@ library(pacehrh)
 # define key columns for each sheet (use for reporting)
 key_cols <- list (PopValues = c("Description", "Sex", "InitValue", "ChangeRate"), 
                   StochasticParameters = c("value"),
-                  TaskValues_ref = c("Indicator", "CommonName"),
-                  CoverageRates_ref = c("Indicator", "CommonName"))
+                  TaskValues_ref = c("Indicator", "CommonName"))
 # define rule-specific extra columns (use for reporting)
 rule_cols <- list(AnnualDeltaRatio_value_Range = c("StartingRateInPop"),
                   RateMultiplier = c("StartingRateInPop")
@@ -91,8 +90,7 @@ ValidateInputExcelFileContent <- function(inputFile,
       checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
       checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
       checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
-      checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_CoverageRates_slowramp.yaml", sheet = sheet_Coverage ) %>% select(c(sheet, rule)) %>% unique())
-      
+     
       for (f in list.files(rules_dir)){
         default_rulename <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f)
         if (!f %in% checklist$rule){
