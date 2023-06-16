@@ -39,6 +39,19 @@ test_that("Stochasticity configuration: basic", {
   testthat::expect_true(is.null(limits))
 })
 
+test_that("Stochasticity configuration: validate rate change limits", {
+  t <- tidyr::tibble(
+    RateCategory = c("Fail 1", "Fail 2", "Fail 3", "Fail 4", "Succeed 1"),
+    Min = c(NA, 1.0, -1.0, 10.0,   3),
+    Max = c(1,   NA, 10.0, -1.0, 300)
+  )
+
+  t_validated <- pacehrh:::.validateChangeRateLimits(t)
+
+  testthat::expect_equal(t_validated$Min, c(NA, NA, NA, NA, 3))
+  testthat::expect_equal(t_validated$Max, c(NA, NA, NA, NA, 300))
+})
+
 test_that("Stochasticity configuration: confirm cleanup 1", {
   testthat::expect_equal(pacehrh:::GPE$inputExcelFile, "./config/model_inputs.xlsx")
 })

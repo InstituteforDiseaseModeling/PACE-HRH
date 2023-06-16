@@ -59,6 +59,54 @@ loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateL
                                .changeRateLimitsMetaData,
                                convertType = FALSE)
 
+  limitData <- .validateChangeRateLimits(limitData)
+
+  return(limitData)
+}
+
+.validateChangeRateLimits <- function(limitData) {
+  if (is.null(limitData)) {
+    return(NULL)
+  }
+
+  # Sanity check data types (should already have been done as part of
+  # validateTableAgainstSchema())
+  types <- sapply(limitData, typeof)
+  names(types) <- NULL
+
+  if (!isTRUE(all.equal(types, .changeRateLimitsColumnTypes))) {
+    return(NULL)
+  }
+
+  .clearRow <- function(rowNum) {
+    limitData[rowNum, "Min"] <<- NA_real_
+    limitData[rowNum, "Max"] <<- NA_real_
+  }
+
+  .isValidRow <- function(min, max) {
+    if (is.na(min) | is.na(max)) {
+      return(FALSE)
+    }
+
+    # Negative values aren't allowed
+    if ((min < 0.0) | (max < 0.0)) {
+      return(FALSE)
+    }
+
+    # The maximum limit must be greater than or equal to the minimum
+    if (min > max) {
+      return(FALSE)
+    }
+
+    return(TRUE)
+  }
+
+  for (i in 1:NROW(limitData)) {
+    if (!.isValidRow(limitData[i, "Min"], limitData[i, "Max"])) {
+      .clearRow(i)
+    }
+  }
+
   return(limitData)
 }
 
