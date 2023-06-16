@@ -44,6 +44,12 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
     return(invisible(NULL))
   }
 
+  # Sanity check: the set of key columns must be a subset of the set of required
+  # columns
+  if (!isTRUE(all.equal(intersect(e$schema$kcols, e$schema$rcols), unique(e$schema$kcols)))) {
+    return(invisible(NULL))
+  }
+
   for (colName in e$schema$kcols){
     e$table <- tidyr::drop_na(e$table, all_of(colName))
   }

@@ -161,6 +161,40 @@
 
 # ------------------------------------------------------------------------------
 #
+# CHANGE RATE LIMITS TABLE
+#
+# ------------------------------------------------------------------------------
+
+.changeRateLimitsColumnNames <-
+  c(
+    "RateCategory",
+    "Min",
+    "Max"
+  )
+
+.changeRateLimitsColumnTypes <-
+  c(
+    "character",
+    "double",
+    "double"
+  )
+
+.changeRateLimitsKeyColumns <-
+  c(
+    "RateCategory"
+  )
+
+.changeRateLimitsMetaData <-
+  list(
+    rcols = .changeRateLimitsColumnNames,
+    rtypes = .changeRateLimitsColumnTypes,
+    cols = .changeRateLimitsColumnNames,
+    types = .changeRateLimitsColumnTypes,
+    kcols = .changeRateLimitsKeyColumns
+  )
+
+# ------------------------------------------------------------------------------
+#
 # TASK VALUES TABLE
 #
 # ------------------------------------------------------------------------------

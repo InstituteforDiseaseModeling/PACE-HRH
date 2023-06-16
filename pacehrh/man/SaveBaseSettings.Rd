@@ -25,6 +25,7 @@ pacehrh::InitializePopulation()
 pacehrh::InitializeScenarios()
 pacehrh::InitializeStochasticParameters()
 pacehrh::InitializeSeasonality()
+pacehrh::InitializeCadreRoles()
 
 scenario <- "ScenarioName"
 
