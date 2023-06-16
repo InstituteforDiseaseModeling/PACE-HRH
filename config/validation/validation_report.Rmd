@@ -22,9 +22,14 @@ div.info { background-color: lightblue; }
 
 ## Input Data Check:
 <br><br>
+
+```{r setup, include=FALSE, echo=FALSE}
+require("knitr")
+opts_knit$set(root.dir = "../../")
+```
 ```{r, echo=FALSE, results='hide',  message=FALSE, warning=FALSE, fig.show = "hide"}
-source("ValidateInput.R")
-source("ValidateInput_plot.R")
+source("config/validation/ValidateInput.R")
+source("config/validation/ValidateInput_plot.R")
 Validate(inputFile = params$inputFile, outputDir = params$outputDir, optional_sheets=params$optional_sheets)
 ```
 
@@ -32,7 +37,7 @@ Validate(inputFile = params$inputFile, outputDir = params$outputDir, optional_sh
 result <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
 outfile <- paste(params$outputDir, "input_validation_results.png", sep="/")
 plot_result(result, outfile)
-knitr::include_graphics(normalizePath(outfile))
+knitr::include_graphics(outfile)
 
 # set caption color
 set_caption_color <- function(state){
@@ -59,7 +64,7 @@ files <- list.files(path=params$outputDir, pattern = "(info|warning|error).*.csv
 
 metadata <- read.csv(paste(params$outputDir, "input_validation_results.csv", sep="/"))
 for (f in files){
-  filename <- normalizePath(paste(params$outputDir, f, sep="/"))
+  filename <- paste(params$outputDir, f, sep="/")
   message(paste0(filename,"\n\n"))
   rule_name <- gsub('^.+?_violation_(.+?).csv', '\\1', f)
   sheet_name <- stringr::str_replace(f, gsub('^.+?(_(error|info|warning))', '\\1', f), "")
@@ -94,15 +99,15 @@ cat(readLines(paste(params$outputDir, "model_input_check.log", sep = "/")), sep 
 <br><br>
 ```{r echo=FALSE, comment='', results = 'asis', warning=FALSE}
   for (f in sort(list.files(file.path(params$outputDir, "custom"), "*.png"))){
-    filename <- normalizePath(file.path(params$outputDir, "custom", f))
+    filename <- file.path(params$outputDir, "custom", f)
     cat("\n\n\n")
     cat("![](",filename,")")
     cat("\n\n\n")
   }
-  custom_metadata <- read.csv(normalizePath(file.path(params$outputDir, "custom", "custom_validation_results.csv")))
+  custom_metadata <- read.csv(file.path(params$outputDir, "custom", "custom_validation_results.csv"))
   for (i in 1:nrow(custom_metadata)){
     f <- as.character(custom_metadata[i, "name"])
-    baddata <- read.csv(normalizePath(f))
+    baddata <- read.csv(f)
     tbl_description <- paste(as.character(custom_metadata[i, "severity"]), ": ", as.character(custom_metadata[i, "description"]))
     set_caption_color(custom_metadata[i, "severity"])
     print(kableExtra::kbl(baddata, caption=tbl_description, format='pipe', align = "l")
