@@ -50,6 +50,9 @@ loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
   cleanHeaders <- c(cleanHeaders[1:2], paste(as.integer(cleanHeaders[3:length(cleanHeaders)]) + BVE$years[1]))
   colnames(coverageRatesData) <- cleanHeaders
   
+  # Add any remaining tasks for this scenario
+  coverageRatesData <- merge(BVE$taskData[,c("Indicator","CommonName")], coverageRatesData, by=c("Indicator","CommonName"), all.x=TRUE)
+
   # All missing values are assumed to be 1.0
   coverageRatesData[is.na(coverageRatesData)] <- 1.0
   
