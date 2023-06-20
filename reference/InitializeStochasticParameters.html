@@ -18,7 +18,7 @@ save to a location in the global package environment."><!-- mathjax --><script s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.8</span>
       </span>
     </div>
 
@@ -68,13 +68,22 @@ save to a location in the global package environment.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">InitializeStochasticParameters</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">InitializeStochasticParameters</span><span class="op">(</span></span>
+<span>  stochasticParametersSheetName <span class="op">=</span> <span class="va">.defaultStochasticParametersSheet</span>,</span>
+<span>  changeRateLimitsSheetName <span class="op">=</span> <span class="va">.defaultChangeRateLimitsSheet</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>...</dt>
-<dd><p>Parameters passed through to <code><a href="loadStochasticParameters.html">loadStochasticParameters()</a></code></p></dd>
+    <dl><dt>stochasticParametersSheetName</dt>
+<dd><p>Name of Excel sheet holding stochastic
+parameters (mean, variance, etc) for different computations</p></dd>
+
+
+<dt>changeRateLimitsSheetName</dt>
+<dd><p>Name of Excel sheet holding max/min ranges
+for generated mortality, fertility, and incidence rate</p></dd>
 
 </dl></div>
     <div id="value">
@@ -100,6 +109,7 @@ save to a location in the global package environment.</p>
 <span class="r-in"><span>  <span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="RunExperiments.html">RunExperiments</a></span><span class="op">(</span>scenarioName <span class="op">=</span> <span class="va">scenario</span>,</span></span>
 <span class="r-in"><span>                       trials <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

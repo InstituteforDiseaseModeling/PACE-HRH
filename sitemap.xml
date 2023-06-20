@@ -31,9 +31,6 @@
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/reference/addRatesMatricesToPopulationChangeRates.html</loc>
-  </url>
-  <url>
     <loc>/reference/AddScenario.html</loc>
   </url>
   <url>
@@ -49,6 +46,9 @@
     <loc>/reference/ComputePopulationProjection.html</loc>
   </url>
   <url>
+    <loc>/reference/ComputeSummaryStats.html</loc>
+  </url>
+  <url>
     <loc>/reference/ConfigureExperimentValues.html</loc>
   </url>
   <url>
@@ -56,18 +56,6 @@
   </url>
   <url>
     <loc>/reference/DeleteScenario.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-computePopulationRangeMatrices.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gatherPopulation.html</loc>
-  </url>
-  <url>
-    <loc>/reference/generatePrevalenceRatesMatrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/generateRatesMatrix.html</loc>
   </url>
   <url>
     <loc>/reference/GetSuiteRates.html</loc>
@@ -89,30 +77,6 @@
   </url>
   <url>
     <loc>/reference/InitializeStochasticParameters.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadCadreRoles.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadGlobalConfig.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadInitialPopulation.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadScenarios.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadSeasonalityCurves.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadSeasonalityOffsets.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadStochasticParameters.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadTaskParameters.html</loc>
   </url>
   <url>
     <loc>/reference/PaceInitialize.html</loc>
@@ -148,9 +112,6 @@
     <loc>/reference/PlotResultsPopulationCurve.html</loc>
   </url>
   <url>
-    <loc>/reference/ReadAndCollateSuiteResults.html</loc>
-  </url>
-  <url>
     <loc>/reference/ReadScenario.html</loc>
   </url>
   <url>
@@ -158,9 +119,6 @@
   </url>
   <url>
     <loc>/reference/RunExperiments.html</loc>
-  </url>
-  <url>
-    <loc>/reference/runSeasonalityExperiment.html</loc>
   </url>
   <url>
     <loc>/reference/SaveBaseSettings.html</loc>
@@ -206,8 +164,5 @@
   </url>
   <url>
     <loc>/reference/UpdateScenario.html</loc>
-  </url>
-  <url>
-    <loc>/reference/varyTaskValues.html</loc>
   </url>
 </urlset>
