@@ -20,6 +20,7 @@
 #' pacehrh::InitializeScenarios()
 #' pacehrh::InitializeStochasticParameters()
 #' pacehrh::InitializeSeasonality()
+#' pacehrh::InitializeCadreRoles()
 #'
 #' scenario <- "ScenarioName"
 #'
@@ -156,7 +157,9 @@ SaveBaseSettings <- function(scenarioName = ""){
                    expression(BVE$stochasticParams),
                    expression(BVE$initialPopulation),
                    expression(BVE$populationLabels),
-                   expression(BVE$populationRangesTable)
+                   expression(BVE$populationRangesTable),
+                   expression(BVE$cadreRoles)
+#                   expression(BVE$changeRateLimits)
                    )
 
   checks <- sapply(varsToCheck, function(v){
@@ -310,7 +313,7 @@ ConfigureExperimentValues <- function(){
 #' \dontrun{
 #' initPop <- pacehrh:::loadInitialPopulation(sheetName = "Flat_Population")
 #' pcr <- pacehrh:::loadPopulationChangeRates(sheetName = "Flat_Rates")
-#' pars <- pacehrh:::loadStochasticParameters(sheetName = "Flat_StochasticParms")
+#' pars <- pacehrh:::loadStochasticParameters(stochasticParametersSheetName = "Flat_StochasticParms")
 #' years <- 2020:2040
 #' pcr <- pacehrh:::addRatesMatricesToPopulationChangeRates(pcr, years, NULL)
 #' }

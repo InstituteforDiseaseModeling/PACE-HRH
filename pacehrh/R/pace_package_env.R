@@ -60,6 +60,7 @@ NULL
 .defaultStochasticParametersSheet <- "StochasticParameters"
 .defaultCadreRolesSheet <- "CadreRoles"
 .defaultTaskCadresSheet <- "TaskCadres"
+.defaultChangeRateLimitsSheet <- "ChangeRateLimits"
 .defaultCoverageRatesSheet <- "CoverageRates"
 
 # GLOBAL VARIABLES

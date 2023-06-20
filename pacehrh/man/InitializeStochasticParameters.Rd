@@ -4,10 +4,17 @@
 \alias{InitializeStochasticParameters}
 \title{Initialize Stochastic Parameters}
 \usage{
-InitializeStochasticParameters(...)
+InitializeStochasticParameters(
+  stochasticParametersSheetName = .defaultStochasticParametersSheet,
+  changeRateLimitsSheetName = .defaultChangeRateLimitsSheet
+)
 }
 \arguments{
-\item{...}{Parameters passed through to loadStochasticParameters()}
+\item{stochasticParametersSheetName}{Name of Excel sheet holding stochastic
+parameters (mean, variance, etc) for different computations}
+
+\item{changeRateLimitsSheetName}{Name of Excel sheet holding max/min ranges
+for generated mortality, fertility, and incidence rate}
 }
 \value{
 NULL (invisible)
@@ -31,4 +38,5 @@ results <-
   pacehrh::RunExperiments(scenarioName = scenario,
                        trials = 100)
 }
+
 }

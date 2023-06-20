@@ -61,7 +61,7 @@ PaceInitialize <- function(globalConfigFile = NULL,
   if (is.null(stochasticParametersSheet)) {
     InitializeStochasticParameters()
   } else {
-    InitializeStochasticParameters(sheetName = stochasticParametersSheet)
+    InitializeStochasticParameters(stochasticParametersSheetName = stochasticParametersSheet)
   }
 
   # Local seasonality curves sheet and seasonality offsets sheets
