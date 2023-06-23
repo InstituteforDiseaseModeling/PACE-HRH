@@ -24,15 +24,9 @@ TaskTimes <- function(){
     # p = prevalence rate
     n <- as.vector(prm$Total[, year][tasks$popRangeMaskPtr])
     p <- as.vector(pm[, year])
-
-    coverageRates <- filter(BVE$taskCoverageRates, years==year)
-    taskvals <- merge(x=taskvals, y=coverageRates, by.x="row.names", by.y="Indicator", all.x=TRUE)
     
     # Compute the number of executed tasks ("service count")
     tasksN <- n * p * taskvals[,"RateMultiplier"] * (taskvals[,"NumContactsPerUnit"] + taskvals[,"NumContactsAnnual"])
-    
-    # Scale by the coverage rate
-    tasksN <- tasksN * taskvals[,"coverage"]
     
     # Round to an integer, unless rounding is turned off
     if (GPE$roundingLaw != "none"){

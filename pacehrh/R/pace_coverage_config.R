@@ -59,8 +59,11 @@ loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
   # Make the data tidy
   tidyCoverageRatesData <-
     pivot_longer(coverageRatesData, !(c("Indicator", "CommonName")), 
-                 names_to="years",
-                 values_to="coverage")
+                 names_to="Year",
+                 values_to="Coverage")
+
+  # Convert year to numeric from char
+  tidyCoverageRatesData$Year <- as.numeric(tidyCoverageRatesData$Year)
   
   return(tidyCoverageRatesData)
 }

@@ -91,7 +91,7 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   if (is.null(results)) {
     return(NULL)
   }
-
+  
   trialIds <- names(results)
   scenario <- BVE$scenario$UniqueID
 
@@ -106,10 +106,26 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   })
 
   out <- data.table::rbindlist(l)
+  
+  # Apply coverage rates by multiplying coverage with num services and service time
+  out <- merge(x=out, y=BVE$taskCoverageRates[,c("Indicator", "Year", "Coverage")], by.x=c("Task_ID", "Year"), by.y=c("Indicator", "Year"), all.x=TRUE)
+  
+  coverageNumServices = out$Num_services * out$Coverage
+  
+  # Round Coverage_num_services to an integer, unless rounding is turned off
+  if (GPE$roundingLaw != "none"){
+    coverageNumServices <- round(coverageNumServices, 0)
+  }
+  
+  out$Coverage_num_services <- coverageNumServices
 
+  
   # Convert Service_time from minutes to hours
   out$Service_time <- out$Service_time / 60.0
-
+  
+  coverageServiceTime = out$Service_time * out$Coverage
+  out$Coverage_service_time <- coverageServiceTime
+  
   # Grab the Tasks table
   tasks <- BVE$taskData
   data.table::setDT(tasks)
@@ -232,15 +248,15 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
                         "Trial_num",
                         "Year",
                         "Month",
-                        "Service_time",
+                        "Coverage_service_time",
                         "WeeksPerYr")
 
   suiteResults <- suiteResults[ , ..allocCalcColumns]
 
-  # Convert from per-month to per-year Service_time stats
+  # Convert from per-month to per-year Coverage_service_time stats
   if (annual) {
     suiteResults <-
-      suiteResults[, .(Service_time = sum(Service_time)), by = .(Task_ID,
+      suiteResults[, .(Coverage_service_time = sum(Coverage_service_time)), by = .(Task_ID,
                                                                  Year,
                                                                  Trial_num,
                                                                  Scenario_ID,
@@ -287,7 +303,7 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
 
   for (i in seq_along(srcFlds)){
     x <- suiteResults[[srcFlds[i]]]
-    x <- x * (suiteResults$Service_time) / 100.0
+    x <- x * (suiteResults$Coverage_service_time) / 100.0
     suiteResults[, (dstFlds[i]) := x]
   }
 
