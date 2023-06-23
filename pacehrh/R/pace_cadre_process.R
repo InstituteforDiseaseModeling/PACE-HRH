@@ -110,6 +110,9 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   # Apply coverage rates by multiplying coverage with num services and service time
   out <- merge(x=out, y=BVE$taskCoverageRates[,c("Indicator", "Year", "Coverage")], by.x=c("Task_ID", "Year"), by.y=c("Indicator", "Year"), all.x=TRUE)
   
+  # Clear the key data, as it's no longer needed
+  setkey(out, NULL)
+  
   coverageNumServices = out$Num_services * out$Coverage
   
   # Round Coverage_num_services to an integer, unless rounding is turned off
