@@ -30,10 +30,10 @@ loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
   }
   
   
-  # total number of years in simulation
+  # Total number of years in simulation
   simYears <- length(BVE$years) 
   
-  # all cols in coverageRatesData minus the indicator and common name cols
+  # All cols in coverageRatesData minus the indicator and common name cols
   coverageYears <- length(coverageRatesData)-2 
   
   # Extend table to include all years if sim is longer than provided columns
@@ -41,7 +41,7 @@ loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
     coverageRatesData[sprintf("Year %d", seq(coverageYears, simYears-1))] <- NA
   }
   
-  # get the new header values
+  # Get the new header values
   hr <- colnames(coverageRatesData)
   
   # Strip out "Year" from the header names and shift colnames to index from the 
