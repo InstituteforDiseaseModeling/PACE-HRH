@@ -107,12 +107,11 @@ The **Scenarios** sheet is the primary sheet that controls inputs to the model. 
   set as targets by a government healthcare program, such as the size of the population each
   primary healthcare facility is expected to serve. Value typically range from 5,000 to 20,000.
 * **o_PopGrowth** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the growth of the population. If set to TRUE, the population size will grow at a rate dependent on the fertility and mortality (set elsewhere). If set to FALSE, the population pyramid will evolve per the fertility and mortality, but the total population will be normalized to the **BaselinePop** value every year, stabilizing population size. This is to be used for debugging and sensitivity analysis.
-* **o_Seasonality** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the seasonality. If set to TRUE, seasonality curves will be applied to the relevant tasks (set elsewhere). If set to FALSE, seasonality will be turned off. This is to be used for debugging and sensitivity analysis.
 * **o_Fertility_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the annual change in the fertility rate. If set to TRUE, fertility rates will decline over time (set elsewhere). If set to FALSE, fertility will remain stable at the level set for the first year of the simulation. This is to be used for debugging and sensitivity analysis.
 * **o_MHIVTB_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the annual change (as specified by the delta) in the incidence rates for malaria, HIV, and TB. If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. For a task that has a **AnnualDeltaRatio** of exactly 1.0, this option will not have any effect. This is to be used for debugging and sensitivity analysis.
 * **o_ChildDis_decr** Typically this should be set to TRUE. Optionally, this true/false binary value turns on or off the annual change (as specified by the delta) in the incidence rates for childhood disease tasks. These are defined within the model as any tasks that are applied to the age 1-4 population, as specified in the population column on the **Task Values** sheet. It does not include those that are specific to a subset (e.g., 1 yo). If set to TRUE, incidence rates will decline over time (set elsewhere). If set to FALSE, these rates will remain stable at the level set for the first year of the simulation. For a task that has a **AnnualDeltaRatio** of exactly 1.0, this option will not have any effect. This is to be used for debugging and sensitivity analysis.
-* **sheet_** columns K through N: The name of the sheets to use as inputs for **TaskValues**, 
-  **PopValues**, **SeasonalityCurves**, and **Cadres** in the model. The function and format of each of those sheets is described in more detail below.
+* **sheet_** columns I through M: The name of the sheets to use as inputs for **TaskValues**, 
+  **PopValues**, **SeasonalityCurves**, **TaskAllocByCadre**, and **Coverage** in the model. The function and format of each of those sheets is described in more detail below.
 * **DeliveryModel**: A text description for the healthcare delivery model scenario. This is for user reference only and does not change how the model functions.
 * **Geography_dontedit**: Informational field that is populated by the **RegionSelect** sheet. Do not edit here, as it will not affect the functioning of the model but is automatically used for naming the results files and may result in confusion if it is changed manually.
 
@@ -148,7 +147,7 @@ stochastic distributions around various parameter values. See the table below fo
 | Annual delta mortality rates                                  | Truncated normal*        | delta, p, q      | $$mean = delta$$ $$std.dev. = p$$ $$a = mean - p*q$$ $$b = mean + p*q$$ | 
 | Annual delta incidence rates <br />(**TaskValues** column L)  | Truncated normal*        | delta, p, q      | $$mean = delta$$ $$std.dev. = p$$ $$a = mean - p*q$$ $$b = mean + p*q$$ |
 | Seasonality ratio to mean                                     | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |
-| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | $$sdlog = \sqrt{log(1 + (\frac{p}{mean})^2)}$$ $$meanlog = log(mean)-\frac{log(1 + (\frac{p}{mean})^2))}{2}$$ |
+| Minutes per contact <br />(optional; **TaskValues** column O) | Lognormal                | mean, p          | $$sdlog = \sqrt{log(1 + (\frac{p}{mean})^2)}$$ $$meanlog = log(mean)-\frac{log(1 + (\frac{p}{mean})^2)}{2}$$ |
 | Hours per week <br />(optional; **TaskValues** column P)      | Uniform                  | mean, p          | $$min = mean - mean*p$$ $$max = mean + mean*p$$ |     
 
 \* Truncated normal can be done in R using the truncnorm package.  
@@ -184,6 +183,16 @@ one used as an input to the model, so values can be changed directly here if you
   below 1 indicates the rate is decreasing. For example, the age 15-19 initial fertility rate of 0.072 will be 0.0712 (0.72 * 0.988469278) after one year.
 * **ValueCode**: The unique string identifying the category. These are useful when analyzing model 
   outputs. 
+
+### ChangeRateLimits
+
+The **ChangeRateLimits** sheet sets limits on cumulative rate of change applied to the mortality, fertility, and incidence rates over the course of the simulation. These limits restrain the predicted values of the rates inside the range considered reasonable by the user. For example, if the user believes that over the course of the simulation, the fertility rates should never decline to 50% of the starting level, the user should set a lower limit of 0.5 for the fertility rates category. The user has the flexibility to set either one or both of upper and lower limits. 
+
+#### Parameters
+
+* **RateCategory**: Category of the rates that the upper and lower limits can be applied to. Applicable rate categories include **Mortality**, **Fertility**, and **Incidence**. This column shouldn't be modified unless you plan to add functionality to the model itself.
+* **Min**: The lower limit of permissible cumulative change in rates, expressed as a ratio to the rate values at the beginning of the simulation. **Min** must be greater than 0. For example, with a **Min** value of 0.6 set for the rate category "Mortality", the initial mortality rates are multiplied by 0.6 to establish lower limits for predicted mortality rates over the course of the simulation. Any predicted mortality rates below these lower limits would be replaced by the lower limits by the model. If **Min** is left empty for any **RateCategory**, the model would run without imposing a lower limit on cumulative change for this **RateCategory**.
+* **Max**: The upper limit of permissible cumulative change in rates, expressed as a ratio to the rate values at the beginning of the simulation. **Max** must be greater than 0. For example, with a **Max** value of 1.1 set for the rate category "Mortality", the initial mortality rates are multiplied by 1.1 to establish upper limits for predicted mortality rates over the course of the simulation. Any predicted mortality rates above these upper limits would be replaced by the upper limits by the model. If **Max** is left empty for any **RateCategory**, the model would run without imposing an upper limit on cumulative change for this **RateCategory**.For each **RateCategory**, the value set for **Max** must be greater than or equal to the value set for **Min**.
 
 ### TaskValues
 
@@ -233,6 +242,18 @@ to the model. Columns G through I do not affect the running of the model, but ar
   with an individual. This value should typically range between 5 and 30 minutes. 
 * **HoursPerWeek**: The number of hours per week a healthcare workers spends on a task, usually a non-clinical task that is not directly related to population rates. For example, there may be a few hours of weekly administrative tasks required, regardless of clinical care provided. Community engagement, outreach, and supply management may also be tasks with this dynamic.
 
+### CoverageRates
+
+The **CoverageRates** sheets specify the service coverage rates for healthcare tasks from the beginning year of the simulation to the ending year of the simulation. The user has the flexibility to specify coverage rates for as many or few tasks as they prefer. Each row represents a healthcare task. Columns A and B reference the healthcare tasks as listed in **TaskValues** sheets. In columns C through W, the user enters any value between zero and one, which is used as a fixed coverage level for that task in the year indicated by the column name. The default sheet max out at 20 years, since extrapolation beyond that is a questionable choice. If a task is missing from the sheet, or the values are not filled in, the model will assume 100% coverage for that year-task combination. 
+
+You can provide one or more **CoverageRates** sheets that describe different potential paths for coverage scale-up. These sheets are specified as inputs to the model via the **Scenarios** sheet in the column **sheet_Coverage**, so that the user can easily run coverage comparisons. For example, by default the **CoverageRates_SlowRamp** sheet is used in all three scenarios. When multiple scenarios using different **TaskValues** sheets share the same **CoverageRates** sheet like in this case, it is okay for a **TaskValues** sheet to not contain all the tasks listed in the **CoverageRates** sheet. If a task listed in a  **CoverageRates** sheet cannot be found in the **TaskValues** sheet used in the same scenario, this task will be ignored by the model. For example, "FH.MN.ANC.2" is not in **TV_Merged**, therefore the model will ignore this task when doing calculations for the **MergedModel** scenario, and will only incorporate coverage rates for the tasks the **TV_Merged** sheet contains, such as "FH.MN.ANC.1" and "FH.MN.PNC.7".
+
+#### Parameters
+
+* **Indicator**: Unique identifier for healthcare tasks, used to match the **Indicator** column in the **TaskValues** sheets.
+* **CommonName**: The human-readable common name for the task.
+* **Year ** columns C through W: Service coverage rate for the healthcare task in each year over the course of the simulation. The column name indicates the year that the coverage rates are applied to. For example, column **Year 0** contains values for task-specific coverage rates at the beginning of the simulation, and column **Year 1** contains coverage rate values applied to the first year of the simulation. The values must be between zero and one: from no coverage to 100% coverage for the task-year combination. For example, in the **CoverageRate_SlowRamp** sheet, you see the coverage rate for ANC visits starts at 50% in the beginning year of the simulation, and ends at 95% in the ending year of the 20-year simulation. If the values are not filled in, the model will assume 100% coverage for that year-task combination. 
+
 ### SeasonalityCurves
 
 The **SeasonlityCurves** sheet describes birth seasonality and the seasonality of conditions like
@@ -250,7 +271,6 @@ If you do so, you can then reference them on the **SeasonalityOffsets** tab.
 
 The **SeasonalityCurves** tab is referenced in the **Scenarios** manager. If you want to run scenarios with 
 different seasonality curves, you can duplicate the **SeasonalityCurves** tab, modify it, and reference the different tabs in the **Scenarios** column M.
-
 
 ### SeasonalityOffsets
 
@@ -276,26 +296,29 @@ malnutrition diagnosed in 2029 will not be included. We recommend ignoring the f
 if you expect this will be a major concern. This edge effect is handled on the final year of the 
 simulation by running the model forward an additional year and adjusting for negative offset tasks. 
 
-### Cadres
+### CadreRoles
 
-The **Cadres** sheets define the type of clinician (community health worker, nurse, doctor, etc.)
-responsible for each type of healthcare task. You may have one or more of these sheets for the
-scenarios you are modeling. The cadre used for each scenario is defined in the **Scenarios** sheet
-in the column **sheet_Cadre**. It's very important that every task value unique identifier appears in
-the **Cadres** sheets because otherwise the tasks will be unassigned and thus uncounted. If you have unexpectedly low workload assigned to certain cadres of workers, this is a possible source of the error.
+Each scenario listed in the **Scenarios** sheet should have a staffing model detailed on the **CadreRoles** sheet. Columns **ScenarioID**, **RoleID**, **StartYear**, and **EndYear** jointly specify the staffing model for a scenario, and the same staffing model is used by **TaskAllocByCadre** sheets. Each row represents an individual healthcare worker with a unique **RoleID**, and healthcare tasks are allocated to this **RoleID** from **StartYear** to **EndYear**. Each scenario can have multiple healthcare workers. For example, in the default example, a staffing model for each of the three scenarios ("ComprehensiveMode", "BasicModel", "MergedModel") in the **Scenarios** sheet is represented in the **CadreRoles** sheet. In the "MergedModel" scenario, allocation of healthcare tasks to two health extension workers ("HEW1" & "HEW2") started in 2020. The allocation ended for "HEW1" in 2029 and for "HEW2" in 2034. **RoleID** and **StartYear** also appear on **TaskAllocByCadre** sheets, and the combination on both sheets must match.
 
-For example, the default Ethiopian example has some tasks being shifted from certain
-cadres of workers to other workers over time as staffing shifts, and each scenario models this
-shift in responsibilities slightly differently. The numbers and names of the columns can be
-changed, but the must be consistent across all sheets and must use the format of YY_CadreName where YY is the last two digits in a year, such as YY=30 for 2030. The year represents the first year in which this allocation is made; the allocation remains in place for the remaining years unless an additional assignment is made. 
+The user should record hours healthcare workers spend on participating in meetings, receiving supervision, and  giving and receiving training in the column **OverheadHoursPerWeek**, since they should be accounted for separately from healthcare tasks listed in **TaskValues** sheets.
 
-The total column isn't fed into the model, but is a visual check to be sure the staff assignments sum to 100% correctly. If the total column is above or below 100%, this will result in either under-assignment or duplicative assignment of task time. If you have unexpected workload assigned to certain cadres of workers, this is a possible source of the error.
+#### Parameters
+* **ScenarioID**: The name of the scenario to model, should match the **UniqueID** column in the **Scenarios** sheet. If a scenario is not listed, allocation of healthcare tasks to healthcare workers can't be made. 
+* **RoleID**: The unique identifier for each healthcare worker responsible for the healthcare tasks in each scenario, selected via a drop-down menu. This identifier must be unique in the same scenario, but can repeat across scenarios. For example, in the "MergedModel" scenario,  healthcare tasks are allocated among four healthcare workers through the course of the simulation, each healthcare worker with their own **RoleID**: two of them are health extension workers ("HEW1" & "HEW2"),  and the other two are family health professionals ("FHP1" & "FHP2").   
+* **RoleDescription**: A text description for the type of healthcare worker (community health worker, nurse, doctor, etc.) Each scenario could have multiple healthcare workers with the same **RoleDescription**. This field can be useful in post-processing steps for grouping healthcare workers into cadres.
+* **OverheadHoursPerWeek**: Number of hours per week a clinician is expected to perform tasks including meetings, training and supervision. 
+* **StartYear**: The first year in which the **RoleID** is assigned healthcare tasks in each scenario.
+* **EndYear**: The last year in which the **RoleID** is assigned healthcare tasks in each scenario. If **EndYear** is left empty, the model will use the default value of the last year of the simulation.
 
-For example, in the **Cadres_Comprehensive** sheet, you see the ANC visits start out as being solely
-the responsibility of the Health Extension Workers (HEWs) and then shift entirely to a cadre of new
-midwife staff members in 2025. A more complex example is the Pneumonia (ARI) tasks, which start as
-the responsibility of the HEWs and then gradually shift to the Health Officers, Family Health
-Officer, and Nurses. 
+### TaskAllocByCadre
+
+The **TaskAllocByCadre** sheets use the staffing models detailed in **CadreRoles** sheet and define the **RoleID** responsible for each healthcare task. You may have one or more of these sheets for the scenarios you are modeling. The **TaskAllocByCadre** sheet used for each scenario is defined in the **Scenarios**  sheet in the column **sheet_Cadre**. Each **TaskAllocByCadre** sheet is paired with the **TaskValue** sheet used in the same scenario. It's very important that every **Indicator** from the paired **TaskValue** sheet appears in the **TaskAllocByCadre** sheet because otherwise the tasks will be unassigned and thus uncounted. If you have unexpectedly low workload assigned to certain cadres of workers, this is a possible source of the error.
+
+The numbers and names of the columns can be changed, but they must be specified in the format of two-level header comprising the first and second rows of the sheet. The first row should be in the format StartYearYYYY (e.g., StartYear2030) where YYYY represents the first year in which this allocation is made; the allocation remains in place for the remaining years unless an additional assignment is made. The second row contains **RoleID** selected via a drop-down menu. The first row and second row jointly reference the staffing model detailed in the **CadreRoles** sheet.
+
+For example, the default Ethiopian example has some tasks being shifted from certain cadres of workers to other workers over time as staffing shifts, and each scenario models this shift in responsibilities slightly differently. In the **TaskAllocByCadre_Comprehensive** sheet, you see the ANC visits start out as being solely the responsibility of the Health Extension Workers ("HEW1" & "HEW2") and then shift entirely to a cadre of new midwife staff members ("MW") in 2025. A more complex example is the Pneumonia (ARI) tasks, which start as the responsibility of "HEW1" & "HEW2" and then gradually shift to the Health Officers ("HO"), Family Health Officer ("FHP1"), and Nurses ("RN"). 
+
+The **Total** column isn't fed into the model, but is a visual check to be sure the staff assignments sum to 100% correctly. If the **Total** column is above or below 100%, this will result in either under-assignment or duplicative assignment of task time. If you have unexpected workload assigned to certain cadres of workers, this is a possible source of the error.
 
 ### RegionalData
 
