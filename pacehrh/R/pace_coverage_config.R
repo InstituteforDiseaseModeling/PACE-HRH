@@ -8,71 +8,78 @@
 #'
 #' @return Data table of per-year task coverage levels
 #'
-loadCoverageRates <- function(sheetName = .defaultCoverageRatesSheet){
-  traceMessage(paste0("Loading task coverage rates sheet ", sheetName))
-  
-  coverageRatesData <- NULL
-  
-  coverageRatesData <- loadTable(sheet = sheetName) # loadTable does validation
-  
-  hr <- colnames(coverageRatesData)
-  
-  # Sanity check: first two columns should be indicator and common name:
-  if (!identical(hr[1:2], c("Indicator", "CommonName"))) {
-    traceMessage(
-      paste0(
-        "Incorrect coverage rate config header names: (",
-        as.character(hr),
-        ")"
+loadCoverageRates <-
+  function(sheetName = .defaultCoverageRatesSheet) {
+    traceMessage(paste0("Loading task coverage rates sheet ", sheetName))
+
+    coverageRatesData <- loadTable(sheet = sheetName)
+
+    if (is.null(coverageRatesData)) {
+      return(NULL)
+    }
+
+    hr <- colnames(coverageRatesData)
+
+    # Sanity check: first two columns should be Indicator and CommonName
+    if (!identical(hr[1:2], c("Indicator", "CommonName"))) {
+      traceMessage(paste0(
+        "Incorrect coverage rate config header names: ",
+        paste0(hr[1:2], collapse = "; ")
+      ))
+
+      return(NULL)
+    }
+
+    headerYears <- as.numeric(gsub("Year ", "", hr[-(1:2)])) + BVE$years[1]
+
+    # Sanity check: year offsets should be contiguous
+    minYear <- min(headerYears)
+    maxYear <- max(headerYears)
+    if (!identical(headerYears, seq(minYear, maxYear, 1))) {
+      traceMessage("Missing years in coverage rate headers")
+      return(NULL)
+    }
+
+    # Update columns names with year values
+    colnames(coverageRatesData) <- c(hr[1:2], as.character(headerYears))
+
+    # If there are any missing years, add new columns
+    missingYears <- setdiff(BVE$years, headerYears)
+    if (length(missingYears) > 0) {
+      coverageRatesData[sprintf("%d", missingYears)] <- NA
+    }
+
+    # Add any remaining tasks for this scenario
+    coverageRatesData <-
+      merge(
+        BVE$taskData[, c("Indicator", "CommonName")],
+        coverageRatesData,
+        by = c("Indicator", "CommonName"),
+        all.x = TRUE
       )
-    )
-    return(NULL)
+
+    # All missing values are assumed to be 1.0
+    coverageRatesData[is.na(coverageRatesData)] <- 1.0
+
+    # Make the data tidy
+    tidyCoverageRatesData <-
+      pivot_longer(coverageRatesData,
+                   !(c("Indicator", "CommonName")),
+                   names_to = "Year",
+                   values_to = "Coverage")
+
+    # Convert year to numeric from char
+    tidyCoverageRatesData$Year <-
+      as.numeric(tidyCoverageRatesData$Year)
+
+    return(tidyCoverageRatesData)
   }
-  
-  
-  # Total number of years in simulation
-  simYears <- length(BVE$years) 
-  
-  # All cols in coverageRatesData minus the indicator and common name cols
-  coverageYears <- length(coverageRatesData)-2 
-  
-  # Extend table to include all years if sim is longer than provided columns
-  if (simYears > coverageYears) {
-    coverageRatesData[sprintf("Year %d", seq(coverageYears, simYears-1))] <- NA
-  }
-  
-  # Get the new header values
-  hr <- colnames(coverageRatesData)
-  
-  # Strip out "Year" from the header names and shift colnames to index from the 
-  # start year
-  cleanHeaders <- gsub("Year ", "", hr)
-  cleanHeaders <- c(cleanHeaders[1:2], paste(as.integer(cleanHeaders[3:length(cleanHeaders)]) + BVE$years[1]))
-  colnames(coverageRatesData) <- cleanHeaders
-  
-  # Add any remaining tasks for this scenario
-  coverageRatesData <- merge(BVE$taskData[,c("Indicator","CommonName")], coverageRatesData, by=c("Indicator","CommonName"), all.x=TRUE)
 
-  # All missing values are assumed to be 1.0
-  coverageRatesData[is.na(coverageRatesData)] <- 1.0
-  
-  # Make the data tidy
-  tidyCoverageRatesData <-
-    pivot_longer(coverageRatesData, !(c("Indicator", "CommonName")), 
-                 names_to="Year",
-                 values_to="Coverage")
-
-  # Convert year to numeric from char
-  tidyCoverageRatesData$Year <- as.numeric(tidyCoverageRatesData$Year)
-  
-  return(tidyCoverageRatesData)
-}
-
-.InitializeCoverageRates <- function(...){
+.InitializeCoverageRates <- function(...) {
   .checkAndLoadGlobalConfig()
-  
+
   coverageRatesData <- loadCoverageRates(...)
-  
+
   BVE$taskCoverageRates <- coverageRatesData
   return(invisible(NULL))
 }
