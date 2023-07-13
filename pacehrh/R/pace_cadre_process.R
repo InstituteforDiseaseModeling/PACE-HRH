@@ -91,7 +91,7 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   if (is.null(results)) {
     return(NULL)
   }
-  
+
   trialIds <- names(results)
   scenario <- BVE$scenario$UniqueID
 
@@ -106,29 +106,37 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   })
 
   out <- data.table::rbindlist(l)
-  
-  # Apply coverage rates by multiplying coverage with num services and service time
-  out <- merge(x=out, y=BVE$taskCoverageRates[,c("Indicator", "Year", "Coverage")], by.x=c("Task_ID", "Year"), by.y=c("Indicator", "Year"), all.x=TRUE)
-  
+
+  # Apply coverage rates by multiplying coverage with num services and service
+  # time
+  out <-
+    merge(
+      x = out,
+      y = BVE$taskCoverageRates[, c("Indicator", "Year", "Coverage")],
+      by.x = c("Task_ID", "Year"),
+      by.y = c("Indicator", "Year"),
+      all.x = TRUE
+    )
+
   # Clear the key data, as it's no longer needed
   setkey(out, NULL)
-  
+
   coverageNumServices = out$Num_services * out$Coverage
-  
+
   # Round Coverage_num_services to an integer, unless rounding is turned off
   if (GPE$roundingLaw != "none"){
     coverageNumServices <- round(coverageNumServices, 0)
   }
-  
+
   out$Coverage_num_services <- coverageNumServices
 
-  
+
   # Convert Service_time from minutes to hours
   out$Service_time <- out$Service_time / 60.0
-  
+
   coverageServiceTime = out$Service_time * out$Coverage
   out$Coverage_service_time <- coverageServiceTime
-  
+
   # Grab the Tasks table
   tasks <- BVE$taskData
   data.table::setDT(tasks)
