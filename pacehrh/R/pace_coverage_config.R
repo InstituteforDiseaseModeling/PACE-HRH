@@ -47,6 +47,11 @@ loadCoverageRates <-
     missingYears <- setdiff(BVE$years, headerYears)
     if (length(missingYears) > 0) {
       coverageRatesData[sprintf("%d", missingYears)] <- NA
+
+      traceMessage(
+        paste0("Mis-match between simulation years and coverage levels. The following years were added at 100% coverage: ",
+               paste0(missingYears, collapse = ", "))
+      )
     }
 
     # Add any remaining tasks for this scenario
