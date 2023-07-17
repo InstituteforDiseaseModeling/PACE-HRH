@@ -259,6 +259,7 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
                         "Trial_num",
                         "Year",
                         "Month",
+                        "Service_time",
                         "Coverage_service_time",
                         "WeeksPerYr")
 
