@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.9</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
                         <h4 data-toc-skip class="author">Jen
 Schripsema</h4>
             
-            <h4 data-toc-skip class="date">2023-06-20</h4>
+            <h4 data-toc-skip class="date">2023-07-17</h4>
       
       
       <div class="hidden name"><code>pacehrh.rmd</code></div>
@@ -228,13 +228,6 @@ mortality, but the total population will be normalized to the
 <strong>BaselinePop</strong> value every year, stabilizing population
 size. This is to be used for debugging and sensitivity analysis.</li>
 <li>
-<strong>o_Seasonality</strong> Typically this should be set to TRUE.
-Optionally, this true/false binary value turns on or off the
-seasonality. If set to TRUE, seasonality curves will be applied to the
-relevant tasks (set elsewhere). If set to FALSE, seasonality will be
-turned off. This is to be used for debugging and sensitivity
-analysis.</li>
-<li>
 <strong>o_Fertility_decr</strong> Typically this should be set to
 TRUE. Optionally, this true/false binary value turns on or off the
 annual change in the fertility rate. If set to TRUE, fertility rates
@@ -266,11 +259,12 @@ year of the simulation. For a task that has a
 have any effect. This is to be used for debugging and sensitivity
 analysis.</li>
 <li>
-<strong>sheet_</strong> columns K through N: The name of the sheets
+<strong>sheet_</strong> columns I through M: The name of the sheets
 to use as inputs for <strong>TaskValues</strong>,
-<strong>PopValues</strong>, <strong>SeasonalityCurves</strong>, and
-<strong>Cadres</strong> in the model. The function and format of each of
-those sheets is described in more detail below.</li>
+<strong>PopValues</strong>, <strong>SeasonalityCurves</strong>,
+<strong>TaskAllocByCadre</strong>, and <strong>Coverage</strong> in the
+model. The function and format of each of those sheets is described in
+more detail below.</li>
 <li>
 <strong>DeliveryModel</strong>: A text description for the
 healthcare delivery model scenario. This is for user reference only and
@@ -415,7 +409,7 @@ mean*p\]</span>
 <td align="left">
 <span class="math display">\[sdlog = \sqrt{log(1 +
 (\frac{p}{mean})^2)}\]</span> <span class="math display">\[meanlog =
-log(mean)-\frac{log(1 + (\frac{p}{mean})^2))}{2}\]</span>
+log(mean)-\frac{log(1 + (\frac{p}{mean})^2)}{2}\]</span>
 </td>
 </tr>
 <tr class="odd">
@@ -499,6 +493,59 @@ category. These are useful when analyzing model outputs.</li>
 </div>
 </div>
 <div class="section level4">
+<h4 id="changeratelimits">ChangeRateLimits<a class="anchor" aria-label="anchor" href="#changeratelimits"></a>
+</h4>
+<p>The <strong>ChangeRateLimits</strong> sheet sets limits on cumulative
+rate of change applied to the mortality, fertility, and incidence rates
+over the course of the simulation. These limits restrain the predicted
+values of the rates inside the range considered reasonable by the user.
+For example, if the user believes that over the course of the
+simulation, the fertility rates should never decline to 50% of the
+starting level, the user should set a lower limit of 0.5 for the
+fertility rates category. The user has the flexibility to set either one
+or both of upper and lower limits.</p>
+<div class="section level5">
+<h5 id="parameters-3">Parameters<a class="anchor" aria-label="anchor" href="#parameters-3"></a>
+</h5>
+<ul>
+<li>
+<strong>RateCategory</strong>: Category of the rates that the upper
+and lower limits can be applied to. Applicable rate categories include
+<strong>Mortality</strong>, <strong>Fertility</strong>, and
+<strong>Incidence</strong>. This column shouldn’t be modified unless you
+plan to add functionality to the model itself.</li>
+<li>
+<strong>Min</strong>: The lower limit of permissible cumulative
+change in rates, expressed as a ratio to the rate values at the
+beginning of the simulation. <strong>Min</strong> must be greater than
+0. For example, with a <strong>Min</strong> value of 0.6 set for the
+rate category “Mortality”, the initial mortality rates are multiplied by
+0.6 to establish lower limits for predicted mortality rates over the
+course of the simulation. Any predicted mortality rates below these
+lower limits would be replaced by the lower limits by the model. If
+<strong>Min</strong> is left empty for any
+<strong>RateCategory</strong>, the model would run without imposing a
+lower limit on cumulative change for this
+<strong>RateCategory</strong>.</li>
+<li>
+<strong>Max</strong>: The upper limit of permissible cumulative
+change in rates, expressed as a ratio to the rate values at the
+beginning of the simulation. <strong>Max</strong> must be greater than
+0. For example, with a <strong>Max</strong> value of 1.1 set for the
+rate category “Mortality”, the initial mortality rates are multiplied by
+1.1 to establish upper limits for predicted mortality rates over the
+course of the simulation. Any predicted mortality rates above these
+upper limits would be replaced by the upper limits by the model. If
+<strong>Max</strong> is left empty for any
+<strong>RateCategory</strong>, the model would run without imposing an
+upper limit on cumulative change for this <strong>RateCategory</strong>.
+For each <strong>RateCategory</strong>, the value set for
+<strong>Max</strong> must be greater than or equal to the value set for
+<strong>Min</strong>.</li>
+</ul>
+</div>
+</div>
+<div class="section level4">
 <h4 id="taskvalues">TaskValues<a class="anchor" aria-label="anchor" href="#taskvalues"></a>
 </h4>
 <p>The <strong>TaskValues</strong> sheets describe the specific
@@ -530,7 +577,7 @@ contacts with the healthcare system are required for a given task, how
 long each contact takes, and the number of proportion of people that
 received care.</p>
 <div class="section level5">
-<h5 id="parameters-3">Parameters<a class="anchor" aria-label="anchor" href="#parameters-3"></a>
+<h5 id="parameters-4">Parameters<a class="anchor" aria-label="anchor" href="#parameters-4"></a>
 </h5>
 <ul>
 <li>
@@ -614,6 +661,69 @@ management may also be tasks with this dynamic.</li>
 </div>
 </div>
 <div class="section level4">
+<h4 id="coveragerates">CoverageRates<a class="anchor" aria-label="anchor" href="#coveragerates"></a>
+</h4>
+<p>The <strong>CoverageRates</strong> sheets specify the service
+coverage rates for healthcare tasks from the beginning year of the
+simulation to the ending year of the simulation. The user has the
+flexibility to specify coverage rates for as many or few tasks as they
+prefer. Each row represents a healthcare task. Columns A and B reference
+the healthcare tasks as listed in <strong>TaskValues</strong> sheets. In
+columns C through W, the user enters any value between zero and one,
+which is used as a fixed coverage level for that task in the year
+indicated by the column name. The default sheet max out at 20 years,
+since extrapolation beyond that is a questionable choice. If a task is
+missing from the sheet, or the values are not filled in, the model will
+assume 100% coverage for that year-task combination.</p>
+<p>You can provide one or more <strong>CoverageRates</strong> sheets
+that describe different potential paths for coverage scale-up. These
+sheets are specified as inputs to the model via the
+<strong>Scenarios</strong> sheet in the column
+<strong>sheet_Coverage</strong>, so that the user can easily run
+coverage comparisons. For example, by default the
+<strong>CoverageRates_SlowRamp</strong> sheet is used in all three
+scenarios. When multiple scenarios using different
+<strong>TaskValues</strong> sheets share the same
+<strong>CoverageRates</strong> sheet like in this case, it is okay for a
+<strong>TaskValues</strong> sheet to not contain all the tasks listed in
+the <strong>CoverageRates</strong> sheet. If a task listed in a
+<strong>CoverageRates</strong> sheet cannot be found in the
+<strong>TaskValues</strong> sheet used in the same scenario, this task
+will be ignored by the model. For example, “FH.MN.ANC.2” is not in
+<strong>TV_Merged</strong>, therefore the model will ignore this task
+when doing calculations for the <strong>MergedModel</strong> scenario,
+and will only incorporate coverage rates for the tasks the
+<strong>TV_Merged</strong> sheet contains, such as “FH.MN.ANC.1” and
+“FH.MN.PNC.7”.</p>
+<div class="section level5">
+<h5 id="parameters-5">Parameters<a class="anchor" aria-label="anchor" href="#parameters-5"></a>
+</h5>
+<ul>
+<li>
+<strong>Indicator</strong>: Unique identifier for healthcare tasks,
+used to match the <strong>Indicator</strong> column in the
+<strong>TaskValues</strong> sheets.</li>
+<li>
+<strong>CommonName</strong>: The human-readable common name for the
+task.</li>
+<li>
+<strong>Year </strong> columns C through W: Service coverage rate
+for the healthcare task in each year over the course of the simulation.
+The column name indicates the year that the coverage rates are applied
+to. For example, column <strong>Year 0</strong> contains values for
+task-specific coverage rates at the beginning of the simulation, and
+column <strong>Year 1</strong> contains coverage rate values applied to
+the first year of the simulation. The values must be between zero and
+one: from no coverage to 100% coverage for the task-year combination.
+For example, in the <strong>CoverageRate_SlowRamp</strong> sheet, you
+see the coverage rate for ANC visits starts at 50% in the beginning year
+of the simulation, and ends at 95% in the ending year of the 20-year
+simulation. If the values are not filled in, the model will assume 100%
+coverage for that year-task combination.</li>
+</ul>
+</div>
+</div>
+<div class="section level4">
 <h4 id="seasonalitycurves">SeasonalityCurves<a class="anchor" aria-label="anchor" href="#seasonalitycurves"></a>
 </h4>
 <p>The <strong>SeasonlityCurves</strong> sheet describes birth
@@ -669,40 +779,118 @@ by running the model forward an additional year and adjusting for
 negative offset tasks.</p>
 </div>
 <div class="section level4">
-<h4 id="cadres">Cadres<a class="anchor" aria-label="anchor" href="#cadres"></a>
+<h4 id="cadreroles">CadreRoles<a class="anchor" aria-label="anchor" href="#cadreroles"></a>
 </h4>
-<p>The <strong>Cadres</strong> sheets define the type of clinician
-(community health worker, nurse, doctor, etc.) responsible for each type
-of healthcare task. You may have one or more of these sheets for the
-scenarios you are modeling. The cadre used for each scenario is defined
-in the <strong>Scenarios</strong> sheet in the column
-<strong>sheet_Cadre</strong>. It’s very important that every task value
-unique identifier appears in the <strong>Cadres</strong> sheets because
-otherwise the tasks will be unassigned and thus uncounted. If you have
-unexpectedly low workload assigned to certain cadres of workers, this is
-a possible source of the error.</p>
+<p>Each scenario listed in the <strong>Scenarios</strong> sheet should
+have a staffing model detailed on the <strong>CadreRoles</strong> sheet.
+Columns <strong>ScenarioID</strong>, <strong>RoleID</strong>,
+<strong>StartYear</strong>, and <strong>EndYear</strong> jointly specify
+the staffing model for a scenario, and the same staffing model is used
+by <strong>TaskAllocByCadre</strong> sheets. Each row represents an
+individual healthcare worker with a unique <strong>RoleID</strong>, and
+healthcare tasks are allocated to this <strong>RoleID</strong> from
+<strong>StartYear</strong> to <strong>EndYear</strong>. Each scenario
+can have multiple healthcare workers. For example, in the default
+example, a staffing model for each of the three scenarios
+(“ComprehensiveMode”, “BasicModel”, “MergedModel”) in the
+<strong>Scenarios</strong> sheet is represented in the
+<strong>CadreRoles</strong> sheet. In the “MergedModel” scenario,
+allocation of healthcare tasks to two health extension workers (“HEW1”
+&amp; “HEW2”) started in 2020. The allocation ended for “HEW1” in 2029
+and for “HEW2” in 2034. <strong>RoleID</strong> and
+<strong>StartYear</strong> also appear on
+<strong>TaskAllocByCadre</strong> sheets, and the combination on both
+sheets must match.</p>
+<p>The user should record hours healthcare workers spend on
+participating in meetings, receiving supervision, and giving and
+receiving training in the column <strong>OverheadHoursPerWeek</strong>,
+since they should be accounted for separately from healthcare tasks
+listed in <strong>TaskValues</strong> sheets.</p>
+<div class="section level5">
+<h5 id="parameters-6">Parameters<a class="anchor" aria-label="anchor" href="#parameters-6"></a>
+</h5>
+<ul>
+<li>
+<strong>ScenarioID</strong>: The name of the scenario to model,
+should match the <strong>UniqueID</strong> column in the
+<strong>Scenarios</strong> sheet. If a scenario is not listed,
+allocation of healthcare tasks to healthcare workers can’t be made.</li>
+<li>
+<strong>RoleID</strong>: The unique identifier for each healthcare
+worker responsible for the healthcare tasks in each scenario, selected
+via a drop-down menu. This identifier must be unique in the same
+scenario, but can repeat across scenarios. For example, in the
+“MergedModel” scenario, healthcare tasks are allocated among four
+healthcare workers through the course of the simulation, each healthcare
+worker with their own <strong>RoleID</strong>: two of them are health
+extension workers (“HEW1” &amp; “HEW2”), and the other two are family
+health professionals (“FHP1” &amp; “FHP2”).<br>
+</li>
+<li>
+<strong>RoleDescription</strong>: A text description for the type of
+healthcare worker (community health worker, nurse, doctor, etc.) Each
+scenario could have multiple healthcare workers with the same
+<strong>RoleDescription</strong>. This field can be useful in
+post-processing steps for grouping healthcare workers into cadres.</li>
+<li>
+<strong>OverheadHoursPerWeek</strong>: Number of hours per week a
+clinician is expected to perform tasks including meetings, training and
+supervision.</li>
+<li>
+<strong>StartYear</strong>: The first year in which the
+<strong>RoleID</strong> is assigned healthcare tasks in each
+scenario.</li>
+<li>
+<strong>EndYear</strong>: The last year in which the
+<strong>RoleID</strong> is assigned healthcare tasks in each scenario.
+If <strong>EndYear</strong> is left empty, the model will use the
+default value of the last year of the simulation.</li>
+</ul>
+</div>
+</div>
+<div class="section level4">
+<h4 id="taskallocbycadre">TaskAllocByCadre<a class="anchor" aria-label="anchor" href="#taskallocbycadre"></a>
+</h4>
+<p>The <strong>TaskAllocByCadre</strong> sheets use the staffing models
+detailed in <strong>CadreRoles</strong> sheet and define the
+<strong>RoleID</strong> responsible for each healthcare task. You may
+have one or more of these sheets for the scenarios you are modeling. The
+<strong>TaskAllocByCadre</strong> sheet used for each scenario is
+defined in the <strong>Scenarios</strong> sheet in the column
+<strong>sheet_Cadre</strong>. Each <strong>TaskAllocByCadre</strong>
+sheet is paired with the <strong>TaskValue</strong> sheet used in the
+same scenario. It’s very important that every <strong>Indicator</strong>
+from the paired <strong>TaskValue</strong> sheet appears in the
+<strong>TaskAllocByCadre</strong> sheet because otherwise the tasks will
+be unassigned and thus uncounted. If you have unexpectedly low workload
+assigned to certain cadres of workers, this is a possible source of the
+error.</p>
+<p>The numbers and names of the columns can be changed, but they must be
+specified in the format of two-level header comprising the first and
+second rows of the sheet. The first row should be in the format
+StartYearYYYY (e.g., StartYear2030) where YYYY represents the first year
+in which this allocation is made; the allocation remains in place for
+the remaining years unless an additional assignment is made. The second
+row contains <strong>RoleID</strong> selected via a drop-down menu. The
+first row and second row jointly reference the staffing model detailed
+in the <strong>CadreRoles</strong> sheet.</p>
 <p>For example, the default Ethiopian example has some tasks being
 shifted from certain cadres of workers to other workers over time as
 staffing shifts, and each scenario models this shift in responsibilities
-slightly differently. The numbers and names of the columns can be
-changed, but the must be consistent across all sheets and must use the
-format of YY_CadreName where YY is the last two digits in a year, such
-as YY=30 for 2030. The year represents the first year in which this
-allocation is made; the allocation remains in place for the remaining
-years unless an additional assignment is made.</p>
-<p>The total column isn’t fed into the model, but is a visual check to
-be sure the staff assignments sum to 100% correctly. If the total column
-is above or below 100%, this will result in either under-assignment or
-duplicative assignment of task time. If you have unexpected workload
-assigned to certain cadres of workers, this is a possible source of the
-error.</p>
-<p>For example, in the <strong>Cadres_Comprehensive</strong> sheet, you
-see the ANC visits start out as being solely the responsibility of the
-Health Extension Workers (HEWs) and then shift entirely to a cadre of
-new midwife staff members in 2025. A more complex example is the
-Pneumonia (ARI) tasks, which start as the responsibility of the HEWs and
-then gradually shift to the Health Officers, Family Health Officer, and
-Nurses.</p>
+slightly differently. In the
+<strong>TaskAllocByCadre_Comprehensive</strong> sheet, you see the ANC
+visits start out as being solely the responsibility of the Health
+Extension Workers (“HEW1” &amp; “HEW2”) and then shift entirely to a
+cadre of new midwife staff members (“MW”) in 2025. A more complex
+example is the Pneumonia (ARI) tasks, which start as the responsibility
+of “HEW1” &amp; “HEW2” and then gradually shift to the Health Officers
+(“HO”), Family Health Officer (“FHP1”), and Nurses (“RN”).</p>
+<p>The <strong>Total</strong> column isn’t fed into the model, but is a
+visual check to be sure the staff assignments sum to 100% correctly. If
+the <strong>Total</strong> column is above or below 100%, this will
+result in either under-assignment or duplicative assignment of task
+time. If you have unexpected workload assigned to certain cadres of
+workers, this is a possible source of the error.</p>
 </div>
 <div class="section level4">
 <h4 id="regionaldata">RegionalData<a class="anchor" aria-label="anchor" href="#regionaldata"></a>
