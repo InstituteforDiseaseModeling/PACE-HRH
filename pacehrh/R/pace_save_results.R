@@ -293,7 +293,7 @@ SaveSuiteResults <- function(results, filepath, scenario, run){
   # row names in a column called "rn")
   DTt <- data.table::as.data.table(mt, keep.rownames = TRUE)
   DT <- data.table::melt(DTt, c("rn"))
-  names(DT) <- c("Task_ID", "Year", "Service_time")
+  names(DT) <- c("Year", "Task_ID", "Service_time")
   DTn <- as.data.table(mn, keep.rownames = TRUE)
   DTn <- data.table::melt(DTn, c("rn"))
 

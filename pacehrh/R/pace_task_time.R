@@ -24,10 +24,10 @@ TaskTimes <- function(){
     # p = prevalence rate
     n <- as.vector(prm$Total[, year][tasks$popRangeMaskPtr])
     p <- as.vector(pm[, year])
-
+    
     # Compute the number of executed tasks ("service count")
     tasksN <- n * p * taskvals[,"RateMultiplier"] * (taskvals[,"NumContactsPerUnit"] + taskvals[,"NumContactsAnnual"])
-
+    
     # Round to an integer, unless rounding is turned off
     if (GPE$roundingLaw != "none"){
       tasksN <- round(tasksN, 0)

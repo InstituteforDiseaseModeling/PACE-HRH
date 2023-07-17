@@ -61,6 +61,7 @@ NULL
 .defaultCadreRolesSheet <- "CadreRoles"
 .defaultTaskCadresSheet <- "TaskCadres"
 .defaultChangeRateLimitsSheet <- "ChangeRateLimits"
+.defaultCoverageRatesSheet <- "CoverageRates"
 
 # GLOBAL VARIABLES
 
@@ -103,4 +104,5 @@ BVE$stochasticParams <- NULL
 BVE$populationRangesTable <- NULL
 BVE$cadreRoles <- NULL
 BVE$taskCadresData <- NULL
+BVE$taskCoverageRates <- NULL
 

@@ -29,6 +29,9 @@ test_that("demo model cadre allocation",{
     expect_true(all(!is.na(results)))
     ER <-  pacehrh::SaveExtendedSuiteResults(results)
     CA <- ER %>% pacehrh::SaveCadreAllocations()
+    # When no coverage is present, these two values are equal
+    expect_true(all(ER$Service_time == ER$Coverage_service_time))
+    expect_true(all(CA$Service_time == CA$Coverage_service_time))
     SS <- pacehrh::ComputeSummaryStats(ER, CA)
     cadreOverheadTime <- pacehrh::SaveCadreOverheadData()
     cadreOverheadTime$Year = as.integer(cadreOverheadTime$Year)

@@ -1,5 +1,5 @@
 options(install.packages.check.source = "no")
-packages = c("validate","readxl", "plyr", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "reshape2", "scales", "glue", "logr", "gridExtra")
+packages = c("validate","readxl", "plyr", "dplyr","ggplot2", "tidyr", "kableExtra", "stringr", "reshape2", "scales", "glue", "logr", "gridExtra", "MonoInc")
 for(i in packages){
   if(!require(i, character.only = T)){
     install.packages(i)
@@ -90,7 +90,7 @@ ValidateInputExcelFileContent <- function(inputFile,
       checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_PopValues.yaml", sheet = sheet_PopValues ) %>% select(c(sheet, rule)) %>% unique())
       checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_SeasonalityCurves.yaml", sheet = sheet_SeasonalityCurves ) %>% select(c(sheet, rule)) %>% unique())
       checklist = rbind(checklist, scenarios %>% dplyr::mutate (rule = "rules_TaskValues_ref.yaml", sheet = sheet_TaskValues ) %>% select(c(sheet, rule)) %>% unique())
-      
+     
       for (f in list.files(rules_dir)){
         default_rulename <- gsub("^rules_([A-Za-z_0-9]+).yaml$", "\\1", f)
         if (!f %in% checklist$rule){

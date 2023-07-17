@@ -22,7 +22,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   traceMessage("Making ClinCat tables")
   ByRun_ClinCat <-
     DR[,
-       .(TotHrs = sum(Service_time)),
+       .(TotHrs = sum(Coverage_service_time)),
        keyby = .(Scenario_ID, Trial_num, Year, ClinicalCat, ClinicalOrNon, WeeksPerYr)]
 
 
@@ -40,7 +40,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   traceMessage("Making ClinMonth tables")
   ByRun_ClinMonth <-
     DR[ClinicalOrNon == "Clinical",
-       .(TotHrs = sum(Service_time)),
+       .(TotHrs = sum(Coverage_service_time)),
        keyby = .(Scenario_ID, Trial_num, Year, Month, WeeksPerYr, HrsPerWeek)]
 
   Stats_ClinMonth <-
@@ -60,7 +60,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
 
   ByRun_ServiceCat <-
     DR2[,
-        .(TotHrs = sum(Service_time)),
+        .(TotHrs = sum(Coverage_service_time)),
         keyby = .(Scenario_ID, Trial_num, Year, ServiceCat, ClinicalOrNon)]
 
   Mean_ServiceCat <-
@@ -79,18 +79,18 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   Mean_AnnualTask <-
     DR2[,
                      .(
-                       CI05 = quantile(Service_time, probs = c(.05)),
-                       CI25 = quantile(Service_time, probs = c(.25)),
-                       MeanHrs = mean(Service_time),
-                       CI75 = quantile(Service_time, probs = c(.75)),
-                       CI95 = quantile(Service_time, probs = c(.95))
+                       CI05 = quantile(Coverage_service_time, probs = c(.05)),
+                       CI25 = quantile(Coverage_service_time, probs = c(.25)),
+                       MeanHrs = mean(Coverage_service_time),
+                       CI75 = quantile(Coverage_service_time, probs = c(.75)),
+                       CI95 = quantile(Coverage_service_time, probs = c(.95))
                      ),
                      keyby = .(Scenario_ID, Year, Task_ID, ServiceCat, ClinicalOrNon)]
 
   traceMessage("Making Total tables")
   ByRun_Total <-
     DR2[,
-        .(TotHrs = sum(Service_time)),
+        .(TotHrs = sum(Coverage_service_time)),
         keyby = .(Scenario_ID, Trial_num, Year, WeeksPerYr, HrsPerWeek)]
 
   Mean_Total <-
@@ -107,7 +107,7 @@ ComputeSummaryStats <- function(DR = NULL, CA = NULL){
   traceMessage("Making TotClin tables")
   ByRun_TotClin <-
     DR2[ClinicalOrNon == "Clinical",
-        .(AnnualHrs = sum(Service_time)),
+        .(AnnualHrs = sum(Coverage_service_time)),
         keyby = .(Scenario_ID, Trial_num, Year, WeeksPerYr, HrsPerWeek)]
 
   Stats_TotClin <-
