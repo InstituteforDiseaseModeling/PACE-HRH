@@ -18,6 +18,7 @@
 #' @param outputFile Results output file. If NULL, results are printed to the console.
 #' @param scenarioSheet Name of the sheet with scenario details. Default = "Scenarios".
 #' @param seasonalityOffsetsSheet Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"
+#' @param noDate Suppress date stamp from output. Default = FALSE.
 #'
 #' @return Error code.
 #' 0 = Success
@@ -33,7 +34,8 @@
 CheckInputExcelFileFormat <- function(inputFile = NULL,
                                       outputFile = NULL,
                                       scenarioSheet = "Scenarios",
-                                      seasonalityOffsetsSheet = "SeasonalityOffsets") {
+                                      seasonalityOffsetsSheet = "SeasonalityOffsets",
+                                      noDate = FALSE) {
 
   # This is a wrapper function that controls whether report output is directed
   # to the console or a file. The real action is in the called function:
@@ -46,19 +48,23 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   }
 
   if (is.null(outputFile)){
-    errcode <- .checkInputExcelFileFormat(inputFile, scenarioSheet, seasonalityOffsetsSheet)
+    errcode <- .checkInputExcelFileFormat(inputFile, scenarioSheet, seasonalityOffsetsSheet, noDate)
   } else {
     withr::with_output_sink(outputFile, code = {
-      errcode <- .checkInputExcelFileFormat(inputFile, scenarioSheet, seasonalityOffsetsSheet)
+      errcode <- .checkInputExcelFileFormat(inputFile, scenarioSheet, seasonalityOffsetsSheet, noDate)
     })
   }
 
   return(errcode)
 }
 
-.checkInputExcelFileFormat <- function(inputFile, scenarioSheet, seasonalityOffsetsSheet){
+.checkInputExcelFileFormat <- function(inputFile, scenarioSheet, seasonalityOffsetsSheet, noDate){
   .catLine()
-  .catLine(date())
+
+  if (!noDate){
+    .catLine(date())
+  }
+
   .catLine("Input file = ", inputFile)
 
   # Create a place for the criticalChecks() functions to write some return
