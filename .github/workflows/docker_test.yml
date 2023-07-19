@@ -31,7 +31,12 @@ jobs:
       - name: Run unittest
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
-        
+      - name: Lint Check
+        run: lintr::expect_lint_free(path="pacehrh")
+        shell: Rscript {0}
+        env: 
+          LINTR_ERROR_ON_LINT: true 
+          NOT_CRAN: true
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
