@@ -32,7 +32,7 @@ jobs:
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
       - name: Lint Check
-        run: lintr::expect_lint_free(path="pacehrh")
+        run: install.packages("lintr");lintr::use_lintr(type = "tidyverse");lintr::expect_lint_free(path="pacehrh")
         shell: Rscript {0}
         env: 
           LINTR_ERROR_ON_LINT: true 
