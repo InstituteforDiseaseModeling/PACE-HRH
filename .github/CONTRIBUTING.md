@@ -6,23 +6,27 @@ NOTE: As of July 2023 PACE-HRH is in the process of cleaning up code to meet the
 
 PACE-HRH follows [https://style.tidyverse.org/](the tidyverse style guide), with the following exceptions:
 
-### Names of variables, objects, functions, and function parameters
+#### Names of variables, objects, functions, and function parameters
 
 PACE-HRH uses variations on camel case (e.g. variableName or ObjectName) for names. PACE-HRH code does not use snake case (variable_name) or dotted case (variable.name)
 
-Public functions and objects (public names that would appear in the package reference and be visible to the pacehrh:: operator) use camel case with a leading upper case letter. Example: CheckInputExcelFileFormat()
+* Public functions and objects (public names that would appear in the package reference and be visible to the pacehrh:: operator) use camel case with a leading upper case letter. Example: CheckInputExcelFileFormat()
 
-Internal functions use camel case with a leading lower case letter. Example: loadTable()
+* Internal functions use camel case with a leading lower case letter. Example: loadTable()
 
-Function parameters use camel case with a leading lower case letter. Example: .getMinMaxRates <- function(initRates, limits) { ... }
+* Function parameters use camel case with a leading lower case letter. Example: .getMinMaxRates <- function(initRates, limits) { ... }
 
-Internal functions intended to be scoped to one source file may have a leading period: Example: .getRatesLimits() (R doesn't actually support private scoping visibility, but we follow this convention to give a hint to a function's intended scope. These "private" functions will still be visible to anybody using the pacehrh::: operator.)
+* Internal functions intended to be scoped to one source file may have a leading period: Example: .getRatesLimits() (R doesn't actually support private scoping visibility, but we follow this convention to give a hint to a function's intended scope. These "private" functions will still be visible to anybody using the pacehrh::: operator.)
 
-### Line lengths
+#### Line lengths
+
 PACE-HRH style allows for 120-character lines (instead of the tidverse default of 80).
 
-### return() statements
-The tidyverse style guide recommends avoiding return() statements and instead to rely on R's native behavior of returning the value of the last evaluated expression. We recommend using return() liberally as it makes the intent of the code more explicit, especially less experience readers of the code. 
+#### return() statements
+
+The tidyverse style guide recommends avoiding return() statements at the end of functions and instead relying on R's native behavior of returning the value of the last evaluated expression. We prefer using return() even at the end of functions because it makes the behavior of the code more explicit, especially for less experienced readers of the code. 
+
+#### Using lintr::lint() to check code style
 
 The following __lintr__ command line checks for correctly formatted code:
 
