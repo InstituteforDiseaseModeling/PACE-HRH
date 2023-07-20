@@ -26,9 +26,31 @@ PACE-HRH style allows for 120-character lines (instead of the tidverse default o
 
 The tidyverse style guide recommends avoiding return() statements at the end of functions and instead relying on R's native behavior of returning the value of the last evaluated expression. We prefer using return() even at the end of functions because it makes the behavior of the code more explicit, especially for less experienced readers of the code. 
 
-#### Using lintr::lint() to check code style
+#### Using styler and lintr to get code style right
+
+The R packages [https://styler.r-lib.org/](styler) and [https://lintr.r-lib.org/](lintr) are the core tools for managing code style.
+
+The styler package reformats code according to whatever style rules have been set up.
+
+The lintr package checks for code style problems. 
+
+Linting configuration is controlled by the .lint file in the package root directory. lintr's default configuration is based on the tidyverse style, so the pacehrh .lint file invokes the default configuration with the exceptions noted previously.
 
 The following __lintr__ command line checks for correctly formatted code:
+
+With the .lintr file in place, the command to lint a file is:
+
+```
+lint("<r-source-code-file-path>")
+```
+
+For example:
+
+```
+lint("R/pace_rates_matrix.R")
+```
+
+The long form of the lint() command duplicating the behavior of the .lint file is:
 
 ```
 lint(
@@ -39,20 +61,37 @@ lint(
   )
 )
 ```
-Example:
+
+Like __styler__, the RStudio _Code/Reformat Code_ command also modifies code to bring it close to the tidyverse standard. Using __styler__ has the advantage that both __styler__ and __lintr__ install commands into the RStudio _Addins_ list.
+
+<img src="rstudio-addins-menu.png" width="200" height="300" />
+
+#### Disabling linting
+
+There are some annoying glitches with linting. A common one is the "no visible binding for variable 'variableName'" message that pops up when ggplot and data.table are used in "normal" ways. The underlying cause is that ggplot and data.table take advantage of R's meta-language features to implement simple and expressive function call syntax, but linters can't know that ggplot and data.table know what to do, and raise a warning. The best approach here is to disable linting for specific blocks of code. (Turning off the object_usage_linter component is a bad idea because several other useful checks would be turned off.)
+
+__lintr__ supports code comment macros to disable linting for specific blocks of code. In this example, 
 
 ```
-lint(
-  "R/pace_rates_matrix.R",
-  linters = linters_with_defaults(
-    line_length_linter = line_length_linter(length = 120L),
-    object_name_linter = object_name_linter(styles = c("camelCase", "CamelCase", "symbols"))
-  )
-)
+  # nolint start
+
+  tokens <- data.table::tstrsplit(dt[, Category], tokenSeparator)
+  dt[, Year := as.numeric(tokens[[1]])]
+  dt[, CadreMember := tokens[[2]]]
+
+  # Remove unnecessary columns
+  dt <- dt[CadreMember != "Total"]
+  dt <- dt[CadreMember != "Unassigned"]
+
+  # Cast to the desired final format
+  dt <-
+    data.table::dcast(
+      dt,
+      Indicator + Year ~ CadreMember,
+      value.var = "allocation",
+      fill = 0
+    )
+
+  # nolint end
+
 ```
-
-Hint: The RStudio _Code/Reformat Code_ command produces formatted code that is close to the tidyverse standard. Run _Code/Reformat Code_ to get your code style into the right ballpark before using the lint() function to find the detailed problem areas.
-
-
-
-<<< WIP >>>

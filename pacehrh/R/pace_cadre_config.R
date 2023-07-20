@@ -5,7 +5,7 @@
 #' @return Dataframe of cadre roles information
 #'
 #' @noRd
-loadCadreRoles <- function(sheetName = .defaultCadreRolesSheet){
+loadCadreRoles <- function(sheetName = .defaultCadreRolesSheet) {
   traceMessage(paste0("Loading cadre roles sheet ", sheetName))
 
   cadreData <- loadTable(sheet = sheetName, schema = .cadreRolesMetaData)
@@ -38,10 +38,12 @@ loadCadreRoles <- function(sheetName = .defaultCadreRolesSheet){
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #' }
-InitializeCadreRoles <- function(...){
+InitializeCadreRoles <- function(...) {
   .checkAndLoadGlobalConfig()
 
   cadreRolesData <- loadCadreRoles(...)
@@ -77,7 +79,7 @@ loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
   )
 
   # Abort if either read fails
-  if (is.null(dataRows) | is.null(headerRows)){
+  if (is.null(dataRows) || is.null(headerRows)) {
     return(NULL)
   }
 
@@ -98,9 +100,9 @@ loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
   # Remove the first two entries from the header rows to focus on the members and
   # year info. Extract members and years, then combine into a single token to
   # use in the subsequent table melt operation.
-  hr <- headerRows[-c(1,2)]
-  years <- gsub("StartYear", "", hr[1,])
-  members <- unlist(hr[2,])
+  hr <- headerRows[-c(1, 2)]
+  years <- gsub("StartYear", "", hr[1, ])
+  members <- unlist(hr[2, ])
   tokenSeparator <- "&&"
   key <- paste0(years, tokenSeparator, members)
 
@@ -108,7 +110,7 @@ loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
   # to turn key values into row data.
   dt <- dataRows
   dt[is.na(dt)] <- 0
-  names(dt) <- c(unlist(headerRows[2,1:2]), key)
+  names(dt) <- c(unlist(headerRows[2, 1:2]), key)
 
   suppressWarnings(
     dt <-
@@ -121,9 +123,11 @@ loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
       )
   )
 
+  # nolint start
+
   # Take the key apart into year and member tokens, then assign individual
   # columns for the token values.
-  tokens <- data.table::tstrsplit(dt[,Category], tokenSeparator)
+  tokens <- data.table::tstrsplit(dt[, Category], tokenSeparator)
   dt[, Year := as.numeric(tokens[[1]])]
   dt[, CadreMember := tokens[[2]]]
 
@@ -139,6 +143,8 @@ loadTaskCadres <- function(sheetName = .defaultTaskCadresSheet) {
       value.var = "allocation",
       fill = 0
     )
+
+  # nolint end
 
   return(dt)
 }
