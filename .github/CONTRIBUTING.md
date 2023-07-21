@@ -1,44 +1,54 @@
 # Contributing to the PACE-HRH Project
 
+Thank you for your interest in contributing to the PACE-HRH project!
+
+## Pull Requests
+
+
+## Raising Issues
+
+
 ## Code Style
 
-NOTE: As of July 2023 PACE-HRH is in the process of cleaning up code to meet these style guidelines.
+_NOTE: As of July 2023 the PACE-HRH team is in the process of cleaning up code to meet these style guidelines._
 
-PACE-HRH follows [the tidyverse style guide]: https://style.tidyverse.org/, with the following exceptions:
+The PACE-HRH project follows [the tidyverse style guide](https://style.tidyverse.org/), with the following exceptions:
 
 #### Names of variables, objects, functions, and function parameters
 
-PACE-HRH uses variations on camel case (e.g. variableName or ObjectName) for names. PACE-HRH code does not use snake case (variable_name) or dotted case (variable.name)
+PACE-HRH uses a variation of camel case (e.g. variableName or ObjectName) for names. PACE-HRH code does not use snake case (variable_name) or dotted case (variable.name)
 
-* Public functions and objects (public names that would appear in the package reference and be visible to the pacehrh:: operator) use camel case with an upper case first letter. Example: CheckInputExcelFileFormat()
+* Public functions and objects (public names that would appear in the package reference and be visible to the pacehrh:: operator) use camel case with an upper case first letter. Example: `CheckInputExcelFileFormat()`
 
-* Internal functions use camel case with a lower case first letter. Example: loadTable()
+* Internal functions use camel case with a lower case first letter. Example: `loadTable()`
 
-* Function parameters use camel case with a lower case first letter. Example: .getMinMaxRates <- function(initRates, limits) { ... }
+* Function parameters use camel case with a lower case first letter. Example: `.getMinMaxRates <- function(initRates, limits) { ... }`
 
-* Internal functions intended to be scoped to one source file may have a leading period: Example: .getRatesLimits() (R doesn't actually support private scoping visibility, but we follow this convention to give a hint to a function's intended scope. These "private" functions will still be visible to anybody using the pacehrh::: operator.)
+* Internal functions intended to be scoped to one source file may have a leading period: Example: `.getRatesLimits()` 
 
-* If you have free reign, treat data labels (for example, data frame column names) like any other variable and use camel case with a lower case first letter. But be mindful that data labels are often inherited from an external data source, and it can more sense to follow whatever conventions the data provider has used than to impose new ones. (Say you're using R's famous built-in _iris_ dataset. It's likely readers of your code will be familiar with the column names: Sepal.Length, Sepal.Width, etc. Your code will be easier to understand if you stick with these column names, even though they don't match the PACE-HRH code style standard. DHS datasets can have scores of fields, with ugly names like v008, v011, v005, midx, m3h-j, etc. You might be tempted to substitute more descriptive names, but recognize that the original forms are used as is in many places, e.g.  [https://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_DHS-7_v2.pdf](Guide to DHS Statistics).
+(R doesn't actually support private scoping visibility, but we follow this convention to give a hint to a function's intended scope. These "private" functions will still be visible to anybody using the pacehrh::: operator.)
+
+* If you have free reign, treat data labels (for example, data frame column names) like any other variable and use camel case with a lower case first letter.
+
+Be mindful that data labels are often inherited from an external data source, and it can make more sense to follow the data provider's convention than impose a new one. (If you're using R's famous built-in _iris_ dataset, readers of your code may already be familiar with the column names: Sepal.Length, Sepal.Width, etc. Your code will be easier for them to understand if you stick with these column names, even though they don't match the PACE-HRH code style standard. DHS datasets can have scores of fields, with ugly names like v008, v011, v005, midx, m3h-j, etc. You might be tempted to substitute more descriptive names, but recognize that the original labels are used as is in many places, such as [Guide to DHS Statistics](https://dhsprogram.com/pubs/pdf/DHSG1/Guide_to_DHS_Statistics_DHS-7_v2.pdf).
 
 #### Line lengths
 
-PACE-HRH style allows for 120-character lines (instead of the tidverse default of 80).
+The PACE-HRH style allows for 120-character lines (instead of the tidverse default of 80).
 
 #### return() statements
 
-The tidyverse style guide recommends avoiding return() statements at the end of functions and instead relying on R's native behavior of returning the value of the last evaluated expression. We prefer using return() even at the end of functions because it makes the behavior of the code more explicit, especially for less experienced readers of the code. 
+The tidyverse style guide recommends avoiding return() statements at the end of functions, relying instead on R's native behavior of returning the value of the last evaluated expression. We prefer using return() even at the end of functions because it makes the behavior of the code more explicit, especially for less experienced readers of the code. 
 
 #### Using styler and lintr to get code style right
 
-The R packages [https://styler.r-lib.org/](styler) and [https://lintr.r-lib.org/](lintr) are the core tools for managing code style.
+The R packages [styler](https://styler.r-lib.org/) and [lintr](https://lintr.r-lib.org/) are the core tools for managing code style.
 
-The styler package reformats code according to whatever style rules have been set up.
+The __styler__ package reformats code according to whatever style rules have been set up.
 
-The lintr package checks for code style problems. 
+The __lintr__ package checks for code style problems. 
 
-Linting configuration is controlled by the .lint file in the package root directory. lintr's default configuration is based on the tidyverse style, so the pacehrh .lint file invokes the default configuration with the exceptions noted previously.
-
-The following __lintr__ command line checks for correctly formatted code:
+The linting configuration is controlled by the .lint file in the package root directory.
 
 With the .lintr file in place, the command to lint a file is:
 
@@ -52,7 +62,7 @@ For example:
 lint("R/pace_rates_matrix.R")
 ```
 
-The long form of the lint() command duplicating the behavior of the .lint file is:
+This longer form of the lint() command duplicates the configuration set by the .lint file:
 
 ```
 lint(
@@ -64,15 +74,15 @@ lint(
 )
 ```
 
-Like __styler__, the RStudio _Code/Reformat Code_ command also modifies code to bring it close to the tidyverse standard. Using __styler__ has the advantage that both __styler__ and __lintr__ install commands into the RStudio _Addins_ list.
+Like __styler__, the RStudio _Code/Reformat Code_ command modifies code to bring it close to the tidyverse standard. Once installed, __styler__ has the advantage that both __styler__ and __lintr__ install commands into the RStudio _Addins_ list.
 
 <img src="rstudio-addins-menu.png" width="200" height="300" />
 
 #### Disabling linting
 
-A well-known glitch with linting is the "no visible binding for variable 'variableName'" message that pops up when ggplot and data.table are used in standard ways. The underlying cause is that ggplot and data.table take advantage of R's meta-language features to implement simple and expressive function call syntax, but linters don't know that and raise a warning. The best approach here is to disable linting for specific blocks of code. (Turning off the object_usage_linter component is a bad idea because several other useful checks would also be turned off.)
+A well-known linting annoyance is the "no visible binding for variable 'variableName'" message that presents when __ggplot__ and __data.table__ are used in standard ways. These packages take advantage of R's meta-language features to implement simple and expressive function call syntax, but linters don't know that and raise a warning. The best remedy is to disable linting for those blocks of code. (Turning off the object_usage_linter component is a bad idea because several other useful checks would also be turned off.)
 
-__lintr__ supports code comment macros to disable linting for specific blocks of code. In this example, warnings would be generated by object labels (Year, CadreMember, Category) that __data.table__ understands correctly to be column names.
+__lintr__ supports code comment macros to disable linting for blocks of code. In this example, "no visible binding for variable 'variableName'" warnings would be generated by object labels (Year, CadreMember, Category, Indicator) that __data.table__ understands correctly to be column names.
 
 ```
   # nolint start
