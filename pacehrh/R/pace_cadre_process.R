@@ -22,7 +22,7 @@ computeCadreData <- function(scenario = NULL, roles = NULL) {
   annualValuesMatrix <- matrix(data = 0, nrow = nrow(roles), ncol = length(BVE$years))
 
   for (i in seq_along(roles$ScenarioID)) {
-    if (is.na(roles$StartYear[i])){
+    if (is.na(roles$StartYear[i])) {
       startYear <- minYear
     } else {
       startYear <- max(roles$StartYear[i], minYear)
@@ -46,14 +46,14 @@ computeCadreData <- function(scenario = NULL, roles = NULL) {
   # date range, and (2) overhead values aren't affected by month, so the
   # seasonality curve is flat.
 
-  curve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12
+  curve <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) / 12
 
   monthlyValuesMatrix <- matrix(data = 0, nrow = nrow(roles), ncol = (length(BVE$years) * length(curve)))
 
   for (i in seq_along(roles$ScenarioID)) {
-    annual <- annualValuesMatrix[i,]
+    annual <- annualValuesMatrix[i, ]
     monthly <- as.vector(matrix(data = curve, ncol = 1) %*% matrix(data = annual, nrow = 1))
-    monthlyValuesMatrix[i,] <- monthly
+    monthlyValuesMatrix[i, ] <- monthly
   }
 
   monthStrs <- as.character(1:12)
@@ -79,8 +79,10 @@ computeCadreData <- function(scenario = NULL, roles = NULL) {
 #' @examples
 #' \dontrun{
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
-#'                           trials = 20)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = "MergedModel",
+#'     trials = 20
+#'   )
 #'
 #' SR <- pacehrh::SaveExtendedSuiteResults(results, filepath = "_SR.csv", run = "Run-1")
 #' CA <- pacehrh::SaveCadreAllocations(SR, filepath = "_CA.csv")
@@ -121,10 +123,10 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   # Clear the key data, as it's no longer needed
   setkey(out, NULL)
 
-  coverageNumServices = out$Num_services * out$Coverage
+  coverageNumServices <- out$Num_services * out$Coverage
 
   # Round Coverage_num_services to an integer, unless rounding is turned off
-  if (GPE$roundingLaw != "none"){
+  if (GPE$roundingLaw != "none") {
     coverageNumServices <- round(coverageNumServices, 0)
   }
 
@@ -134,7 +136,7 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   # Convert Service_time from minutes to hours
   out$Service_time <- out$Service_time / 60.0
 
-  coverageServiceTime = out$Service_time * out$Coverage
+  coverageServiceTime <- out$Service_time * out$Coverage
   out$Coverage_service_time <- coverageServiceTime
 
   # Grab the Tasks table
@@ -147,28 +149,36 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   tasks$NumContactsPer <-
     tasks$NumContactsPerUnit + tasks$NumContactsAnnual
 
+  # nolint start
+
   # Filter the Tasks table column set
   tasks <-
-    tasks[, .(Indicator,
-              CommonName,
-              ClinicalOrNon,
-              ClinicalCat,
-              ServiceCat,
-              NumContactsPer)]
+    tasks[, .(
+      Indicator,
+      CommonName,
+      ClinicalOrNon,
+      ClinicalCat,
+      ServiceCat,
+      NumContactsPer
+    )]
 
   # Join Scenario information to the output
   out <- dplyr::left_join(out,
-                          BVE$scenario[c("UniqueID",
-                                         "WeeksPerYr",
-                                         "HrsPerWeek",
-                                         "BaselinePop",
-                                         "DeliveryModel")],
-                          by = dplyr::join_by(Scenario_ID == UniqueID))
+    BVE$scenario[c(
+      "UniqueID",
+      "WeeksPerYr",
+      "HrsPerWeek",
+      "BaselinePop",
+      "DeliveryModel"
+    )],
+    by = dplyr::join_by(Scenario_ID == UniqueID)
+  )
 
   # Join Task information to the output
   out <- dplyr::left_join(out,
-                          tasks,
-                          by = dplyr::join_by(Task_ID == Indicator))
+    tasks,
+    by = dplyr::join_by(Task_ID == Indicator)
+  )
 
   # Create a stochastic hours per week value that's different for each year.
   sdvalue <-
@@ -188,14 +198,18 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
   stochasticHrs$Count <- NULL
 
   out <- dplyr::left_join(out,
-                          stochasticHrs,
-                          by = dplyr::join_by(Trial_num == Trial_num, Year == Year))
+    stochasticHrs,
+    by = dplyr::join_by(Trial_num == Trial_num, Year == Year)
+  )
+
+  # nolint end
 
   if (!is.null(filepath)) {
     data.table::fwrite(out,
-                       file = filepath,
-                       row.names = FALSE,
-                       na = "NA")
+      file = filepath,
+      row.names = FALSE,
+      na = "NA"
+    )
   }
 
   return(out)
@@ -220,8 +234,10 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
 #' @examples
 #' \dontrun{
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
-#'                           trials = 20)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = "MergedModel",
+#'     trials = 20
+#'   )
 #'
 #' SR <- pacehrh::SaveExtendedSuiteResults(results, filepath = "_SR.csv", run = "Run-1")
 #' CA <- pacehrh::SaveCadreAllocations(SR, filepath = "_CA.csv")
@@ -229,52 +245,42 @@ SaveExtendedSuiteResults <- function(results = NULL, filepath = NULL, run = "Run
 #' summaryStats <- pacehrh::ComputeSummaryStats(SR, CA)
 #' }
 SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
-  scenarioName <- BVE$scenario$UniqueID
-
   # Do some sanity checking
-  if (isFALSE(all.equal(GPE$years, unique(suiteResults$Year)))) {
-    traceMessage("Configured year range (GPE) does not match reported year range")
+  if (!.scaSanityCheck(suiteResults)) {
     return(NULL)
   }
 
-  if (length(unique(suiteResults$Scenario_ID)) != 1) {
-    traceMessage("More than one scenario in suite results")
-    return(NULL)
-  }
-
-  if (unique(suiteResults$Scenario_ID) != scenarioName) {
-    traceMessage(paste0("Suite results don't match experiment scenario (", scenarioName, ")"))
-    return(NULL)
-  }
-
-  if (is.null( BVE$taskCadresData)) {
-    traceMessage(paste0("No task-to-cadre allocation data"))
-    return(NULL)
-  }
+  # nolint start
 
   # Filter the extended suite results
-  allocCalcColumns <- c("Task_ID",
-                        "Scenario_ID",
-                        "DeliveryModel",
-                        "Trial_num",
-                        "Year",
-                        "Month",
-                        "Service_time",
-                        "Coverage_service_time",
-                        "WeeksPerYr")
+  allocCalcColumns <- c(
+    "Task_ID",
+    "Scenario_ID",
+    "DeliveryModel",
+    "Trial_num",
+    "Year",
+    "Month",
+    "Service_time",
+    "Coverage_service_time",
+    "WeeksPerYr"
+  )
 
-  suiteResults <- suiteResults[ , ..allocCalcColumns]
+  suiteResults <- suiteResults[, ..allocCalcColumns]
 
   # Convert from per-month to per-year Coverage_service_time stats
   if (annual) {
     suiteResults <-
-      suiteResults[, .(Coverage_service_time = sum(Coverage_service_time)), by = .(Task_ID,
-                                                                 Year,
-                                                                 Trial_num,
-                                                                 Scenario_ID,
-                                                                 DeliveryModel,
-                                                                 WeeksPerYr)]
+      suiteResults[, .(Coverage_service_time = sum(Coverage_service_time)), by = .(
+        Task_ID,
+        Year,
+        Trial_num,
+        Scenario_ID,
+        DeliveryModel,
+        WeeksPerYr
+      )]
   }
+
+  # nolint end
 
   # Build a list of values on which to join the cadre allocation table with the
   # suite results The cadre allocation table defines start years for each
@@ -285,17 +291,19 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
 
   joinYear <- suiteResults$Year
 
-  for (yr in unique(suiteResults$Year)){
+  for (yr in unique(suiteResults$Year)) {
     # Select the largest refYear value less than or equal to yr
     ry <- refYears[refYears <= yr]
     if (length(ry) == 0) {
-      refVal = NA_integer_
+      refVal <- NA_integer_
     } else {
       refVal <- max(ry)
     }
     mask <- (suiteResults$Year == yr)
     joinYear[mask] <- refVal
   }
+
+  # nolint start
 
   # Add the joinYear column to the suite results, then use it to join to the
   # cadre allocation table. Afterwards delete the joinYear column.
@@ -308,12 +316,14 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
     )
   suiteResults$joinYear <- NULL
 
+  # nolint end
+
   # Take the allocation percentages, and combine with the time values to create
   # allocated times.
-  srcFlds <- names(BVE$taskCadresData)[-c(1,2)]
+  srcFlds <- names(BVE$taskCadresData)[-c(1, 2)]
   dstFlds <- paste0(srcFlds, "_Alloc")
 
-  for (i in seq_along(srcFlds)){
+  for (i in seq_along(srcFlds)) {
     x <- suiteResults[[srcFlds[i]]]
     x <- x * (suiteResults$Coverage_service_time) / 100.0
     suiteResults[, (dstFlds[i]) := x]
@@ -321,10 +331,37 @@ SaveCadreAllocations <- function(suiteResults, filepath = NULL, annual = TRUE) {
 
   if (!is.null(filepath)) {
     data.table::fwrite(suiteResults,
-                       file = filepath,
-                       row.names = FALSE,
-                       na = "NA")
+      file = filepath,
+      row.names = FALSE,
+      na = "NA"
+    )
   }
 
   return(suiteResults)
+}
+
+.scaSanityCheck <- function(suiteResults) {
+  scenarioName <- BVE$scenario$UniqueID
+
+  if (isFALSE(all.equal(GPE$years, unique(suiteResults$Year)))) {
+    traceMessage("Configured year range (GPE) does not match reported year range")
+    return(FALSE)
+  }
+
+  if (length(unique(suiteResults$Scenario_ID)) != 1) {
+    traceMessage("More than one scenario in suite results")
+    return(FALSE)
+  }
+
+  if (unique(suiteResults$Scenario_ID) != scenarioName) {
+    traceMessage(paste0("Suite results don't match experiment scenario (", scenarioName, ")"))
+    return(FALSE)
+  }
+
+  if (is.null(BVE$taskCadresData)) {
+    traceMessage(paste0("No task-to-cadre allocation data"))
+    return(FALSE)
+  }
+
+  return(TRUE)
 }

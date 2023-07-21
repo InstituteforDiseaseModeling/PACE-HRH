@@ -26,8 +26,10 @@ how much time each cadre spends per year on each healthcare task.
 \examples{
 \dontrun{
 results <-
-  pacehrh::RunExperiments(scenarioName = "MergedModel",
-                          trials = 20)
+  pacehrh::RunExperiments(
+    scenarioName = "MergedModel",
+    trials = 20
+  )
 
 SR <- pacehrh::SaveExtendedSuiteResults(results, filepath = "_SR.csv", run = "Run-1")
 CA <- pacehrh::SaveCadreAllocations(SR, filepath = "_CA.csv")
