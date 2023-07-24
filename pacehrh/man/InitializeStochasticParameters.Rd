@@ -5,7 +5,7 @@
 \title{Initialize Stochastic Parameters}
 \usage{
 InitializeStochasticParameters(
-  stochasticParametersSheetName = .defaultStochasticParametersSheet,
+  stochasticParametersSheetName = .defaultStochasticParmsSheet,
   changeRateLimitsSheetName = .defaultChangeRateLimitsSheet
 )
 }

@@ -24,8 +24,10 @@
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #' }
 RunExperiments <-
   function(scenarioName = "ScenarioA",
@@ -37,7 +39,7 @@ RunExperiments <-
     assertthat::assert_that(trials > 1)
     assertthat::is.flag(debug)
 
-    if (is.null(SaveBaseSettings(scenarioName))){
+    if (is.null(SaveBaseSettings(scenarioName))) {
       warning("Critical failure. RunExperiments() ended.")
       return(NULL)
     }

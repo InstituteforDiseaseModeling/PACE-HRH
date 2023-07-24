@@ -5,7 +5,7 @@
 #' @return Dataframe of stochastic parameters
 #'
 #' @noRd
-loadStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet) {
+loadStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParmsSheet) {
   traceMessage(paste0("Loading stochastic parameters sheet ", stochasticParametersSheetName))
 
   stochData <- tryCatch({
@@ -141,7 +141,7 @@ loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateL
 #'                        trials = 100)
 #' }
 #'
-InitializeStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet,
+InitializeStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParmsSheet,
                                            changeRateLimitsSheetName = .defaultChangeRateLimitsSheet) {
   .checkAndLoadGlobalConfig()
 

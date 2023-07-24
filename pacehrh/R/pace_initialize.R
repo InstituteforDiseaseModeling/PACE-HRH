@@ -34,7 +34,7 @@ PaceInitialize <- function(globalConfigFile = NULL,
 
   # Reload the global configuration if either (1) configuration data has not
   # already been loaded, or (2) the forceGlobalConfigReload flag is set
-  if (!GPE$globalConfigLoaded | forceGlobalConfigReload == TRUE) {
+  if (!GPE$globalConfigLoaded || forceGlobalConfigReload == TRUE) {
     if (!is.null(globalConfigFile)) {
       loadGlobalConfig(path = globalConfigFile)
     } else {
