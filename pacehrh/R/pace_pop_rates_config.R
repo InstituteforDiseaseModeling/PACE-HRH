@@ -1,4 +1,4 @@
-.computeFullPopRates <- function(p){
+.computeFullPopRates <- function(p) {
   assertthat::assert_that(nrow(p) > 0)
 
   x <- rep_len(0.0, length(GPE$ages))
@@ -9,9 +9,9 @@
   p$InitValue[is.na(p$InitValue)] <- 0.0
   p$ChangeRate[is.na(p$ChangeRate)] <- 1.0
 
-  p <- p[order(p$BandStart),]
+  p <- p[order(p$BandStart), ]
 
-  for (i in seq_along(p$BandStart)){
+  for (i in seq_along(p$BandStart)) {
     start <- p$BandStart[i] + 1
     end <- p$BandEnd[i] + 1
     x[start:end] <- p$InitValue[i]
@@ -21,11 +21,11 @@
   return(list(initValues = x, changeRates = y))
 }
 
-.computeBandedPopulationRates <- function(p){
+.computeBandedPopulationRates <- function(p) {
   assertthat::assert_that(nrow(p) > 0)
 
-  p <- p[order(p$BandEnd),]
-  breaks <- p$BandEnd[1:nrow(p) - 1]
+  p <- p[order(p$BandEnd), ]
+  breaks <- p$BandEnd[-length(p$BandEnd)]
 
   return(
     list(
@@ -42,7 +42,7 @@
 # loadPopulationChangeRates(). Then the user could, if they wanted, implement
 # many more kinds of population strata.
 
-.initPopulationChangeRates <- function(){
+.initPopulationChangeRates <- function() {
   return(list(
     femaleFertility = list(type = "Fertility", sex = "F"),
     maleFertility = list(type = "Fertility", sex = "M"),
@@ -56,20 +56,20 @@
 # into the four sub-tables, and does some data tidying and data sanity-
 # checking along the way.
 
-.splitPopulationRatesTable <- function(prt){
-  # prt = 'population rates table'
+.splitPopulationRatesTable <- function(prt) {
+  # prt  : 'population rates table'
 
   populationChangeRates <- .initPopulationChangeRates()
 
-  l <- lapply(populationChangeRates, function(x){
-    p <- prt[prt$Type == x$type & prt$Sex == x$sex,]
+  l <- lapply(populationChangeRates, function(x) {
+    p <- prt[prt$Type == x$type & prt$Sex == x$sex, ]
 
     p$BandStart[is.na(p$BandStart)] <- GPE$ageMin
     p$BandEnd[is.na(p$BandEnd)] <- GPE$ageMax
     p$InitValue[is.na(p$InitValue)] <- 0.0
     p$ChangeRate[is.na(p$ChangeRate)] <- 1.0
 
-    if (.checkPopRates(p, x$type, x$sex) == TRUE){
+    if (.checkPopRates(p, x$type, x$sex) == TRUE) {
       x$prt <- p
     } else {
       x$prt <- NULL
@@ -81,20 +81,20 @@
   return(l)
 }
 
-loadPopulationChangeRates <- function(sheetName = .defaultPopulationRatesSheet){
+loadPopulationChangeRates <- function(sheetName = .defaultPopulationRatesSheet) {
   traceMessage(paste0("Loading population change rates sheet ", sheetName))
-  
+
   popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
   popValues <- validateTableAgainstSchema(popValues, .populationChangeRateColumnMetaData)
-  
-  if (is.null(popValues)){
+
+  if (is.null(popValues)) {
     return(NULL)
   }
-  
+
   popValues <- .splitPopulationRatesTable(popValues)
 
-  popValues <- lapply(popValues, function(p){
-    if (!is.null(p$prt)){
+  popValues <- lapply(popValues, function(p) {
+    if (!is.null(p$prt)) {
       p$fullRates <- .computeFullPopRates(p$prt)
       p$bandedRates <- .computeBandedPopulationRates(p$prt)
     }
