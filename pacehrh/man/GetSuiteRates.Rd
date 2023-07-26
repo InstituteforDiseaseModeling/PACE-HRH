@@ -20,8 +20,10 @@ Generate A Long-Format Data Frame Of Suite Mortality and Fertility Rates
 \examples{
 \dontrun{
 results <-
-  pacehrh::RunExperiments(scenarioName = "MergedModel",
-                          trials = 20)
+  pacehrh::RunExperiments(
+    scenarioName = "MergedModel",
+    trials = 20
+  )
 
 df <- pacehrh::GetSuiteRates(results, rateCategory = "femaleFertility")
 }
