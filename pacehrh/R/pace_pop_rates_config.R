@@ -85,7 +85,7 @@ loadPopulationChangeRates <- function(sheetName = .defaultPopulationRatesSheet) 
   traceMessage(paste0("Loading population change rates sheet ", sheetName))
 
   popValues <- readxl::read_xlsx(GPE$inputExcelFile, sheet = sheetName)
-  popValues <- validateTableAgainstSchema(popValues, .populationChangeRateColumnMetaData)
+  popValues <- validateTableAgainstSchema(popValues, .populationChangeRateMetaData)
 
   if (is.null(popValues)) {
     return(NULL)
