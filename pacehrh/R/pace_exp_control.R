@@ -26,9 +26,9 @@
 #'
 #' result <- pacehrh::SaveBaseSettings(scenario)
 #' }
-SaveBaseSettings <- function(scenarioName = ""){
+SaveBaseSettings <- function(scenarioName = "") {
   # Check for tables that should have been loaded during initialization
-  if (.checkForBaseTables() == FALSE){
+  if (.checkForBaseTables() == FALSE) {
     return(NULL)
   }
 
@@ -36,7 +36,7 @@ SaveBaseSettings <- function(scenarioName = ""){
 
   BVE$scenario <- .getScenarioConfig(scenarioName)
 
-  if (is.null(BVE$scenario)){
+  if (is.null(BVE$scenario)) {
     return(NULL)
   }
 
@@ -51,7 +51,7 @@ SaveBaseSettings <- function(scenarioName = ""){
     BVE$populationChangeRates <- loadPopulationChangeRates()
   }
 
-  if (is.null(BVE$populationChangeRates)){
+  if (is.null(BVE$populationChangeRates)) {
     return(NULL)
   }
 
@@ -60,13 +60,13 @@ SaveBaseSettings <- function(scenarioName = ""){
 
   seasonalitySheet <- BVE$scenario$sheet_SeasonalityCurves
 
-  if (!is.blank(seasonalitySheet)){
+  if (!is.blank(seasonalitySheet)) {
     BVE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
   } else {
     BVE$seasonalityCurves <- loadSeasonalityCurves()
   }
 
-  if (is.null(BVE$seasonalityCurves)){
+  if (is.null(BVE$seasonalityCurves)) {
     return(NULL)
   }
 
@@ -75,13 +75,13 @@ SaveBaseSettings <- function(scenarioName = ""){
 
   taskSheet <- BVE$scenario$sheet_TaskValues
 
-  if (!is.blank(taskSheet)){
+  if (!is.blank(taskSheet)) {
     BVE$taskData <- loadTaskParameters(taskSheet)
   } else {
     BVE$taskData <- loadTaskParameters()
   }
 
-  if (is.null(BVE$taskData)){
+  if (is.null(BVE$taskData)) {
     return(NULL)
   }
 
@@ -93,7 +93,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   # initialization.
 
   s <- setdiff(BVE$taskData$RelevantPop, BVE$populationLabels$Labels)
-  if (!.okLabels(s)){
+  if (!.okLabels(s)) {
     warning(paste0("Invalid population labels: ", paste0(s, collapse = ", ")))
     return(NULL)
   }
@@ -108,7 +108,7 @@ SaveBaseSettings <- function(scenarioName = ""){
 
     # Add a task data column pointing into the population range mask tables
     # associated with each RelevantPop range
-    index <- sapply(BVE$taskData$RelevantPop, function(label){
+    index <- sapply(BVE$taskData$RelevantPop, function(label) {
       which(rownames(BVE$populationRangesTable$Female) == label)
     })
 
@@ -134,45 +134,45 @@ SaveBaseSettings <- function(scenarioName = ""){
   # in the Scenarios sheet.
   taskCadresSheet <- BVE$scenario$sheet_Cadre
 
-  if (!is.blank(taskCadresSheet)){
+  if (!is.blank(taskCadresSheet)) {
     BVE$taskCadresData <- loadTaskCadres(taskCadresSheet)
   } else {
     BVE$taskCadresData <- loadTaskCadres()
   }
-  
+
   taskCoverageRatesSheet <- BVE$scenario$sheet_Coverage
-  if (!is.blank(taskCoverageRatesSheet)){
+  if (!is.blank(taskCoverageRatesSheet)) {
     BVE$taskCoverageRates <- loadCoverageRates(taskCoverageRatesSheet)
   } else {
     BVE$taskCoverageRates <- loadCoverageRates()
   }
-  
+
 
   return(BVE$scenario)
 }
 
-.checkForBaseTables <- function(){
-  varsToCheck <- c(expression(GPE$scenarios),
-                   expression(BVE$seasonalityOffsets),
-                   expression(BVE$stochasticParams),
-                   expression(BVE$initialPopulation),
-                   expression(BVE$populationLabels),
-                   expression(BVE$populationRangesTable),
-                   expression(BVE$cadreRoles)
-#                   expression(BVE$changeRateLimits)
-                   )
+.checkForBaseTables <- function() {
+  varsToCheck <- c(
+    expression(GPE$scenarios),
+    expression(BVE$seasonalityOffsets),
+    expression(BVE$stochasticParams),
+    expression(BVE$initialPopulation),
+    expression(BVE$populationLabels),
+    expression(BVE$populationRangesTable),
+    expression(BVE$cadreRoles)
+  )
 
-  checks <- sapply(varsToCheck, function(v){
+  checks <- sapply(varsToCheck, function(v) {
     return(!is.null(eval(v)))
   })
 
-  if (all(checks)){
+  if (all(checks)) {
     return(TRUE)
   }
 
   varNames <- sapply(varsToCheck, deparse)
   badVars <- varNames[checks == FALSE]
-  badVarsStr <- paste(badVars, collapse = ", " )
+  badVarsStr <- paste(badVars, collapse = ", ")
 
   errorMsg <- paste0("Uninitialized variables: ", badVarsStr)
   warning(errorMsg, call. = FALSE)
@@ -182,7 +182,7 @@ SaveBaseSettings <- function(scenarioName = ""){
 
 # Extend the SeasonalityOffsets table with the seasonality curve values from the
 # SeasonalityCurves table. This facilitates easier lookups later on.
-.mergeSeasonalityCurves <- function(){
+.mergeSeasonalityCurves <- function() {
   seasonalityCurvesTable <- BVE$seasonalityCurves
   curveCols <- 2:length(seasonalityCurvesTable)
   monthNames <- seasonalityCurvesTable$Month
@@ -197,21 +197,21 @@ SaveBaseSettings <- function(scenarioName = ""){
   BVE$seasonalityOffsetsEx <- merge(BVE$seasonalityOffsets, tsc, by.x = "Curve", by.y = "Type")
 }
 
-.setTrialYears <- function(){
+.setTrialYears <- function() {
   BVE$startYear <- GPE$startYear
   BVE$endYear <- GPE$endYear + GPE$shoulderYears
   BVE$years <- seq(BVE$startYear, BVE$endYear, 1)
 }
 
-.okLabels <- function(diffOutput){
-  if (length(diffOutput) == 0){
+.okLabels <- function(diffOutput) {
+  if (length(diffOutput) == 0) {
     return(TRUE)
   }
 
   return(FALSE)
 }
 
-.zeroExpBaseVariables <- function(){
+.zeroExpBaseVariables <- function() {
   BVE$scenario <- NULL
   BVE$taskParameters <- NULL
   BVE$taskData <- NULL
@@ -219,7 +219,7 @@ SaveBaseSettings <- function(scenarioName = ""){
   BVE$stochasticTasks <- NULL
 }
 
-.getScenarioConfig <- function(scenarioName){
+.getScenarioConfig <- function(scenarioName) {
   n <- which(GPE$scenarios$UniqueID == scenarioName)
 
   if (length(n) == 0) {
@@ -234,15 +234,17 @@ SaveBaseSettings <- function(scenarioName = ""){
   return(GPE$scenarios[n[1], ])
 }
 
-.taskDataCols <- c("StartingRateInPop",
-                   "RateMultiplier",
-                   "AnnualDeltaRatio",
-                   "NumContactsPerUnit",
-                   "NumContactsAnnual",
-                   "MinsPerContact",
-                   "HoursPerWeek")
+.taskDataCols <- c(
+  "StartingRateInPop",
+  "RateMultiplier",
+  "AnnualDeltaRatio",
+  "NumContactsPerUnit",
+  "NumContactsAnnual",
+  "MinsPerContact",
+  "HoursPerWeek"
+)
 
-.convertTaskDfToMatrix <- function(df){
+.convertTaskDfToMatrix <- function(df) {
   # Extract numeric data columns from a taskData dataframe as read from the
   # configuration Excel file
   rowNames <- df$Indicator
@@ -281,12 +283,12 @@ SaveBaseSettings <- function(scenarioName = ""){
 #' ConfigureExperimentValues()
 #' results <- RunExperiment()
 #' }
-ConfigureExperimentValues <- function(){
+ConfigureExperimentValues <- function() {
   # TODO: Insert check that all the needed values exist
 
   pcr <- BVE$populationChangeRates
 
-  for (label in names(pcr)){
+  for (label in names(pcr)) {
     m <- generateRatesMatrix(label)
     pcr[[label]]$ratesMatrix <- m
   }
@@ -328,9 +330,10 @@ addRatesMatricesToPopulationChangeRates <-
     for (label in names(pcr)) {
       m <-
         .generateRatesMatrix(stochasticParms,
-                             years,
-                             pcr[[label]],
-                             stochasticity = stochasticityFlag)
+          years,
+          pcr[[label]],
+          stochasticity = stochasticityFlag
+        )
       pcr[[label]]$ratesMatrix <- m
     }
 

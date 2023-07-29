@@ -1,4 +1,4 @@
-.varyInitialIncidenceRates <- function(rates, p){
+.varyInitialIncidenceRates <- function(rates, p) {
   p <- p * c(-1, 1)
   return(rates * (1 + runif(length(rates), p[1], p[2])))
 }
@@ -12,8 +12,8 @@
 #' @return Rates matrix
 #'
 #' @noRd
-generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
-  if (!GPE$stochasticity){
+generatePrevalenceRatesMatrix <- function(debugEnv = NULL) {
+  if (!GPE$stochasticity) {
     return(.generateNonStochPrm(debugEnv))
   }
 
@@ -31,23 +31,25 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
       "applyStochasticity"
     )]
 
-  nRows = NROW(tasks)
-  nCols = length(years)
+  nRows <- NROW(tasks)
+  nCols <- length(years)
 
   # Mask for tasks affected by prevalence stochasticity
   sMask <- tasks$applyStochasticity
 
   # Grab the initial prevalence/incidence values, and apply a stochastic tweak
-  p = pars[pars$Value == "Incidence rates", ]$p
+  p <- pars[pars$Value == "Incidence rates", ]$p
 
   initRates <- rep(1.0, nRows)
   initRates[sMask] <-
-    .varyInitialIncidenceRates(tasks[sMask,]$StartingRateInPop, p)
+    .varyInitialIncidenceRates(tasks[sMask, ]$StartingRateInPop, p)
 
   # Calculate min/max constraints on rates
   limits <- .getRatesLimits("Incidence")
   rateLimits <- .getMinMaxRates(initRates, limits)
-  maskedRateLimits <- lapply(rateLimits, function(x){x[sMask]})
+  maskedRateLimits <- lapply(rateLimits, function(x) {
+    x[sMask]
+  })
 
   # Write some information back to the user-provided debugging environment
   if (!is.null(debugEnv)) {
@@ -65,13 +67,13 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
   m[, 1] <- initRates
 
   # Derive the rest of the matrix
-  p = pars[pars$Value == "Annual delta incidence rates", ]$p
-  q = pars[pars$Value == "Annual delta incidence rates", ]$q
-  lims = p * q * c(-1, 1)
+  p <- pars[pars$Value == "Annual delta incidence rates", ]$p
+  q <- pars[pars$Value == "Annual delta incidence rates", ]$q
+  lims <- p * q * c(-1, 1)
 
   deltaRatios <- .computeAdjustedDeltaRatios(tasks)
 
-  for (j in 2:nCols){
+  for (j in 2:nCols) {
     e <- truncnorm::rtruncnorm(
       sum(sMask),
       mean = 0,
@@ -80,7 +82,7 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
       b = lims[2]
     )
     deltas <- deltaRatios[sMask] * (1 + e)
-    m[sMask, j] <- .applyRateLimits(m[sMask, j-1] * deltas, maskedRateLimits)
+    m[sMask, j] <- .applyRateLimits(m[sMask, j - 1] * deltas, maskedRateLimits)
   }
 
   return(m)
@@ -90,7 +92,7 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
   deltaRatios <- tasks$AnnualDeltaRatio
 
   # Set annual prevalence deltas to unity if the scenario requires it
-  if (BVE$scenario$o_MHIVTB_decr == FALSE){
+  if (BVE$scenario$o_MHIVTB_decr == FALSE) {
     # Determine which rows refer to Malaria/HIV/TB
     mhivtbMask <-
       (
@@ -101,7 +103,7 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
     deltaRatios[mhivtbMask] <- 1
   }
 
-  if (BVE$scenario$o_ChildDis_decr == FALSE){
+  if (BVE$scenario$o_ChildDis_decr == FALSE) {
     # Determine which rows refer to childhood diseases
     childDisMask <- (tasks$RelevantPop == "1-4")
 
@@ -111,7 +113,7 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
   return(deltaRatios)
 }
 
-.generateNonStochPrm <- function(debugEnv = NULL){
+.generateNonStochPrm <- function(debugEnv = NULL) {
   years <- BVE$years
 
   tasks <-
@@ -124,19 +126,21 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
       "applyStochasticity"
     )]
 
-  nRows = NROW(tasks)
-  nCols = length(years)
+  nRows <- NROW(tasks)
+  nCols <- length(years)
 
   # Mask for tasks affected by prevalence stochasticity
   sMask <- tasks$applyStochasticity
 
   initRates <- rep(1.0, nRows)
-  initRates[sMask] <- tasks[sMask,]$StartingRateInPop
+  initRates[sMask] <- tasks[sMask, ]$StartingRateInPop
 
   # Calculate min/max constraints on rates
   limits <- .getRatesLimits("Incidence")
   rateLimits <- .getMinMaxRates(initRates, limits)
-  maskedRateLimits <- lapply(rateLimits, function(x){x[sMask]})
+  maskedRateLimits <- lapply(rateLimits, function(x) {
+    x[sMask]
+  })
 
   if (!is.null(debugEnv)) {
     assign("rateLimits", rateLimits, envir = debugEnv)
@@ -156,8 +160,8 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL){
 
   # Derive the rest of the matrix
   deltas <- deltaRatios[sMask]
-  for (j in 2:nCols){
-    m[sMask, j] <- .applyRateLimits(m[sMask, j-1] * deltas, maskedRateLimits)
+  for (j in 2:nCols) {
+    m[sMask, j] <- .applyRateLimits(m[sMask, j - 1] * deltas, maskedRateLimits)
   }
 
   return(m)

@@ -11,22 +11,24 @@
 #' @examples
 #' \dontrun{
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                           trials = nTrials)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = nTrials
+#'   )
 #'
-#'  pm <- pacehrh::ComputeApplicablePopulationMatrices(results)
+#' pm <- pacehrh::ComputeApplicablePopulationMatrices(results)
 #' }
-ComputeApplicablePopulationMatrices <- function(results, labels = BVE$populationLabels$Labels){
-  if (is.null(results)){
+ComputeApplicablePopulationMatrices <- function(results, labels = BVE$populationLabels$Labels) {
+  if (is.null(results)) {
     return(NULL)
   }
 
-  if (is.null(labels)){
+  if (is.null(labels)) {
     traceMessage("No population labels")
     return(NULL)
   }
 
-  ll <- lapply(results, function(r){
+  ll <- lapply(results, function(r) {
     .computeApplicablePopulationMatrix(r, labels)
   })
 
@@ -46,17 +48,19 @@ ComputeApplicablePopulationMatrices <- function(results, labels = BVE$population
 #' @examples
 #' \dontrun{
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                           trials = nTrials)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = nTrials
+#'   )
 #'
-#'  m <- pacehrh::ComputeApplicablePopulationMatrix(results)
+#' m <- pacehrh::ComputeApplicablePopulationMatrix(results)
 #' }
-ComputeApplicablePopulationMatrix <- function(result, labels = BVE$populationLabels$Labels){
-  if (is.null(result)){
+ComputeApplicablePopulationMatrix <- function(result, labels = BVE$populationLabels$Labels) {
+  if (is.null(result)) {
     return(NULL)
   }
 
-  if (is.null(labels)){
+  if (is.null(labels)) {
     traceMessage("No population labels")
     return(NULL)
   }
@@ -64,12 +68,13 @@ ComputeApplicablePopulationMatrix <- function(result, labels = BVE$populationLab
   return(.computeApplicablePopulationMatrix(result, labels))
 }
 
-.computeApplicablePopulationMatrix <- function(result, labels){
-  l <- lapply(result$Population, function(pop){
-    s <- sapply(labels, function(label){
+.computeApplicablePopulationMatrix <- function(result, labels) {
+  l <- lapply(result$Population, function(pop) {
+    s <- sapply(labels, function(label) {
       .computeApplicablePopulation(pop, label)
     })
+    return(s)
   })
 
-  return(t(do.call(rbind,l)))
+  return(t(do.call(rbind, l)))
 }

@@ -42,11 +42,11 @@ loadTable <- function(file = GPE$inputExcelFile,
                       convertType = FALSE) {
   data <- readSheet(path = file, sheetName = sheet)
 
-  if (is.null(data)){
+  if (is.null(data)) {
     traceMessage(paste0("Failed to load sheet ", sheet))
   }
 
-  if (!is.null(data) & !is.null(schema)) {
+  if (!is.null(data) && !is.null(schema)) {
     data <- validateTableAgainstSchema(data, schema, convertType)
   }
 
