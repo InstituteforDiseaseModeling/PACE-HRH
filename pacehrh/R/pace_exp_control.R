@@ -40,50 +40,23 @@ SaveBaseSettings <- function(scenarioName = "") {
     return(NULL)
   }
 
-  # Load Population change parameter data from the appropriate Excel sheet, as specified
-  # in the Scenarios sheet.
+  # Set the year range for trials, which is just the specified year range extended by a GPE$shoulderYears years to
+  # correct for seasonality edge effects. This must be done BEFORE the cadre and coverage sheets are read.
+  .setTrialYears()
 
-  popValsSheet <- BVE$scenario$sheet_PopValues
+  # Read scenario-specific input sheets
+  .newFunc(BVE$scenario$sheet_PopValues, loadPopulationChangeRates, BVE$populationChangeRates)
+  .newFunc(BVE$scenario$sheet_SeasonalityCurves, loadSeasonalityCurves, BVE$seasonalityCurves)
+  .newFunc(BVE$scenario$sheet_TaskValues, loadTaskParameters, BVE$taskData)
 
-  if (!is.blank(popValsSheet)) {
-    BVE$populationChangeRates <- loadPopulationChangeRates(popValsSheet)
-  } else {
-    BVE$populationChangeRates <- loadPopulationChangeRates()
-  }
-
-  if (is.null(BVE$populationChangeRates)) {
+  if (is.null(BVE$populationChangeRates) ||
+      is.null(BVE$seasonalityCurves) ||
+      is.null(BVE$taskData)) {
     return(NULL)
   }
 
-  # Load Seasonality parameter data from the appropriate Excel sheet, as specified
-  # in the Scenarios sheet.
-
-  seasonalitySheet <- BVE$scenario$sheet_SeasonalityCurves
-
-  if (!is.blank(seasonalitySheet)) {
-    BVE$seasonalityCurves <- loadSeasonalityCurves(seasonalitySheet)
-  } else {
-    BVE$seasonalityCurves <- loadSeasonalityCurves()
-  }
-
-  if (is.null(BVE$seasonalityCurves)) {
-    return(NULL)
-  }
-
-  # Load Task parameter data from the appropriate Excel sheet, as specified
-  # in the Scenarios sheet.
-
-  taskSheet <- BVE$scenario$sheet_TaskValues
-
-  if (!is.blank(taskSheet)) {
-    BVE$taskData <- loadTaskParameters(taskSheet)
-  } else {
-    BVE$taskData <- loadTaskParameters()
-  }
-
-  if (is.null(BVE$taskData)) {
-    return(NULL)
-  }
+  .newFunc(BVE$scenario$sheet_Cadre, loadTaskCadres, BVE$taskCadresData)
+  .newFunc(BVE$scenario$sheet_Coverage, loadCoverageRates, BVE$taskCoverageRates)
 
   # Check that all the population labels in the tasks list are included in
   # the populationLabels lookup. (This connection is also enforced by logic
@@ -120,36 +93,36 @@ SaveBaseSettings <- function(scenarioName = "") {
     BVE$seasonalTasks <- intersect(soIds, tpIds)
   }
 
-  # Set the year range for trials, which is just the specified year range
-  # extended by a GPE$shoulderYears years to correct for seasonality edge effects.
-  .setTrialYears()
-
   # Merge seasonality curves into the seasonality offsets table
   .mergeSeasonalityCurves()
 
   # Compute cadre member overhead times, etc
   BVE$cadreData <- computeCadreData(BVE$scenario, BVE$cadreRoles)
 
-  # Load Cadre parameter data from the appropriate Excel sheet, as specified
-  # in the Scenarios sheet.
-  taskCadresSheet <- BVE$scenario$sheet_Cadre
-
-  if (!is.blank(taskCadresSheet)) {
-    BVE$taskCadresData <- loadTaskCadres(taskCadresSheet)
-  } else {
-    BVE$taskCadresData <- loadTaskCadres()
-  }
-
-  taskCoverageRatesSheet <- BVE$scenario$sheet_Coverage
-  if (!is.blank(taskCoverageRatesSheet)) {
-    BVE$taskCoverageRates <- loadCoverageRates(taskCoverageRatesSheet)
-  } else {
-    BVE$taskCoverageRates <- loadCoverageRates()
-  }
-
-
   return(BVE$scenario)
 }
+
+# A bit of R's metaprogramming magic here. First we grab the expression passed as outVar (not the value of the
+# expression) with a call to rlang::enexpr() and assign to x. Then the x expression is inserted into a new assignment
+# expression, which is then evaluated with a call to eval(). In the middle we call the passed sheet reading function
+# with the passed name of the sheet to read.
+
+# nolint start
+.newFunc <- function(sheetName, sheetReadFunc, outVar) {
+  x <- rlang::enexpr(outVar)
+
+  eval(rlang::expr(!!x <- NULL))
+
+  if (!is.blank(sheetName)) {
+    data <- sheetReadFunc(sheetName)
+  } else {
+    data <- sheetReadFunc()
+  }
+
+  eval(rlang::expr(!!x <- data))
+}
+# nolint end
+
 
 .checkForBaseTables <- function() {
   varsToCheck <- c(
