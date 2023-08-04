@@ -22,7 +22,7 @@ jobs:
           Rscript install_dep_for_tests.R
       - name: Check package
         run: |
-          echo y | apt-get update
+          echo y | apt-get update --allow-releaseinfo-change
           echo y | apt-get install texinfo
           echo y | apt-get install texlive-latex-base
           echo y | apt-get install texlive-latex-extra
