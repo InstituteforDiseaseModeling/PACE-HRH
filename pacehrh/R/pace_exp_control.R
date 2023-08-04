@@ -50,8 +50,8 @@ SaveBaseSettings <- function(scenarioName = "") {
   .newFunc(BVE$scenario$sheet_TaskValues, loadTaskParameters, BVE$taskData)
 
   if (is.null(BVE$populationChangeRates) ||
-      is.null(BVE$seasonalityCurves) ||
-      is.null(BVE$taskData)) {
+        is.null(BVE$seasonalityCurves) ||
+        is.null(BVE$taskData)) {
     return(NULL)
   }
 

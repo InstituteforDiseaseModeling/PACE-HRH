@@ -97,7 +97,8 @@ generatePrevalenceRatesMatrix <- function(debugEnv = NULL) {
     mhivtbMask <-
       (
         tasks$ServiceCat == "Malaria" |
-          tasks$ServiceCat == "Tuberculosis" | tasks$ServiceCat == "HIV"
+        tasks$ServiceCat == "Tuberculosis" |
+        tasks$ServiceCat == "HIV"
       )
 
     deltaRatios[mhivtbMask] <- 1

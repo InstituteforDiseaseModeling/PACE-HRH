@@ -132,7 +132,7 @@
     "BandEnd",
     "InitValue",
     "ChangeRate"
-    )
+  )
 
 .populationChangeRateColTypes <-
   c(
