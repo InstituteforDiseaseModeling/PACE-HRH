@@ -17,17 +17,17 @@
 # original, Dec 1, 2021 Charles Eliot
 
 # Create a vector iterator object
-iter <- function(obj, recycle=FALSE) {
+iter <- function(obj, recycle = FALSE) {
   state <- new.env()
   state$index <- 0L
   state$obj <- obj
   n <- length(obj)
-  it <- list(state=state, length=n, recycle=recycle)
+  it <- list(state = state, length = n, recycle = recycle)
   it
 }
 
-hasNext <- function(obj){
-  if (obj$recycle){
+hasNext <- function(obj) {
+  if (obj$recycle) {
     return(TRUE)
   }
 
@@ -36,33 +36,34 @@ hasNext <- function(obj){
 
 getIterVal <- function(obj) {
   i <- obj$state$index
-  if (i > obj$length)
-    stop('SubscriptOutOfBounds', call.=FALSE)
+  if (i > obj$length) {
+    stop("SubscriptOutOfBounds", call. = FALSE)
+  }
   obj$state$obj[[i]]
 }
 
 nextElem <- function(obj) {
   repeat {
-    tryCatch({
-      obj$state$index <- obj$state$index + 1L
-      return(getIterVal(obj))
-    }, error=function(e) {
-      if (any(nzchar(e$message))) {
-        if (identical(e$message, "SubscriptOutOfBounds")) {
-          if (obj$recycle) {
-            obj$state$index <- 0L
+    tryCatch(
+      {
+        obj$state$index <- obj$state$index + 1L
+        return(getIterVal(obj))
+      },
+      error = function(e) {
+        if (any(nzchar(e$message))) {
+          if (identical(e$message, "SubscriptOutOfBounds")) {
+            if (obj$recycle) {
+              obj$state$index <- 0L
+            } else {
+              stop("StopIteration", call. = FALSE)
+            }
+          } else {
+            stop(e$message, call. = FALSE)
           }
-          else {
-            stop('StopIteration', call.=FALSE)
-          }
-        }
-        else {
-          stop(e$message, call.=FALSE)
+        } else {
+          stop("Abort", call. = e)
         }
       }
-      else {
-        stop('Abort', call.=e)
-      }
-    })
+    )
   }
 }

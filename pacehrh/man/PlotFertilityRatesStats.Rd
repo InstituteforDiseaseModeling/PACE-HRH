@@ -34,8 +34,10 @@ pacehrh::InitializeSeasonality()
 scenario <- "ScenarioName"
 
 results <-
-  pacehrh::RunExperiments(scenarioName = scenario,
-                       trials = 100)
+  pacehrh::RunExperiments(
+    scenarioName = scenario,
+    trials = 100
+  )
 
 g <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
 print(g)

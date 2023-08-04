@@ -16,7 +16,7 @@ loadScenarios <- function(sheetName = .defaultScenariosSheet) {
 
   scenarios <- readSheet(sheetName = sheetName)
 
-  if (!is.null(scenarios)){
+  if (!is.null(scenarios)) {
     scenarios <- validateTableAgainstSchema(scenarios, .scenarioMetaData)
   }
 
@@ -49,13 +49,15 @@ loadScenarios <- function(sheetName = .defaultScenariosSheet) {
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #' }
-InitializeScenarios <- function(loadFromExcel = TRUE, ...){
+InitializeScenarios <- function(loadFromExcel = TRUE, ...) {
   .checkAndLoadGlobalConfig()
 
-  if (loadFromExcel){
+  if (loadFromExcel) {
     scenarios <- loadScenarios(...)
   } else {
     scenarios <- CreateScenariosTable()

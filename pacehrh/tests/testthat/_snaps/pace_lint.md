@@ -4,7 +4,7 @@
       errCode <- pacehrh::CheckInputExcelFileFormat(noDate = TRUE)
     Output
       
-      Input file = ../../config/model_inputs.xlsx
+      Input file = ./config/model_inputs.xlsx
       Sheet references from scenarios ... OK
       No duplicate tasks in seasonality offsets table ... OK
       The following tasks in the scenario offsets table are not used in task values sheets ...
@@ -149,7 +149,7 @@
         noDate = TRUE)
     Output
       
-      Input file = ../../config/model_inputs.xlsx
+      Input file = ./config/model_inputs.xlsx
       notasheet sheet could not be found
 
 # Lint: bad seasonality offsets sheet name
@@ -159,7 +159,7 @@
         noDate = TRUE)
     Output
       
-      Input file = ../../config/model_inputs.xlsx
+      Input file = ./config/model_inputs.xlsx
       notasheet sheet could not be found
 
 # Lint: non-existent input file

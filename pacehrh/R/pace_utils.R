@@ -1,7 +1,9 @@
-.populationRateCategories <- c("femaleFertility",
-                               "maleFertility",
-                               "femaleMortality",
-                               "maleMortality")
+.populationRateCategories <- c(
+  "femaleFertility",
+  "maleFertility",
+  "femaleMortality",
+  "maleMortality"
+)
 
 #' Generate A Long-Format Data Frame Of Suite Mortality and Fertility Rates
 #'
@@ -16,18 +18,20 @@
 #' @examples
 #' \dontrun{
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = "MergedModel",
-#'                           trials = 20)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = "MergedModel",
+#'     trials = 20
+#'   )
 #'
 #' df <- pacehrh::GetSuiteRates(results, rateCategory = "femaleFertility")
 #' }
 GetSuiteRates <- function(results, rateCategory = .populationRateCategories[1]) {
-  if (is.null(results)){
+  if (is.null(results)) {
     warning(paste0("Null results parameter. Returning NULL."))
     return(NULL)
   }
 
-  if (!(rateCategory %in% .populationRateCategories)){
+  if (!(rateCategory %in% .populationRateCategories)) {
     warning(paste0("Invalid population rate category (", rateCategory, ")"))
     return(NULL)
   }
@@ -38,7 +42,7 @@ GetSuiteRates <- function(results, rateCategory = .populationRateCategories[1]) 
     t <-
       results[[trial]][["PopulationRates"]][[rateCategory]][["ratesMatrix"]]
     t <- as.data.table(t, keep.rownames = "Label")
-    t$Trial = rep(trial, nrow(t))
+    t$Trial <- rep(trial, nrow(t))
     return(t)
   })
 
@@ -56,7 +60,13 @@ GetSuiteRates <- function(results, rateCategory = .populationRateCategories[1]) 
   return(outData)
 }
 
-is.blank <- function(str){
+# Inhibit the linter for this function name. "is.blank()" follows a common R convention - is.double(), is.array(), etc.
+# To be consistent with the PACE-HRH style the function should be "isBlank()", and there are plenty of examples of this
+# convention too, such as isTRUE() and isS4(). I figure this decision could go either way.
+
+# nolint start
+is.blank <- function(str) {
+# nolint end
   if (is.null(str)) {
     return(TRUE)
   }
@@ -75,9 +85,3 @@ is.blank <- function(str){
 
   return(FALSE)
 }
-
-
-
-
-
-

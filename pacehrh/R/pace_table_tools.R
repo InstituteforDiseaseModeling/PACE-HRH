@@ -13,20 +13,20 @@
 #' @return Validated tibble
 #'
 #' @noRd
-validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType = FALSE){
+validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType = FALSE) {
   return(.checkColumns(table, schema, convertType))
 }
 
-.checkColumns <- function(table, schema, convertType){
+.checkColumns <- function(table, schema, convertType) {
   e <- rlang::current_env()
 
   rCols <- .checkRequiredColumns(e)
-  if (is.null(rCols)){
+  if (is.null(rCols)) {
     return(NULL)
   }
 
   oCols <- .checkOptionalColumns(e)
-  if (is.null(oCols)){
+  if (is.null(oCols)) {
     return(NULL)
   }
 
@@ -39,8 +39,8 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   return(table)
 }
 
-.removeBadRows <- function(e){
-  if (is.null(e$schema$kcols)){
+.removeBadRows <- function(e) {
+  if (is.null(e$schema$kcols)) {
     return(invisible(NULL))
   }
 
@@ -50,28 +50,28 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
     return(invisible(NULL))
   }
 
-  for (colName in e$schema$kcols){
+  for (colName in e$schema$kcols) {
     e$table <- tidyr::drop_na(e$table, all_of(colName))
   }
 }
 
-.checkRequiredColumns <- function(e){
+.checkRequiredColumns <- function(e) {
   columns <- names(e$table)
 
   # Test that all required columns have shown up
-  if (length(setdiff(e$schema$rcols, columns)) > 0){
+  if (length(setdiff(e$schema$rcols, columns)) > 0) {
     .raiseAlarm(setdiff(e$schema$rcols, columns), alarmType = "name")
     return(NULL)
   }
 
   # Test that all required columns have the correct types
   correctTypesMask <- (sapply(e$table[e$schema$rcols], typeof) == e$schema$rtypes)
-  if (!all(correctTypesMask)){
-    if (e$convertType){
+  if (!all(correctTypesMask)) {
+    if (e$convertType) {
       # Convert columns to correct types if possible
       indexes <- which(!correctTypesMask)
-      for (i in indexes){
-        if (.changeColumnType(e, e$schema$rcols[i], e$schema$rtype[i]) == FALSE){
+      for (i in indexes) {
+        if (.changeColumnType(e, e$schema$rcols[i], e$schema$rtype[i]) == FALSE) {
           return(NULL)
         }
       }
@@ -85,38 +85,42 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   return(e$schema$rcols)
 }
 
-.changeColumnType <- function(e, colName, colType){
-  if (colType == "double"){
+.changeColumnType <- function(e, colName, colType) {
+  if (colType == "double") {
     retVal <- tryCatch(
       {
         e$table[[colName]] <- as.numeric(e$table[[colName]])
         TRUE
       },
-      warning = function(w){
-        if (length(grep("NAs introduced", w$message)) > 0){
+      warning = function(w) {
+        if (length(grep("NAs introduced", w$message)) > 0) {
           .raiseChangeAlarm(colName, colType)
           FALSE
         }
       },
-      finally = function(){}
+      finally = function() {
+
+      }
     )
 
     return(retVal)
   }
 
-  if (colType == "character"){
+  if (colType == "character") {
     retVal <- tryCatch(
       {
         e$table[[colName]] <- as.character(e$table[[colName]])
         TRUE
       },
-      warning = function(w){
-        if (length(grep("NAs introduced", w$message)) > 0){
+      warning = function(w) {
+        if (length(grep("NAs introduced", w$message)) > 0) {
           .raiseChangeAlarm(colName, colType)
           FALSE
         }
       },
-      finally = function(){}
+      finally = function() {
+
+      }
     )
 
     return(retVal)
@@ -125,10 +129,10 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   return(FALSE)
 }
 
-.checkOptionalColumns <- function(e){
+.checkOptionalColumns <- function(e) {
   out <- vector(mode = "character")
 
-  if (is.null(e$schema$ocols)){
+  if (is.null(e$schema$ocols)) {
     return(out)
   }
 
@@ -136,16 +140,16 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   types <- sapply(e$table, typeof)
   badTypeColumnsList <- vector(mode = "character")
 
-  for (i in seq_along(e$schema$ocols)){
+  for (i in seq_along(e$schema$ocols)) {
     col <- e$schema$ocols[i]
     type <- e$schema$otypes[i]
 
-    if (col %in% columns){ # If the table contains an optional column
-      if (types[col] == type){ # If the column has the right type
+    if (col %in% columns) { # If the table contains an optional column
+      if (types[col] == type) { # If the column has the right type
         out <- c(out, col)
       } else {
-        if (e$convertType){
-          if (.changeColumnType(e, col, type) == FALSE){
+        if (e$convertType) {
+          if (.changeColumnType(e, col, type) == FALSE) {
             return(NULL)
           }
           out <- c(out, col)
@@ -160,7 +164,7 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   }
 
   # Raise alarm if user has supplied optional columns of the wrong type
-  if (length(badTypeColumnsList) > 0){
+  if (length(badTypeColumnsList) > 0) {
     .raiseAlarm(badTypeColumnsList, alarmType = "type")
     return(NULL)
   }
@@ -169,19 +173,19 @@ validateTableAgainstSchema <- function(table = NULL, schema = NULL, convertType 
   return(out)
 }
 
-.raiseAlarm <- function(columns, alarmType = "name"){
-  colStr <- paste(columns, collapse = ", " )
+.raiseAlarm <- function(columns, alarmType = "name") {
+  colStr <- paste(columns, collapse = ", ")
 
-  if (alarmType == "name"){
+  if (alarmType == "name") {
     errorMsg <- paste0("Missing required columns in table: ", colStr)
-  } else if (alarmType == "type"){
+  } else if (alarmType == "type") {
     errorMsg <- paste0("Columns with incorrect types in table: ", colStr)
   }
 
   warning(errorMsg, call. = FALSE)
 }
 
-.raiseChangeAlarm <- function(colName, colType){
+.raiseChangeAlarm <- function(colName, colType) {
   warning(
     paste0(
       "Column ",

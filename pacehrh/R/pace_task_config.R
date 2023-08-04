@@ -9,21 +9,22 @@
 #' @return Data frame of healthcare task parameters
 #'
 #' @noRd
-loadTaskParameters <- function(sheetName = .defaultTaskValuesSheet){
+loadTaskParameters <- function(sheetName = .defaultTaskValuesSheet) {
   traceMessage(paste0("Loading task values sheet ", sheetName))
 
   taskData <- NULL
 
   taskData <- readSheet(sheetName = sheetName)
 
-  if (is.null(taskData)){
+  if (is.null(taskData)) {
     return(NULL)
   }
 
   taskData <-
     validateTableAgainstSchema(taskData,
-                               .taskValuesMetaData,
-                               convertType = TRUE)
+      .taskValuesMetaData,
+      convertType = TRUE
+    )
 
   if (!is.null(taskData)) {
     # Convert some of the NA values to sensible defaults. Note that

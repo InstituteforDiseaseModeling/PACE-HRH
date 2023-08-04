@@ -5,27 +5,30 @@
 #' @return Dataframe of stochastic parameters
 #'
 #' @noRd
-loadStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet) {
+loadStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParmsSheet) {
   traceMessage(paste0("Loading stochastic parameters sheet ", stochasticParametersSheetName))
 
-  stochData <- tryCatch({
-    readxl::read_xlsx(GPE$inputExcelFile, sheet = stochasticParametersSheetName)
-  },
-  error = function(e){
-    return(NULL)
-  },
-  finally = {
-  })
+  stochData <- tryCatch(
+    {
+      readxl::read_xlsx(GPE$inputExcelFile, sheet = stochasticParametersSheetName)
+    },
+    error = function(e) {
+      return(NULL)
+    },
+    finally = {
+    }
+  )
 
-  if (is.null(stochData)){
+  if (is.null(stochData)) {
     warning("Could not read stochastic parameters sheet")
     return(NULL)
   }
 
   stochData <-
     validateTableAgainstSchema(stochData,
-                               .stochasticParametersMetaData,
-                               convertType = FALSE)
+      .stochasticParametersMetaData,
+      convertType = FALSE
+    )
 
   return(stochData)
 }
@@ -40,24 +43,27 @@ loadStochasticParameters <- function(stochasticParametersSheetName = .defaultSto
 loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateLimitsSheet) {
   traceMessage(paste0("Loading change rate limits sheet ", changeRateLimitsSheetName))
 
-  limitData <- tryCatch({
-    readxl::read_xlsx(GPE$inputExcelFile, sheet = changeRateLimitsSheetName)
-  },
-  error = function(e){
-    return(NULL)
-  },
-  finally = {
-  })
+  limitData <- tryCatch(
+    {
+      readxl::read_xlsx(GPE$inputExcelFile, sheet = changeRateLimitsSheetName)
+    },
+    error = function(e) {
+      return(NULL)
+    },
+    finally = {
+    }
+  )
 
-  if (is.null(limitData)){
+  if (is.null(limitData)) {
     warning("Could not read change rate limits sheet")
     return(NULL)
   }
 
   limitData <-
     validateTableAgainstSchema(limitData,
-                               .changeRateLimitsMetaData,
-                               convertType = FALSE)
+      .changeRateLimitsMetaData,
+      convertType = FALSE
+    )
 
   limitData <- .validateChangeRateLimits(limitData)
 
@@ -83,31 +89,31 @@ loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateL
     limitData[rowNum, "Max"] <<- NA_real_
   }
 
-  .isValidRow <- function(min, max) {
-    if (is.na(min) | is.na(max)) {
-      return(FALSE)
-    }
-
-    # Negative values aren't allowed
-    if ((min < 0.0) | (max < 0.0)) {
-      return(FALSE)
-    }
-
-    # The maximum limit must be greater than or equal to the minimum
-    if (min > max) {
-      return(FALSE)
-    }
-
-    return(TRUE)
-  }
-
-  for (i in 1:NROW(limitData)) {
+  for (i in seq_len(NROW(limitData))) {
     if (!.isValidRow(limitData[i, "Min"], limitData[i, "Max"])) {
       .clearRow(i)
     }
   }
 
   return(limitData)
+}
+
+.isValidRow <- function(min, max) {
+  if (is.na(min) || is.na(max)) {
+    return(FALSE)
+  }
+
+  # Negative values aren't allowed
+  if ((min < 0.0) || (max < 0.0)) {
+    return(FALSE)
+  }
+
+  # The maximum limit must be greater than or equal to the minimum
+  if (min > max) {
+    return(FALSE)
+  }
+
+  return(TRUE)
 }
 
 #' Initialize Stochastic Parameters
@@ -137,11 +143,13 @@ loadChangeRateLimits <- function(changeRateLimitsSheetName = .defaultChangeRateL
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #' }
 #'
-InitializeStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParametersSheet,
+InitializeStochasticParameters <- function(stochasticParametersSheetName = .defaultStochasticParmsSheet,
                                            changeRateLimitsSheetName = .defaultChangeRateLimitsSheet) {
   .checkAndLoadGlobalConfig()
 

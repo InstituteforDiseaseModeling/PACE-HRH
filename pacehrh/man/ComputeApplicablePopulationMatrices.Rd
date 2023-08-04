@@ -23,9 +23,11 @@ Generate Matrices of Applicable Populations
 \examples{
 \dontrun{
 results <-
-  pacehrh::RunExperiments(scenarioName = scenario,
-                          trials = nTrials)
+  pacehrh::RunExperiments(
+    scenarioName = scenario,
+    trials = nTrials
+  )
 
- pm <- pacehrh::ComputeApplicablePopulationMatrices(results)
+pm <- pacehrh::ComputeApplicablePopulationMatrices(results)
 }
 }

@@ -1,3 +1,5 @@
-.taskColumnNames <- c(.taskValuesMetaData$cols, 
-                      "computeMethod", 
-                      "applyStochasticity")
+.taskColumnNames <- c(
+  .taskValuesMetaData$cols,
+  "computeMethod",
+  "applyStochasticity"
+)
