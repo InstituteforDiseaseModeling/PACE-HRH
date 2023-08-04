@@ -3,3 +3,5 @@
 ^codecov\.yml$
 ^_pkgdown\.yml$
 ^pkgdown$
+^\.lintr$
+^vignettes/\.gitignore$
