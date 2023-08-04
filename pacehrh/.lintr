@@ -3,3 +3,7 @@ linters: linters_with_defaults(
     object_length_linter(length = 40L),
     object_name_linter = object_name_linter(styles = c("camelCase", "CamelCase", "symbols"))
   )
+exclusions: list(
+    "tests",
+    "vignettes"
+  )
