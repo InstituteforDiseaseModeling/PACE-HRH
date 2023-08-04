@@ -32,14 +32,11 @@ jobs:
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
       - name: Lint Check
+        working-directory: 'pacehrh'
         run: >
           install.packages("lintr");
           library(lintr);
-          use_lintr(type = "tidyverse");
-          expect_lint_free(path="pacehrh", linters_with_defaults(
-          line_length_linter = line_length_linter(length = 120L),
-          object_name_linter = object_name_linter(styles = c("camelCase", "CamelCase", "symbols"))
-          ))
+          expect_lint_free()
         shell: Rscript {0}
         env: 
           LINTR_ERROR_ON_LINT: true 
