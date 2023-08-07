@@ -22,6 +22,7 @@ jobs:
           Rscript install_dep_for_tests.R
       - name: Check package
         run: |
+          echo y | apt-get update --allow-releaseinfo-change
           echo y | apt-get install texinfo
           echo y | apt-get install texlive-latex-base
           echo y | apt-get install texlive-latex-extra
@@ -31,7 +32,17 @@ jobs:
       - name: Run unittest
         working-directory: 'pacehrh'
         run: Rscript -e 'devtools::test()'
-        
+      - name: Lint Check
+        working-directory: 'pacehrh'
+        run: >
+          install.packages("lintr");
+          library(lintr);
+          devtools::load_all();
+          expect_lint_free()
+        shell: Rscript {0}
+        env: 
+          LINTR_ERROR_ON_LINT: true 
+          NOT_CRAN: true
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
