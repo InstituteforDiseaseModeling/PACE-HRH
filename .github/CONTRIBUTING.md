@@ -54,7 +54,7 @@ The __styler__ package re-formats code according to whatever style rules have be
 
 The __lintr__ package checks for code style problems. 
 
-The linting configuration is controlled by the .lint file in the package root directory.
+The linting configuration is controlled by the .lintr file in the package root directory.
 
 With the .lintr file in place, the command to lint a file is:
 
