@@ -37,6 +37,7 @@ jobs:
         run: >
           install.packages("lintr");
           library(lintr);
+          devtools::load_all()
           expect_lint_free()
         shell: Rscript {0}
         env: 
