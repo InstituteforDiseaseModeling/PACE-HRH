@@ -49,8 +49,10 @@ loadCoverageRates <-
       coverageRatesData[sprintf("%d", missingYears)] <- NA
 
       traceMessage(
-        paste0("Mis-match between simulation years and coverage levels. The following years were added at 100% coverage: ",
-               paste0(missingYears, collapse = ", "))
+        paste0(
+          "Mis-match between simulation years and coverage levels. The following years were added at 100% coverage: ",
+          paste0(missingYears, collapse = ", ")
+        )
       )
     }
 
@@ -69,9 +71,10 @@ loadCoverageRates <-
     # Make the data tidy
     tidyCoverageRatesData <-
       pivot_longer(coverageRatesData,
-                   !(c("Indicator", "CommonName")),
-                   names_to = "Year",
-                   values_to = "Coverage")
+        !(c("Indicator", "CommonName")),
+        names_to = "Year",
+        values_to = "Coverage"
+      )
 
     # Convert year to numeric from char
     tidyCoverageRatesData$Year <-

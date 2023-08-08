@@ -29,8 +29,10 @@ pacehrh::InitializeSeasonality()
 scenario <- "ScenarioName"
 
 results <-
-  pacehrh::RunExperiments(scenarioName = scenario,
-                       trials = 100)
+  pacehrh::RunExperiments(
+    scenarioName = scenario,
+    trials = 100
+  )
 
 g <- pacehrh::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
 print(g)

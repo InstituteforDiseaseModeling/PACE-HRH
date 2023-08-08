@@ -6,9 +6,9 @@
 #' @return List of dataframes of per-task times, or NULL
 #'
 #' @noRd
-runSeasonalityExperiment <- function(results, debug = FALSE){
+runSeasonalityExperiment <- function(results, debug = FALSE) {
   # The seasonality "curve" used when we don't know the seasonality
-  dummyCurve <- c(1,1,1,1,1,1,1,1,1,1,1,1) / 12
+  dummyCurve <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) / 12
 
   # Look for seasonality-affected tasks in the task list for this scenario
 
@@ -19,21 +19,20 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   # We compute extra "shoulder" years to handle inaccuracies at the far end of
   # the seasonality time service resulting from negative seasonality offsets. We
   # truncate off the extra years when we're done.
-  computedMonthCount <- 12 * length(BVE$years)
   returnedMonthCount <- 12 * length(GPE$years)
 
-  l <- lapply(taskNames, function(taskName){
-    if (length(seasonalityTaskIndex <- which(seasonalityTaskNames == taskName)) == 1){
+  l <- lapply(taskNames, function(taskName) {
+    if (length(seasonalityTaskIndex <- which(seasonalityTaskNames == taskName)) == 1) {
       # Grab already computed annual data for this task
-      annualTimes <- results$AnnualTimes[taskName,]
-      annualServices <- results$AnnualCounts[taskName,]
+      annualTimes <- results$AnnualTimes[taskName, ]
+      annualServices <- results$AnnualCounts[taskName, ]
 
       # Find the appropriate seasonality curve
       curve <-
         .getSeasonalityCurve(seasonalityTaskCurves[seasonalityTaskIndex])
 
       # Renormalize the seasonality curve if necessary
-      if (abs(sum(curve) - 1.0) > 1e-6){
+      if (abs(sum(curve) - 1.0) > 1e-6) {
         curve <- curve / sum(curve)
       }
 
@@ -48,17 +47,21 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
       A <- matrix(0, nrow = nRows, ncol = nCols)
 
       offsets <-
-        BVE$seasonalityOffsets[seasonalityTaskIndex,
-                               c("Offset1", "Offset2", "Offset3",
-                                 "Offset4", "Offset5", "Offset6")]
+        BVE$seasonalityOffsets[
+          seasonalityTaskIndex,
+          c(
+            "Offset1", "Offset2", "Offset3",
+            "Offset4", "Offset5", "Offset6"
+          )
+        ]
       offsets <- offsets[!is.na(offsets)]
       nOffsets <- length(offsets)
 
-      for (r in 1:nRows){
-        for (offset in offsets){
+      for (r in 1:nRows) {
+        for (offset in offsets) {
           c <- r - offset
-          if ((c >= 1) & (c <= nCols)){
-            A[r,c] <- 1
+          if ((c >= 1) & (c <= nCols)) {
+            A[r, c] <- 1
           }
         }
       }
@@ -72,13 +75,13 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 
       return(list(Time = monthlyTimes, N = monthlyServices))
     } else {
-      annualTimes <- results$AnnualTimes[taskName,]
-      annualServices <- results$AnnualCounts[taskName,]
+      annualTimes <- results$AnnualTimes[taskName, ]
+      annualServices <- results$AnnualCounts[taskName, ]
 
       names(annualTimes) <- NULL
       monthlyTimes <- .convertAnnualToMonthly(annualTimes, dummyCurve)
 
-      if (is.null(annualServices)){
+      if (is.null(annualServices)) {
         monthlyServices <- replicate(length(monthlyTimes), 0)
       } else {
         names(annualServices) <- NULL
@@ -99,10 +102,10 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
   return(l)
 }
 
-.convertAnnualToMonthly <- function(values, curve){
+.convertAnnualToMonthly <- function(values, curve) {
   monthly <- as.vector(matrix(data = curve, ncol = 1) %*% matrix(data = values, nrow = 1))
 
-  if (GPE$roundingLaw != "none"){
+  if (GPE$roundingLaw != "none") {
     return(round(monthly, 0))
   } else {
     return(monthly)
@@ -110,7 +113,7 @@ runSeasonalityExperiment <- function(results, debug = FALSE){
 }
 
 .getSeasonalityCurve <- function(curveType) {
-  curve = NULL
+  curve <- NULL
 
   curve <- BVE$seasonalityCurves[[curveType]]
 

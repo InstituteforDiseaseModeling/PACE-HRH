@@ -10,7 +10,7 @@
 #' @return Seasonality curves data frame.
 #'
 #' @noRd
-loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesSheet, ...){
+loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesSheet, ...) {
   traceMessage(paste0("Loading seasonality curves sheet ", sheetNameCurves))
 
   seasonalityCurvesData <- NULL
@@ -35,7 +35,7 @@ loadSeasonalityCurves <- function(sheetNameCurves = .defaultSeasonalityCurvesShe
 #' @return Seasonality offsets data frame.
 #'
 #' @noRd
-loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet, ...){
+loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsetsSheet, ...) {
   traceMessage(paste0("Loading seasonality offsets sheet ", sheetNameOffsets))
 
   seasonalityOffsetsData <- NULL
@@ -45,8 +45,9 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsets
   if (!is.null(seasonalityOffsetsData)) {
     seasonalityOffsetsData <-
       validateTableAgainstSchema(seasonalityOffsetsData,
-                                 .seasonalityOffsetMetaData,
-                                 convertType = TRUE)
+        .seasonalityOffsetMetaData,
+        convertType = TRUE
+      )
   }
 
   return(seasonalityOffsetsData)
@@ -77,10 +78,12 @@ loadSeasonalityOffsets <- function(sheetNameOffsets = .defaultSeasonalityOffsets
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #' }
-InitializeSeasonality <- function(...){
+InitializeSeasonality <- function(...) {
   .checkAndLoadGlobalConfig()
 
   seasonalityCurvesData <- loadSeasonalityCurves(...)

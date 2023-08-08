@@ -19,7 +19,8 @@ CheckInputExcelFileFormat(
 
 \item{scenarioSheet}{Name of the sheet with scenario details. Default = "Scenarios".}
 
-\item{seasonalityOffsetsSheet}{Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"}
+\item{seasonalityOffsetsSheet}{Name of the sheet with per-task seasonality offset details. Default =
+"SeasonalityOffsets"}
 
 \item{noDate}{Suppress date stamp from output. Default = FALSE.}
 }

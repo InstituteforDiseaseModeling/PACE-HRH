@@ -1,4 +1,4 @@
-writeCurrentExpDemographics_wide <- function(filename = "out.csv") {
+writeExpDemographicsWide <- function(filename = "out.csv") {
   popData <- EXP$demographics
 
   if (is.null(popData)) {
@@ -9,7 +9,7 @@ writeCurrentExpDemographics_wide <- function(filename = "out.csv") {
   outdf <- data.frame(Age = ages)
   years <- names(popData)
 
-  for (i in 1:length(popData)) {
+  for (i in seq_along(popData)) {
     year <- years[i]
     pop <- popData[[i]]
 

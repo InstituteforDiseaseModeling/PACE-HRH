@@ -1,5 +1,7 @@
 # Completion codes
 
+# nolint start
+
 .Success <- 0L
 .errInputFileNotFound <- -1L
 .errInputFileNotReadable <- -2L
@@ -9,6 +11,8 @@
 .errSeasonalityOffsetSheetNotReadable <- -6L
 .warnProblemsFound <- 1L
 
+# nolint end
+
 #' Perform Sanity Checks On Input Excel File
 #'
 #' @description
@@ -17,7 +21,8 @@
 #' @param inputFile Excel file to examine. If NULL, check the file defined in the global Configuration.
 #' @param outputFile Results output file. If NULL, results are printed to the console.
 #' @param scenarioSheet Name of the sheet with scenario details. Default = "Scenarios".
-#' @param seasonalityOffsetsSheet Name of the sheet with per-task seasonality offset details. Default = "SeasonalityOffsets"
+#' @param seasonalityOffsetsSheet Name of the sheet with per-task seasonality offset details. Default =
+#'   "SeasonalityOffsets"
 #' @param noDate Suppress date stamp from output. Default = FALSE.
 #'
 #' @return Error code.
@@ -36,10 +41,8 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
                                       scenarioSheet = "Scenarios",
                                       seasonalityOffsetsSheet = "SeasonalityOffsets",
                                       noDate = FALSE) {
-
   # This is a wrapper function that controls whether report output is directed
-  # to the console or a file. The real action is in the called function:
-  # .checkInputExcelFileFormat()
+  # to the console or a file. The real action is in the called function: .checkInputExcelFileFormat()
 
   errcode <- .Success
 
@@ -47,7 +50,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
     inputFile <- GPE$inputExcelFile
   }
 
-  if (is.null(outputFile)){
+  if (is.null(outputFile)) {
     errcode <- .checkInputExcelFileFormat(inputFile, scenarioSheet, seasonalityOffsetsSheet, noDate)
   } else {
     withr::with_output_sink(outputFile, code = {
@@ -58,10 +61,10 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(errcode)
 }
 
-.checkInputExcelFileFormat <- function(inputFile, scenarioSheet, seasonalityOffsetsSheet, noDate){
+.checkInputExcelFileFormat <- function(inputFile, scenarioSheet, seasonalityOffsetsSheet, noDate) {
   .catLine()
 
-  if (!noDate){
+  if (!noDate) {
     .catLine(date())
   }
 
@@ -75,7 +78,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   # so wrong there's no way to continue.
   errcode <- .criticalChecks(inputFile, scenarioSheet, seasonalityOffsetsSheet, e)
 
-  if (errcode != .Success){
+  if (errcode != .Success) {
     return(errcode)
   }
 
@@ -98,15 +101,17 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   # ------------------------------------------
 
   testFuncs <- c(
-    .test1_sheetRefs,
-    .test2_dupSeasonalityTasks,
-    .test3_seasonalityTasksUsed,
-    .test4_dupTaskIds,
-    .test5_invalidNumerics,
-    .test6_seasonalityNormalization
+    .sheetRefsTest,
+    .duplicateSeasonalityTasksTest,
+    .seasonalityTasksUsedTest,
+    .duplicateTaskIdsTest,
+    .invalidNumericsTest,
+    .seasonalityNormalizationTest
   )
 
-  out <- sapply(testFuncs, function(f){do.call(f,list(e))})
+  out <- sapply(testFuncs, function(f) {
+    do.call(f, list(e))
+  })
 
   # Pop a line at the bottom of the report output indicating at a glance
   # which tests passed/failed. (1 = failed, 0 = passed.)
@@ -114,7 +119,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 
   .catLine("Test results: ", paste(as.list(as.character(out)), collapse = "-"))
 
-  if (all(out == .Success)){
+  if (all(out == .Success)) {
     return(.Success)
   } else {
     return(out[which(out != .Success)[1]])
@@ -126,62 +131,76 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 # That information is passed back to the caller through a passed environment
 # object.
 
-.criticalChecks <- function(inputFile, scenarioSheet, seasonalityOffsetsSheet, outEnv){
+.criticalChecks <- function(inputFile, scenarioSheet, seasonalityOffsetsSheet, outEnv) {
   outEnv$sheets <- NULL
   outEnv$scenarios <- NULL
 
   # Check whether the input file exists
-  if (!file.exists(inputFile)){
+  if (!file.exists(inputFile)) {
     .catLine(inputFile, " not found")
     return(.errInputFileNotFound)
   }
 
   # Extract sheet (tab) list, or raise an error if the input file can't be read
-  sheets <- tryCatch({
-    readxl::excel_sheets(inputFile)
-  },
-  error = function(c){
-    .catLine(inputFile, " could not be read")
-    .catLine("Error message: ", c)
-    return(NULL)
-  })
+  sheets <- tryCatch(
+    {
+      readxl::excel_sheets(inputFile)
+    },
+    error = function(c) {
+      .catLine(inputFile, " could not be read")
+      .catLine("Error message: ", c)
+      return(NULL)
+    }
+  )
 
   if (is.null(sheets)) {
     return(.errInputFileNotReadable)
   }
 
   # Check whether the scenario sheet is in the sheet list
-  if (!(scenarioSheet %in% sheets)){
+  if (!(scenarioSheet %in% sheets)) {
     .catLine(scenarioSheet, " sheet could not be found")
     return(.errScenarioSheetNotFound)
   }
 
   # Check whether the seasonality offsets sheet is in the sheet list
-  if (!(seasonalityOffsetsSheet %in% sheets)){
+  if (!(seasonalityOffsetsSheet %in% sheets)) {
     .catLine(seasonalityOffsetsSheet, " sheet could not be found")
     return(.errSeasonalityOffsetSheetNotFound)
   }
 
   # Read the contents of the Scenarios sheet
-  scenarios <- tryCatch({
-    readxl::read_xlsx(inputFile, sheet = scenarioSheet)
-  },
-  warning = function(c){return(NULL)},
-  error = function(c){return(NULL)})
+  scenarios <- tryCatch(
+    {
+      readxl::read_xlsx(inputFile, sheet = scenarioSheet)
+    },
+    warning = function(c) {
+      return(NULL)
+    },
+    error = function(c) {
+      return(NULL)
+    }
+  )
 
-  if (is.null(scenarios)){
+  if (is.null(scenarios)) {
     .catLine("Could not read scenario sheet (", scenarioSheet, ")")
     return(.errScenarioSheetNotReadable)
   }
 
   # Read the contents of the SeasonalityOffsets sheet
-  seasonalityOffsets <- tryCatch({
-    readxl::read_xlsx(inputFile, sheet = seasonalityOffsetsSheet)
-  },
-  warning = function(c){return(NULL)},
-  error = function(c){return(NULL)})
+  seasonalityOffsets <- tryCatch(
+    {
+      readxl::read_xlsx(inputFile, sheet = seasonalityOffsetsSheet)
+    },
+    warning = function(c) {
+      return(NULL)
+    },
+    error = function(c) {
+      return(NULL)
+    }
+  )
 
-  if (is.null(seasonalityOffsets)){
+  if (is.null(seasonalityOffsets)) {
     .catLine("Could not read seasonality offsets sheet (", seasonalityOffsetsSheet, ")")
     return(.errSeasonalityOffsetSheetNotReadable)
   }
@@ -193,13 +212,19 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(.Success)
 }
 
-.readTaskValuesSheetData <- function(inputFile, taskValuesSheets){
-  l <- lapply(taskValuesSheets, function(sheet){
-    sheetData <- tryCatch({
-      readxl::read_xlsx(inputFile, sheet = sheet)
-    },
-    warning = function(c){return(NULL)},
-    error = function(c){return(NULL)})
+.readTaskValuesSheetData <- function(inputFile, taskValuesSheets) {
+  l <- lapply(taskValuesSheets, function(sheet) {
+    sheetData <- tryCatch(
+      {
+        readxl::read_xlsx(inputFile, sheet = sheet)
+      },
+      warning = function(c) {
+        return(NULL)
+      },
+      error = function(c) {
+        return(NULL)
+      }
+    )
 
     return(sheetData)
   })
@@ -207,24 +232,26 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(l)
 }
 
-.catLine <- function(...){
+.catLine <- function(...) {
   cat(paste0(..., "\n", collapse = ""))
 }
 
-.test1_sheetRefs <- function(e){
+.sheetRefsTest <- function(e) {
   # Collect references to other workbook sheets, and check that all the
   # references are to existing sheets
   errcode <- .Success
 
-  sheetRefs <- c(e$scenarios$sheet_PopValues,
-                 e$scenarios$sheet_TaskValues,
-                 e$scenarios$sheet_SeasonalityCurves)
+  sheetRefs <- c(
+    e$scenarios$sheet_PopValues,
+    e$scenarios$sheet_TaskValues,
+    e$scenarios$sheet_SeasonalityCurves
+  )
 
   sheetRefs <- unique(sheetRefs)
 
   results <- (sheetRefs %in% e$sheets)
 
-  if (all(results)){
+  if (all(results)) {
     .catLine("Sheet references from scenarios ... OK")
   } else {
     errcode <- .warnProblemsFound
@@ -235,14 +262,14 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(errcode)
 }
 
-.test2_dupSeasonalityTasks <- function(e){
+.duplicateSeasonalityTasksTest <- function(e) {
   # Check for duplicated task IDs in the seasonality offsets table
   errcode <- .Success
 
   tasks <- e$seasonalityOffsets$Task
   dups <- duplicated(tasks)
 
-  if (!any(dups)){
+  if (!any(dups)) {
     .catLine("No duplicate tasks in seasonality offsets table ... OK")
   } else {
     errcode <- .warnProblemsFound
@@ -253,7 +280,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(errcode)
 }
 
-.test3_seasonalityTasksUsed <- function(e){
+.seasonalityTasksUsedTest <- function(e) {
   # Check whether all the seasonality tasks are being used in each task values sheet
   # (This is to enforce a workaround for a yet-to-be-fixed bug.)
   errcode <- .Success
@@ -261,8 +288,8 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   tasksInSeasonalityOffsetsSheet <- unique(e$seasonalityOffsets$Task)
 
   # Gather the task IDs for seasonality tasks that aren't used in task value sheets
-  l <- lapply(e$taskValuesSheetData, function(sheetData){
-    if (is.null(sheetData)){
+  l <- lapply(e$taskValuesSheetData, function(sheetData) {
+    if (is.null(sheetData)) {
       return(character(0))
     } else {
       tasks <- sheetData$Indicator
@@ -274,11 +301,11 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   # Output report info
   .catLine("The following tasks in the scenario offsets table are not used in task values sheets ...")
 
-  for (i in seq_along(e$taskValuesSheets)){
+  for (i in seq_along(e$taskValuesSheets)) {
     sheet <- e$taskValuesSheets[i]
     unusedSeasonalityTasks <- l[[i]]
 
-    if (length(unusedSeasonalityTasks) == 0){
+    if (length(unusedSeasonalityTasks) == 0) {
       .catLine("- ", sheet, " : ", "OK")
     } else {
       errcode <- .warnProblemsFound
@@ -289,13 +316,13 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(errcode)
 }
 
-.test4_dupTaskIds <- function(e){
+.duplicateTaskIdsTest <- function(e) {
   # Check that there are no duplicated task-geography combinations in task
   # value sheets.
   errcode <- .Success
 
-  l <- lapply(e$taskValuesSheetData, function(sheetData){
-    if (is.null(sheetData)){
+  l <- lapply(e$taskValuesSheetData, function(sheetData) {
+    if (is.null(sheetData)) {
       return(character(0))
     } else {
       tasks <- sheetData$Indicator
@@ -305,11 +332,11 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 
   .catLine("The following tasks are duplicated in task values sheets ...")
 
-  for (i in seq_along(e$taskValuesSheets)){
+  for (i in seq_along(e$taskValuesSheets)) {
     sheet <- e$taskValuesSheets[i]
     duplicateTasks <- l[[i]]
 
-    if (length(duplicateTasks) == 0){
+    if (length(duplicateTasks) == 0) {
       .catLine("- ", sheet, " : ", "OK")
     } else {
       errcode <- .warnProblemsFound
@@ -320,7 +347,7 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(errcode)
 }
 
-.test5_invalidNumerics <- function(e){
+.invalidNumericsTest <- function(e) {
   # Check for non-numeric characters in task values sheet columns that should
   # be numeric. (R's coercion rules require that the elements of a vector all
   # have the same type, so if R can't translate a vector element as a number,
@@ -339,11 +366,11 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
       "HoursPerWeek"
     )
 
-  l <- lapply(e$taskValuesSheetData, function(sheetData){
-    if (is.null(sheetData)){
+  l <- lapply(e$taskValuesSheetData, function(sheetData) {
+    if (is.null(sheetData)) {
       return(character(0))
     } else {
-      types <- sapply(numericColumns, function(colName){
+      types <- sapply(numericColumns, function(colName) {
         return(typeof(sheetData[[colName]]))
       })
       return(types)
@@ -358,16 +385,16 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 
   .catLine("The following numeric columns contain non-numeric values ...")
 
-  for (i in seq_along(e$taskValuesSheets)){
+  for (i in seq_along(e$taskValuesSheets)) {
     sheet <- e$taskValuesSheets[i]
     types <- l[[i]]
 
     sheetData <- e$taskValuesSheetData[[i]]
-    blank <- sapply(numericColumns, function(colName){
+    blank <- sapply(numericColumns, function(colName) {
       return(all(is.na(sheetData[[colName]])))
     })
 
-    if (all(types == "double" | blank == TRUE)){
+    if (all(types == "double" | blank == TRUE)) {
       .catLine("- ", sheet, " : ", "OK")
     } else {
       errcode <- .warnProblemsFound
@@ -379,11 +406,11 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
   return(errcode)
 }
 
-.test6_seasonalityNormalization <- function(e){
+.seasonalityNormalizationTest <- function(e) {
   errcode <- .Success
 
-  l <- lapply(e$seasonalityCurvesSheetData, function(sheetData){
-    if (is.null(sheetData)){
+  l <- lapply(e$seasonalityCurvesSheetData, function(sheetData) {
+    if (is.null(sheetData)) {
       return(character(0))
     } else {
       sheetData <- sheetData[-1]
@@ -393,20 +420,22 @@ CheckInputExcelFileFormat <- function(inputFile = NULL,
 
   .catLine("The following seasonality curves aren't normalized to 1 ...")
 
-  for (i in seq_along(e$seasonalityCurveSheets)){
+  for (i in seq_along(e$seasonalityCurveSheets)) {
     sheet <- e$taskValuesSheets[i]
     normSums <- l[[i]]
     curveNames <- names(normSums)
 
     normSumDeviation <- abs(normSums - 1.0)
 
-    if (all(normSumDeviation < 1e-9,  na.rm = TRUE)){
+    if (all(normSumDeviation < 1e-9, na.rm = TRUE)) {
       .catLine("- ", sheet, " : ", "OK")
     } else {
       errcode <- .warnProblemsFound
-      .catLine("* ", sheet, " : ",
-               curveNames[normSumDeviation >= 1e-9],
-               " (", round(normSums[normSumDeviation >= 1e-9], 3), ")")
+      .catLine(
+        "* ", sheet, " : ",
+        curveNames[normSumDeviation >= 1e-9],
+        " (", round(normSums[normSumDeviation >= 1e-9], 3), ")"
+      )
     }
   }
 

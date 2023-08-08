@@ -25,8 +25,10 @@ Save Demographics Information From A Suite Of Experiments
 scenario <- "ScenarioName"
 
 results <-
- pacehrh::RunExperiments(scenarioName = scenario,
-                      trials = 100)
+  pacehrh::RunExperiments(
+    scenarioName = scenario,
+    trials = 100
+  )
 
 df <- pacehrh::SaveSuiteDemographics(results, breaks = c(50))
 

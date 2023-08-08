@@ -2,8 +2,6 @@
 .defaultFPlotType <- .allowedFPlotTypes[1]
 
 .validateFPlotType <- function(type) {
-  allowedTypes <-
-
   if (is.null(type)) {
     return(.defaultFPlotType)
   }
@@ -73,8 +71,10 @@
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #'
 #' g <- pacehrh::PlotFertilityRatesStats(results, type = "boxplot", log = FALSE)
 #' print(g)
@@ -121,37 +121,47 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
 }
 
 .fRatesBoxPlot <- function(df, log) {
-  if (log){
+  # nolint start
+  if (log) {
     g <- ggplot(df, aes(
       x = Year,
       y = LogRate,
       color = Label,
-      group = Year))
+      group = Year
+    ))
   } else {
     g <- ggplot(df, aes(
       x = Year,
       y = Rate,
       color = Label,
-      group = Year))
+      group = Year
+    ))
   }
+  # nolint end
 
   g <- g + geom_boxplot()
   g <- g + scale_x_discrete(breaks = seq(2000, 2100, 5))
   g <- g + theme(legend.position = "none")
 
-  if (log){
+  # nolint start
+  if (log) {
     g <- g + facet_wrap(vars(Label))
     g <- g + ylab("log10(Rate)") + xlab("Year")
   } else {
     g <- g + facet_wrap(vars(Label), scales = "free_y")
     g <- g + ylab("Rate") + xlab("Year")
   }
+  # nolint end
 
   return(g)
 }
 
 .fRatesRibbonPlot <- function(df, se, trials) {
-  dff <- df %>% group_by(Label,Year) %>% summarize(m = mean(LogRate), sd = sd(LogRate))
+  # nolint start
+  dff <- df %>%
+    group_by(Label, Year) %>%
+    summarize(m = mean(LogRate), sd = sd(LogRate))
+  # nolint end
 
   # Compute the 95% confidence interval
   if (se == TRUE) {
@@ -162,6 +172,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
     ylabel <- "Variance log10(Rate) (CI = 95%)"
   }
 
+  # nolint start
   g <- ggplot(dff, aes(
     x = Year,
     y = m,
@@ -175,12 +186,17 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   g <- g + theme(legend.position = "none")
   g <- g + ylab(ylabel) + xlab("Year")
   g <- g + xlab("Year")
+  # nolint end
 
   return(g)
 }
 
 .fRatesLinesPlot <- function(df, se, trials) {
-  dff <- df %>% group_by(Label,Year) %>% summarize(m = mean(LogRate), sd = sd(LogRate))
+  # nolint start
+  dff <- df %>%
+    group_by(Label, Year) %>%
+    summarize(m = mean(LogRate), sd = sd(LogRate))
+  # nolint end
 
   # Compute the 95% confidence interval
   if (se == TRUE) {
@@ -191,6 +207,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
     ylabel <- "Variance log10(Rate) (CI = 95%)"
   }
 
+  # nolint start
   g <- ggplot(dff, aes(
     x = Year,
     y = m,
@@ -203,6 +220,7 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
   g <- g + theme(legend.position = "none")
   g <- g + ylab(ylabel) + xlab("Year")
   g <- g + xlab("Year")
+  # nolint end
 
   return(g)
 }
@@ -228,13 +246,15 @@ PlotFertilityRatesStats <- function(results, se = FALSE, type = "lines", log = T
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #'
 #' g <- pacehrh::PlotFertilityRates(results[[49]]$PopulationRates, 2030)
 #' print(g)
 #' }
-PlotFertilityRates <- function(populationRates, year){
+PlotFertilityRates <- function(populationRates, year) {
   rates <- .explodeRates(populationRates, year)
 
   df <- as.data.frame(rates)
@@ -252,16 +272,19 @@ PlotFertilityRates <- function(populationRates, year){
       values_to = "Rate"
     )
 
-  dff <- dff[dff$Sex %in% c("femaleFertility", "maleFertility"),]
+  dff <- dff[dff$Sex %in% c("femaleFertility", "maleFertility"), ]
 
   titleStr <- paste("Fertility Rates (", year, ")", sep = "")
 
+  # nolint start
   g <- ggplot(dff, aes(x = Age, y = Rate, color = Sex))
   g <- g + scale_color_manual(values = c(.colorF, .colorM))
   g <- g + theme(legend.position = "none")
   g <- g + geom_point(alpha = 0.5)
   g <- g + facet_grid(cols = vars(Sex))
   g <- g + ggtitle(titleStr) + xlab("Age") + ylab("Rate")
+  # nolint end
+
   return(g)
 }
 
@@ -287,17 +310,18 @@ PlotFertilityRates <- function(populationRates, year){
 #' scenario <- "ScenarioName"
 #'
 #' results <-
-#'   pacehrh::RunExperiments(scenarioName = scenario,
-#'                        trials = 100)
+#'   pacehrh::RunExperiments(
+#'     scenarioName = scenario,
+#'     trials = 100
+#'   )
 #'
 #' g <- pacehrh::PlotResultsFertilityRates(results, 49, 2030)
 #' print(g)
 #' }
-PlotResultsFertilityRates <- function(results, trial = 1, year = 2020){
+PlotResultsFertilityRates <- function(results, trial = 1, year = 2020) {
   if (!.validResultsParams(results, trial, year)) {
     return(NULL)
   }
 
   return(PlotFertilityRates(results[[trial]]$PopulationRates, year))
 }
-

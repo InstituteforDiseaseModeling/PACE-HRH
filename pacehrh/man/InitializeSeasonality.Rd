@@ -29,7 +29,9 @@ pacehrh::InitializeSeasonality()
 scenario <- "ScenarioName"
 
 results <-
-  pacehrh::RunExperiments(scenarioName = scenario,
-                       trials = 100)
+  pacehrh::RunExperiments(
+    scenarioName = scenario,
+    trials = 100
+  )
 }
 }

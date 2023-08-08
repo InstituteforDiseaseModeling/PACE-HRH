@@ -11,8 +11,8 @@
 #   | 0  0  1 |            | c |
 #   | 0  0  1 |            | c |
 
-.generateExpansionMatrix <- function(ages = 0:100, breaks = c(0,4,9,14,19,24)){
-  if (is.null(breaks) | length(breaks) == 0){
+.generateExpansionMatrix <- function(ages = 0:100, breaks = c(0, 4, 9, 14, 19, 24)) {
+  if (is.null(breaks) || length(breaks) == 0) {
     return(matrix(data = 1, nrow = length(ages), ncol = 1))
   }
 
@@ -26,7 +26,7 @@
 
   startAge <- ages[1]
 
-  for (i in seq_along(breaks)){
+  for (i in seq_along(breaks)) {
     endAge <- breaks[i]
 
     startRow <- startAge + 1
@@ -38,7 +38,7 @@
 
   # Fill in the final bucket
   endAge <- ages[length(ages)]
-  if (startAge <= endAge){
+  if (startAge <= endAge) {
     i <- i + 1
 
     startRow <- startAge + 1

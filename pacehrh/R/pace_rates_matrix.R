@@ -5,22 +5,22 @@
 #' @return Rates matrix
 #'
 #' @noRd
-generateRatesMatrix <- function(label = NULL){
+generateRatesMatrix <- function(label = NULL) {
   pars <- BVE$stochasticParams
   years <- BVE$years
 
-  if (is.null(label)){
+  if (is.null(label)) {
     return(NULL)
   }
 
-  if (!assertthat::is.string(label)){
+  if (!assertthat::is.string(label)) {
     traceMessage("Non-string label passed to generateRatesMatrix()")
     return(NULL)
   }
 
   rates <- BVE$populationChangeRates[[label]]
 
-  if (is.null(rates)){
+  if (is.null(rates)) {
     return(NULL)
   }
 
@@ -34,7 +34,8 @@ generateRatesMatrix <- function(label = NULL){
     limits,
     stochasticity = GPE$stochasticity,
     seed = NULL,
-    optConstantFertility = ifelse(BVE$scenario$o_Fertility_decr == TRUE, FALSE, TRUE)
+    optConstantFertility =
+      ifelse(BVE$scenario$o_Fertility_decr == TRUE, FALSE, TRUE)
   )
 
   return(m)
@@ -56,8 +57,7 @@ generateRatesMatrix <- function(label = NULL){
   } else if (tolower(rateTypeLabel) == "incidence") {
     row <- limitsTable[limitsTable$RateCategory == "Incidence", ]
     limits <- c(row$Min, row$Max)
-  }
-  else {
+  } else {
     limits <- c(NA_real_, NA_real_)
   }
 
@@ -118,8 +118,8 @@ generateRatesMatrix <- function(label = NULL){
     rateNames <- rates$bandedRates$labels
 
     # Initialize a rates matrix
-    nRows = length(initRates)
-    nCols = length(years)
+    nRows <- length(initRates)
+    nCols <- length(years)
     m <-
       matrix(
         nrow = nRows,
@@ -135,10 +135,10 @@ generateRatesMatrix <- function(label = NULL){
 
     # TODO: Check whether this flag should apply to ALL rates, or just fertility
     if (optConstantFertility == TRUE) {
-      deltaRatios[1:length(deltaRatios)] <- 1
+      deltaRatios[seq_along(deltaRatios)] <- 1
     }
 
-    if (stochasticity == FALSE){
+    if (stochasticity == FALSE) {
       # Compute min and max rate caps
       rateLimits <- .getMinMaxRates(initRates, limits)
       m[, 1] <- initRates
@@ -148,10 +148,10 @@ generateRatesMatrix <- function(label = NULL){
         m[, j] <- .applyRateLimits(m[, j - 1] * deltaRatios, rateLimits)
       }
     } else {
-      if (rates$type == "Fertility"){
-        p = pars[pars$Value == "Fertility rates", ]$p
+      if (rates$type == "Fertility") {
+        p <- pars[pars$Value == "Fertility rates", ]$p
       } else {
-        p = pars[pars$Value == "Mortality rates", ]$p
+        p <- pars[pars$Value == "Mortality rates", ]$p
       }
 
       p <- p * c(-1, 1)
@@ -164,15 +164,15 @@ generateRatesMatrix <- function(label = NULL){
 
       # Grab the stochastic parameters for fertility rates deltas.
 
-      if (rates$type == "Fertility"){
-        p = pars[pars$Value == "Annual delta fertility rates", ]$p
-        q = pars[pars$Value == "Annual delta fertility rates", ]$q
+      if (rates$type == "Fertility") {
+        p <- pars[pars$Value == "Annual delta fertility rates", ]$p
+        q <- pars[pars$Value == "Annual delta fertility rates", ]$q
       } else {
-        p = pars[pars$Value == "Annual delta mortality rates", ]$p
-        q = pars[pars$Value == "Annual delta mortality rates", ]$q
+        p <- pars[pars$Value == "Annual delta mortality rates", ]$p
+        q <- pars[pars$Value == "Annual delta mortality rates", ]$q
       }
 
-      lims = p * q * c(-1, 1)
+      lims <- p * q * c(-1, 1)
 
       # TODO: make all the rtruncnorm calls at once, build a lookup table
 

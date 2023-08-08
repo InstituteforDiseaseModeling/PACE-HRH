@@ -10,13 +10,13 @@
 #' oldState <- Trace()
 #' print(oldState)
 #'
-Trace <- function(state = NULL){
+Trace <- function(state = NULL) {
   originalState <- GPE$traceState
 
   # IDEA: A different way to drive default behavior when Trace() is called
   # without parameters would be to use the hasArg() function.
 
-  if (!is.null(state) & (typeof(state) == 'logical')){
+  if (!is.null(state) && (typeof(state) == "logical")) {
     GPE$traceState <- state
   }
 
@@ -27,18 +27,18 @@ Trace <- function(state = NULL){
 #'
 #' @param msgString Trace message
 #' @noRd
-traceMessage <- function(msgString){
-  if (GPE$traceState == TRUE){
+traceMessage <- function(msgString) {
+  if (GPE$traceState == TRUE) {
     message(msgString)
   }
 }
 
 #' Raise A Trace Message
-#' 
+#'
 #' Same as `traceMessage()`, but doesn't depend on traceMessage value
 #'
 #' @param msgString Trace message
 #' @noRd
-raiseMessage <- function(msgString){
+raiseMessage <- function(msgString) {
   message(msgString)
 }

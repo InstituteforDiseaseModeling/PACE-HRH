@@ -47,8 +47,8 @@ NULL
 
 .defaultPerAgeLevel <- .perAgeLevels[1] # "off"
 
-.colorM <- rgb(96,131,180, maxColorValue = 255)
-.colorF <- rgb(210,120,135, maxColorValue = 255)
+.colorM <- rgb(96, 131, 180, maxColorValue = 255)
+.colorF <- rgb(210, 120, 135, maxColorValue = 255)
 
 .defaultPopSheet <- "TotalPop"
 .defaultPopLabelSheet <- "Lookup"
@@ -57,7 +57,7 @@ NULL
 .defaultSeasonalityOffsetsSheet <- "SeasonalityOffsets"
 .defaultTaskValuesSheet <- "TaskValues"
 .defaultScenariosSheet <- "Scenarios"
-.defaultStochasticParametersSheet <- "StochasticParameters"
+.defaultStochasticParmsSheet <- "StochasticParameters"
 .defaultCadreRolesSheet <- "CadreRoles"
 .defaultTaskCadresSheet <- "TaskCadres"
 .defaultChangeRateLimitsSheet <- "ChangeRateLimits"
@@ -74,18 +74,22 @@ GPE$ignoreGlobalConfigExcelFileSetting <- FALSE
 
 GPE$startYear <- 2020
 GPE$endYear <- 2040
-GPE$years <- seq(from = GPE$startYear,
-                 to = GPE$endYear,
-                 by = 1)
+GPE$years <- seq(
+  from = GPE$startYear,
+  to = GPE$endYear,
+  by = 1
+)
 GPE$shoulderYears <- 1
 
 GPE$stochasticity <- TRUE
 
 GPE$ageMin <- 0
 GPE$ageMax <- 100
-GPE$ages <- seq(from = GPE$ageMin,
-                to = GPE$ageMax,
-                by = 1)
+GPE$ages <- seq(
+  from = GPE$ageMin,
+  to = GPE$ageMax,
+  by = 1
+)
 
 GPE$ratioFemalesAtBirth <- 0.5
 GPE$ratioMalesAtBirth <- 1.0 - GPE$ratioFemalesAtBirth
@@ -105,4 +109,3 @@ BVE$populationRangesTable <- NULL
 BVE$cadreRoles <- NULL
 BVE$taskCadresData <- NULL
 BVE$taskCoverageRates <- NULL
-

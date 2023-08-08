@@ -10,16 +10,16 @@
 #' \code{Female}, \code{Male} and \code{Total}
 #'
 #' @noRd
-loadInitialPopulation <- function(sheetName = .defaultPopSheet){
+loadInitialPopulation <- function(sheetName = .defaultPopSheet) {
   traceMessage(paste0("Loading initial population sheet ", sheetName))
 
   popData <- readSheet(sheetName = sheetName)
 
-  if (!is.null(popData)){
+  if (!is.null(popData)) {
     popData <- validateTableAgainstSchema(popData, .populationMetaData)
   }
 
-  if (is.null(popData)){
+  if (is.null(popData)) {
     return(NULL)
   }
 
@@ -34,7 +34,7 @@ loadInitialPopulation <- function(sheetName = .defaultPopSheet){
     return(NULL)
   }
 
-  if (GPE$roundingLaw != "none"){
+  if (GPE$roundingLaw != "none") {
     femalePop <- round(femalePop, 0)
     malePop <- round(malePop, 0)
   }
@@ -75,28 +75,33 @@ loadInitialPopulation <- function(sheetName = .defaultPopSheet){
 .popLabelColumns <-
   c("Labels", "Male", "Female", "Start", "End")
 
-loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet){
+loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet) {
   traceMessage(paste0("Loading population labels sheet ", sheetName))
 
-  df <- tryCatch({
+  df <- tryCatch(
+    {
       readxl::read_xlsx(GPE$inputExcelFile,
-                        sheet = sheetName,
-                        .name_repair = "minimal")
-  },
-  error = function(e){
-    return(NULL)
-  },
-  finally = {
-  })
+        sheet = sheetName,
+        .name_repair = "minimal"
+      )
+    },
+    error = function(e) {
+      return(NULL)
+    },
+    finally = {
+    }
+  )
 
-  if (is.null(df)){
+  if (is.null(df)) {
     warning("Could not read population labels lookup sheet")
     return(NULL)
   }
 
-  if (!all(.popLabelRawColumns %in% colnames(df))){
-    str <- paste0("Invalid columns in population labels lookup sheet\n",
-                  "Expected: ", paste0(.popLabelRawColumns, collapse = ", "))
+  if (!all(.popLabelRawColumns %in% colnames(df))) {
+    str <- paste0(
+      "Invalid columns in population labels lookup sheet\n",
+      "Expected: ", paste0(.popLabelRawColumns, collapse = ", ")
+    )
     warning(str)
     return(NULL)
   }
@@ -105,16 +110,24 @@ loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet){
   # triggers a fatal error when RunExperiments() is called.
 
   # Filter the columns, and rename
-  df <- df[,.popLabelRawColumns]
+  df <- df[, .popLabelRawColumns]
   names(df) <- .popLabelColumns
 
   # Remove blank columns
-  df <- df[,apply(df,2,function(x){any(!is.na(x))})]
+  df <- df[, apply(df, 2, function(x) {
+    any(!is.na(x))
+  })]
   # Remove blank rows
-  df <- df[apply(df,1,function(x){any(!is.na(x))}),]
+  df <- df[apply(df, 1, function(x) {
+    any(!is.na(x))
+  }), ]
 
+  # Turn linter off around data.table code
+
+  # nolint start
   dt <- data.table::setDT(df)
   data.table::setkey(dt, Labels)
+  # nolint end
 
   return(dt)
 }
@@ -134,7 +147,7 @@ loadPopulationLabels <- function(sheetName = .defaultPopLabelSheet){
 #' \dontrun{
 #' pacehrh::InitializePopulation()
 #' }
-InitializePopulation <- function(popSheet = .defaultPopSheet){
+InitializePopulation <- function(popSheet = .defaultPopSheet) {
   .checkAndLoadGlobalConfig()
 
   BVE$initialPopulation <- NULL
@@ -148,50 +161,57 @@ InitializePopulation <- function(popSheet = .defaultPopSheet){
   return(invisible(NULL))
 }
 
-.computePopulationRanges <- function(lt){
-  return(list(Female = .computePopulationRangesBySex(lt, "f"),
-              Male = .computePopulationRangesBySex(lt, "m")))
+.computePopulationRanges <- function(lt) {
+  return(list(
+    Female = .computePopulationRangesBySex(lt, "f"),
+    Male = .computePopulationRangesBySex(lt, "m")
+  ))
 }
 
-.computePopulationRangesBySex <- function(lt, sex = "m"){
-  if (is.null(lt)){
+.computePopulationRangesBySex <- function(lt, sex = "m") {
+  if (is.null(lt)) {
     return(NULL)
   }
 
-  if (!(tolower(sex) %in% c("m", "f"))){
+  if (!(tolower(sex) %in% c("m", "f"))) {
     traceMessage(paste0("Invalid sex (", sex, ") provided to .computePopulationRangesBySex()"))
     sex <- "m"
   }
 
-  l <- lapply(1:NROW(lt), function(i){
+  #   l <- lapply(1:NROW(lt), function(i) {
+  l <- lapply(seq_len(NROW(lt)), function(i) {
     v <- numeric(length(GPE$ages))
 
-    if (sex == "m" && (lt$Male[i] == FALSE)){
+    if (sex == "m" && (lt$Male[i] == FALSE)) {
       return(v)
     }
 
-    if (sex == "f" && (lt$Female[i] == FALSE)){
+    if (sex == "f" && (lt$Female[i] == FALSE)) {
       return(v)
     }
 
     start <- lt$Start[i]
-    if (is.na(start)){
+    if (is.na(start)) {
       start <- GPE$ageMin
     }
 
     end <- lt$End[i]
-    if (is.na(end)){
+    if (is.na(end)) {
       end <- GPE$ageMax
     }
 
-    v[(start+1):(end+1)] <- 1
+    v[(start + 1):(end + 1)] <- 1
 
     return(v)
   })
 
   m <- do.call(rbind, l)
 
+  # Turn linter off for data.table code
+
+  # nolint start
   rownames(m) <- lt[, Labels]
+  # nolint end
   colnames(m) <- GPE$ages
 
   return(m)

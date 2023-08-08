@@ -6,7 +6,7 @@ withr::local_dir("..")
 test_that("Lint: basic", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "../../config/model_inputs.xlsx"
+  e$inputExcelFile <- "./config/model_inputs.xlsx"
   outFile = "lintout_01_clean.txt"
 
   # Check that linting produces an output file
@@ -37,7 +37,7 @@ test_that("Lint: basic", {
 test_that("Lint: bad scenario sheet name", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "../../config/model_inputs.xlsx"
+  e$inputExcelFile <- "./config/model_inputs.xlsx"
   testthat::expect_snapshot({
     errCode <- pacehrh::CheckInputExcelFileFormat(scenarioSheet = "notasheet", noDate = TRUE)
   })
@@ -48,7 +48,7 @@ test_that("Lint: bad scenario sheet name", {
 test_that("Lint: bad seasonality offsets sheet name", {
   e <- pacehrh:::GPE
   local_vars("inputExcelFile", envir = e)
-  e$inputExcelFile <- "../../config/model_inputs.xlsx"
+  e$inputExcelFile <- "./config/model_inputs.xlsx"
   testthat::expect_snapshot({
     errCode <- pacehrh::CheckInputExcelFileFormat(seasonalityOffsetsSheet = "notasheet", noDate = TRUE)
   })

@@ -11,11 +11,11 @@
 #'
 #' @return List of dataframes of per-task times, or NULL
 #'
-RunExperiment <- function(debug = FALSE){
+RunExperiment <- function(debug = FALSE) {
   # INITIALIZE
   scenario <- BVE$scenario
 
-  if (is.null(scenario)){
+  if (is.null(scenario)) {
     traceMessage(paste("No scenario specified"))
     return(NULL)
   }
@@ -53,35 +53,35 @@ RunExperiment <- function(debug = FALSE){
   # structures. Results from the next couple of calls are written directly into
   # the temp environment, not passed back from the procedures.
 
-  if (GPE$perAgeStats != "off"){
+  if (GPE$perAgeStats != "off") {
     e <- rlang::env()
     ComputePerAgeTaskTimes(e)
 
-    if (GPE$perAgeStats == "annual"){
+    if (GPE$perAgeStats == "annual") {
       results$AnnualPerAge <- e$AnnualPerAge
     } else {
       results$MonthlyPerAge <- as.list(e)
     }
   }
 
-
-  results$Config$PaceHrhVersion = packageVersion("pacehrh")
-
+  results$Config$PaceHrhVersion <- packageVersion("pacehrh")
 
   return(results)
 }
 
-.computeTotalTimes <- function(resultsObj){
-  if (is.null(resultsObj)){
+.computeTotalTimes <- function(resultsObj) {
+  if (is.null(resultsObj)) {
     return(0)
   }
 
-  retVal <- tryCatch({
-    apply(resultsObj[["Time"]], 1, sum)
-  },
-  error = function(e){
-    return(0)
-  })
+  retVal <- tryCatch(
+    {
+      apply(resultsObj[["Time"]], 1, sum)
+    },
+    error = function(e) {
+      return(0)
+    }
+  )
 
   return(retVal)
 }
@@ -99,24 +99,28 @@ RunExperiment <- function(debug = FALSE){
 #' EXP$populationRangeMatrices <-
 #'   .computePopulationRangeMatrices(EXP$demographics, BVE$populationRangesTable)
 #' }
-.computePopulationRangeMatrices <- function(populations, popRanges){
-  l <- lapply(populations, function(pop){pop$Female})
+.computePopulationRangeMatrices <- function(populations, popRanges) {
+  l <- lapply(populations, function(pop) {
+    pop$Female
+  })
   popMatrix <- do.call(cbind, l)
   rangeMatrix <- popRanges$Female
 
   mf <- rangeMatrix %*% popMatrix
 
-  l <- lapply(populations, function(pop){pop$Male})
+  l <- lapply(populations, function(pop) {
+    pop$Male
+  })
   popMatrix <- do.call(cbind, l)
   rangeMatrix <- popRanges$Male
 
   mm <- rangeMatrix %*% popMatrix
 
-  rf <- lapply(populations, function(pop){
+  rf <- lapply(populations, function(pop) {
     t(t(popRanges$Female) * pop$Female)
   })
 
-  rm <- lapply(populations, function(pop){
+  rm <- lapply(populations, function(pop) {
     t(t(popRanges$Male) * pop$Male)
   })
 

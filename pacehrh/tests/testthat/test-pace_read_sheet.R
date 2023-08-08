@@ -39,7 +39,7 @@ test_that("Sheet read: non-default intput file", {
   testthat::expect_s3_class(data, c("tbl_df", "tbl", "data.frame"))
 
   cols <- names(data)
-  schemaCols <- pacehrh:::.populationChangeRateColumnNames
+  schemaCols <- pacehrh:::.populationChangeRateColNames
   testthat::expect_true(length(setdiff(schemaCols, cols)) == 0)
 })
 

@@ -122,7 +122,7 @@
 #
 # ------------------------------------------------------------------------------
 
-.populationChangeRateColumnNames <-
+.populationChangeRateColNames <-
   c(
     "Description",
     "Label",
@@ -132,9 +132,9 @@
     "BandEnd",
     "InitValue",
     "ChangeRate"
-    )
+  )
 
-.populationChangeRateColumnTypes <-
+.populationChangeRateColTypes <-
   c(
     "character",
     "character",
@@ -152,12 +152,12 @@
     "Sex"
   )
 
-.populationChangeRateColumnMetaData <-
+.populationChangeRateMetaData <-
   list(
-    rcols = .populationChangeRateColumnNames,
-    rtypes = .populationChangeRateColumnTypes,
-    cols = .populationChangeRateColumnNames,
-    types = .populationChangeRateColumnTypes,
+    rcols = .populationChangeRateColNames,
+    rtypes = .populationChangeRateColTypes,
+    cols = .populationChangeRateColNames,
+    types = .populationChangeRateColTypes,
     kcols = .populationChangeRateKeyColumns
   )
 
@@ -279,47 +279,27 @@
     "character"
   )
 
-# .scenarioColumnNamesOptional <-
-#   c(
-#     "DeliveryModel"
-#   )
-#
-# .scenarioColumnTypesOptional <-
-#   c(
-#     "character"
-#   )
-#
-# .scenarioMetaData <-
-#   list(
-#     rcols = .scenarioColumnNames,
-#     rtypes = .scenarioColumnTypes,
-#     ocols = .scenarioColumnNamesOptional,
-#     otypes = .scenarioColumnTypesOptional,
-#     cols = c(.scenarioColumnNames, .scenarioColumnNamesOptional),
-#     types = c(.scenarioColumnTypes, .scenarioColumnTypesOptional)
-#   )
-
 # ------------------------------------------------------------------------------
 #
 # STOCHASTIC PARAMETERS TABLE
 #
 # ------------------------------------------------------------------------------
 
-.stochasticParametersColumnNames <-
+.stochasticParametersColNames <-
   c(
     "Value",
     "p",
     "q"
   )
 
-.stochasticParametersColumnTypes <-
+.stochasticParametersColTypes <-
   c(
     "character",
     "double",
     "double"
   )
 
-.stochasticParametersKeyColumns <-
+.stochasticParametersKeyCols <-
   c(
     "Value",
     "p"
@@ -327,11 +307,11 @@
 
 .stochasticParametersMetaData <-
   list(
-    rcols = .stochasticParametersColumnNames,
-    rtypes = .stochasticParametersColumnTypes,
-    cols = .stochasticParametersColumnNames,
-    types = .stochasticParametersColumnTypes,
-    kcols = .stochasticParametersKeyColumns
+    rcols = .stochasticParametersColNames,
+    rtypes = .stochasticParametersColTypes,
+    cols = .stochasticParametersColNames,
+    types = .stochasticParametersColTypes,
+    kcols = .stochasticParametersKeyCols
   )
 
 # ------------------------------------------------------------------------------
