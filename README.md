@@ -21,6 +21,12 @@ Complete documentation, including R code reference and getting started guidance,
 
 https://institutefordiseasemodeling.github.io/PACE-HRH/articles/pacehrh.html
 
+## Contributing Guidelines
+
+If you're interested in contributing to this repository, please refer to the guidelines at 
+
+https://github.com/InstituteforDiseaseModeling/PACE-HRH/blob/main/.github/CONTRIBUTING.md
+
 ## Package Dependencies
 
 PACE-HRH depends on the following user-installed R packages: jsonlite, readxl, data.table, assertthat, dplyr, magrittr, ggplot2, scales, methods, truncnorm, tibble, testthat, roxytest, readr, tidyr, installr, withr, knitr, rmarkdown, validate, kableExtra, stringr, pandoc. The script util\setup.R can be used to install these packages.
