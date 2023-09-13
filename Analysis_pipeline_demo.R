@@ -133,6 +133,36 @@ ggplot(data=Cadre_labelled)+
 
 ####################################################################################################
 
+# FTE calculation by Cadre
+ymax = max(ceiling(Cadre_labelled$CI50/Cadre_labelled$WeeksPerYr/(Cadre_labelled$HrsPerWeek*Cadre_labelled$MaxUtilization))) + 1
+
+ggplot(data=Cadre_labelled)+
+  geom_bar(aes(x=Year,y=ceiling(CI50/WeeksPerYr/(HrsPerWeek*MaxUtilization))),stat="identity",position="stack")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(2021,2025,2030,2035))+
+  ylim(0,ymax)+
+  facet_grid(~Scenario_ID)+
+  labs(x="Year",y="Total required staff count",title="Required staff count (total)")
+
+ggplot(data=Cadre_labelled)+
+  geom_bar(aes(x=Year,y=ceiling(CI50/WeeksPerYr/(HrsPerWeek*MaxUtilization)),fill=RoleDescription),stat="identity",position="stack")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(2021,2025,2030,2035))+
+  ylim(0,ymax)+
+  facet_grid(~Scenario_ID)+
+  labs(x="Year",y="Minimum staff count",fill="Cadre",title="Minimum staff count by cadre")
+
+ggplot(data=Cadre_labelled)+
+  geom_bar(aes(x=Year,y=ceiling(CI50/WeeksPerYr/(HrsPerWeek*MaxUtilization)),fill=RoleDescription),stat="identity")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(2021,2025,2030,2035))+
+  ylim(0,ymax)+
+  facet_grid(RoleDescription~Scenario_ID)+
+  labs(x="Year",y="Minimum staff count",fill="Cadre",title="Minimum staff count by cadre")
+
+
+####################################################################################################
+
 # service mix change over time, Line Plot
 
 ServiceCat_Clinical <- Mean_ServiceCat %>%
