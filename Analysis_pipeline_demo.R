@@ -3,6 +3,7 @@ library(readxl)
 library(plyr)
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 library(stringr)
 library(reshape2)
 library(viridis)
@@ -21,6 +22,7 @@ Mean_ServiceCat <- read.csv(paste("results/Mean_ServiceCat_",usefuldescription,"
 Stats_TotClin <- read.csv(paste("results/Stats_TotClin_",usefuldescription,"_",date,".csv",sep=""))
 Mean_ClinCat <- read.csv(paste("results/Mean_ClinCat_",usefuldescription,"_",date,".csv",sep=""))
 Mean_Total <- read.csv(paste("results/Mean_Total_",usefuldescription,"_",date,".csv",sep=""))
+ByRun_ClinMonth <- read.csv(paste("results/ByRun_ClinMonth_",usefuldescription,"_",date,".csv",sep=""))
 Stats_ClinMonth <- read.csv(paste("results/Stats_ClinMonth_",usefuldescription,"_",date,".csv",sep=""))
 Mean_Alloc <- read.csv(paste("results/Mean_Alloc_",usefuldescription,"_",date,".csv",sep=""))
 
@@ -130,6 +132,38 @@ ggplot(data=Cadre_labelled)+
   scale_fill_brewer(palette = "Paired", direction = -1)+
   facet_wrap(~Scenario_ID)+
   labs(x="Year", y="Hours per Week per 5,000 Pop", fill = "Cadre", title = "Time allocation by Cadre")
+
+####################################################################################################
+
+# FTE calculation by Cadre
+ymax = max(ceiling(Cadre_labelled$CI50/Cadre_labelled$WeeksPerYr/(Cadre_labelled$HrsPerWeek*Cadre_labelled$MaxUtilization))) + 1
+Cadre_labelled$ScenarioLabel = paste(Cadre_labelled$Scenario_ID,":", Cadre_labelled$MaxUtilization, "MaxUtil")
+unique(Cadre_labelled$ScenarioLabel)
+
+ggplot(data=Cadre_labelled)+
+  geom_bar(aes(x=Year,y=ceiling(CI50/WeeksPerYr/(HrsPerWeek*MaxUtilization))),stat="identity",position="stack")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(2021,2025,2030,2035))+
+  ylim(0,ymax)+
+  facet_grid(~ScenarioLabel)+
+  labs(x="Year",y="Total required staff count",title="Required staff count (total)")
+
+ggplot(data=Cadre_labelled)+
+  geom_bar(aes(x=Year,y=ceiling(CI50/WeeksPerYr/(HrsPerWeek*MaxUtilization)),fill=RoleDescription),stat="identity",position="stack")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(2021,2025,2030,2035))+
+  ylim(0,ymax)+
+  facet_grid(~ScenarioLabel)+
+  labs(x="Year",y="Minimum staff count",fill="Cadre",title="Minimum staff count by cadre")
+
+ggplot(data=Cadre_labelled)+
+  geom_bar(aes(x=Year,y=ceiling(CI50/WeeksPerYr/(HrsPerWeek*MaxUtilization)),fill=RoleDescription),stat="identity")+
+  theme_bw()+
+  scale_x_continuous(breaks = c(2021,2025,2030,2035))+
+  ylim(0,ymax)+
+  facet_grid(RoleDescription~ScenarioLabel)+
+  labs(x="Year",y="Minimum staff count",fill="Cadre",title="Minimum staff count by cadre")
+
 
 ####################################################################################################
 
