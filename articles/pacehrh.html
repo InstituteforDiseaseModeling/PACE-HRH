@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
                         <h4 data-toc-skip class="author">Jen
 Schripsema</h4>
             
-            <h4 data-toc-skip class="date">2023-07-17</h4>
+            <h4 data-toc-skip class="date">2023-09-22</h4>
       
       
       <div class="hidden name"><code>pacehrh.rmd</code></div>
@@ -212,6 +212,12 @@ value would be 52-2-3=47.</li>
 <strong>HrsPerWeek</strong>: The number of hours each week a typical
 healthcare worker is expected to work, excluding breaks and on-call
 time. This should typically be less than 40.</li>
+<li>
+<strong>MaxUtilization</strong>: The maximum percentage of the hours
+per week that a healthcare worker is able to be productive. Range 0% to
+100%, entered as a decimal with a max value of 1. This should typically
+be less than 0.85, which is a commonly accepted threshold for a ‘busy’
+staff member in a clinical context.</li>
 <li>
 <strong>BaselinePop</strong>: The number of people in a typical
 healthcare catchment. Usually, these values are set as targets by a

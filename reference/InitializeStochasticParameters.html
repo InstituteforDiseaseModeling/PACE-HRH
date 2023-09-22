@@ -18,7 +18,7 @@ save to a location in the global package environment."><!-- mathjax --><script s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pacehrh</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@ save to a location in the global package environment.</p>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">InitializeStochasticParameters</span><span class="op">(</span></span>
-<span>  stochasticParametersSheetName <span class="op">=</span> <span class="va">.defaultStochasticParametersSheet</span>,</span>
+<span>  stochasticParametersSheetName <span class="op">=</span> <span class="va">.defaultStochasticParmsSheet</span>,</span>
 <span>  changeRateLimitsSheetName <span class="op">=</span> <span class="va">.defaultChangeRateLimitsSheet</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -106,8 +106,10 @@ for generated mortality, fertility, and incidence rate</p></dd>
 <span class="r-in"><span><span class="va">scenario</span> <span class="op">&lt;-</span> <span class="st">"ScenarioName"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="RunExperiments.html">RunExperiments</a></span><span class="op">(</span>scenarioName <span class="op">=</span> <span class="va">scenario</span>,</span></span>
-<span class="r-in"><span>                       trials <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">pacehrh</span><span class="fu">::</span><span class="fu"><a href="RunExperiments.html">RunExperiments</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    scenarioName <span class="op">=</span> <span class="va">scenario</span>,</span></span>
+<span class="r-in"><span>    trials <span class="op">=</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
