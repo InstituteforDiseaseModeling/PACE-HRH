@@ -220,13 +220,13 @@
 <text transform='translate(13.05,278.10) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='29.95px' lengthAdjust='spacingAndGlyphs'>Times</text>
 <rect x='607.90' y='239.03' width='106.62' height='78.13' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <text x='613.38' y='253.23' style='font-size: 11.00px; font-family: sans;' textLength='38.52px' lengthAdjust='spacingAndGlyphs'>variable</text>
-<rect x='613.38' y='259.85' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #F2F2F2;' />
+<rect x='613.38' y='259.85' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #EBEBEB;' />
 <circle cx='622.02' cy='268.49' r='5.69' style='stroke-width: 0.71; stroke: #0000FF;' />
 <line x1='616.33' y1='268.49' x2='627.70' y2='268.49' style='stroke-width: 0.71; stroke: #0000FF;' />
 <line x1='622.02' y1='274.18' x2='622.02' y2='262.80' style='stroke-width: 0.71; stroke: #0000FF;' />
-<rect x='613.38' y='277.13' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #F2F2F2;' />
+<rect x='613.38' y='277.13' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #EBEBEB;' />
 <polygon points='622.02,280.24 626.80,288.53 617.23,288.53 ' style='stroke-width: 0.71; stroke: none; fill: #00FF00;' />
-<rect x='613.38' y='294.41' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #F2F2F2;' />
+<rect x='613.38' y='294.41' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #EBEBEB;' />
 <circle cx='622.02' cy='303.05' r='1.42' style='stroke-width: 0.71; stroke: #FFA500; fill: #FFA500;' />
 <text x='636.13' y='271.52' style='font-size: 8.80px; font-family: sans;' textLength='64.10px' lengthAdjust='spacingAndGlyphs'>reported_annual</text>
 <text x='636.13' y='288.80' style='font-size: 8.80px; font-family: sans;' textLength='69.97px' lengthAdjust='spacingAndGlyphs'>reported_per_age</text>
