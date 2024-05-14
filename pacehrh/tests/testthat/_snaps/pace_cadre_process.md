@@ -2,7 +2,7 @@
 
     Code
       results <- pacehrh::RunExperiments(scenarioName = scenario, trials = nTrials)
-    Message <simpleMessage>
+    Message
       Loading population change rates sheet PopValues
       Loading seasonality curves sheet SeasonalityCurves
       Loading task values sheet TV_Merged
