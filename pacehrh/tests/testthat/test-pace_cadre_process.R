@@ -134,3 +134,19 @@ test_that("Cadre computations - bad cadre task sheet", {
 
   testthat::expect_true(is.null(caData))
 })
+
+test_that("check cadre compute", {
+  bve <- pacehrh:::BVE
+  local_vars("years", envir = bve)
+  bve$years <- seq(2020, 2030)  # Set the mock value
+  testWeeksPerYr <- 52
+  testWeeksPerYr <- 40
+  scenario <- list(UniqueID = 1, WeeksPerYr=testWeeksPerYr)
+  roles <- data.frame(ScenarioID = c(1,1), RoleID = c("FH1", "FH2"), StartYear = c(2020, 2035), EndYear = c(2030, NA), OverheadHoursPerWeek = c(testWeeksPerYr,testWeeksPerYr))
+  expect_warning(output <- computeCadreData(scenario, roles), "FH2 has start year after the simulation end year")
+  overhead <- data.frame(output$annualOverheads)
+  included_role <- overhead[overhead$Role == "FH1", ]
+  excluded_role <- overhead[overhead$Role == "FH2", ]
+  testthat::expect_true(all(excluded_role == 0, na.rm = TRUE))
+  testthat::expect_true(all(included_role == testWeeksPerYr*testWeeksPerYr*60, na.rm = TRUE))
+})

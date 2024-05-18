@@ -34,8 +34,12 @@ computeCadreData <- function(scenario = NULL, roles = NULL) {
       endYear <- min(roles$EndYear[i], maxYear)
     }
 
-    overheadTime <- roles$OverheadHoursPerWeek[i] * 60.0 * scenario$WeeksPerYr
-    annualValuesMatrix[i, (startYear - minYear + 1):(endYear - minYear + 1)] <- overheadTime
+    if (roles$StartYear[i] <= maxYear) {
+      overheadTime <- roles$OverheadHoursPerWeek[i] * 60.0 * scenario$WeeksPerYr
+      annualValuesMatrix[i, (startYear - minYear + 1):(endYear - minYear + 1)] <- overheadTime
+    } else {
+      warning(paste0("Role ", roles$RoleID[i], " has start year after the simulation end year, it will be ignored"))
+    }
   }
 
   dimnames(annualValuesMatrix) <- list("Role" = roles$RoleID, "Year" = BVE$years)

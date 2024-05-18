@@ -2,14 +2,14 @@
 
     Code
       popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "newPopValues")
-    Message <simpleMessage>
+    Message
       Loading population change rates sheet newPopValues
 
 ---
 
     Code
       popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues")
-    Message <simpleMessage>
+    Message
       Loading population change rates sheet badPopValues
       Out of order BandEnd values for (Fertility, F)
       Incomplete BandStart/BandEnd range (0, 98) for (Mortality, F)
@@ -19,16 +19,17 @@
 
     Code
       popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_2")
-    Message <simpleMessage>
+    Message
       Loading population change rates sheet badPopValues_2
-    Warning <simpleWarning>
+    Condition
+      Warning:
       Missing required columns in table: Type
 
 ---
 
     Code
       popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_4")
-    Message <simpleMessage>
+    Message
       Loading population change rates sheet badPopValues_4
       Incomplete BandStart/BandEnd range (2, 98)
 
@@ -36,6 +37,6 @@
 
     Code
       popRates <- pacehrh:::loadPopulationChangeRates(sheetName = "badPopValues_3")
-    Message <simpleMessage>
+    Message
       Loading population change rates sheet badPopValues_3
 

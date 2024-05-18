@@ -47,7 +47,7 @@ jobs:
       contents: write
     strategy:
         matrix:
-          R: [ '4.2' ]
+          R: [ '4.4' ]
     name: R ${{ matrix.R }} Binary Build
     needs: job_check
     if: needs.job_check.outputs.tag_exist == 'false'
