@@ -2,7 +2,11 @@
 title: "Get started"
 author: "Jen Schripsema"
 date: '`r Sys.Date()`'
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    includes:
+      in_header: head.html
+      after_body: after_body.html
 vignette: >
   %\VignetteIndexEntry{Get started}
   %\VignetteEngine{knitr::rmarkdown}
