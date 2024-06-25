@@ -1,7 +1,7 @@
 Type: Package
 Package: pacehrh
 Title: Population-Aware Capacity Estimator for Human Resources for Health
-Version: 2.0.0
+Version: 2.0.1
 Author: Charles Eliot, Brittany Hagedorn
 Maintainer: Charles Eliot <charles.eliot@gatesfoundation.org>
 Description: This package models the healthcare needs of a given population so you
