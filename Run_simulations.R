@@ -33,6 +33,10 @@ pacehrh::SetRoundingLaw("Late")
 scenarios <- read_xlsx("config/model_inputs_demo.xlsx",sheet="Scenarios")
 cadreroles <- read_xlsx("config/model_inputs_demo.xlsx",sheet="CadreRoles")
 
+# Validate Data
+source("util/data_validation.R")
+check_numeric_column(cadreroles$OverheadHoursPerWeek)
+
 numtrials <- 50
 date <- Sys.Date()
 usefuldescription <- "test"
